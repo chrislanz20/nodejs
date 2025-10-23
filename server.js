@@ -1,12 +1,21 @@
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
+const path = require("path");
 
 const app = express();
 app.use(express.json());
 
 // Allow your site to call this API (we can restrict origins later)
 app.use(cors());
+
+// Serve the marketing site
+const publicDir = path.join(__dirname, "public");
+app.use(express.static(publicDir));
+
+app.get("/", (_req, res) => {
+  res.sendFile(path.join(publicDir, "index.html"));
+});
 
 // --- ENV VARS (we'll set these in Railway) ---
 const RETELL_API_KEY = process.env.RETELL_API_KEY;   // secret key from Retell dashboard
