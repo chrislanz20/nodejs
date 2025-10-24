@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>10 High-Impact Automation Opportunities - SaveYa Tech</title>
+  <style>
+    /* =====================
+       Brand & Base Styles
+       ===================== */
+    :root {
+      --brand-teal: #4DB8C4;
+      --brand-teal-600: #3aa5b3;
+      --brand-charcoal: #1f2937; /* slate-800 */
+      --ink: #0f172a;           /* slate-900 */
+      --muted: #475569;         /* slate-600 */
+      --muted-2: #64748b;       /* slate-500 */
+      --line: #e2e8f0;          /* slate-200 */
+      --paper: #ffffff;
+      --subtle: #f8fafc;        /* slate-50 */
+      --impact-bg: #e6f9fb;     /* very light teal */
+    }
+
+    @media print {
+      @page {
+        size: letter;           /* 8.5in x 11in */
+        margin: 0.75in;         /* comfortable margins for PDF */
+      }
+      html, body { background: #ffffff !important; }
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .page-break { page-break-before: always; }
+      .no-break { page-break-inside: avoid; }
+      .cover { page-break-after: always; }
+      .screen-only { display: none !important; }
+    }
+
+    html, body {
+      background: var(--subtle);
+    }
+
+    body {
+      font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.55;
+      color: var(--ink);
+      margin: 0;
+      padding: 0;
+    }
+
+    .doc {
+      max-width: 7.0in; /* matches printable width with 0.75in margins */
+      margin: 0 auto;
+      background: var(--paper);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    /* =====================
+       Cover
+       ===================== */
+    .cover {
+      padding: 1.1in 0.9in 0.9in; /* generous white space for PDF */
+      background: linear-gradient(180deg, #fdfefe 0%, #fbfeff 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .brand-row img.logo {
+      height: 56px;
+      width: 56px;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+
+    .brand-name {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-top {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      color: var(--ink);
+    }
+
+    .brand-tagline {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .title {
+      margin: 32px 0 0;
+      font-size: 28px;
+      line-height: 1.25;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.2px;
+    }
+
+    .subtitle {
+      margin: 12px 0 0;
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 42rem;
+    }
+
+    .meta {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      color: var(--muted-2);
+      font-size: 13px;
+    }
+
+    /* =====================
+       Content
+       ===================== */
+    .content { padding: 0.75in 0.9in; }
+
+    h2.section {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--ink);
+      margin: 28px 0 14px;
+      display: grid;
+      grid-template-columns: 6px 1fr;
+      align-items: center;
+      gap: 12px;
+    }
+    h2.section::before {
+      content: "";
+      display: block;
+      width: 6px;
+      height: 26px;
+      border-radius: 4px;
+      background: var(--brand-teal);
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--brand-teal-600);
+      margin: 18px 0 10px;
+    }
+
+    p { margin: 10px 0; color: var(--ink); }
+    ul { margin: 8px 0 10px 22px; }
+    li { margin: 6px 0; }
+    strong { color: var(--ink); font-weight: 800; }
+    em { color: var(--muted-2); }
+
+    .lead { color: var(--muted); text-align: center; margin: 10px 0 26px; }
+
+    .callout {
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--brand-teal);
+      border-radius: 8px;
+      background: #f8fdfe; /* very light, print-friendly */
+      margin: 14px 0;
+    }
+
+    .impact {
+      background: var(--impact-bg);
+      border: 1px solid #c5eef3;
+      border-left: 4px solid var(--brand-teal);
+    }
+
+    .stats { color: var(--brand-teal-600); font-weight: 800; }
+
+    .bottom-line {
+      margin: 34px 0;
+      padding: 18px 18px 8px;
+      border: 2px solid var(--brand-teal);
+      border-radius: 10px;
+      background: #f7fcfd;
+    }
+
+    .cta {
+      margin: 28px 0 8px;
+      padding: 20px 18px;
+      text-align: center;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--brand-teal) 0%, #3aa5b3 100%);
+      border-radius: 12px;
+    }
+
+    .cta h3 { color: #ffffff; margin: 0 0 6px; }
+
+    .footer {
+      padding: 0 0.9in 0.9in;
+      color: var(--muted);
+      font-size: 14px;
+      border-top: 1px solid var(--line);
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    .footer strong { color: var(--brand-teal-600); font-size: 16px; }
+
+    /* Utility */
+    .page-break { margin-top: 24px; }
+    .no-break { break-inside: avoid; }
+    .muted { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <main class="doc">
+    <!-- Cover -->
+    <section class="cover">
+      <div class="brand-row">
+        <!-- Place your logo file named 'saveya-logo.png' next to this HTML file -->
+        <img class="logo" src="./saveya-logo.png" alt="SaveYa Tech logo" />
+        <div class="brand-name">
+          <div class="brand-top">SaveYa Tech</div>
+          <div class="brand-tagline">AI Efficiency Consulting & Custom Automation Solutions</div>
+        </div>
+      </div>
+
+      <h1 class="title">10 High-Impact Automation Opportunities for Your Chiropractic Practice</h1>
+      <p class="subtitle">A concise, implementation-ready briefing on where intelligent automation can create immediate efficiency, higher patient conversion, and measurable revenue growth.</p>
+
+      <div class="meta">
+        <span><strong style="color:var(--brand-teal-600)">Prepared by</strong>: SaveYa Tech</span>
+        <span><strong style="color:var(--brand-teal-600)">Format</strong>: Letter (8.5" × 11")</span>
+        <span><strong style="color:var(--brand-teal-600)">Brand palette</strong>: Teal & Charcoal</span>
+      </div>
+    </section>
+
+    <!-- Content -->
+    <section class="content">
+      <p class="lead"><em>Based on our research into successful chiropractic practices and the challenges you're facing as a solo practitioner with growing lead volume, here are ten areas where intelligent automation could transform your operations.</em></p>
+
+      <div class="no-break">
+        <h2 class="section">1. Instant Lead Response System</h2>
+        <div class="callout">
+          <h3>The Challenge You're Facing</h3>
+          <p>Research shows you're 21 times more likely to convert a lead if you respond within 5 minutes versus 30 minutes. Yet 63% of businesses take over an hour to respond to new inquiries. With your marketing driving 3x more leads, every delayed response is a lost opportunity.</p>
+        </div>
+        <h3>What This Would Look Like</h3>
+        <p>Every lead from your website, SEO campaigns, and ads gets an instant response via text message and phone call within 60 seconds—even at 2am on a Sunday. The system knows your services, pricing, insurance policies, and availability. It can have a natural conversation with leads, answer their specific questions about whether you treat their condition, and book them directly into your calendar. Urgent cases (acute injuries, severe pain) are immediately flagged and sent to your phone. Every interaction is automatically logged with complete conversation history, so you know exactly what was discussed before you ever meet the patient.</p>
+        <div class="callout impact">
+          <p><strong>The Impact:</strong> Most practices see 40-60% improvement in lead conversion rates when they implement instant response systems. Given your marketing investment, this could represent significant recovered revenue from leads that would otherwise go cold while waiting for a callback.</p>
+        </div>
+      </div>
+
+      <div class="page-break no-break">
+        <h2 class="section">2. 24/7 AI-Powered Phone Coverage (Trained Specifically on Your Practice)</h2>
+        <div class="callout">
+          <h3>The Challenge You're Facing</h3>
+          <p>Maintaining consistent communication with patients is one of the biggest challenges chiropractors face, and missed calls directly impact patient retention and new patient acquisition. As a solo practitioner, you can't answer calls during adjustments, lunch breaks, or after hours.</p>
+        </div>
+        <h3>What This Would Look Like</h3>
+        <p>An AI receptionist that sounds completely natural and is trained specifically on your practice—just like hiring a real receptionist, but available 24/7. It knows:</p>
+        <ul>
+          <li>Your exact services and which conditions you treat</li>
+          <li>Your pricing structure and insurance policies</li>
+          <li>Your scheduling preferences (how you like appointments spaced, which time slots you prefer for new vs. existing patients)</li>
+          <li>Your location, directions, and parking instructions</li>
+          <li>How to handle emergency situations vs. routine appointments</li>
+          <li>When to transfer calls to you vs. handling them independently</li>
+        </ul>
+        <p>The system books appointments directly into your calendar, answers questions like "Do you accept my insurance?" or "What should I bring to my first visit?", qualifies urgency levels ("On a scale of 1-10, how would you rate your pain?"), and knows when to take a detailed message versus handling the request immediately. Emergency cases are routed appropriately with clear instructions.</p>
+        <div class="callout impact">
+          <p><strong>The Impact:</strong> Practices typically miss 30-50% of incoming calls during business hours. Capturing even a fraction of these missed opportunities could add substantial monthly revenue while improving patient satisfaction. Plus, you'll never again lose a potential patient because they called at 6pm and went to a competitor who answered.</p>
+        </div>
+      </div>
+
+      <div class="page-break no-break">
+        <h2 class="section">3. Smart No-Show Prevention</h2>
+        <div class="callout">
+          <h3>The Challenge You're Facing</h3>
+          <p>No-shows and last-minute cancellations are a major pain point for chiropractic practices, and manual reminder calls are both time-consuming and expensive. Each missed appointment represents lost revenue that's difficult to recover.</p>
+        </div>
+        <h3>What This Would Look Like</h3>
+        <p>A multi-layered reminder system that adapts to patient behavior:</p>
+        <ul>
+          <li><strong>72 hours before:</strong> Personalized text reminder with appointment details and one-click confirm/reschedule</li>
+          <li><strong>24 hours before:</strong> If they haven't confirmed, another reminder with added urgency</li>
+          <li><strong>2 hours before:</strong> Final reminder for those who confirmed</li>
+          <li><strong>For non-responders:</strong> Automated phone call at 24 hours saying something like "Hi [Name], this is calling from [Your Practice] about your appointment tomorrow at 2pm. We haven't heard back from you and wanted to make sure you're still planning to come in."</li>
+        </ul>
+        <p>The system tracks which patients chronically no-show and can automatically require them to confirm twice, or flag them for your review. When someone cancels, the system immediately texts patients on your waitlist: "A spot just opened up for tomorrow at 2pm—want it?"</p>
+        <div class="callout impact">
+          <p><strong>The Impact:</strong> Practices using automated reminder systems report significantly more consistent show-up rates. Reducing your no-show rate from 20% to 5% could prevent thousands in lost monthly revenue. If you're seeing 100 appointments monthly, that's preventing 15 no-shows = <span class="stats">$1,500-$2,250 recovered revenue per month</span>.</p>
+        </div>
+      </div>
+
+      <div class="page-break no-break">
+        <h2 class="section">4. Patient Reactivation Campaigns</h2>
+        <div class="callout">
+          <h3>The Challenge You're Facing</h3>
+          <p>Many clinics struggle to keep patients engaged once their immediate pain is addressed, leading to decreased return visits. However, research shows up to 35% of lapsed patients can be successfully reactivated with proper follow-up.</p>
+        </div>
+        <h3>What This Would Look Like</h3>
+        <p>The system automatically identifies patients based on their last visit and condition, then sends personalized outreach:</p>
+        <ul>
+          <li><strong>30 days inactive (acute care patient):</strong> "Hey [Name], it's been a month since your last adjustment. How's your back feeling? If you're still experiencing any discomfort, it's a great time for a check-in visit."</li>
+          <li><strong>90 days inactive (maintenance patient):</strong> "Hi [Name], just wanted to check in! It's been 3 months since we've seen you. Ready to get back on track with your wellness routine? Your body will thank you."</li>
+          <li><strong>6 months inactive (any patient):</strong> Phone call from the AI receptionist: "Hi, this is calling from [Your Practice]. We noticed it's been a while since you've been in, and we wanted to reach out personally to see how you're doing."</li>
+        </ul>
+        <p>Messages are tailored to their specific condition and include relevant educational content. One-click booking makes it effortless to return.</p>
+        <div class="callout impact">
+          <p><strong>The Impact:</strong> Research indicates that increasing patient retention by just 5% can boost practice profits by 25-95%. Bringing back even 15-20 inactive patients each month at $100 per visit creates <span class="stats">$1,500-$2,000 in recurring revenue monthly</span>. Over a year, that's <span class="stats">$18,000-$24,000</span> from patients who would have been lost forever.</p>
+        </div>
+      </div>
+
+      <div class="page-break no-break">
+        <h2 class="section">5. Digital Patient Intake & Documentation</h2>
+        <div class="callout">
+          <h3>The Challenge You're Facing</h3>
+          <p>New patient intake typically consumes 15-30 minutes per patient, and with 3x more leads converting, the administrative burden becomes unsustainable for a solo practice.</p>
+        </div>
+        <h3>What This Would Look Like</h3>
+        <p>The moment a patient books an appointment, they receive a text: "Thanks for booking with [Your Practice]! Please complete your intake forms before your visit: [link]."</p>
+        <p>The forms are mobile-friendly and can be completed in 5-10 minutes from their phone. The system sends friendly reminders every 24 hours until completed. All information flows directly into your practice management system automatically—no data entry required. The system extracts and highlights critical information like red flags, insurance details, and chief complaints. Everything is organized before the patient arrives, so your first interaction can be about care, not paperwork.</p>
+        <div class="callout impact">
+          <p><strong>The Impact:</strong> This saves you 10-20 hours weekly on administrative work—time that could be used seeing 10-20 more patients per week (that's <span class="stats">$4,000-$8,000 in additional monthly capacity</span>), or simply having a life outside your practice. Patients also appreciate the modern, streamlined experience.</p>
+        </div>
+      </div>
+
+      <div class="page-break no-break">
+        <h2 class="section">6. Automated Review Generation & Reputation Management</h2>
+        <div class="callout">
+          <h3>The Challenge You're Facing</h3>
+          <p>Online reviews are critical for attracting new patients, as prospective patients heavily rely on online word-of-mouth when choosing a chiropractor. However, consistently asking for reviews rarely happens when you're busy treating patients.</p>
+        </div>
+        <h3>What This Would Look Like</h3>
+        <p>2-4 hours after each appointment, the system automatically analyzes the visit outcome and patient satisfaction signals:</p>
+        <p><strong>For happy patients:</strong> Sends a personalized text with a direct link to Google, making it incredibly easy—one click takes them to leave a review. New reviews automatically display on your website within hours.</p>
+        <p><strong>For potentially unhappy patients:</strong> Routes feedback privately to you, preventing negative public reviews by catching issues early and giving you a chance to remedy situations.</p>
+        <div class="callout impact">
+          <p><strong>The Impact:</strong> Growing from 10 to 50+ Google reviews typically doubles a practice's visibility in local search results. If your marketing company is spending $2,000-$5,000/month to get you found, having 5x more positive reviews could effectively double that investment's return without spending another dollar on ads. New patients frequently mention "I read your reviews" as their reason for choosing you.</p>
+        </div>
+      </div>
+
+      <div class="page-break no-break">
+        <h2 class="section">7. Insurance Verification Automation</h2>
+        <div class="callout">
+          <h3>The Challenge You're Facing</h3>
+          <p>Insurance verification typically takes 10-15 minutes per patient and often delays care or creates billing issues when not done thoroughly.</p>
+        </div>
+        <h3>What This Would Look Like</h3>
+        <p>Insurance information is captured from intake forms and coverage, benefits, copays, and deductible status are automatically verified before the appointment. Issues are flagged early, and patients receive clear information about out-of-pocket costs: "Quick heads up: Your insurance copay is $25, and you have 15 visits remaining this year."</p>
+        <p>No surprises, no confusion. After visits, superbills are generated automatically with proper coding.</p>
+        <div class="callout impact">
+          <p><strong>The Impact:</strong> This eliminates 10+ hours of weekly administrative work (that's 10 more patient appointments = <span class="stats">$4,000/month in additional capacity</span>). It dramatically reduces billing issues and payment delays. Most importantly, it improves patient satisfaction through complete cost transparency.</p>
+        </div>
+      </div>
+
+      <div class="page-break no-break">
+        <h2 class="section">8. Treatment Plan Tracking & Intelligent Scheduling</h2>
+        <div class="callout">
+          <h3>The Challenge You're Facing</h3>
+          <p>Effective chiropractic care requires coordinating appointment frequencies with treatment protocols, ensuring patients follow through on recommended care plans. Manually tracking who needs to come back when doesn't scale.</p>
+        </div>
+        <h3>What This Would Look Like</h3>
+        <p>When you create a treatment plan ("Acute phase: 3x/week for 2 weeks, then corrective: 2x/week for 3 weeks, then maintenance: 1x/month"), the system becomes your treatment plan manager:</p>
+        <ul>
+          <li>Automatically schedules the recommended appointments at optimal intervals</li>
+          <li>Tracks compliance and sends smart reminders when patients miss scheduled visits</li>
+          <li>Alerts you to non-compliance with daily digests</li>
+          <li>Adapts as patients improve and you update their plans</li>
+          <li>Tracks outcomes by connecting appointments to patient-reported pain levels</li>
+        </ul>
+        <div class="callout impact">
+          <p><strong>The Impact:</strong> Treatment plan compliance is the difference between a one-time $300 patient and a long-term $2,000-$5,000 patient. When patients follow through on care plans, they get better results, which leads to more referrals and longer retention. Practices that implement treatment plan tracking typically see <span class="stats">30-50% improvement in plan completion rates</span>.</p>
+        </div>
+      </div>
+
+      <div class="page-break no-break">
+        <h2 class="section">9. Marketing Performance Dashboard & ROI Tracking</h2>
+        <div class="callout">
+          <h3>The Challenge You're Facing</h3>
+          <p>You're investing significantly in SEO and marketing companies, but you likely don't have clear visibility into which channels are actually bringing in patients versus just website traffic. You're essentially flying blind on thousands of dollars in monthly marketing spend.</p>
+        </div>
+        <h3>What This Would Look Like</h3>
+        <p>A comprehensive tracking system that follows every lead from first touch to revenue. You'd see exactly:</p>
+        <ul>
+          <li><strong>Google Ads:</strong> Leads, appointments, shows, revenue, cost per patient</li>
+          <li><strong>SEO/Organic:</strong> Leads, appointments, shows, revenue, cost per patient</li>
+          <li><strong>Facebook Ads:</strong> Leads, appointments, shows, revenue, cost per patient</li>
+          <li><strong>Referrals:</strong> Leads, appointments, shows, revenue, cost per patient</li>
+        </ul>
+        <p>The dashboard shows you which marketing sources produce the highest quality leads, cost per appointment by channel, ROI by channel, conversion rates at each stage, and lifetime value by acquisition source.</p>
+        <div class="callout impact">
+          <p><strong>The Impact:</strong> This visibility transforms marketing from a guessing game to a science. Most practices discover they're wasting 30-50% of marketing budget on channels that don't convert. You could redirect $1,500/month from underperforming channels to your top performers and potentially double your patient acquisition without spending more. Over a year, optimizing a $4,000/month marketing budget could mean the difference between 60 new patients and 120 new patients—that's a <span class="stats">$72,000 annual revenue swing</span>.</p>
+        </div>
+      </div>
+
+      <div class="page-break no-break">
+        <h2 class="section">10. Automated Patient Education & Engagement Platform</h2>
+        <div class="callout">
+          <h3>The Challenge You're Facing</h3>
+          <p>Patient education and engagement between visits is crucial for retention, but manually following up with dozens of patients is impossible when you're running a solo practice.</p>
+        </div>
+        <h3>What This Would Look Like</h3>
+        <p>An intelligent system that keeps patients engaged and educated throughout their care journey:</p>
+        <p><strong>Condition-specific education sequences:</strong> Back pain patients receive stretch routines, desk workers get posture tips, athletes receive injury prevention advice.</p>
+        <p><strong>24/7 website AI assistant:</strong> Answers questions instantly, trained specifically on your practice, captures leads even while you're sleeping.</p>
+        <p><strong>Proactive engagement:</strong> Check-in texts asking how patients are feeling, birthday messages with special offers, seasonal reminders, wellness check-ins that keep you top-of-mind.</p>
+        <div class="callout impact">
+          <p><strong>The Impact:</strong> Consistent patient engagement between visits can increase retention rates by 20-40%. This is the difference between a patient who comes 3 times for acute care ($300) vs. someone who becomes a wellness patient for years ($3,000-$5,000 lifetime value). If you convert just 20% of your acute patients into long-term wellness patients, that's tens of thousands in annual recurring revenue. Plus, engaged patients refer more.</p>
+        </div>
+      </div>
+
+      <div class="page-break">
+        <div class="bottom-line">
+          <h3 style="margin: 0 0 8px; color: var(--brand-teal-600);">The Bottom Line</h3>
+          <p>Let's put real numbers to this. If you're currently seeing 20-30 patients per week at $100 average per visit, you're generating roughly <strong>$8,000-$12,000/month</strong>.</p>
+          <p><strong>By implementing these systems, here's what's realistic:</strong></p>
+          <p><strong>Immediate gains (first 90 days):</strong></p>
+          <ul>
+            <li>Capture 30-40% more leads from existing marketing = <span class="stats">+$2,400-$4,800/month</span></li>
+            <li>Reduce no-shows by 50% = <span class="stats">+$1,500-$3,000/month</span></li>
+            <li>Free up 15-20 hours/week for more appointments = <span class="stats">+$3,000-$6,000/month</span></li>
+          </ul>
+          <p><strong>Longer-term gains (6-12 months):</strong></p>
+          <ul>
+            <li>Reactivate 15-20 lapsed patients monthly = <span class="stats">+$1,500-$2,000/month</span></li>
+            <li>Improve treatment plan completion = <span class="stats">2-3x patient lifetime value</span></li>
+            <li>Optimize marketing spend = <span class="stats">Double patient acquisition efficiency</span></li>
+          </ul>
+          <p><strong>Conservative estimate:</strong> <span class="stats">$15,000-$22,000/month revenue</span> (nearly 2x current)<br />
+            <strong>Realistic upside:</strong> <span class="stats">$25,000-$35,000/month</span> within 12 months
+          </p>
+          <p>And here's the key: <em>You're not working harder. You're working smarter.</em> These systems run 24/7 whether you're treating patients, sleeping, or on vacation.</p>
+        </div>
+      </div>
+
+      <div class="cta">
+        <h3>Next Steps</h3>
+        <p>These ten areas represent significant opportunities to scale your practice without proportional increases in overhead or stress. The key question is: which of these challenges is costing you the most right now?</p>
+        <p style="margin-top: 8px;"><strong>We recommend starting with a complimentary AI efficiency assessment where we:</strong></p>
+        <ul style="text-align: left; display: inline-block; margin: 10px auto 0; color: #ffffff;">
+          <li>Map your current patient journey from lead to loyal patient</li>
+          <li>Identify where you're losing the most opportunities or time</li>
+          <li>Quantify the potential dollar impact of addressing each area</li>
+          <li>Show you exactly what these systems would look like in your practice</li>
+          <li>Design a custom automation roadmap tailored to your specific situation</li>
+        </ul>
+        <p style="margin-top: 14px; font-size: 17px;"><strong>Want to see what this would actually look like for your practice?</strong></p>
+        <p>Let's schedule a 30-minute consultation where we can walk through your specific situation and show you exactly where the biggest opportunities are.</p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p><strong>SaveYa Tech</strong><br />
+        AI Efficiency Consulting & Custom Automation Solutions</p>
+      <p>Phone: 781-734-6337<br />
+        Website: saveyatech.com</p>
+      <p style="margin-top: 16px; font-style: italic;">"We're really good at consulting businesses to become more efficient with AI—<br />then we build and manage the custom solutions that drive measurable ROI."</p>
+    </footer>
+  </main>
+</body>
+</html>
