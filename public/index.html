@@ -3,25 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Waystack &amp; Kirby, Attorneys at Law | Melrose, MA</title>
+    <title>Mark's Smoke Shop &amp; News Stand | Wakefield, MA</title>
     <meta
       name="description"
-      content="Waystack & Kirby is a Melrose, MA law firm focused on estate planning, elder law, real estate, probate, and personal tax guidance."
+      content="Mark's Smoke Shop & News Stand in Wakefield, Massachusetts carries premium cigars, vape supplies, lottery, gifts, and local news essentials with friendly service."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Crimson+Text:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <header class="hero">
-      <div class="hero__overlay"></div>
+    <header class="hero" id="top">
+      <div class="hero__overlay" aria-hidden="true"></div>
       <div class="container hero__content">
-        <nav class="nav">
-          <a class="nav__brand" href="#">Waystack &amp; Kirby</a>
+        <nav class="nav" aria-label="Primary">
+          <a class="nav__brand" href="#top">Mark's Smoke Shop</a>
           <button class="nav__toggle" aria-expanded="false" aria-controls="primary-navigation">
             <span class="nav__toggle-line"></span>
             <span class="nav__toggle-line"></span>
@@ -29,233 +29,343 @@
             <span class="sr-only">Toggle navigation</span>
           </button>
           <ul class="nav__links" id="primary-navigation">
-            <li><a href="#about">Firm</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#attorneys">Attorneys</a></li>
-            <li><a href="#testimonials">Testimonials</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#collections">Collections</a></li>
+            <li><a href="#specials">Specials</a></li>
+            <li><a href="#visit">Visit</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
         </nav>
+        <div class="hero__smoke hero__smoke--left" aria-hidden="true"></div>
+        <div class="hero__smoke hero__smoke--right" aria-hidden="true"></div>
         <div class="hero__text">
-          <p class="eyebrow">Serving Melrose since 1994</p>
-          <h1>Trusted Counsel for Life&rsquo;s Most Important Decisions</h1>
+          <p class="eyebrow">Wakefield's neighborhood destination</p>
+          <h1>Glow-lit vibes, rare cigars, and elevated smoke culture</h1>
+          <div class="hero__badge" role="list">
+            <span role="listitem">Premium Cigars</span>
+            <span role="listitem">Hookah &amp; Shisha</span>
+            <span role="listitem">Glass Art</span>
+            <span role="listitem">CBD &amp; Wellness</span>
+          </div>
           <p>
-            Waystack &amp; Kirby provides thoughtful, personalized legal guidance in estate planning,
-            elder law, real estate, probate, and personal taxation. We partner with generations of
-            local families and businesses to safeguard what matters most.
+            Since 1997, Mark&rsquo;s Smoke Shop &amp; News Stand has been the go-to corner stop in downtown
+            Wakefield for hand-rolled cigars, glow-lit hookah sessions, artisan glass, and the latest
+            magazines &mdash; all with personal service you know by name.
           </p>
           <div class="hero__cta">
-            <a class="btn btn--primary" href="#contact">Schedule a Consultation</a>
-            <a class="btn btn--ghost" href="#services">Explore Services</a>
+            <a class="btn btn--primary" href="tel:17812458106">Call (781) 245-8106</a>
+            <a class="btn btn--ghost" href="#visit">Plan Your Visit</a>
           </div>
+        </div>
+        <div class="hero__hours" aria-label="Store hours">
+          <span class="hero__hours-label">Open Late</span>
+          <p>Mon &ndash; Sat: 8 AM &ndash; 10 PM<br />Sunday: 9 AM &ndash; 8 PM</p>
         </div>
       </div>
     </header>
 
     <main>
-      <section class="section" id="about">
+      <section class="section" id="experience">
         <div class="container section__grid">
           <div class="section__content">
-            <h2>Deep Roots in the Melrose Community</h2>
+            <h2>A modern smoke shop with classic hospitality</h2>
             <p>
-              Founded by F. Peter Waystack in 1994 and joined by partner Martina M. Kirby in the
-              mid-2010s, Waystack &amp; Kirby has remained a small, relationship-driven practice. With
-              more than 70 years of combined experience, our attorneys offer attentive service and
-              practical solutions tailored to each client&rsquo;s needs.
+              Step inside Mark&rsquo;s and you&rsquo;ll find humidors glowing in amber light, carefully cured
+              pipe blends, limited-drop disposables, and a glass counter full of local artistry. Our
+              team loves guiding both aficionados and curious newcomers toward the right product for
+              their next chill session.
             </p>
             <p>
-              We live, work, and volunteer in the communities we serve. From speaking at local elder
-              law seminars to supporting neighborhood events, our firm is committed to being a trusted
-              resource for Melrose and the surrounding North Shore.
+              We keep the vibe welcoming and vibrant with knowledgeable staff, weekly tasting notes,
+              shisha flavor flights, and a humidor that&rsquo;s always rotating in limited releases.
+              Whether you&rsquo;re planning a celebration or stopping in after work, we make it easy to
+              unwind.
             </p>
+            <div class="pill-list" role="list">
+              <span class="pill" role="listitem">Walkable downtown Wakefield</span>
+              <span class="pill" role="listitem">Exclusive humidor drops</span>
+              <span class="pill" role="listitem">Glow-lit tasting corner</span>
+              <span class="pill" role="listitem">Loyalty rewards every visit</span>
+            </div>
           </div>
-          <div class="section__card">
-            <h3>Why Clients Choose Us</h3>
-            <ul class="checklist">
-              <li>Decades of estate planning, elder law, and real estate experience</li>
-              <li>Personalized strategies with meticulous attention to detail</li>
-              <li>Responsive communication and warm, approachable counsel</li>
-              <li>Long-term relationships with multi-generational families</li>
-            </ul>
+          <div class="feature-cards">
+            <article class="feature-card">
+              <div class="feature-card__icon" aria-hidden="true">💨</div>
+              <h3>Walk-in Humidor</h3>
+              <p>
+                Explore boutique cigar labels, Dominican classics, and Connecticut shade staples
+                stored in our climate-controlled walk-in humidor.
+              </p>
+            </article>
+            <article class="feature-card">
+              <div class="feature-card__icon" aria-hidden="true">🔥</div>
+              <h3>Neon Hookah Bar</h3>
+              <p>
+                Sample new shisha blends, salt nic favorites, coils, pods, and accessories under the
+                glow of our midnight neon bar.
+              </p>
+            </article>
+            <article class="feature-card">
+              <div class="feature-card__icon" aria-hidden="true">🧿</div>
+              <h3>Glass Gallery</h3>
+              <p>
+                Discover hand-blown pipes, premium papers, torches, grinders, and incense curated to
+                set the mood right.
+              </p>
+            </article>
           </div>
         </div>
       </section>
 
-      <section class="section section--accent" id="services">
+      <section class="section section--accent" id="collections">
         <div class="container">
           <div class="section__header">
-            <p class="eyebrow">Practice Areas</p>
-            <h2>Comprehensive Planning for Families and Businesses</h2>
+            <p class="eyebrow">Collections</p>
+            <h2>Hand-selected heat you&rsquo;ll only find at Mark&rsquo;s</h2>
             <p>
-              We guide clients through every stage of planning, protecting, and transferring their
-              assets with clarity and care.
+              From small-batch cigars to neon-glow glass, we partner with trusted makers and
+              independent distributors to bring Wakefield the best smoke and newsstand finds in one
+              stop.
             </p>
           </div>
           <div class="card-grid">
             <article class="card">
-              <h3>Estate Planning</h3>
+              <div class="card__icon" aria-hidden="true">
+                <span>🔥</span>
+              </div>
+              <h3>Signature Cigar Locker</h3>
               <p>
-                Design wills, trusts, powers of attorney, and health care proxies that honor your
-                wishes and secure your family&rsquo;s future.
+                Reserve your personal locker for aging special occasion sticks and receive monthly
+                tasting cards plus member-only events.
               </p>
             </article>
             <article class="card">
-              <h3>Elder Law &amp; Medicaid Planning</h3>
+              <div class="card__icon" aria-hidden="true">
+                <span>💎</span>
+              </div>
+              <h3>Glass Artist Spotlight</h3>
               <p>
-                Navigate long-term care options, MassHealth eligibility, and asset protection with
-                compassionate guidance for seniors and caregivers.
+                Discover locally blown rigs, color-changing spoons, and quartz bangers in rotating
+                artist features with drop alerts.
               </p>
             </article>
             <article class="card">
-              <h3>Probate &amp; Estate Administration</h3>
+              <div class="card__icon" aria-hidden="true">
+                <span>🌬️</span>
+              </div>
+              <h3>Hookah Flavor Flights</h3>
               <p>
-                Settle estates efficiently, from court filings and inventories to distributions and
-                trust administration.
+                Mix up double-apple classics, exotic mint blends, and limited shisha collabs to find
+                your perfect night-in rotation.
               </p>
             </article>
             <article class="card">
-              <h3>Real Estate Transactions</h3>
+              <div class="card__icon" aria-hidden="true">
+                <span>📰</span>
+              </div>
+              <h3>News &amp; Lucky Picks</h3>
               <p>
-                Represent buyers, sellers, and lenders in residential and commercial closings, title
-                reviews, refinancing, and property transfers.
+                Grab the latest papers, scratch tickets, and grab-and-go gifts to keep the tradition
+                alive on every visit.
               </p>
             </article>
-            <article class="card">
-              <h3>Wills, Trusts &amp; Powers of Attorney</h3>
-              <p>
-                Establish tailored instruments that empower loved ones to act when it matters most and
-                ensure assets are passed on seamlessly.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Personal Taxation</h3>
-              <p>
-                Receive tax planning advice and IRS representation from an experienced, IRS-registered
-                preparer serving clients along the East Coast.
-              </p>
-            </article>
+          </div>
+          <div class="brand-strip" aria-label="Featured brands">
+            <span>Ashton</span>
+            <span>Illadelph</span>
+            <span>Raw</span>
+            <span>Puffco</span>
+            <span>Fumari</span>
+            <span>Juul</span>
           </div>
         </div>
       </section>
 
-      <section class="section" id="attorneys">
+      <section class="section section--glow">
         <div class="container">
           <div class="section__header">
-            <p class="eyebrow">Our Team</p>
-            <h2>Experienced, Approachable Counsel</h2>
+            <p class="eyebrow">Shop the vibe</p>
+            <h2>Set the scene with our glow-lit essentials</h2>
+            <p>
+              Build out your smoke night with ready-to-go bundles curated by the Mark&rsquo;s crew. Pair it
+              with playlists, mood lighting, and your crew.
+            </p>
           </div>
-          <div class="profile-grid">
-            <article class="profile">
-              <h3>F. Peter Waystack, Esq.</h3>
-              <p class="profile__subtitle">Founding Partner</p>
-              <p>
-                Practicing law since 1974, Attorney Waystack focuses on estate planning, real estate
-                conveyancing, and personal tax matters. He is known for careful attention to detail
-                and for building trusted relationships with generations of families across Melrose.
-              </p>
-              <ul class="profile__highlights">
-                <li>Suffolk University Law School, J.D. (1974)</li>
-                <li>Former director of Melrose Cooperative Bank</li>
-                <li>Admitted to the U.S. Supreme Court</li>
-              </ul>
+          <div class="glow-grid">
+            <article class="glow-card">
+              <div
+                class="glow-card__image"
+                style="background-image: url('https://images.unsplash.com/photo-1600056046127-3b32cdf88390?auto=format&fit=crop&w=1200&q=80');"
+                aria-hidden="true"
+              ></div>
+              <div class="glow-card__body">
+                <h3>Nightcap Humidor Bundle</h3>
+                <p>Top-shelf maduros, cedar spills, and a dual-torch lighter ready for gifting.</p>
+              </div>
             </article>
-            <article class="profile">
-              <h3>Martina M. Kirby, Esq.</h3>
-              <p class="profile__subtitle">Partner</p>
-              <p>
-                Attorney Kirby concentrates on real estate law, estate planning, and elder law. Clients
-                value her responsiveness and compassion, especially when navigating complex closings or
-                long-term care planning.
-              </p>
-              <ul class="profile__highlights">
-                <li>Practicing in Massachusetts since 2002</li>
-                <li>Frequent speaker on wills, trusts, and Medicaid planning</li>
-                <li>Active in local civic and senior support organizations</li>
-              </ul>
+            <article class="glow-card">
+              <div
+                class="glow-card__image"
+                style="background-image: url('https://images.unsplash.com/photo-1533827432537-70133748f5c8?auto=format&fit=crop&w=1200&q=80');"
+                aria-hidden="true"
+              ></div>
+              <div class="glow-card__body">
+                <h3>Electric Hookah Session</h3>
+                <p>Coals, foil, hose tips, and premium shisha flavors stacked for the lounge.</p>
+              </div>
+            </article>
+            <article class="glow-card">
+              <div
+                class="glow-card__image"
+                style="background-image: url('https://images.unsplash.com/photo-1527960471264-932f39eb5846?auto=format&fit=crop&w=1200&q=80');"
+                aria-hidden="true"
+              ></div>
+              <div class="glow-card__body">
+                <h3>Glass Cleaner Reset</h3>
+                <p>Iso kits, cotton swabs, odor wipes, and trays to keep your pieces shining.</p>
+              </div>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="section section--quote" id="community">
+      <section class="section" id="specials">
         <div class="container section__narrow">
-          <h2>Grounded in Community</h2>
-          <p>
-            From chamber of commerce events to educational seminars, Waystack &amp; Kirby is invested in
-            the wellbeing of Melrose. We meet clients where they are&mdash;with empathy, clarity, and a
-            commitment to long-term partnership.
-          </p>
-        </div>
-      </section>
-
-      <section class="section" id="testimonials">
-        <div class="container">
           <div class="section__header">
-            <p class="eyebrow">Client Feedback</p>
-            <h2>Trusted by Neighbors Across the North Shore</h2>
+            <p class="eyebrow">Weekly Specials</p>
+            <h2>Fresh deals rolling every week</h2>
+            <p>
+              Follow us on Instagram @MarksSmokeShop for the latest drops, tasting notes, and flash
+              giveaways. Here&rsquo;s what&rsquo;s hot right now:
+            </p>
           </div>
-          <div class="testimonials">
-            <figure class="testimonial">
-              <blockquote>
-                “Exceptional service and care. Highly recommend!”
-              </blockquote>
-              <figcaption>&mdash; Santiago O.</figcaption>
-            </figure>
-            <figure class="testimonial">
-              <blockquote>
-                “Martina Kirby and her team are fabulous! They went above and beyond for my real estate
-                transaction.”
-              </blockquote>
-              <figcaption>&mdash; Allison C.</figcaption>
-            </figure>
+          <div class="specials">
+            <article class="special">
+              <h3>Two for Tuesdays</h3>
+              <p>
+                Buy any two premium cigars from the featured shelf and enjoy 15% off the pair. Perfect
+                for pairing night.
+              </p>
+            </article>
+            <article class="special">
+              <h3>Starter Vape Bundle</h3>
+              <p>
+                Pick up a pod kit, charger, and two salt nic bottles for a bundled price of $54.99 &mdash;
+                plus loyalty points.
+              </p>
+            </article>
+            <article class="special">
+              <h3>Morning Paper Perks</h3>
+              <p>
+                Early risers get a complimentary hot coffee with any newspaper before 10 AM, daily.
+              </p>
+            </article>
           </div>
         </div>
       </section>
 
-      <section class="section section--contact" id="contact">
+      <section class="section section--gallery" aria-label="Shop gallery">
+        <div class="container">
+          <div class="gallery">
+            <div
+              class="gallery__item"
+              style="background-image: url('https://images.unsplash.com/photo-1519669011783-4eaa95fa46bc?auto=format&fit=crop&w=1100&q=80');"
+              aria-hidden="true"
+            ></div>
+            <div
+              class="gallery__item"
+              style="background-image: url('https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=1100&q=80');"
+              aria-hidden="true"
+            ></div>
+            <div
+              class="gallery__item"
+              style="background-image: url('https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&w=1100&q=80');"
+              aria-hidden="true"
+            ></div>
+            <div
+              class="gallery__item"
+              style="background-image: url('https://images.unsplash.com/photo-1542322178-7e5889f1f5e0?auto=format&fit=crop&w=1100&q=80');"
+              aria-hidden="true"
+            ></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--testimonial" aria-labelledby="testimonial-heading">
+        <div class="container section__narrow">
+          <h2 id="testimonial-heading">Neighbors love Mark&rsquo;s</h2>
+          <div class="testimonial">
+            <p>
+              “Best humidor north of Boston. Mark and the crew remember your name and never steer you
+              wrong on a recommendation. It&rsquo;s the highlight of my walk through Wakefield Center.”
+            </p>
+            <p class="testimonial__name">&mdash; Denise R., Wakefield local</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--visit" id="visit">
         <div class="container section__grid">
           <div class="section__content">
-            <p class="eyebrow">Contact</p>
-            <h2>Let&rsquo;s Talk</h2>
+            <p class="eyebrow">Plan Your Visit</p>
+            <h2>Drop in, say hello, and stay a while</h2>
             <p>
-              Schedule a consultation to discuss your estate plan, real estate transaction, or tax
-              needs. We look forward to learning how we can help.
+              You&rsquo;ll find us steps from Lake Quannapowitt with plenty of parking out front and a cozy
+              lounge corner for sampling new arrivals. Call ahead for curbside pickup or to reserve a
+              special order.
             </p>
             <div class="contact-details">
               <div>
-                <h3>Visit</h3>
-                <p>25 Myrtle Street<br />Melrose, MA 02176</p>
-              </div>
-              <div>
-                <h3>Call</h3>
-                <p><a href="tel:17816651136">(781) 665-1136</a></p>
-              </div>
-              <div>
-                <h3>Email</h3>
-                <p><a href="mailto:mkirby@WaystackKirby.com">mkirby@WaystackKirby.com</a></p>
+                <h3>Find us</h3>
+                <p>385 Main Street<br />Wakefield, MA 01880</p>
               </div>
               <div>
                 <h3>Hours</h3>
-                <p>Monday – Friday, 9:00 AM – 5:00 PM</p>
+                <p>Mon &ndash; Sat: 8 AM &ndash; 10 PM<br />Sunday: 9 AM &ndash; 8 PM</p>
+              </div>
+              <div>
+                <h3>Call or text</h3>
+                <p><a href="tel:17812458106">(781) 245-8106</a></p>
+              </div>
+              <div>
+                <h3>Stay in the loop</h3>
+                <p><a href="https://www.instagram.com" target="_blank" rel="noopener">@MarksSmokeShop</a></p>
               </div>
             </div>
           </div>
-          <div class="section__card section__card--contact">
-            <h3>Schedule a Meeting</h3>
-            <p>
-              Call or email our office to arrange an appointment. Evening or weekend meetings may be
-              available upon request for urgent matters.
-            </p>
-            <a class="btn btn--primary" href="tel:17816651136">Call the Office</a>
+          <div class="map-card" aria-label="Map of Mark's Smoke Shop &amp; News Stand">
+            <iframe
+              title="Map to Mark's Smoke Shop &amp; News Stand"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2952.882064952791!2d-71.06844632378654!3d42.50345052760079!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e377c45e45a151%3A0xdfb268d551f3cda9!2s385%20Main%20St%2C%20Wakefield%2C%20MA%2001880!5e0!3m2!1sen!2sus!4v1717090000000!5m2!1sen!2sus"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen
+            ></iframe>
           </div>
+        </div>
+      </section>
+
+      <section class="section section--cta" id="contact">
+        <div class="container section__cta">
+          <h2>Join the Mark&rsquo;s Loyalty Circle</h2>
+          <p>
+            Earn points on every purchase, unlock surprise birthday gifts, and be first to know about
+            cigar tastings and accessory launches.
+          </p>
+          <form class="cta-form" aria-label="Join the loyalty program">
+            <label class="sr-only" for="email">Email address</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" required />
+            <button type="submit" class="btn btn--primary">Notify Me</button>
+          </form>
+          <small>No spam &mdash; just smoky good news once or twice a month.</small>
         </div>
       </section>
     </main>
 
     <footer class="footer">
       <div class="container footer__content">
-        <p>© <span id="year"></span> Waystack &amp; Kirby, LLC. All rights reserved.</p>
-        <p>Serving Melrose, Stoneham, and communities across the North Shore.</p>
+        <p>© <span id="year"></span> Mark&rsquo;s Smoke Shop &amp; News Stand. All rights reserved.</p>
+        <p>Serving Wakefield, Stoneham, Melrose, and the North Shore community.</p>
       </div>
     </footer>
 
@@ -270,6 +380,16 @@
       });
 
       document.getElementById("year").textContent = new Date().getFullYear();
+
+      const form = document.querySelector(".cta-form");
+      form?.addEventListener("submit", event => {
+        event.preventDefault();
+        form.reset();
+        form.insertAdjacentHTML(
+          "afterend",
+          '<p class="form-success" role="status">Thanks! We&rsquo;ll be in touch with exclusives soon.</p>'
+        );
+      });
     </script>
   </body>
 </html>
