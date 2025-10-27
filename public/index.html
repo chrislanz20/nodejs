@@ -2,26 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Waystack &amp; Kirby, Attorneys at Law | Melrose, MA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Omelette Headquarters | Wakefield, Massachusetts</title>
     <meta
       name="description"
-      content="Waystack & Kirby is a Melrose, MA law firm focused on estate planning, elder law, real estate, probate, and personal tax guidance."
+      content="Omelette Headquarters in Wakefield, MA serves sunlit brunch plates, seasonal omelettes, and feel-good gatherings."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <header class="hero">
-      <div class="hero__overlay"></div>
-      <div class="container hero__content">
-        <nav class="nav">
-          <a class="nav__brand" href="#">Waystack &amp; Kirby</a>
+    <header class="hero" id="top">
+      <div class="hero__shine"></div>
+      <div class="container">
+        <nav class="nav" aria-label="Primary">
+          <a class="nav__brand" href="#top">Omelette HQ</a>
           <button class="nav__toggle" aria-expanded="false" aria-controls="primary-navigation">
             <span class="nav__toggle-line"></span>
             <span class="nav__toggle-line"></span>
@@ -29,233 +29,276 @@
             <span class="sr-only">Toggle navigation</span>
           </button>
           <ul class="nav__links" id="primary-navigation">
-            <li><a href="#about">Firm</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#attorneys">Attorneys</a></li>
-            <li><a href="#testimonials">Testimonials</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#events">Events</a></li>
+            <li><a href="#visit">Visit</a></li>
           </ul>
         </nav>
-        <div class="hero__text">
-          <p class="eyebrow">Serving Melrose since 1994</p>
-          <h1>Trusted Counsel for Life&rsquo;s Most Important Decisions</h1>
-          <p>
-            Waystack &amp; Kirby provides thoughtful, personalized legal guidance in estate planning,
-            elder law, real estate, probate, and personal taxation. We partner with generations of
-            local families and businesses to safeguard what matters most.
-          </p>
-          <div class="hero__cta">
-            <a class="btn btn--primary" href="#contact">Schedule a Consultation</a>
-            <a class="btn btn--ghost" href="#services">Explore Services</a>
+        <div class="hero__layout">
+          <div class="hero__copy">
+            <p class="eyebrow">Wakefield, Massachusetts</p>
+            <h1>Bright brunch energy, folded into every omelette.</h1>
+            <p>
+              Omelette Headquarters is a sun-soaked café celebrating the joy of eggs, coffee, and community.
+              Join us for seasonal omelettes, small-batch pastries, and vinyl brunch vibes moments from Lake
+              Quannapowitt.
+            </p>
+            <div class="hero__cta">
+              <a class="btn btn--primary" href="#menu">See Seasonal Lineup</a>
+              <a class="btn btn--ghost" href="#visit">Plan a Visit</a>
+            </div>
+            <dl class="hero__stats" aria-label="Cafe highlights">
+              <div>
+                <dt>12</dt>
+                <dd>Signature omelettes on rotation</dd>
+              </div>
+              <div>
+                <dt>7am – 3pm</dt>
+                <dd>Daily brunch service</dd>
+              </div>
+              <div>
+                <dt>100%</dt>
+                <dd>New England farm eggs</dd>
+              </div>
+            </dl>
+          </div>
+          <div class="hero__media">
+            <figure class="hero__image">
+              <img
+                src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1300&q=80"
+                alt="Table filled with omelettes, pastries, and coffee in a bright café"
+              />
+              <figcaption>Morning light inside Omelette Headquarters</figcaption>
+            </figure>
           </div>
         </div>
       </div>
     </header>
 
     <main>
-      <section class="section" id="about">
-        <div class="container section__grid">
-          <div class="section__content">
-            <h2>Deep Roots in the Melrose Community</h2>
-            <p>
-              Founded by F. Peter Waystack in 1994 and joined by partner Martina M. Kirby in the
-              mid-2010s, Waystack &amp; Kirby has remained a small, relationship-driven practice. With
-              more than 70 years of combined experience, our attorneys offer attentive service and
-              practical solutions tailored to each client&rsquo;s needs.
-            </p>
-            <p>
-              We live, work, and volunteer in the communities we serve. From speaking at local elder
-              law seminars to supporting neighborhood events, our firm is committed to being a trusted
-              resource for Melrose and the surrounding North Shore.
-            </p>
+      <section class="section section--highlight" id="about">
+        <div class="container section__split">
+          <div class="section__media">
+            <img
+              src="https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=1200&q=80"
+              alt="Chef folding an omelette in a skillet"
+            />
           </div>
-          <div class="section__card">
-            <h3>Why Clients Choose Us</h3>
-            <ul class="checklist">
-              <li>Decades of estate planning, elder law, and real estate experience</li>
-              <li>Personalized strategies with meticulous attention to detail</li>
-              <li>Responsive communication and warm, approachable counsel</li>
-              <li>Long-term relationships with multi-generational families</li>
+          <div class="section__content">
+            <p class="eyebrow">Our Wakefield Story</p>
+            <h2>The headquarters of happiness is breakfast.</h2>
+            <p>
+              Chef Dana Avery launched Omelette Headquarters as a lakeside pop-up and grew it into Wakefield's
+              favorite brunch retreat. Every recipe begins with pasture-raised eggs, house-cultured dairy, and
+              produce from friends at the Middlesex farmer’s market.
+            </p>
+            <p>
+              From sunrise espresso pours to late brunch mocktails, our team serves warmth, creativity, and a
+              little bit of buttered theatre.
+            </p>
+            <ul class="feature-list" aria-label="Cafe values">
+              <li>Seasonal menus that change monthly with local harvests</li>
+              <li>Playful plating inspired by artful Boston cafés</li>
+              <li>Community events supporting Wakefield creatives</li>
             </ul>
           </div>
         </div>
       </section>
 
-      <section class="section section--accent" id="services">
+      <section class="section" id="experience">
         <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Practice Areas</p>
-            <h2>Comprehensive Planning for Families and Businesses</h2>
+          <div class="section__intro">
+            <p class="eyebrow">Experience</p>
+            <h2>Sunlit corners, feel-good rituals.</h2>
             <p>
-              We guide clients through every stage of planning, protecting, and transferring their
-              assets with clarity and care.
+              Every visit blends bright design, mellow playlists, and joyful service. Settle into our banquette or
+              linger on the patio—either way, brunch feels like vacation.
             </p>
           </div>
-          <div class="card-grid">
-            <article class="card">
-              <h3>Estate Planning</h3>
+          <div class="experience-grid">
+            <article class="experience-card">
+              <h3>Egg Bar Theatre</h3>
               <p>
-                Design wills, trusts, powers of attorney, and health care proxies that honor your
-                wishes and secure your family&rsquo;s future.
+                Watch our chefs fold omelettes to order, layering smoky, herbaceous, and citrusy fillings for the
+                perfect bite.
               </p>
             </article>
-            <article class="card">
-              <h3>Elder Law &amp; Medicaid Planning</h3>
+            <article class="experience-card">
+              <h3>Slow Coffee Counter</h3>
               <p>
-                Navigate long-term care options, MassHealth eligibility, and asset protection with
-                compassionate guidance for seniors and caregivers.
+                Nitro cold brew, maple cortados, and single-origin pour overs curated with our Wakefield roaster
+                partners.
               </p>
             </article>
-            <article class="card">
-              <h3>Probate &amp; Estate Administration</h3>
+            <article class="experience-card">
+              <h3>Weekend Vinyl Sessions</h3>
               <p>
-                Settle estates efficiently, from court filings and inventories to distributions and
-                trust administration.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Real Estate Transactions</h3>
-              <p>
-                Represent buyers, sellers, and lenders in residential and commercial closings, title
-                reviews, refinancing, and property transfers.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Wills, Trusts &amp; Powers of Attorney</h3>
-              <p>
-                Establish tailored instruments that empower loved ones to act when it matters most and
-                ensure assets are passed on seamlessly.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Personal Taxation</h3>
-              <p>
-                Receive tax planning advice and IRS representation from an experienced, IRS-registered
-                preparer serving clients along the East Coast.
+                Local DJs set the brunch tempo every Saturday, spinning groovy sunshine tracks from 10 AM to 1 PM.
               </p>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="section" id="attorneys">
+      <section class="section section--menu" id="menu">
         <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Our Team</p>
-            <h2>Experienced, Approachable Counsel</h2>
+          <div class="section__intro">
+            <p class="eyebrow">Seasonal Omelette Lineup</p>
+            <h2>Favorites folded with flair.</h2>
+            <p>Inspired by sunrise walks around Lake Quannapowitt, these plates keep our brunch crowd glowing.</p>
           </div>
-          <div class="profile-grid">
-            <article class="profile">
-              <h3>F. Peter Waystack, Esq.</h3>
-              <p class="profile__subtitle">Founding Partner</p>
-              <p>
-                Practicing law since 1974, Attorney Waystack focuses on estate planning, real estate
-                conveyancing, and personal tax matters. He is known for careful attention to detail
-                and for building trusted relationships with generations of families across Melrose.
-              </p>
-              <ul class="profile__highlights">
-                <li>Suffolk University Law School, J.D. (1974)</li>
-                <li>Former director of Melrose Cooperative Bank</li>
-                <li>Admitted to the U.S. Supreme Court</li>
-              </ul>
+          <div class="menu-grid">
+            <article class="menu-card">
+              <h3>Golden Lake Classic</h3>
+              <p>Applewood bacon, Cabot cheddar, slow-roasted tomatoes, chive crème fraîche.</p>
+              <span class="menu-tag">Signature</span>
             </article>
-            <article class="profile">
-              <h3>Martina M. Kirby, Esq.</h3>
-              <p class="profile__subtitle">Partner</p>
-              <p>
-                Attorney Kirby concentrates on real estate law, estate planning, and elder law. Clients
-                value her responsiveness and compassion, especially when navigating complex closings or
-                long-term care planning.
-              </p>
-              <ul class="profile__highlights">
-                <li>Practicing in Massachusetts since 2002</li>
-                <li>Frequent speaker on wills, trusts, and Medicaid planning</li>
-                <li>Active in local civic and senior support organizations</li>
-              </ul>
+            <article class="menu-card">
+              <h3>Garden Glow</h3>
+              <p>Charred broccolini, whipped lemon ricotta, basil oil, toasted pine nuts.</p>
+              <span class="menu-tag">Vegetarian</span>
+            </article>
+            <article class="menu-card">
+              <h3>Harbor Heat</h3>
+              <p>Spicy linguica, smoked gouda, pickled fresnos, pineapple fire relish.</p>
+              <span class="menu-tag menu-tag--spicy">Spicy</span>
+            </article>
+            <article class="menu-card">
+              <h3>Wakefield Weekender</h3>
+              <p>Butter-poached lobster, champagne hollandaise, dill pollen, brioche crumble.</p>
+              <span class="menu-tag">Saturday &amp; Sunday</span>
+            </article>
+            <article class="menu-card">
+              <h3>Sunrise Market</h3>
+              <p>Roasted delicata squash, sage brown butter, goat cheese mousse, maple pepitas.</p>
+              <span class="menu-tag">Seasonal</span>
+            </article>
+            <article class="menu-card">
+              <h3>Sweet Cream Soufflé</h3>
+              <p>Creamy custard omelette, vanilla bean mascarpone, brûléed citrus.</p>
+              <span class="menu-tag">Limited</span>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="section section--quote" id="community">
-        <div class="container section__narrow">
-          <h2>Grounded in Community</h2>
-          <p>
-            From chamber of commerce events to educational seminars, Waystack &amp; Kirby is invested in
-            the wellbeing of Melrose. We meet clients where they are&mdash;with empathy, clarity, and a
-            commitment to long-term partnership.
-          </p>
-        </div>
-      </section>
-
-      <section class="section" id="testimonials">
+      <section class="section section--gallery">
         <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Client Feedback</p>
-            <h2>Trusted by Neighbors Across the North Shore</h2>
+          <div class="section__intro">
+            <p class="eyebrow">Inside HQ</p>
+            <h2>A peek at the pastel brunch dream.</h2>
+            <p>Every corner is styled for lingering—from the sunny banquettes to the pastry peep window.</p>
           </div>
-          <div class="testimonials">
-            <figure class="testimonial">
-              <blockquote>
-                “Exceptional service and care. Highly recommend!”
-              </blockquote>
-              <figcaption>&mdash; Santiago O.</figcaption>
+          <div class="gallery-grid">
+            <figure>
+              <img
+                src="https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=900&q=80"
+                alt="Colorful omelette plated with fresh greens"
+              />
             </figure>
-            <figure class="testimonial">
-              <blockquote>
-                “Martina Kirby and her team are fabulous! They went above and beyond for my real estate
-                transaction.”
-              </blockquote>
-              <figcaption>&mdash; Allison C.</figcaption>
+            <figure>
+              <img
+                src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80"
+                alt="Guests enjoying brunch in a bright café interior"
+              />
+            </figure>
+            <figure>
+              <img
+                src="https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=900&q=80"
+                alt="Barista pouring latte art"
+              />
+            </figure>
+            <figure>
+              <img
+                src="https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=900&q=80"
+                alt="Chef seasoning ingredients at the egg bar"
+              />
             </figure>
           </div>
         </div>
       </section>
 
-      <section class="section section--contact" id="contact">
-        <div class="container section__grid">
+      <section class="section" id="events">
+        <div class="container">
+          <div class="section__intro">
+            <p class="eyebrow">Community Gatherings</p>
+            <h2>Mark your brunch calendar.</h2>
+            <p>Wakefield neighbors meet here for classes, tastings, and bright-and-early adventures.</p>
+          </div>
+          <div class="event-list">
+            <article class="event-card">
+              <h3>Lakefront Sunrise Club · Fridays</h3>
+              <p>Meet at 6:30 AM for a lakeside jog followed by espresso shots on the patio.</p>
+            </article>
+            <article class="event-card">
+              <h3>Omelette Art Lab · September 14</h3>
+              <p>Hands-on class where chef Dana teaches folding techniques and plating artistry.</p>
+            </article>
+            <article class="event-card">
+              <h3>Harvest Vinyl Brunch · October 20</h3>
+              <p>Five-course tasting menu with guest DJs spinning soul and sunshine beats.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--visit" id="visit">
+        <div class="container section__split">
           <div class="section__content">
-            <p class="eyebrow">Contact</p>
-            <h2>Let&rsquo;s Talk</h2>
+            <p class="eyebrow">Visit</p>
+            <h2>Come hang at Omelette HQ.</h2>
             <p>
-              Schedule a consultation to discuss your estate plan, real estate transaction, or tax
-              needs. We look forward to learning how we can help.
+              Find us steps from the Wakefield commuter rail. Walk-ins are welcome, and we hold a handful of
+              reservations for six-plus brunch parties.
             </p>
-            <div class="contact-details">
+            <div class="info-grid">
               <div>
-                <h3>Visit</h3>
-                <p>25 Myrtle Street<br />Melrose, MA 02176</p>
-              </div>
-              <div>
-                <h3>Call</h3>
-                <p><a href="tel:17816651136">(781) 665-1136</a></p>
-              </div>
-              <div>
-                <h3>Email</h3>
-                <p><a href="mailto:mkirby@WaystackKirby.com">mkirby@WaystackKirby.com</a></p>
+                <h3>Location</h3>
+                <p>12 Main Street<br />Wakefield, MA 01880</p>
               </div>
               <div>
                 <h3>Hours</h3>
-                <p>Monday – Friday, 9:00 AM – 5:00 PM</p>
+                <p>Daily 7:00 AM – 3:00 PM<br />Brunch until 4:00 PM on weekends</p>
+              </div>
+              <div>
+                <h3>Contact</h3>
+                <p>
+                  <a href="tel:17815551234">(781) 555-1234</a><br />
+                  <a href="mailto:hello@omelettehq.com">hello@omelettehq.com</a>
+                </p>
+              </div>
+              <div>
+                <h3>Follow Along</h3>
+                <p>
+                  <a href="https://www.instagram.com" target="_blank" rel="noreferrer">Instagram</a>
+                  &middot;
+                  <a href="https://www.tiktok.com" target="_blank" rel="noreferrer">TikTok</a>
+                </p>
               </div>
             </div>
           </div>
-          <div class="section__card section__card--contact">
-            <h3>Schedule a Meeting</h3>
-            <p>
-              Call or email our office to arrange an appointment. Evening or weekend meetings may be
-              available upon request for urgent matters.
-            </p>
-            <a class="btn btn--primary" href="tel:17816651136">Call the Office</a>
+          <div class="section__media section__media--card">
+            <iframe
+              title="Map of Omelette Headquarters in Wakefield MA"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2939.217417979731!2d-71.07318192355152!3d42.50393917117971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e36f78d1de7d21%3A0xa795882b58c2c299!2sWakefield%2C%20MA!5e0!3m2!1sen!2sus!4v1720384050002!5m2!1sen!2sus"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
           </div>
         </div>
       </section>
     </main>
 
     <footer class="footer">
-      <div class="container footer__content">
-        <p>© <span id="year"></span> Waystack &amp; Kirby, LLC. All rights reserved.</p>
-        <p>Serving Melrose, Stoneham, and communities across the North Shore.</p>
+      <div class="container footer__inner">
+        <p>© <span id="year"></span> Omelette Headquarters. Crafted with love in Wakefield, MA.</p>
+        <p>
+          Need catering? Email <a href="mailto:catering@omelettehq.com">catering@omelettehq.com</a> for custom brunch
+          spreads.
+        </p>
       </div>
     </footer>
 
