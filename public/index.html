@@ -34,10 +34,12 @@
   <body>
     <div class="topbar" role="banner" data-topbar>
       <div class="container topbar__inner">
-        <span>Now booking fall brunch events &amp; private omelette bars.</span>
+        <span class="topbar__message">Now booking fall brunch events &amp; private omelette bars.</span>
         <div class="topbar__actions">
           <a href="mailto:events@omelettehq.com" class="topbar__link">Plan your gathering →</a>
-          <button type="button" class="topbar__close" aria-label="Dismiss announcement" data-topbar-close>×</button>
+          <button type="button" class="topbar__close" aria-label="Dismiss announcement" data-topbar-close>
+            <span aria-hidden="true">×</span>
+          </button>
         </div>
       </div>
     </div>
@@ -134,10 +136,46 @@
               <p class="eyebrow">Our Standards</p>
               <h3>What makes every plate Omelette HQ.</h3>
               <ul class="bullet-list">
-                <li><strong>Farm eggs, always:</strong> Pasture-raised deliveries from Brookford Farm and Kimball Fruit Farm.</li>
-                <li><strong>House-fermented sauces:</strong> Pineapple fire relish, chili honey, and pickled fresnos on tap.</li>
-                <li><strong>Compost-first kitchen:</strong> Spent grounds and veg trim fuel our community garden beds.</li>
-                <li><strong>Hospitality at heart:</strong> Vinyl-spun brunches, mocktail pairings, and neighbor discounts.</li>
+                <li>
+                  <span class="bullet-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path
+                        d="M12 3c3.866 0 7 2.91 7 6.5S12 21 12 21s-7-7.134-7-11.5S8.134 3 12 3z"
+                      />
+                    </svg>
+                  </span>
+                  <div><strong>Farm eggs, always:</strong> Pasture-raised deliveries from Brookford Farm and Kimball Fruit Farm.</div>
+                </li>
+                <li>
+                  <span class="bullet-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path
+                        d="M4.5 12.75l6.75 6.75L19.5 6.75l-2.12-2.12-6.13 9.02-3.38-3.38z"
+                      />
+                    </svg>
+                  </span>
+                  <div><strong>House-fermented sauces:</strong> Pineapple fire relish, chili honey, and pickled fresnos on tap.</div>
+                </li>
+                <li>
+                  <span class="bullet-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path
+                        d="M5 4h14v2H5zm2 4h10l-1 12H8z"
+                      />
+                    </svg>
+                  </span>
+                  <div><strong>Compost-first kitchen:</strong> Spent grounds and veg trim fuel our community garden beds.</div>
+                </li>
+                <li>
+                  <span class="bullet-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path
+                        d="M12 13.5c-2.485 0-4.5-2.015-4.5-4.5S9.515 4.5 12 4.5s4.5 2.015 4.5 4.5-2.015 4.5-4.5 4.5zm0 2.25c3.314 0 6 2.239 6 5v1.5H6v-1.5c0-2.761 2.686-5 6-5z"
+                      />
+                    </svg>
+                  </span>
+                  <div><strong>Hospitality at heart:</strong> Vinyl-spun brunches, mocktail pairings, and neighbor discounts.</div>
+                </li>
               </ul>
             </div>
             <figure class="story-grid__aside-photo">
@@ -164,28 +202,52 @@
           </div>
           <div class="experience-grid" role="list">
             <article class="experience-card" role="listitem">
-              <span class="experience-card__icon" aria-hidden="true">🥚</span>
-              <h3>Egg Bar Theatre</h3>
-              <p>
-                Watch omelettes folded to order with fillings like maple-glazed bacon, lemony greens, and house-fermented hot
-                sauces.
-              </p>
+              <span class="experience-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                  <path
+                    d="M12 4c2.21 0 4 1.79 4 4 0 1.84-1.25 3.39-2.96 3.86L13 20h-2l-.04-8.14C9.25 11.39 8 9.84 8 8c0-2.21 1.79-4 4-4z"
+                  />
+                </svg>
+              </span>
+              <div class="experience-card__content">
+                <h3>Egg Bar Theatre</h3>
+                <p>
+                  Watch omelettes folded to order with fillings like maple-glazed bacon, lemony greens, and house-fermented
+                  hot sauces.
+                </p>
+              </div>
             </article>
             <article class="experience-card" role="listitem">
-              <span class="experience-card__icon" aria-hidden="true">☕</span>
-              <h3>Slow Coffee Counter</h3>
-              <p>
-                Sip maple cortados, nitro cold brew, and seasonal espresso tonics roasted with our Wakefield partners at Perch
-                Coffee.
-              </p>
+              <span class="experience-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                  <path
+                    d="M6 3h12l-1 9H7L6 3zm4 13h4l1 5H9l1-5z"
+                  />
+                </svg>
+              </span>
+              <div class="experience-card__content">
+                <h3>Slow Coffee Counter</h3>
+                <p>
+                  Sip maple cortados, nitro cold brew, and seasonal espresso tonics roasted with our Wakefield partners at
+                  Perch Coffee.
+                </p>
+              </div>
             </article>
             <article class="experience-card" role="listitem">
-              <span class="experience-card__icon" aria-hidden="true">🎶</span>
-              <h3>Vinyl Brunch Sessions</h3>
-              <p>
-                Local DJs spin mellow sunshine tracks on Saturdays, while Sundays feature neighbor-curated vinyl listening
-                parties.
-              </p>
+              <span class="experience-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                  <path
+                    d="M4 8h2v8H4zm4-2h2v12H8zm4 4h2v8h-2zm4-3h2v11h-2z"
+                  />
+                </svg>
+              </span>
+              <div class="experience-card__content">
+                <h3>Vinyl Brunch Sessions</h3>
+                <p>
+                  Local DJs spin mellow sunshine tracks on Saturdays, while Sundays feature neighbor-curated vinyl listening
+                  parties.
+                </p>
+              </div>
             </article>
           </div>
           <div class="experience-gallery" id="gallery" aria-label="Omelette Headquarters gallery">
@@ -240,6 +302,7 @@
                     <p class="menu-card__price">$14</p>
                   </header>
                   <p>Applewood bacon, Cabot cheddar, slow-roasted tomatoes, chive crème fraîche.</p>
+                  <span class="menu-tag menu-tag--highlight">Chef Favorite</span>
                 </article>
                 <article class="menu-card" role="listitem">
                   <header>
@@ -285,6 +348,7 @@
                   </header>
                   <p>Creamy custard omelette, vanilla bean mascarpone, brûléed citrus.</p>
                   <span class="menu-tag">Limited</span>
+                  <span class="menu-tag menu-tag--sweet">Sweet</span>
                 </article>
               </div>
             </section>
@@ -300,33 +364,63 @@
             <h2>Save your date with Omelette Headquarters.</h2>
             <p>We host brunch adventures that connect Wakefield neighbors and visiting food lovers alike.</p>
           </div>
-          <div class="events-grid" role="list">
+          <div class="events-timeline" role="list">
             <article class="event-card" role="listitem">
-              <span class="event-card__icon" aria-hidden="true">🌅</span>
-              <div class="event-card__meta">
-                <time datetime="2024-09-06">Fridays · 6:30 AM</time>
-                <h3>Lakefront Sunrise Club</h3>
+              <div class="event-card__date" aria-hidden="true">
+                <span class="event-card__month">Sep</span>
+                <span class="event-card__day">6</span>
               </div>
-              <p>Join our Lake Quannapowitt jog, then refuel with espresso shots and chef's choice omelette bites.</p>
-              <a class="event-card__cta" href="mailto:events@omelettehq.com?subject=Lakefront%20Sunrise%20Club">RSVP</a>
+              <div class="event-card__content">
+                <header class="event-card__header">
+                  <time datetime="2024-09-06">Fridays · 6:30 AM</time>
+                  <h3>Lakefront Sunrise Club</h3>
+                </header>
+                <p>Join our Lake Quannapowitt jog, then refuel with espresso shots and chef's choice omelette bites.</p>
+                <a class="event-card__cta" href="mailto:events@omelettehq.com?subject=Lakefront%20Sunrise%20Club">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                  RSVP
+                </a>
+              </div>
             </article>
             <article class="event-card" role="listitem">
-              <span class="event-card__icon" aria-hidden="true">👩‍🍳</span>
-              <div class="event-card__meta">
-                <time datetime="2024-09-21">September 21</time>
-                <h3>Omelette Art Lab</h3>
+              <div class="event-card__date" aria-hidden="true">
+                <span class="event-card__month">Sep</span>
+                <span class="event-card__day">21</span>
               </div>
-              <p>Chef Dana teaches folding technique, plating, and sauce pairings—plus a take-home spice kit.</p>
-              <a class="event-card__cta" href="mailto:events@omelettehq.com?subject=Omelette%20Art%20Lab">Reserve Spot</a>
+              <div class="event-card__content">
+                <header class="event-card__header">
+                  <time datetime="2024-09-21">September 21</time>
+                  <h3>Omelette Art Lab</h3>
+                </header>
+                <p>Chef Dana teaches folding technique, plating, and sauce pairings—plus a take-home spice kit.</p>
+                <a class="event-card__cta" href="mailto:events@omelettehq.com?subject=Omelette%20Art%20Lab">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                  Reserve Spot
+                </a>
+              </div>
             </article>
             <article class="event-card" role="listitem">
-              <span class="event-card__icon" aria-hidden="true">🎧</span>
-              <div class="event-card__meta">
-                <time datetime="2024-10-19">October 19</time>
-                <h3>Harvest Vinyl Brunch</h3>
+              <div class="event-card__date" aria-hidden="true">
+                <span class="event-card__month">Oct</span>
+                <span class="event-card__day">19</span>
               </div>
-              <p>Five-course tasting menu with guest DJs spinning golden-hour soul and indie sunshine.</p>
-              <a class="event-card__cta" href="mailto:events@omelettehq.com?subject=Harvest%20Vinyl%20Brunch">Book Table</a>
+              <div class="event-card__content">
+                <header class="event-card__header">
+                  <time datetime="2024-10-19">October 19</time>
+                  <h3>Harvest Vinyl Brunch</h3>
+                </header>
+                <p>Five-course tasting menu with guest DJs spinning golden-hour soul and indie sunshine.</p>
+                <a class="event-card__cta" href="mailto:events@omelettehq.com?subject=Harvest%20Vinyl%20Brunch">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                  Book Table
+                </a>
+              </div>
             </article>
           </div>
         </div>
@@ -366,24 +460,51 @@
               <h3>Say Hello</h3>
               <ul class="contact-list">
                 <li>
-                  <span aria-hidden="true">📞</span>
+                  <span class="contact-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path d="M6.62 10.79a15.91 15.91 0 006.59 6.59l2.2-2.2a1 1 0 01.97-.26 11.36 11.36 0 003.56.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.56 1 1 0 01-.26.97z" />
+                    </svg>
+                  </span>
                   <a href="tel:17815551234">(781) 555-1234</a>
                 </li>
                 <li>
-                  <span aria-hidden="true">✉️</span>
+                  <span class="contact-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path d="M4 6h16v12H4z" />
+                      <path d="M4 6l8 7 8-7" />
+                    </svg>
+                  </span>
                   <a href="mailto:hello@omelettehq.com">hello@omelettehq.com</a>
                 </li>
                 <li>
-                  <span aria-hidden="true">📸</span>
+                  <span class="contact-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path
+                        d="M12 7a5 5 0 015 5 5 5 0 11-5-5zm0-5a10 10 0 100 20 10 10 0 000-20zm0 6a4 4 0 100 8 4 4 0 000-8z"
+                      />
+                    </svg>
+                  </span>
                   <a href="https://www.instagram.com" target="_blank" rel="noreferrer">Instagram</a>
                 </li>
                 <li>
-                  <span aria-hidden="true">🎬</span>
+                  <span class="contact-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path
+                        d="M4 4h16v16H4z"
+                      />
+                      <path d="M9 9h1.5L12 12l1.5-3H15l-2 6h-2z" />
+                    </svg>
+                  </span>
                   <a href="https://www.tiktok.com" target="_blank" rel="noreferrer">TikTok</a>
                 </li>
               </ul>
               <a class="btn btn--ghost" href="mailto:events@omelettehq.com">Book a Private Event</a>
             </article>
+          </div>
+          <hr class="visit__divider" />
+          <div class="visit__cta">
+            <p>Planning a milestone brunch or corporate retreat? Our events team will customize the perfect omelette spread.</p>
+            <a class="btn btn--primary" href="mailto:events@omelettehq.com?subject=Plan%20Your%20Gathering">Plan Your Gathering</a>
           </div>
         </div>
       </section>
@@ -392,16 +513,24 @@
     <footer class="footer">
       <div class="container footer__inner">
         <div class="footer__brand">
-          <p>© <span id="year"></span> Omelette Headquarters. Crafted with love in Wakefield, MA.</p>
+          <p>© <span id="year"></span> Omelette Headquarters – Crafted with love in Wakefield, MA.</p>
           <p>Need catering? Email <a href="mailto:catering@omelettehq.com">catering@omelettehq.com</a> for North Shore brunch spreads.</p>
         </div>
         <div class="footer__actions">
           <a class="footer__social" href="https://www.instagram.com" target="_blank" rel="noreferrer">
-            <span aria-hidden="true">📸</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                d="M7 4h10a3 3 0 013 3v10a3 3 0 01-3 3H7a3 3 0 01-3-3V7a3 3 0 013-3zm5 4a5 5 0 105 5 5 5 0 00-5-5zm6.5-.25a1.25 1.25 0 10-1.25-1.25 1.25 1.25 0 001.25 1.25zm-6.5 2a3 3 0 11-3 3 3 3 0 013-3z"
+              />
+            </svg>
             <span class="sr-only">Instagram</span>
           </a>
           <a class="footer__social" href="https://www.tiktok.com" target="_blank" rel="noreferrer">
-            <span aria-hidden="true">🎬</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                d="M15.5 4.5c1 1.6 2.5 2.6 4.5 2.7v3.1c-1.6-.1-3-.6-4.5-1.5v6.2a5.1 5.1 0 11-4.5-5v3.2a1.9 1.9 0 101.5 1.9V4.5z"
+              />
+            </svg>
             <span class="sr-only">TikTok</span>
           </a>
         </div>
