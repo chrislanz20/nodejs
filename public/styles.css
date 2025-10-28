@@ -788,7 +788,7 @@ a:focus {
 
 .footer__column h2,
 .footer__column h3 {
-  color: var(--color-gold);
+  color: #ffffff;
   text-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
 }
 
