@@ -93,6 +93,19 @@ body {
   color: var(--color-dark);
 }
 
+.section__header h2 {
+  font-size: clamp(2.4rem, 5vw, 3.2rem);
+  font-weight: 700;
+  color: var(--color-brown);
+  text-shadow: 0 12px 28px rgba(42, 28, 16, 0.22);
+}
+
+.section__header .section__lead {
+  font-size: clamp(1.15rem, 2.8vw, 1.35rem);
+  font-weight: 500;
+  color: rgba(44, 36, 22, 0.88);
+}
+
 .section__lead {
   margin: 16px auto 0;
   max-width: 680px;
@@ -417,6 +430,18 @@ a:focus {
   margin-bottom: 32px;
 }
 
+.menu-section header h3 {
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--color-brown);
+  text-shadow: 0 8px 20px rgba(42, 28, 16, 0.15);
+}
+
+.menu-section header p {
+  font-size: 1.05rem;
+  color: rgba(44, 36, 22, 0.78);
+}
+
 .experience-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -708,10 +733,30 @@ a:focus {
   gap: 16px;
 }
 
+#reviews .section__header h2 {
+  font-size: clamp(2.6rem, 5vw, 3.4rem);
+  color: var(--color-brown);
+  text-shadow: 0 10px 26px rgba(42, 28, 16, 0.18);
+}
+
+#reviews .section__lead {
+  font-weight: 600;
+  font-size: clamp(1.2rem, 3vw, 1.45rem);
+  color: rgba(44, 36, 22, 0.9);
+}
+
 .footer {
   background: rgba(44, 36, 22, 0.92);
   color: var(--color-cream);
   padding: 48px 0 24px;
+}
+
+.footer,
+.footer p,
+.footer li,
+.footer a {
+  color: rgba(255, 255, 255, 0.94);
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.55);
 }
 
 .footer__inner {
@@ -726,10 +771,11 @@ a:focus {
   color: var(--color-gold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
 }
 
 .footer a {
-  color: var(--color-cream);
+  color: rgba(255, 255, 255, 0.94);
 }
 
 .footer__links {
@@ -747,7 +793,8 @@ a:focus {
   margin-top: 32px;
   padding-top: 24px;
   text-align: center;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.94);
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.55);
 }
 
 .scroll-top {
