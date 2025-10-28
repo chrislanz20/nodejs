@@ -1,14 +1,14 @@
 :root {
   --color-gold: #f5a623;
-  --color-brown: #d84315;
-  --color-rail-red: #d84315;
+  --color-brown: #B71C1C;
+  --color-rail-red: #B71C1C;
   --color-cream: #fff8e7;
   --color-dark: #2c2416;
   --color-white: #ffffff;
   --color-overlay-dark: rgba(0, 0, 0, 0.65);
   --color-overlay-light: rgba(255, 255, 255, 0.92);
-  --shadow-soft: 0 18px 45px rgba(216, 67, 21, 0.28);
-  --shadow-card: 0 12px 30px rgba(216, 67, 21, 0.18);
+  --shadow-soft: 0 18px 45px rgba(183, 28, 28, 0.28);
+  --shadow-card: 0 12px 30px rgba(183, 28, 28, 0.18);
   --transition-base: all 0.3s ease;
   scroll-behavior: smooth;
 }
@@ -47,7 +47,7 @@ body {
   inset: 0;
   background:
     linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)),
-    rgba(216, 67, 21, 0.08);
+    rgba(183, 28, 28, 0.08);
   z-index: -1;
   mix-blend-mode: multiply;
   pointer-events: none;
@@ -76,7 +76,7 @@ body {
   position: relative;
   background-color: rgba(255, 248, 231, 0.78);
   backdrop-filter: blur(6px);
-  box-shadow: 0 24px 60px rgba(216, 67, 21, 0.25);
+  box-shadow: 0 24px 60px rgba(183, 28, 28, 0.25);
 }
 
 .section + .section {
@@ -97,7 +97,7 @@ body {
   font-size: clamp(2.4rem, 5vw, 3.2rem);
   font-weight: 700;
   color: var(--color-brown);
-  text-shadow: 0 12px 28px rgba(216, 67, 21, 0.22);
+  text-shadow: 0 12px 28px rgba(183, 28, 28, 0.22);
 }
 
 .section__header .section__lead {
@@ -171,11 +171,11 @@ a:focus {
   padding: 32px;
   box-shadow: var(--shadow-card);
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(216, 67, 21, 0.24);
+  border: 1px solid rgba(183, 28, 28, 0.24);
 }
 
 .content-card--dark {
-  background: rgba(216, 67, 21, 0.78);
+  background: rgba(183, 28, 28, 0.78);
   color: var(--color-white);
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
   border: 1px solid rgba(255, 248, 231, 0.28);
@@ -203,13 +203,13 @@ a:focus {
   align-items: center;
   justify-content: space-between;
   padding: 18px 32px;
-  background: rgba(216, 67, 21, 0.85);
+  background: rgba(183, 28, 28, 0.85);
   backdrop-filter: blur(10px);
-  box-shadow: 0 12px 30px rgba(216, 67, 21, 0.32);
+  box-shadow: 0 12px 30px rgba(183, 28, 28, 0.32);
 }
 
 .nav--scrolled {
-  background: rgba(216, 67, 21, 0.92);
+  background: rgba(183, 28, 28, 0.92);
 }
 
 .nav__brand-group {
@@ -434,7 +434,7 @@ a:focus {
   font-size: clamp(1.7rem, 3vw, 2.2rem);
   font-weight: 700;
   color: var(--color-brown);
-  text-shadow: 0 8px 20px rgba(216, 67, 21, 0.18);
+  text-shadow: 0 8px 20px rgba(183, 28, 28, 0.18);
 }
 
 .menu-section header p {
@@ -478,7 +478,7 @@ a:focus {
 .location-callout {
   margin-top: 32px;
   text-align: center;
-  background: rgba(216, 67, 21, 0.85);
+  background: rgba(183, 28, 28, 0.85);
   border: 1px solid rgba(255, 248, 231, 0.45);
 }
 
@@ -571,7 +571,7 @@ a:focus {
   border: none;
   border-radius: 14px;
   filter: saturate(1.08);
-  box-shadow: inset 0 0 0 1px rgba(216, 67, 21, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(183, 28, 28, 0.18);
 }
 
 .menu-grid {
@@ -598,7 +598,7 @@ a:focus {
 
 .menu-item {
   padding: 14px 0;
-  border-bottom: 1px solid rgba(216, 67, 21, 0.2);
+  border-bottom: 1px solid rgba(183, 28, 28, 0.2);
 }
 
 .menu-item dt {
@@ -736,7 +736,7 @@ a:focus {
 #reviews .section__header h2 {
   font-size: clamp(2.6rem, 5vw, 3.4rem);
   color: var(--color-brown);
-  text-shadow: 0 10px 26px rgba(216, 67, 21, 0.2);
+  text-shadow: 0 10px 26px rgba(183, 28, 28, 0.2);
 }
 
 #reviews .section__lead {
@@ -749,13 +749,13 @@ a:focus {
   position: relative;
   background: linear-gradient(
     180deg,
-    rgba(216, 67, 21, 0.98) 0%,
-    rgba(216, 67, 21, 0.92) 52%,
-    rgba(216, 67, 21, 0.88) 100%
+    rgba(183, 28, 28, 0.98) 0%,
+    rgba(183, 28, 28, 0.92) 52%,
+    rgba(183, 28, 28, 0.88) 100%
   );
   color: var(--color-cream);
   padding: 56px 0 32px;
-  box-shadow: 0 -18px 40px rgba(216, 67, 21, 0.45);
+  box-shadow: 0 -18px 40px rgba(183, 28, 28, 0.45);
   isolation: isolate;
 }
 
@@ -763,7 +763,7 @@ a:focus {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(216, 67, 21, 0.4);
+  background: rgba(183, 28, 28, 0.4);
   z-index: -1;
 }
 
@@ -906,7 +906,7 @@ a:focus {
     padding: 24px;
     flex-direction: column;
     gap: 18px;
-    background: rgba(216, 67, 21, 0.96);
+    background: rgba(183, 28, 28, 0.96);
     border-radius: 18px;
     box-shadow: var(--shadow-soft);
     transform: translateY(-20px);
