@@ -747,10 +747,10 @@ a:focus {
 
 .footer {
   position: relative;
-  background: linear-gradient(180deg, rgba(44, 36, 22, 0.98) 0%, rgba(32, 25, 15, 0.98) 100%);
+  background: linear-gradient(180deg, rgba(36, 26, 16, 0.98) 0%, rgba(26, 19, 12, 0.98) 100%);
   color: var(--color-cream);
-  padding: 48px 0 24px;
-  box-shadow: 0 -18px 40px rgba(42, 28, 16, 0.35);
+  padding: 56px 0 32px;
+  box-shadow: 0 -18px 40px rgba(42, 28, 16, 0.4);
   isolation: isolate;
 }
 
@@ -758,7 +758,7 @@ a:focus {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(12, 8, 5, 0.68);
   z-index: -1;
 }
 
@@ -767,26 +767,39 @@ a:focus {
 .footer li,
 .footer a {
   color: #ffffff;
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.65);
+  text-shadow: 0 6px 16px rgba(0, 0, 0, 0.75);
 }
 
 .footer__inner {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 32px;
+  gap: 36px;
   align-items: start;
+}
+
+.footer__column {
+  background: rgba(255, 248, 231, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 24px 28px;
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(6px);
+}
+
+.footer__column h2,
+.footer__column h3 {
+  color: var(--color-gold);
+  text-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
 }
 
 .footer__logo {
   font-family: 'Playfair Display', serif;
-  color: var(--color-gold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  text-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
 }
 
 .footer a {
-  color: rgba(255, 255, 255, 0.94);
+  color: rgba(255, 255, 255, 0.96);
 }
 
 .footer__links {
@@ -796,16 +809,19 @@ a:focus {
 }
 
 .footer__links li + li {
-  margin-top: 12px;
+  margin-top: 14px;
 }
 
 .footer__bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  margin-top: 32px;
-  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  margin-top: 40px;
+  padding-top: 28px;
   text-align: center;
-  color: rgba(255, 255, 255, 0.94);
-  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 5px 16px rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 18px;
+  padding-bottom: 20px;
 }
 
 .scroll-top {
