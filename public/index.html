@@ -8,6 +8,13 @@
       name="description"
       content="Experience Omelette Headquarters in Wakefield, MA—a pastel brunch café with seasonal omelettes, crafted coffee, and community events."
     />
+    <meta property="og:title" content="Omelette Headquarters | Wakefield, MA" />
+    <meta
+      property="og:description"
+      content="Pastel mornings, chef-crafted omelettes, and community brunch events at Omelette Headquarters in downtown Wakefield."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=1200&q=80" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -17,11 +24,18 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
+    <div class="topbar" role="banner">
+      <div class="container topbar__inner">
+        <span>Now booking fall brunch events &amp; private omelette bars.</span>
+        <a href="mailto:events@omelettehq.com" class="topbar__link">Plan your gathering →</a>
+      </div>
+    </div>
+
     <header class="hero" id="top">
       <div class="hero__pattern" aria-hidden="true"></div>
       <div class="container hero__inner">
         <nav class="nav" aria-label="Primary">
-          <a class="nav__brand" href="#top">Omelette HQ</a>
+          <a class="nav__brand" href="#top" aria-label="Omelette Headquarters home">Omelette HQ</a>
           <button class="nav__toggle" aria-expanded="false" aria-controls="primary-navigation">
             <span class="nav__toggle-line"></span>
             <span class="nav__toggle-line"></span>
@@ -70,6 +84,7 @@
             <img
               src="https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=1200&q=80"
               alt="A signature omelette at Omelette Headquarters with herbs and edible flowers"
+              loading="lazy"
             />
             <figcaption>Brunch artistry from Chef Dana Avery</figcaption>
           </figure>
@@ -84,6 +99,7 @@
             <img
               src="https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=1200&q=80"
               alt="Chef Dana of Omelette Headquarters folding an omelette on the line"
+              loading="lazy"
             />
             <figcaption>Our egg bar in action each morning</figcaption>
           </figure>
@@ -140,6 +156,32 @@
               </p>
             </article>
           </div>
+        </div>
+      </section>
+
+      <section class="section section--standards" id="standards">
+        <div class="container section__split">
+          <div class="section__content">
+            <p class="eyebrow">Our Standards</p>
+            <h2>Every omelette begins with uncompromising sourcing.</h2>
+            <p>
+              We contract with five New England farms to secure pasture-raised eggs, Vermont creamery dairy, and
+              herbaceous produce. Our team whisks every omelette to order and cooks in carbon-steel pans seasoned daily.
+            </p>
+            <ul class="bullet-list">
+              <li><strong>Farm-to-pan:</strong> Weekly deliveries from Brookford Farm and Kimball Fruit Farm.</li>
+              <li><strong>House-made sides:</strong> Preserves, pickles, and sourdough boules proofed in-house.</li>
+              <li><strong>Community focus:</strong> 3% of brunch profits fund Wakefield school breakfast programs.</li>
+            </ul>
+          </div>
+          <figure class="section__media section__media--card">
+            <img
+              src="https://images.unsplash.com/photo-1506084868230-bb9d95c24759?auto=format&fit=crop&w=1200&q=80"
+              alt="Fresh farm eggs and herbs prepared for Omelette Headquarters brunch service"
+              loading="lazy"
+            />
+            <figcaption>We prep each service with locally sourced eggs, herbs, and sourdough.</figcaption>
+          </figure>
         </div>
       </section>
 
@@ -218,30 +260,35 @@
               <img
                 src="https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=900&q=80"
                 alt="Herbed omelette with edible flowers at Omelette Headquarters"
+                loading="lazy"
               />
             </figure>
             <figure>
               <img
                 src="https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=900&q=80"
                 alt="Sunlit café seating inside Omelette Headquarters"
+                loading="lazy"
               />
             </figure>
             <figure>
               <img
                 src="https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=900&q=80"
                 alt="Barista pouring latte art at the Omelette Headquarters coffee counter"
+                loading="lazy"
               />
             </figure>
             <figure>
               <img
                 src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80"
                 alt="Brunch spread featuring omelettes, greens, and pastries"
+                loading="lazy"
               />
             </figure>
             <figure>
               <img
                 src="https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?auto=format&fit=crop&w=900&q=80"
                 alt="Guests enjoying brunch at Omelette Headquarters in Wakefield"
+                loading="lazy"
               />
             </figure>
           </div>
@@ -334,11 +381,20 @@
     <script>
       const navToggle = document.querySelector(".nav__toggle");
       const navLinks = document.querySelector(".nav__links");
+      const navAnchors = navLinks?.querySelectorAll("a") ?? [];
 
       navToggle?.addEventListener("click", () => {
         const expanded = navToggle.getAttribute("aria-expanded") === "true";
         navToggle.setAttribute("aria-expanded", String(!expanded));
         navLinks?.classList.toggle("nav__links--open");
+      });
+
+      navAnchors.forEach((anchor) => {
+        anchor.addEventListener("click", () => {
+          if (!navLinks?.classList.contains("nav__links--open")) return;
+          navLinks.classList.remove("nav__links--open");
+          navToggle?.setAttribute("aria-expanded", "false");
+        });
       });
 
       document.getElementById("year").textContent = new Date().getFullYear();
