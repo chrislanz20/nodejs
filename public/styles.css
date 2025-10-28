@@ -21,7 +21,7 @@
 body {
   margin: 0;
   font-family: var(--font-body);
-  background: linear-gradient(rgba(34, 20, 6, 0.55), rgba(34, 20, 6, 0.55)),
+  background: linear-gradient(rgba(34, 20, 6, 0.45), rgba(34, 20, 6, 0.45)),
     url("https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/6901125b8a87f34327e2ce69.png") center / cover no-repeat fixed;
   color: var(--color-coffee);
   line-height: 1.6;
