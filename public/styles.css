@@ -139,8 +139,12 @@ ul {
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  padding-top: 0.75rem;
+  padding: 0.9rem 1.5rem;
   margin-bottom: clamp(2.5rem, 6vw, 4rem);
+  background: rgba(18, 10, 5, 0.72);
+  border: 1px solid rgba(255, 246, 232, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 18px 32px rgba(18, 10, 5, 0.35);
 }
 
 .nav__brand {
@@ -148,6 +152,7 @@ ul {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   font-size: 1.1rem;
+  color: rgba(255, 246, 232, 0.95);
 }
 
 .nav__links {
@@ -160,7 +165,7 @@ ul {
   font-weight: 600;
   font-size: 0.95rem;
   letter-spacing: 0.04em;
-  color: rgba(255, 246, 232, 0.9);
+  color: rgba(255, 246, 232, 0.92);
 }
 
 .nav__cta {
@@ -391,6 +396,18 @@ ul {
   fill: var(--color-caramel);
 }
 
+.menu__note {
+  margin-top: 2.5rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-coffee);
+  background: var(--color-card);
+  padding: 1.1rem 1.5rem;
+  border-radius: 18px;
+  border: 1px solid var(--color-outline);
+  box-shadow: var(--shadow-soft);
+}
+
 .menu-layout {
   display: grid;
   gap: 2.5rem;
@@ -455,35 +472,6 @@ ul {
   background: rgba(255, 201, 150, 0.6);
 }
 
-.section--timeline {
-  background: rgba(255, 246, 232, 0.75);
-}
-
-.timeline {
-  display: grid;
-  gap: 1.5rem;
-  max-width: 760px;
-  margin: 0 auto;
-}
-
-.timeline__item {
-  display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: 1.2rem;
-  align-items: start;
-  background: var(--color-card);
-  padding: 1.5rem 1.75rem;
-  border-radius: 22px;
-  border: 1px solid var(--color-outline);
-  box-shadow: var(--shadow-soft);
-}
-
-.timeline__date {
-  font-family: var(--font-heading);
-  font-size: 1.05rem;
-  color: var(--color-caramel);
-}
-
 .visit {
   display: grid;
   gap: 2.5rem;
@@ -520,6 +508,12 @@ ul {
 .visit__contact {
   display: grid;
   gap: 1.5rem;
+}
+
+.visit__note {
+  font-weight: 600;
+  color: var(--color-coffee);
+  margin: 1rem 0 1.5rem;
 }
 
 .contact-card {
@@ -619,9 +613,6 @@ ul {
     padding-top: 1.5rem;
   }
 
-  .timeline__item {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 768px) {
