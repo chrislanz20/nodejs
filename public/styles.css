@@ -19,26 +19,18 @@
 body {
   margin: 0;
   font-family: var(--font-body);
-  background: var(--color-cream);
-  color: var(--color-ink);
+  background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.45)),
+    url("https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/6901125b8a87f34327e2ce69.png")
+      center / cover no-repeat fixed;
+  background-repeat: no-repeat, no-repeat;
+  background-attachment: fixed, fixed;
+  background-position: center, center;
+  background-size: cover, cover;
+  color: #f9f9f9;
   line-height: 1.7;
   text-rendering: optimizeLegibility;
   position: relative;
   min-height: 100vh;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: url("https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/6901125b8a87f34327e2ce69.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.45;
-  filter: saturate(0.92) brightness(1.03);
-  z-index: -2;
-  pointer-events: none;
 }
 
 a {
@@ -65,10 +57,12 @@ h4 {
   color: var(--color-ink);
   line-height: 1.2;
   margin: 0 0 0.75rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 
 p {
   margin: 0 0 1.1rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 ul {
@@ -79,6 +73,10 @@ ul {
 .container {
   width: min(1120px, 92vw);
   margin-inline: auto;
+}
+
+main {
+  color: var(--color-ink);
 }
 
 .topbar {
@@ -187,7 +185,8 @@ ul {
   font-weight: 600;
   font-size: 0.95rem;
   letter-spacing: 0.03em;
-  color: var(--color-muted);
+  color: rgba(255, 248, 242, 0.85);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
 }
 
 .nav__cta {
@@ -250,8 +249,14 @@ ul {
   margin-bottom: 1.3rem;
 }
 
+.hero__copy h1 {
+  color: #fff6f1;
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
 .hero__copy p {
-  color: var(--color-muted);
+  color: rgba(255, 247, 240, 0.9);
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
 }
 
 .hero__copy h1,
@@ -305,10 +310,20 @@ ul {
 }
 
 .hero__stats div {
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 1.2rem;
   padding: 1.2rem 1.5rem;
   box-shadow: 0 20px 35px rgba(255, 179, 71, 0.18);
+  color: var(--color-ink);
+}
+
+.hero__media,
+.standards-card,
+.experience-card,
+.menu-card,
+.event-card,
+.visit-card {
+  color: var(--color-ink);
 }
 
 .hero__stats dt {
@@ -359,10 +374,10 @@ ul {
 .section--soft,
 .section--menu,
 .section--visit {
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  box-shadow: 0 20px 45px rgba(53, 44, 39, 0.08);
+  background: rgba(255, 255, 255, 0.32);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 24px 55px rgba(17, 17, 17, 0.12);
 }
 
 .section__intro {
@@ -937,6 +952,11 @@ ul {
     visibility: hidden;
     transition: opacity 0.2s ease, transform 0.2s ease;
     z-index: 5;
+  }
+
+  .nav__links a {
+    color: var(--color-ink);
+    text-shadow: none;
   }
 
   .nav__links--open {
