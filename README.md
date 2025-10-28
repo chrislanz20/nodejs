@@ -38,3 +38,14 @@ These steps walk through getting the project running on a Mac, starting from scr
 - Return to Terminal and press `Ctrl + C` to stop the running server.
 
 You can repeat steps 3–6 any time you want to view changes to the site. Edit the files inside the `public/` folder, save them, refresh the browser, and you will see your updates.
+
+## Resolving binary merge conflicts on GitHub
+If a pull request shows **"binary files are not supported"** when you click **Update branch**, pull the latest `main` branch locally and merge it into your feature branch instead:
+
+```bash
+git fetch origin
+git checkout work
+git merge origin/main
+```
+
+If Git reports a conflict for `public/images/static-site.png`, choose **ours** (keep the version from `main`) or delete the file—this project now serves hosted photography so the legacy screenshot is no longer required. Commit the merge resolution and push your branch; the pull request will update automatically without needing the GitHub button.

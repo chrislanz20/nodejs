@@ -2,26 +2,53 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Waystack &amp; Kirby, Attorneys at Law | Melrose, MA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Omelette Headquarters | Wakefield, Massachusetts</title>
     <meta
       name="description"
-      content="Waystack & Kirby is a Melrose, MA law firm focused on estate planning, elder law, real estate, probate, and personal tax guidance."
+      content="Experience Omelette Headquarters in Wakefield, MA—a pastel brunch café with seasonal omelettes, crafted coffee, and community events."
     />
+    <meta property="og:title" content="Omelette Headquarters | Wakefield, MA" />
+    <meta
+      property="og:description"
+      content="Pastel mornings, chef-crafted omelettes, and community brunch events at Omelette Headquarters in downtown Wakefield."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=80" />
+    <meta property="og:url" content="https://www.omelettehq.com" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Omelette Headquarters | Wakefield, Massachusetts" />
+    <meta
+      name="twitter:description"
+      content="Wakefield's cheerful brunch café for pastel mornings, chef Dana Avery's omelettes, and community gatherings."
+    />
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=80" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <header class="hero">
-      <div class="hero__overlay"></div>
-      <div class="container hero__content">
-        <nav class="nav">
-          <a class="nav__brand" href="#">Waystack &amp; Kirby</a>
+    <div class="topbar" role="banner" data-topbar>
+      <div class="container topbar__inner">
+        <span class="topbar__message">Now booking fall brunch events &amp; private omelette bars.</span>
+        <div class="topbar__actions">
+          <a href="mailto:events@omelettehq.com" class="topbar__link">Plan your gathering →</a>
+          <button type="button" class="topbar__close" aria-label="Dismiss announcement" data-topbar-close>
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <header class="hero" id="top">
+      <div class="hero__overlay" aria-hidden="true"></div>
+      <div class="container hero__inner">
+        <nav class="nav" aria-label="Primary">
+          <a class="nav__brand" href="#top" aria-label="Omelette Headquarters home">Omelette HQ</a>
           <button class="nav__toggle" aria-expanded="false" aria-controls="primary-navigation">
             <span class="nav__toggle-line"></span>
             <span class="nav__toggle-line"></span>
@@ -29,244 +56,510 @@
             <span class="sr-only">Toggle navigation</span>
           </button>
           <ul class="nav__links" id="primary-navigation">
-            <li><a href="#about">Firm</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#attorneys">Attorneys</a></li>
-            <li><a href="#testimonials">Testimonials</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="#about">Story</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#events">Events</a></li>
+            <li><a href="#visit">Visit</a></li>
           </ul>
+          <a class="nav__cta" href="#visit">Reserve</a>
         </nav>
-        <div class="hero__text">
-          <p class="eyebrow">Serving Melrose since 1994</p>
-          <h1>Trusted Counsel for Life&rsquo;s Most Important Decisions</h1>
-          <p>
-            Waystack &amp; Kirby provides thoughtful, personalized legal guidance in estate planning,
-            elder law, real estate, probate, and personal taxation. We partner with generations of
-            local families and businesses to safeguard what matters most.
-          </p>
-          <div class="hero__cta">
-            <a class="btn btn--primary" href="#contact">Schedule a Consultation</a>
-            <a class="btn btn--ghost" href="#services">Explore Services</a>
+        <div class="hero__layout">
+          <div class="hero__copy">
+            <span class="hero__badge">Wakefield, Massachusetts</span>
+            <h1>Pastel brunch rituals, folded by Chef Dana Avery.</h1>
+            <p>
+              Omelette Headquarters is the North Shore's brunch atelier for serious omelette lovers. From pasture-raised eggs
+              to small-batch sauces, every table is styled with color, comfort, and a touch of Boston sparkle.
+            </p>
+            <div class="hero__cta">
+              <a class="btn btn--primary" href="#menu">Explore the Lineup</a>
+              <a class="btn btn--ghost" href="#events">Upcoming Events</a>
+            </div>
+            <dl class="hero__stats" aria-label="Omelette Headquarters highlights">
+              <div>
+                <dt>12</dt>
+                <dd>Seasonal omelettes each month</dd>
+              </div>
+              <div>
+                <dt>7 AM – 3 PM</dt>
+                <dd>Daily brunch service</dd>
+              </div>
+              <div>
+                <dt>100%</dt>
+                <dd>New England farm eggs</dd>
+              </div>
+            </dl>
           </div>
+          <figure class="hero__media">
+            <img
+              src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=80"
+              alt="A brunch table at Omelette Headquarters with omelettes, pastries, and seasonal fruit"
+              loading="lazy"
+            />
+            <figcaption>Chef Dana Avery plates Wakefield farm eggs with local greens and sourdough.</figcaption>
+          </figure>
         </div>
       </div>
     </header>
 
     <main>
-      <section class="section" id="about">
-        <div class="container section__grid">
-          <div class="section__content">
-            <h2>Deep Roots in the Melrose Community</h2>
+      <section class="section section--soft" id="about">
+        <div class="container story-grid">
+          <article class="story-grid__main">
+            <p class="eyebrow">Our Story</p>
+            <h2>The Wakefield café built on breakfast joy.</h2>
             <p>
-              Founded by F. Peter Waystack in 1994 and joined by partner Martina M. Kirby in the
-              mid-2010s, Waystack &amp; Kirby has remained a small, relationship-driven practice. With
-              more than 70 years of combined experience, our attorneys offer attentive service and
-              practical solutions tailored to each client&rsquo;s needs.
+              Omelette Headquarters began as a Lake Quannapowitt pop-up and grew into the town's beloved brunch clubhouse. We
+              source from Middlesex County farms, churn our own cultured butter, and weave playful Boston energy into every plate.
             </p>
             <p>
-              We live, work, and volunteer in the communities we serve. From speaking at local elder
-              law seminars to supporting neighborhood events, our firm is committed to being a trusted
-              resource for Melrose and the surrounding North Shore.
+              Mornings start with espresso tastings, afternoons flow with mocktails, and Sundays are for neighborhood vinyl
+              swaps. If it tastes like sunshine and feels like community, it belongs on our menu.
             </p>
-          </div>
-          <div class="section__card">
-            <h3>Why Clients Choose Us</h3>
-            <ul class="checklist">
-              <li>Decades of estate planning, elder law, and real estate experience</li>
-              <li>Personalized strategies with meticulous attention to detail</li>
-              <li>Responsive communication and warm, approachable counsel</li>
-              <li>Long-term relationships with multi-generational families</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="section section--accent" id="services">
-        <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Practice Areas</p>
-            <h2>Comprehensive Planning for Families and Businesses</h2>
-            <p>
-              We guide clients through every stage of planning, protecting, and transferring their
-              assets with clarity and care.
-            </p>
-          </div>
-          <div class="card-grid">
-            <article class="card">
-              <h3>Estate Planning</h3>
-              <p>
-                Design wills, trusts, powers of attorney, and health care proxies that honor your
-                wishes and secure your family&rsquo;s future.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Elder Law &amp; Medicaid Planning</h3>
-              <p>
-                Navigate long-term care options, MassHealth eligibility, and asset protection with
-                compassionate guidance for seniors and caregivers.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Probate &amp; Estate Administration</h3>
-              <p>
-                Settle estates efficiently, from court filings and inventories to distributions and
-                trust administration.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Real Estate Transactions</h3>
-              <p>
-                Represent buyers, sellers, and lenders in residential and commercial closings, title
-                reviews, refinancing, and property transfers.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Wills, Trusts &amp; Powers of Attorney</h3>
-              <p>
-                Establish tailored instruments that empower loved ones to act when it matters most and
-                ensure assets are passed on seamlessly.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Personal Taxation</h3>
-              <p>
-                Receive tax planning advice and IRS representation from an experienced, IRS-registered
-                preparer serving clients along the East Coast.
-              </p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" id="attorneys">
-        <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Our Team</p>
-            <h2>Experienced, Approachable Counsel</h2>
-          </div>
-          <div class="profile-grid">
-            <article class="profile">
-              <h3>F. Peter Waystack, Esq.</h3>
-              <p class="profile__subtitle">Founding Partner</p>
-              <p>
-                Practicing law since 1974, Attorney Waystack focuses on estate planning, real estate
-                conveyancing, and personal tax matters. He is known for careful attention to detail
-                and for building trusted relationships with generations of families across Melrose.
-              </p>
-              <ul class="profile__highlights">
-                <li>Suffolk University Law School, J.D. (1974)</li>
-                <li>Former director of Melrose Cooperative Bank</li>
-                <li>Admitted to the U.S. Supreme Court</li>
-              </ul>
-            </article>
-            <article class="profile">
-              <h3>Martina M. Kirby, Esq.</h3>
-              <p class="profile__subtitle">Partner</p>
-              <p>
-                Attorney Kirby concentrates on real estate law, estate planning, and elder law. Clients
-                value her responsiveness and compassion, especially when navigating complex closings or
-                long-term care planning.
-              </p>
-              <ul class="profile__highlights">
-                <li>Practicing in Massachusetts since 2002</li>
-                <li>Frequent speaker on wills, trusts, and Medicaid planning</li>
-                <li>Active in local civic and senior support organizations</li>
-              </ul>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section section--quote" id="community">
-        <div class="container section__narrow">
-          <h2>Grounded in Community</h2>
-          <p>
-            From chamber of commerce events to educational seminars, Waystack &amp; Kirby is invested in
-            the wellbeing of Melrose. We meet clients where they are&mdash;with empathy, clarity, and a
-            commitment to long-term partnership.
-          </p>
-        </div>
-      </section>
-
-      <section class="section" id="testimonials">
-        <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Client Feedback</p>
-            <h2>Trusted by Neighbors Across the North Shore</h2>
-          </div>
-          <div class="testimonials">
-            <figure class="testimonial">
-              <blockquote>
-                “Exceptional service and care. Highly recommend!”
-              </blockquote>
-              <figcaption>&mdash; Santiago O.</figcaption>
-            </figure>
-            <figure class="testimonial">
-              <blockquote>
-                “Martina Kirby and her team are fabulous! They went above and beyond for my real estate
-                transaction.”
-              </blockquote>
-              <figcaption>&mdash; Allison C.</figcaption>
-            </figure>
-          </div>
-        </div>
-      </section>
-
-      <section class="section section--contact" id="contact">
-        <div class="container section__grid">
-          <div class="section__content">
-            <p class="eyebrow">Contact</p>
-            <h2>Let&rsquo;s Talk</h2>
-            <p>
-              Schedule a consultation to discuss your estate plan, real estate transaction, or tax
-              needs. We look forward to learning how we can help.
-            </p>
-            <div class="contact-details">
-              <div>
-                <h3>Visit</h3>
-                <p>25 Myrtle Street<br />Melrose, MA 02176</p>
-              </div>
-              <div>
-                <h3>Call</h3>
-                <p><a href="tel:17816651136">(781) 665-1136</a></p>
-              </div>
-              <div>
-                <h3>Email</h3>
-                <p><a href="mailto:mkirby@WaystackKirby.com">mkirby@WaystackKirby.com</a></p>
-              </div>
-              <div>
-                <h3>Hours</h3>
-                <p>Monday – Friday, 9:00 AM – 5:00 PM</p>
-              </div>
+            <div class="signature">
+              <p class="signature__name">Chef Dana Avery</p>
+              <p class="signature__title">Founder &amp; Executive Omelette Artist</p>
             </div>
-          </div>
-          <div class="section__card section__card--contact">
-            <h3>Schedule a Meeting</h3>
+            <figure class="story-grid__photo">
+              <img
+                src="https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=1200&q=80"
+                alt="Chef Dana of Omelette Headquarters folding an omelette on the line"
+                loading="lazy"
+              />
+              <figcaption>Chef Dana folds every omelette to order at the Wakefield egg bar.</figcaption>
+            </figure>
+          </article>
+          <aside class="story-grid__aside">
+            <div class="standards-card">
+              <p class="eyebrow">Our Standards</p>
+              <h3>What makes every plate Omelette HQ.</h3>
+              <ul class="bullet-list">
+                <li>
+                  <span class="bullet-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path
+                        d="M12 3c3.866 0 7 2.91 7 6.5S12 21 12 21s-7-7.134-7-11.5S8.134 3 12 3z"
+                      />
+                    </svg>
+                  </span>
+                  <div><strong>Farm eggs, always:</strong> Pasture-raised deliveries from Brookford Farm and Kimball Fruit Farm.</div>
+                </li>
+                <li>
+                  <span class="bullet-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path
+                        d="M4.5 12.75l6.75 6.75L19.5 6.75l-2.12-2.12-6.13 9.02-3.38-3.38z"
+                      />
+                    </svg>
+                  </span>
+                  <div><strong>House-fermented sauces:</strong> Pineapple fire relish, chili honey, and pickled fresnos on tap.</div>
+                </li>
+                <li>
+                  <span class="bullet-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path
+                        d="M5 4h14v2H5zm2 4h10l-1 12H8z"
+                      />
+                    </svg>
+                  </span>
+                  <div><strong>Compost-first kitchen:</strong> Spent grounds and veg trim fuel our community garden beds.</div>
+                </li>
+                <li>
+                  <span class="bullet-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path
+                        d="M12 13.5c-2.485 0-4.5-2.015-4.5-4.5S9.515 4.5 12 4.5s4.5 2.015 4.5 4.5-2.015 4.5-4.5 4.5zm0 2.25c3.314 0 6 2.239 6 5v1.5H6v-1.5c0-2.761 2.686-5 6-5z"
+                      />
+                    </svg>
+                  </span>
+                  <div><strong>Hospitality at heart:</strong> Vinyl-spun brunches, mocktail pairings, and neighbor discounts.</div>
+                </li>
+              </ul>
+            </div>
+            <figure class="story-grid__aside-photo">
+              <img
+                src="https://images.unsplash.com/photo-1506084868230-bb9d95c24759?auto=format&fit=crop&w=1200&q=80"
+                alt="Fresh farm eggs and herbs prepped for Omelette Headquarters brunch service"
+                loading="lazy"
+              />
+              <figcaption>Seasonal herbs, cultured butter, and eggs delivered each dawn.</figcaption>
+            </figure>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="experience">
+        <div class="container">
+          <div class="section__intro">
+            <p class="eyebrow">Experience</p>
+            <h2>Every visit feels like a mini vacation.</h2>
             <p>
-              Call or email our office to arrange an appointment. Evening or weekend meetings may be
-              available upon request for urgent matters.
+              From the pastel palette to the curated playlists, Omelette Headquarters is designed for lingering. Choose a
+              counter seat to chat with the chefs or settle into the sunroom for a long brunch with friends.
             </p>
-            <a class="btn btn--primary" href="tel:17816651136">Call the Office</a>
+          </div>
+          <div class="experience-grid" role="list">
+            <article class="experience-card" role="listitem">
+              <span class="experience-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                  <path
+                    d="M12 4c2.21 0 4 1.79 4 4 0 1.84-1.25 3.39-2.96 3.86L13 20h-2l-.04-8.14C9.25 11.39 8 9.84 8 8c0-2.21 1.79-4 4-4z"
+                  />
+                </svg>
+              </span>
+              <div class="experience-card__content">
+                <h3>Egg Bar Theatre</h3>
+                <p>
+                  Watch omelettes folded to order with fillings like maple-glazed bacon, lemony greens, and house-fermented
+                  hot sauces.
+                </p>
+              </div>
+            </article>
+            <article class="experience-card" role="listitem">
+              <span class="experience-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                  <path
+                    d="M6 3h12l-1 9H7L6 3zm4 13h4l1 5H9l1-5z"
+                  />
+                </svg>
+              </span>
+              <div class="experience-card__content">
+                <h3>Slow Coffee Counter</h3>
+                <p>
+                  Sip maple cortados, nitro cold brew, and seasonal espresso tonics roasted with our Wakefield partners at
+                  Perch Coffee.
+                </p>
+              </div>
+            </article>
+            <article class="experience-card" role="listitem">
+              <span class="experience-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                  <path
+                    d="M4 8h2v8H4zm4-2h2v12H8zm4 4h2v8h-2zm4-3h2v11h-2z"
+                  />
+                </svg>
+              </span>
+              <div class="experience-card__content">
+                <h3>Vinyl Brunch Sessions</h3>
+                <p>
+                  Local DJs spin mellow sunshine tracks on Saturdays, while Sundays feature neighbor-curated vinyl listening
+                  parties.
+                </p>
+              </div>
+            </article>
+          </div>
+          <div class="experience-gallery" id="gallery" aria-label="Omelette Headquarters gallery">
+            <figure>
+              <img
+                src="https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=1200&q=80"
+                alt="Herbed omelette garnished with edible flowers at Omelette Headquarters"
+                loading="lazy"
+              />
+            </figure>
+            <figure>
+              <img
+                src="https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=1200&q=80"
+                alt="Sunlit café seating inside Omelette Headquarters"
+                loading="lazy"
+              />
+            </figure>
+            <figure>
+              <img
+                src="https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1200&q=80"
+                alt="Barista pouring latte art at the Omelette Headquarters coffee counter"
+                loading="lazy"
+              />
+            </figure>
+            <figure>
+              <img
+                src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80"
+                alt="Brunch spread with omelettes, greens, and pastries at Omelette Headquarters"
+                loading="lazy"
+              />
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--menu" id="menu">
+        <div class="container">
+          <div class="section__intro">
+            <p class="eyebrow">Seasonal Omelette Lineup</p>
+            <h2>Wakefield favorites folded with flair.</h2>
+            <p>
+              Menus rotate monthly to showcase New England farms. Every omelette is served with toasted sourdough and citrus greens.
+            </p>
+          </div>
+          <div class="menu-groups">
+            <section class="menu-group" aria-label="Classics">
+              <h3>Classics</h3>
+              <div class="menu-grid" role="list">
+                <article class="menu-card" role="listitem">
+                  <header>
+                    <h4>Golden Lake Classic</h4>
+                    <p class="menu-card__price">$14</p>
+                  </header>
+                  <p>Applewood bacon, Cabot cheddar, slow-roasted tomatoes, chive crème fraîche.</p>
+                  <span class="menu-tag menu-tag--highlight">Chef Favorite</span>
+                </article>
+                <article class="menu-card" role="listitem">
+                  <header>
+                    <h4>Garden Sunrise</h4>
+                    <p class="menu-card__price">$13</p>
+                  </header>
+                  <p>Charred broccolini, whipped lemon ricotta, basil oil, toasted pine nuts.</p>
+                  <span class="menu-tag">Vegetarian</span>
+                </article>
+                <article class="menu-card" role="listitem">
+                  <header>
+                    <h4>North Shore Heat</h4>
+                    <p class="menu-card__price">$15</p>
+                  </header>
+                  <p>Spicy linguica, smoked gouda, pickled fresnos, pineapple fire relish.</p>
+                  <span class="menu-tag menu-tag--spicy">Spicy</span>
+                </article>
+              </div>
+            </section>
+            <section class="menu-group" aria-label="Specials">
+              <h3>Specials</h3>
+              <div class="menu-grid" role="list">
+                <article class="menu-card" role="listitem">
+                  <header>
+                    <h4>Wakefield Weekender</h4>
+                    <p class="menu-card__price">$22</p>
+                  </header>
+                  <p>Butter-poached lobster, champagne hollandaise, dill pollen, brioche crumble.</p>
+                  <span class="menu-tag">Weekend Only</span>
+                </article>
+                <article class="menu-card" role="listitem">
+                  <header>
+                    <h4>Sunrise Market</h4>
+                    <p class="menu-card__price">$14</p>
+                  </header>
+                  <p>Roasted delicata squash, sage brown butter, goat cheese mousse, maple pepitas.</p>
+                  <span class="menu-tag">Seasonal</span>
+                </article>
+                <article class="menu-card" role="listitem">
+                  <header>
+                    <h4>Sweet Cream Soufflé</h4>
+                    <p class="menu-card__price">$12</p>
+                  </header>
+                  <p>Creamy custard omelette, vanilla bean mascarpone, brûléed citrus.</p>
+                  <span class="menu-tag">Limited</span>
+                  <span class="menu-tag menu-tag--sweet">Sweet</span>
+                </article>
+              </div>
+            </section>
+          </div>
+          <p class="menu__note">Ask about gluten-free toast, dairy swaps, and our kid-sized omelettes.</p>
+        </div>
+      </section>
+
+      <section class="section" id="events">
+        <div class="container">
+          <div class="section__intro">
+            <p class="eyebrow">Community Gatherings</p>
+            <h2>Save your date with Omelette Headquarters.</h2>
+            <p>We host brunch adventures that connect Wakefield neighbors and visiting food lovers alike.</p>
+          </div>
+          <div class="events-timeline" role="list">
+            <article class="event-card" role="listitem">
+              <div class="event-card__date" aria-hidden="true">
+                <span class="event-card__month">Sep</span>
+                <span class="event-card__day">6</span>
+              </div>
+              <div class="event-card__content">
+                <header class="event-card__header">
+                  <time datetime="2024-09-06">Fridays · 6:30 AM</time>
+                  <h3>Lakefront Sunrise Club</h3>
+                </header>
+                <p>Join our Lake Quannapowitt jog, then refuel with espresso shots and chef's choice omelette bites.</p>
+                <a class="event-card__cta" href="mailto:events@omelettehq.com?subject=Lakefront%20Sunrise%20Club">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                  RSVP
+                </a>
+              </div>
+            </article>
+            <article class="event-card" role="listitem">
+              <div class="event-card__date" aria-hidden="true">
+                <span class="event-card__month">Sep</span>
+                <span class="event-card__day">21</span>
+              </div>
+              <div class="event-card__content">
+                <header class="event-card__header">
+                  <time datetime="2024-09-21">September 21</time>
+                  <h3>Omelette Art Lab</h3>
+                </header>
+                <p>Chef Dana teaches folding technique, plating, and sauce pairings—plus a take-home spice kit.</p>
+                <a class="event-card__cta" href="mailto:events@omelettehq.com?subject=Omelette%20Art%20Lab">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                  Reserve Spot
+                </a>
+              </div>
+            </article>
+            <article class="event-card" role="listitem">
+              <div class="event-card__date" aria-hidden="true">
+                <span class="event-card__month">Oct</span>
+                <span class="event-card__day">19</span>
+              </div>
+              <div class="event-card__content">
+                <header class="event-card__header">
+                  <time datetime="2024-10-19">October 19</time>
+                  <h3>Harvest Vinyl Brunch</h3>
+                </header>
+                <p>Five-course tasting menu with guest DJs spinning golden-hour soul and indie sunshine.</p>
+                <a class="event-card__cta" href="mailto:events@omelettehq.com?subject=Harvest%20Vinyl%20Brunch">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                  Book Table
+                </a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--visit" id="visit">
+        <div class="container">
+          <div class="section__intro">
+            <p class="eyebrow">Visit</p>
+            <h2>Plan your Omelette Headquarters brunch.</h2>
+            <p>
+              Steps from the Wakefield commuter rail, with patio seating overlooking Main Street. Walk-ins are welcome, and parties
+              of six or more can reserve a communal table.
+            </p>
+          </div>
+          <div class="visit-grid">
+            <article class="visit-card">
+              <h3>Find Us</h3>
+              <p>12 Main Street<br />Wakefield, MA 01880</p>
+              <div class="visit-card__map">
+                <iframe
+                  title="Map of Omelette Headquarters in Wakefield MA"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2939.217417979731!2d-71.07318192355152!3d42.50393917117971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e36f78d1de7d21%3A0xa795882b58c2c299!2sWakefield%2C%20MA!5e0!3m2!1sen!2sus!4v1720384050002!5m2!1sen!2sus"
+                  allowfullscreen=""
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                ></iframe>
+              </div>
+            </article>
+            <article class="visit-card">
+              <h3>Hours &amp; Seating</h3>
+              <p>Daily 7:00 AM – 3:00 PM<br />Brunch until 4:00 PM on weekends</p>
+              <p>Patio seating April–October · Communal harvest table for large parties.</p>
+              <a class="btn btn--primary" href="mailto:hello@omelettehq.com?subject=Reservation%20Request">Reserve a Table</a>
+            </article>
+            <article class="visit-card">
+              <h3>Say Hello</h3>
+              <ul class="contact-list">
+                <li>
+                  <span class="contact-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path d="M6.62 10.79a15.91 15.91 0 006.59 6.59l2.2-2.2a1 1 0 01.97-.26 11.36 11.36 0 003.56.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.56 1 1 0 01-.26.97z" />
+                    </svg>
+                  </span>
+                  <a href="tel:17815551234">(781) 555-1234</a>
+                </li>
+                <li>
+                  <span class="contact-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path d="M4 6h16v12H4z" />
+                      <path d="M4 6l8 7 8-7" />
+                    </svg>
+                  </span>
+                  <a href="mailto:hello@omelettehq.com">hello@omelettehq.com</a>
+                </li>
+                <li>
+                  <span class="contact-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path
+                        d="M12 7a5 5 0 015 5 5 5 0 11-5-5zm0-5a10 10 0 100 20 10 10 0 000-20zm0 6a4 4 0 100 8 4 4 0 000-8z"
+                      />
+                    </svg>
+                  </span>
+                  <a href="https://www.instagram.com" target="_blank" rel="noreferrer">Instagram</a>
+                </li>
+                <li>
+                  <span class="contact-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path
+                        d="M4 4h16v16H4z"
+                      />
+                      <path d="M9 9h1.5L12 12l1.5-3H15l-2 6h-2z" />
+                    </svg>
+                  </span>
+                  <a href="https://www.tiktok.com" target="_blank" rel="noreferrer">TikTok</a>
+                </li>
+              </ul>
+              <a class="btn btn--ghost" href="mailto:events@omelettehq.com">Book a Private Event</a>
+            </article>
+          </div>
+          <hr class="visit__divider" />
+          <div class="visit__cta">
+            <p>Planning a milestone brunch or corporate retreat? Our events team will customize the perfect omelette spread.</p>
+            <a class="btn btn--primary" href="mailto:events@omelettehq.com?subject=Plan%20Your%20Gathering">Plan Your Gathering</a>
           </div>
         </div>
       </section>
     </main>
 
     <footer class="footer">
-      <div class="container footer__content">
-        <p>© <span id="year"></span> Waystack &amp; Kirby, LLC. All rights reserved.</p>
-        <p>Serving Melrose, Stoneham, and communities across the North Shore.</p>
+      <div class="container footer__inner">
+        <div class="footer__brand">
+          <p>© <span id="year"></span> Omelette Headquarters – Crafted with love in Wakefield, MA.</p>
+          <p>Need catering? Email <a href="mailto:catering@omelettehq.com">catering@omelettehq.com</a> for North Shore brunch spreads.</p>
+        </div>
+        <div class="footer__actions">
+          <a class="footer__social" href="https://www.instagram.com" target="_blank" rel="noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                d="M7 4h10a3 3 0 013 3v10a3 3 0 01-3 3H7a3 3 0 01-3-3V7a3 3 0 013-3zm5 4a5 5 0 105 5 5 5 0 00-5-5zm6.5-.25a1.25 1.25 0 10-1.25-1.25 1.25 1.25 0 001.25 1.25zm-6.5 2a3 3 0 11-3 3 3 3 0 013-3z"
+              />
+            </svg>
+            <span class="sr-only">Instagram</span>
+          </a>
+          <a class="footer__social" href="https://www.tiktok.com" target="_blank" rel="noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                d="M15.5 4.5c1 1.6 2.5 2.6 4.5 2.7v3.1c-1.6-.1-3-.6-4.5-1.5v6.2a5.1 5.1 0 11-4.5-5v3.2a1.9 1.9 0 101.5 1.9V4.5z"
+              />
+            </svg>
+            <span class="sr-only">TikTok</span>
+          </a>
+        </div>
       </div>
     </footer>
 
     <script>
       const navToggle = document.querySelector(".nav__toggle");
       const navLinks = document.querySelector(".nav__links");
+      const navAnchors = navLinks?.querySelectorAll("a") ?? [];
+      const topbar = document.querySelector("[data-topbar]");
+      const topbarClose = document.querySelector("[data-topbar-close]");
 
       navToggle?.addEventListener("click", () => {
         const expanded = navToggle.getAttribute("aria-expanded") === "true";
         navToggle.setAttribute("aria-expanded", String(!expanded));
         navLinks?.classList.toggle("nav__links--open");
+      });
+
+      navAnchors.forEach((anchor) => {
+        anchor.addEventListener("click", () => {
+          if (!navLinks?.classList.contains("nav__links--open")) return;
+          navLinks.classList.remove("nav__links--open");
+          navToggle?.setAttribute("aria-expanded", "false");
+        });
+      });
+
+      topbarClose?.addEventListener("click", () => {
+        topbar?.classList.add("topbar--hidden");
       });
 
       document.getElementById("year").textContent = new Date().getFullYear();
