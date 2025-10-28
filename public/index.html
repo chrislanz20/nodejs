@@ -6,7 +6,7 @@
     <title>Omelette Headquarters | Wakefield, Massachusetts</title>
     <meta
       name="description"
-      content="Omelette Headquarters in Wakefield, MA serves sunlit brunch plates, seasonal omelettes, and feel-good gatherings."
+      content="Experience Omelette Headquarters in Wakefield, MA—a pastel brunch café with seasonal omelettes, crafted coffee, and community events."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18,8 +18,8 @@
   </head>
   <body>
     <header class="hero" id="top">
-      <div class="hero__shine"></div>
-      <div class="container">
+      <div class="hero__pattern" aria-hidden="true"></div>
+      <div class="container hero__inner">
         <nav class="nav" aria-label="Primary">
           <a class="nav__brand" href="#top">Omelette HQ</a>
           <button class="nav__toggle" aria-expanded="false" aria-controls="primary-navigation">
@@ -29,33 +29,35 @@
             <span class="sr-only">Toggle navigation</span>
           </button>
           <ul class="nav__links" id="primary-navigation">
-            <li><a href="#about">About</a></li>
-            <li><a href="#menu">Menu</a></li>
+            <li><a href="#about">Story</a></li>
             <li><a href="#experience">Experience</a></li>
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#gallery">Gallery</a></li>
             <li><a href="#events">Events</a></li>
             <li><a href="#visit">Visit</a></li>
           </ul>
+          <a class="nav__cta" href="#visit">Reserve</a>
         </nav>
         <div class="hero__layout">
           <div class="hero__copy">
-            <p class="eyebrow">Wakefield, Massachusetts</p>
-            <h1>Bright brunch energy, folded into every omelette.</h1>
+            <span class="hero__badge">Wakefield, Massachusetts</span>
+            <h1>Pastel mornings, legendary omelettes.</h1>
             <p>
-              Omelette Headquarters is a sun-soaked café celebrating the joy of eggs, coffee, and community.
-              Join us for seasonal omelettes, small-batch pastries, and vinyl brunch vibes moments from Lake
-              Quannapowitt.
+              Omelette Headquarters is Wakefield's haven for sun-drenched brunch rituals. Chef Dana Avery folds
+              market ingredients into cloud-like omelettes, pours slow coffee, and curates vinyl playlists that feel
+              like the weekend every day of the week.
             </p>
             <div class="hero__cta">
-              <a class="btn btn--primary" href="#menu">See Seasonal Lineup</a>
-              <a class="btn btn--ghost" href="#visit">Plan a Visit</a>
+              <a class="btn btn--primary" href="#menu">Explore the Lineup</a>
+              <a class="btn btn--ghost" href="#events">Upcoming Events</a>
             </div>
-            <dl class="hero__stats" aria-label="Cafe highlights">
+            <dl class="hero__stats" aria-label="Omelette Headquarters highlights">
               <div>
                 <dt>12</dt>
-                <dd>Signature omelettes on rotation</dd>
+                <dd>Seasonal omelettes each month</dd>
               </div>
               <div>
-                <dt>7am – 3pm</dt>
+                <dt>7 AM – 3 PM</dt>
                 <dd>Daily brunch service</dd>
               </div>
               <div>
@@ -64,45 +66,43 @@
               </div>
             </dl>
           </div>
-          <div class="hero__media">
-            <figure class="hero__image">
-              <img
-                src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1300&q=80"
-                alt="Table filled with omelettes, pastries, and coffee in a bright café"
-              />
-              <figcaption>Morning light inside Omelette Headquarters</figcaption>
-            </figure>
-          </div>
+          <figure class="hero__media">
+            <img
+              src="https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=1200&q=80"
+              alt="A signature omelette at Omelette Headquarters with herbs and edible flowers"
+            />
+            <figcaption>Brunch artistry from Chef Dana Avery</figcaption>
+          </figure>
         </div>
       </div>
     </header>
 
     <main>
-      <section class="section section--highlight" id="about">
+      <section class="section section--soft" id="about">
         <div class="container section__split">
-          <div class="section__media">
+          <figure class="section__media">
             <img
               src="https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=1200&q=80"
-              alt="Chef folding an omelette in a skillet"
+              alt="Chef Dana of Omelette Headquarters folding an omelette on the line"
             />
-          </div>
+            <figcaption>Our egg bar in action each morning</figcaption>
+          </figure>
           <div class="section__content">
-            <p class="eyebrow">Our Wakefield Story</p>
-            <h2>The headquarters of happiness is breakfast.</h2>
+            <p class="eyebrow">Our Story</p>
+            <h2>The Wakefield café built on breakfast joy.</h2>
             <p>
-              Chef Dana Avery launched Omelette Headquarters as a lakeside pop-up and grew it into Wakefield's
-              favorite brunch retreat. Every recipe begins with pasture-raised eggs, house-cultured dairy, and
-              produce from friends at the Middlesex farmer’s market.
+              Omelette Headquarters began as a Lake Quannapowitt pop-up and grew into the town's beloved brunch clubhouse.
+              We source from Middlesex County farms, churn our own cultured butter, and weave playful Boston energy into every
+              plate.
             </p>
             <p>
-              From sunrise espresso pours to late brunch mocktails, our team serves warmth, creativity, and a
-              little bit of buttered theatre.
+              Mornings start with espresso tastings, afternoons flow with mocktails, and Sundays are for neighborhood vinyl
+              swaps. If it tastes like sunshine and feels like community, it belongs on our menu.
             </p>
-            <ul class="feature-list" aria-label="Cafe values">
-              <li>Seasonal menus that change monthly with local harvests</li>
-              <li>Playful plating inspired by artful Boston cafés</li>
-              <li>Community events supporting Wakefield creatives</li>
-            </ul>
+            <div class="signature">
+              <p class="signature__name">Chef Dana Avery</p>
+              <p class="signature__title">Founder &amp; Executive Omelette Artist</p>
+            </div>
           </div>
         </div>
       </section>
@@ -111,31 +111,32 @@
         <div class="container">
           <div class="section__intro">
             <p class="eyebrow">Experience</p>
-            <h2>Sunlit corners, feel-good rituals.</h2>
+            <h2>Every visit feels like a mini vacation.</h2>
             <p>
-              Every visit blends bright design, mellow playlists, and joyful service. Settle into our banquette or
-              linger on the patio—either way, brunch feels like vacation.
+              From the pastel palette to the curated playlists, Omelette Headquarters is designed for lingering. Choose a
+              counter seat to chat with the chefs or settle into the sunroom for a long brunch with friends.
             </p>
           </div>
-          <div class="experience-grid">
-            <article class="experience-card">
+          <div class="experience-grid" role="list">
+            <article class="experience-card" role="listitem">
               <h3>Egg Bar Theatre</h3>
               <p>
-                Watch our chefs fold omelettes to order, layering smoky, herbaceous, and citrusy fillings for the
-                perfect bite.
+                Watch omelettes folded to order with fillings like maple-glazed bacon, lemony greens, and house-fermented
+                hot sauces.
               </p>
             </article>
-            <article class="experience-card">
+            <article class="experience-card" role="listitem">
               <h3>Slow Coffee Counter</h3>
               <p>
-                Nitro cold brew, maple cortados, and single-origin pour overs curated with our Wakefield roaster
-                partners.
+                Sip maple cortados, nitro cold brew, and seasonal espresso tonics roasted with our Wakefield partners at
+                Perch Coffee.
               </p>
             </article>
-            <article class="experience-card">
-              <h3>Weekend Vinyl Sessions</h3>
+            <article class="experience-card" role="listitem">
+              <h3>Vinyl Brunch Sessions</h3>
               <p>
-                Local DJs set the brunch tempo every Saturday, spinning groovy sunshine tracks from 10 AM to 1 PM.
+                Local DJs spin mellow sunshine tracks on Saturdays, while Sundays feature neighbor-curated vinyl listening
+                parties.
               </p>
             </article>
           </div>
@@ -146,74 +147,101 @@
         <div class="container">
           <div class="section__intro">
             <p class="eyebrow">Seasonal Omelette Lineup</p>
-            <h2>Favorites folded with flair.</h2>
-            <p>Inspired by sunrise walks around Lake Quannapowitt, these plates keep our brunch crowd glowing.</p>
+            <h2>Wakefield favorites folded with flair.</h2>
+            <p>
+              Menus rotate monthly to showcase New England farms. Every omelette is served with toasted sourdough and citrus
+              greens.
+            </p>
           </div>
-          <div class="menu-grid">
-            <article class="menu-card">
-              <h3>Golden Lake Classic</h3>
+          <div class="menu-grid" role="list">
+            <article class="menu-card" role="listitem">
+              <header>
+                <h3>Golden Lake Classic</h3>
+                <p class="menu-card__price">$14</p>
+              </header>
               <p>Applewood bacon, Cabot cheddar, slow-roasted tomatoes, chive crème fraîche.</p>
-              <span class="menu-tag">Signature</span>
             </article>
-            <article class="menu-card">
-              <h3>Garden Glow</h3>
+            <article class="menu-card" role="listitem">
+              <header>
+                <h3>Garden Glow</h3>
+                <p class="menu-card__price">$13</p>
+              </header>
               <p>Charred broccolini, whipped lemon ricotta, basil oil, toasted pine nuts.</p>
               <span class="menu-tag">Vegetarian</span>
             </article>
-            <article class="menu-card">
-              <h3>Harbor Heat</h3>
+            <article class="menu-card" role="listitem">
+              <header>
+                <h3>Harbor Heat</h3>
+                <p class="menu-card__price">$15</p>
+              </header>
               <p>Spicy linguica, smoked gouda, pickled fresnos, pineapple fire relish.</p>
               <span class="menu-tag menu-tag--spicy">Spicy</span>
             </article>
-            <article class="menu-card">
-              <h3>Wakefield Weekender</h3>
+            <article class="menu-card" role="listitem">
+              <header>
+                <h3>Wakefield Weekender</h3>
+                <p class="menu-card__price">$22</p>
+              </header>
               <p>Butter-poached lobster, champagne hollandaise, dill pollen, brioche crumble.</p>
-              <span class="menu-tag">Saturday &amp; Sunday</span>
+              <span class="menu-tag">Saturday + Sunday</span>
             </article>
-            <article class="menu-card">
-              <h3>Sunrise Market</h3>
+            <article class="menu-card" role="listitem">
+              <header>
+                <h3>Sunrise Market</h3>
+                <p class="menu-card__price">$14</p>
+              </header>
               <p>Roasted delicata squash, sage brown butter, goat cheese mousse, maple pepitas.</p>
               <span class="menu-tag">Seasonal</span>
             </article>
-            <article class="menu-card">
-              <h3>Sweet Cream Soufflé</h3>
+            <article class="menu-card" role="listitem">
+              <header>
+                <h3>Sweet Cream Soufflé</h3>
+                <p class="menu-card__price">$12</p>
+              </header>
               <p>Creamy custard omelette, vanilla bean mascarpone, brûléed citrus.</p>
               <span class="menu-tag">Limited</span>
             </article>
           </div>
+          <p class="menu__note">Ask about gluten-free toast, dairy swaps, and our kid-sized omelettes.</p>
         </div>
       </section>
 
-      <section class="section section--gallery">
+      <section class="section section--gallery" id="gallery">
         <div class="container">
           <div class="section__intro">
             <p class="eyebrow">Inside HQ</p>
-            <h2>A peek at the pastel brunch dream.</h2>
-            <p>Every corner is styled for lingering—from the sunny banquettes to the pastry peep window.</p>
+            <h2>The pastel palette of Omelette Headquarters.</h2>
+            <p>Tour our sunroom, egg bar, and pastry counter before you arrive.</p>
           </div>
           <div class="gallery-grid">
             <figure>
               <img
                 src="https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=900&q=80"
-                alt="Colorful omelette plated with fresh greens"
+                alt="Herbed omelette with edible flowers at Omelette Headquarters"
               />
             </figure>
             <figure>
               <img
-                src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80"
-                alt="Guests enjoying brunch in a bright café interior"
+                src="https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=900&q=80"
+                alt="Sunlit café seating inside Omelette Headquarters"
               />
             </figure>
             <figure>
               <img
                 src="https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=900&q=80"
-                alt="Barista pouring latte art"
+                alt="Barista pouring latte art at the Omelette Headquarters coffee counter"
               />
             </figure>
             <figure>
               <img
-                src="https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=900&q=80"
-                alt="Chef seasoning ingredients at the egg bar"
+                src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80"
+                alt="Brunch spread featuring omelettes, greens, and pastries"
+              />
+            </figure>
+            <figure>
+              <img
+                src="https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?auto=format&fit=crop&w=900&q=80"
+                alt="Guests enjoying brunch at Omelette Headquarters in Wakefield"
               />
             </figure>
           </div>
@@ -224,21 +252,21 @@
         <div class="container">
           <div class="section__intro">
             <p class="eyebrow">Community Gatherings</p>
-            <h2>Mark your brunch calendar.</h2>
-            <p>Wakefield neighbors meet here for classes, tastings, and bright-and-early adventures.</p>
+            <h2>Save your date with Omelette Headquarters.</h2>
+            <p>We host brunch adventures that connect Wakefield neighbors and visiting food lovers alike.</p>
           </div>
-          <div class="event-list">
-            <article class="event-card">
+          <div class="timeline" role="list">
+            <article class="timeline__item" role="listitem">
               <h3>Lakefront Sunrise Club · Fridays</h3>
-              <p>Meet at 6:30 AM for a lakeside jog followed by espresso shots on the patio.</p>
+              <p>6:30 AM jog around Lake Quannapowitt, followed by espresso and chef's choice omelette bites.</p>
             </article>
-            <article class="event-card">
-              <h3>Omelette Art Lab · September 14</h3>
-              <p>Hands-on class where chef Dana teaches folding techniques and plating artistry.</p>
+            <article class="timeline__item" role="listitem">
+              <h3>Omelette Art Lab · September 21</h3>
+              <p>Chef Dana teaches fold techniques, plating, and sauce pairings. Includes a souvenir spice kit.</p>
             </article>
-            <article class="event-card">
-              <h3>Harvest Vinyl Brunch · October 20</h3>
-              <p>Five-course tasting menu with guest DJs spinning soul and sunshine beats.</p>
+            <article class="timeline__item" role="listitem">
+              <h3>Harvest Vinyl Brunch · October 19</h3>
+              <p>Five-course tasting menu with guest DJs spinning golden-hour soul and indie sunshine.</p>
             </article>
           </div>
         </div>
@@ -248,10 +276,10 @@
         <div class="container section__split">
           <div class="section__content">
             <p class="eyebrow">Visit</p>
-            <h2>Come hang at Omelette HQ.</h2>
+            <h2>Plan your Omelette Headquarters brunch.</h2>
             <p>
-              Find us steps from the Wakefield commuter rail. Walk-ins are welcome, and we hold a handful of
-              reservations for six-plus brunch parties.
+              Steps from the Wakefield commuter rail, with patio seating overlooking Main Street. Walk-ins are always welcome,
+              and parties of six or more can reserve a communal table.
             </p>
             <div class="info-grid">
               <div>
@@ -278,6 +306,7 @@
                 </p>
               </div>
             </div>
+            <a class="btn btn--primary btn--inline" href="mailto:events@omelettehq.com">Book a Private Event</a>
           </div>
           <div class="section__media section__media--card">
             <iframe
@@ -296,8 +325,8 @@
       <div class="container footer__inner">
         <p>© <span id="year"></span> Omelette Headquarters. Crafted with love in Wakefield, MA.</p>
         <p>
-          Need catering? Email <a href="mailto:catering@omelettehq.com">catering@omelettehq.com</a> for custom brunch
-          spreads.
+          Need catering? Email <a href="mailto:catering@omelettehq.com">catering@omelettehq.com</a> for brunch spreads across
+          the North Shore.
         </p>
       </div>
     </footer>
