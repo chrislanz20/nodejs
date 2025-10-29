@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="grad" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#f9f1e6" />
+      <stop offset="55%" stop-color="#f1d0c7" />
+      <stop offset="100%" stop-color="#8b1e3f" />
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="30" fill="url(#grad)" stroke="#ffffff" stroke-width="4" />
+  <text x="32" y="38" text-anchor="middle" font-family="'Raleway', 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="700" fill="#fff8f0" letter-spacing="2">MD</text>
+</svg>
