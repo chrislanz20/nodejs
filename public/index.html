@@ -1,232 +1,338 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Omelette Headquarters | Wakefield, Massachusetts</title>
+    <title>Union Cafe | Coffee & Breakfast in Downtown Lynn, MA</title>
     <meta
       name="description"
-      content="Omelette Headquarters in Wakefield, MA serves artfully crafted breakfast, brunch, and coffee in a sunlit café inspired by the perfect omelette."
+      content="Union Cafe is Lynn, MA's owner-operated coffee shop serving fresh breakfast, specialty coffee, homemade pastries, and lunch made to order every day."
     />
+    <meta property="og:title" content="Union Cafe – Your Local Coffee & Breakfast Destination" />
+    <meta
+      property="og:description"
+      content="Discover Union Cafe in downtown Lynn, MA. Real eggs, homemade desserts, exceptional service, and delivery via DoorDash, Uber Eats, and Seamless."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://unioncafelynn.com/" />
+    <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "CafeOrCoffeeShop",
+        "name": "Union Cafe",
+        "image": "https://unioncafelynn.com/assets/hero-breakfast.svg",
+        "url": "https://unioncafelynn.com/",
+        "telephone": "+1-781-584-4084",
+        "priceRange": "$$",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "1 Central Square",
+          "addressLocality": "Lynn",
+          "addressRegion": "MA",
+          "postalCode": "01901",
+          "addressCountry": "US"
+        },
+        "openingHoursSpecification": [
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": "Monday", "opens": "06:00", "closes": "19:00" },
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday", "Wednesday", "Thursday"], "opens": "05:30", "closes": "19:00" },
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": "Friday", "opens": "06:00", "closes": "19:00" },
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "07:00", "closes": "19:00" },
+          { "@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "opens": "07:00", "closes": "13:00" }
+        ],
+        "servesCuisine": ["Coffee", "Breakfast", "Brunch", "Lunch"],
+        "sameAs": ["https://www.instagram.com/unioncafelynn"]
+      }
+    </script>
   </head>
   <body>
-    <header class="hero" id="top">
-      <div class="hero__overlay"></div>
-      <div class="container hero__inner">
-        <nav class="nav" aria-label="Main">
-          <a class="nav__brand" href="#top">Omelette HQ</a>
-          <button class="nav__toggle" aria-expanded="false" aria-controls="primary-navigation">
-            <span class="nav__toggle-line"></span>
-            <span class="nav__toggle-line"></span>
-            <span class="nav__toggle-line"></span>
-            <span class="sr-only">Toggle navigation</span>
-          </button>
-          <ul class="nav__links" id="primary-navigation">
-            <li><a href="#about">Our Story</a></li>
-            <li><a href="#menu">Menu</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#events">Events</a></li>
-            <li><a href="#visit">Visit</a></li>
+    <div class="top-bar">
+      <div class="container top-bar__inner">
+        <span>Open early! Tue–Thu from <strong>5:30 AM</strong></span>
+        <a class="top-bar__phone" href="tel:17815844084">Call (781) 584-4084</a>
+      </div>
+    </div>
+    <header class="site-header" id="top">
+      <div class="container site-header__inner">
+        <a class="brand" href="/">
+          <img src="/assets/logo.svg" alt="Union Cafe Lynn MA logo - Local coffee and breakfast" width="156" height="48" />
+        </a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation">
+          <span class="nav-toggle__line"></span>
+          <span class="nav-toggle__line"></span>
+          <span class="nav-toggle__line"></span>
+          <span class="sr-only">Toggle navigation</span>
+        </button>
+        <nav class="primary-nav" aria-label="Main">
+          <ul class="nav-list" id="primary-navigation">
+            <li><a class="nav-link nav-link--current" href="/">Home</a></li>
+            <li><a class="nav-link" href="/menu.html">Menu</a></li>
+            <li><a class="nav-link" href="/about.html">About Us</a></li>
+            <li><a class="nav-link" href="/location-hours.html">Location &amp; Hours</a></li>
+            <li><a class="nav-link" href="/contact.html">Contact</a></li>
+            <li class="nav-link-group">
+              <span class="nav-link-group__label">Order Online</span>
+              <ul class="nav-submenu">
+                <li><a href="https://www.doordash.com" target="_blank" rel="noopener">DoorDash</a></li>
+                <li><a href="https://www.ubereats.com" target="_blank" rel="noopener">Uber Eats</a></li>
+                <li><a href="https://www.seamless.com" target="_blank" rel="noopener">Seamless</a></li>
+              </ul>
+            </li>
+            <li><a class="nav-link nav-link--phone" href="tel:17815844084">(781) 584-4084</a></li>
           </ul>
         </nav>
-
-        <div class="hero__content">
-          <p class="eyebrow">Wakefield, Massachusetts</p>
-          <h1>Where Omelettes are an Art Form</h1>
-          <p>
-            Omelette Headquarters is a cheerful café devoted to one perfect dish. From locally sourced
-            eggs to inventive fillings, every plate is a canvas for comfort and creativity.
-          </p>
-          <div class="hero__cta">
-            <a class="btn btn--primary" href="#menu">Explore the Menu</a>
-            <a class="btn btn--ghost" href="#visit">Plan Your Visit</a>
-          </div>
-        </div>
       </div>
     </header>
 
     <main>
-      <section class="section" id="about">
-        <div class="container section__grid">
-          <div class="section__content">
-            <h2>Born from a Breakfast Obsession</h2>
-            <p>
-              Omelette Headquarters began as a pop-up on Wakefield&rsquo;s lakefront farmer&rsquo;s market and
-              quickly became the town&rsquo;s favorite morning ritual. Founder and chef Dana Avery wanted a
-              place where guests could slow down, savor the moment, and experience eggs elevated beyond
-              expectations.
-            </p>
-            <p>
-              Today, our kitchen celebrates the craft of breakfast with seasonal ingredients, a zero-waste
-              mindset, and barista-crafted coffee drinks. Every omelette is folded to order, served with
-              toasted sourdough, and paired with playful sauces you won&rsquo;t find anywhere else.
-            </p>
+      <section class="hero">
+        <div class="hero__media">
+          <picture>
+            <img src="/assets/hero-breakfast.svg" alt="Fresh breakfast sandwich with real eggs at Union Cafe Lynn MA" width="960" height="640" />
+          </picture>
+        </div>
+        <div class="hero__content">
+          <p class="eyebrow">Union Cafe &middot; Downtown Lynn, Massachusetts</p>
+          <h1>Union Cafe &mdash; Your Local Coffee &amp; Breakfast Destination</h1>
+          <p>
+            Fresh, quality, community. Enjoy specialty coffee, real-egg breakfast sandwiches, homemade pastries, and made-to-order lunch from Lynn&rsquo;s favorite owner-operated cafe.
+          </p>
+          <p class="hero__hours">Serving downtown Lynn with exceptional coffee and breakfast since 2021. <strong>Open early!</strong></p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="tel:17815844084">Call Now: (781) 584-4084</a>
+            <a class="btn btn--secondary" href="/menu.html">View Menu</a>
+            <a class="btn btn--ghost" href="https://www.doordash.com" target="_blank" rel="noopener">Order Delivery</a>
           </div>
-          <article class="highlight-card" aria-label="House values">
-            <h3>Our Guiding Ingredients</h3>
-            <ul class="checklist">
-              <li>Farm eggs sourced within 50 miles of Wakefield</li>
-              <li>House-fermented hot sauces and pickled vegetables</li>
-              <li>Compost-first kitchen with reusable packaging</li>
-              <li>Warm, neighborhood hospitality every day</li>
-            </ul>
+        </div>
+      </section>
+
+      <section class="section section--trust" aria-label="Union Cafe highlights">
+        <div class="container trust-grid">
+          <article class="trust-card">
+            <span aria-hidden="true" class="trust-card__icon">⭐</span>
+            <h2>4.8/5 Stars</h2>
+            <p>Rated excellent by Lynn&rsquo;s community of regulars and first-time visitors alike.</p>
+          </article>
+          <article class="trust-card">
+            <span aria-hidden="true" class="trust-card__icon">📍</span>
+            <h2>Central Square</h2>
+            <p>Find us at 1 Central Square in downtown Lynn &mdash; steps from City Hall and transit.</p>
+          </article>
+          <article class="trust-card">
+            <span aria-hidden="true" class="trust-card__icon">☕</span>
+            <h2>Quality Coffee</h2>
+            <p>Specialty espresso drinks, blueberry swirl coffee, and oat milk lattes crafted to perfection.</p>
+          </article>
+          <article class="trust-card">
+            <span aria-hidden="true" class="trust-card__icon">🥞</span>
+            <h2>Made to Order</h2>
+            <p>Real eggs, homemade pastries, and hot breakfast served all day &mdash; never frozen.</p>
           </article>
         </div>
       </section>
 
-      <section class="section section--accent" id="menu">
+      <section class="section section--why">
         <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Signature Omelettes</p>
-            <h2>Crafted Classics & Bold Specials</h2>
-            <p>
-              From timeless comforts to daring flavor mashups, these omelettes showcase the flair and fun of
-              Omelette HQ. Seasonal specials rotate monthly.
-            </p>
+          <div class="section-header">
+            <h2>Why Union Cafe is Lynn&rsquo;s Favorite Coffee Shop</h2>
+            <p class="section-subhead">We&rsquo;re not a chain. We&rsquo;re your neighbors.</p>
           </div>
-          <div class="card-grid">
-            <article class="card">
-              <h3>Lake Quannapowitt Classic</h3>
-              <p>Applewood bacon, smoked cheddar, slow-roasted tomatoes, scallion crème fraîche.</p>
-              <span class="pill">$14</span>
+          <div class="why-grid">
+            <article class="why-card">
+              <h3>Fresh &amp; Quality</h3>
+              <ul>
+                <li>Real eggs in every breakfast sandwich</li>
+                <li>Homemade pastries from our family bakery</li>
+                <li>Quality coffee beans, expertly crafted</li>
+                <li>Made-to-order, never frozen</li>
+                <li>&ldquo;You already tried Dunkin&rsquo; and Starbucks. It&rsquo;s time for something better.&rdquo;</li>
+              </ul>
             </article>
-            <article class="card">
-              <h3>Garden Sunrise</h3>
-              <p>Charred broccolini, lemon ricotta, basil pesto drizzle, toasted almond crunch.</p>
-              <span class="pill">Vegetarian</span>
+            <article class="why-card">
+              <h3>Exceptional Service</h3>
+              <ul>
+                <li>Owner-greeted, personally served</li>
+                <li>Fast service even when busy</li>
+                <li>Spotlessly clean, every visit</li>
+                <li>Every detail matters</li>
+                <li>&ldquo;We want to serve you how YOU want to be served.&rdquo;</li>
+              </ul>
             </article>
-            <article class="card">
-              <h3>North Shore Heat</h3>
-              <p>Chorizo, cotija, caramelized onions, pickled fresnos, house pineapple fire sauce.</p>
-              <span class="pill pill--spicy">Spicy</span>
-            </article>
-            <article class="card">
-              <h3>Wakefield Weekender</h3>
-              <p>Lobster tail medallions, brown butter hollandaise, champagne chive pearls.</p>
-              <span class="pill">Saturday & Sunday Only</span>
+            <article class="why-card">
+              <h3>Community Hub</h3>
+              <ul>
+                <li>Locally owned &amp; operated</li>
+                <li>Part of the Lynn community</li>
+                <li>European-style outdoor seating</li>
+                <li>Loyalty rewards coming soon</li>
+                <li>&ldquo;A place that feels like home the moment you walk in.&rdquo;</li>
+              </ul>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="section section--experience" id="experience">
-        <div class="container section__grid section__grid--reverse">
-          <article class="section__content">
-            <h2>The Omelette HQ Experience</h2>
+      <section class="section section--favorites" id="favorites">
+        <div class="container">
+          <div class="section-header">
+            <h2>Fan Favorites &mdash; What Our Customers Love</h2>
+            <p>Breakfast and lunch classics made fresh every day.</p>
+          </div>
+          <div class="favorites-grid">
+            <article class="favorite-card">
+              <img src="/assets/hero-breakfast.svg" alt="Signature breakfast sandwich with real eggs at Union Cafe Lynn MA" loading="lazy" width="360" height="240" />
+              <div class="favorite-card__content">
+                <h3>Signature Breakfast Sandwiches</h3>
+                <p>Real eggs, bacon, sausage, or veggie options on bagels, croissants, or English muffins.</p>
+                <p class="favorite-card__quote">“The best bacon egg &amp; cheese in Lynn.”</p>
+              </div>
+            </article>
+            <article class="favorite-card">
+              <img src="/assets/specialty-coffee.svg" alt="Specialty coffee drinks crafted fresh at Union Cafe" loading="lazy" width="360" height="240" />
+              <div class="favorite-card__content">
+                <h3>Specialty Coffee Drinks</h3>
+                <p>Lattes, cappuccinos, blueberry swirl coffee, and peanut butter flavored brews.</p>
+                <p class="favorite-card__quote">Always crafted exactly how you like it.</p>
+              </div>
+            </article>
+            <article class="favorite-card">
+              <img src="/assets/pancakes.svg" alt="Delicious pancakes fresh off the griddle at Union Cafe" loading="lazy" width="360" height="240" />
+              <div class="favorite-card__content">
+                <h3>Chocolate Chip Pancakes</h3>
+                <p>Fluffy pancakes made to order and served with butter, syrup, and fresh fruit.</p>
+                <p class="favorite-card__quote">Guest-requested and kid approved.</p>
+              </div>
+            </article>
+            <article class="favorite-card">
+              <img src="/assets/pastries.svg" alt="Fresh homemade pastries from our family bakery" loading="lazy" width="360" height="240" />
+              <div class="favorite-card__content">
+                <h3>Pistachio Croissant</h3>
+                <p>Sweet, flaky, and baked by our family bakery. Never frozen.</p>
+                <p class="favorite-card__quote">A pastry case filled with local love.</p>
+              </div>
+            </article>
+            <article class="favorite-card">
+              <img src="/assets/cheesesteak.svg" alt="Award-winning ribeye cheesesteak sandwich" loading="lazy" width="360" height="240" />
+              <div class="favorite-card__content">
+                <h3>Ribeye Cheesesteak</h3>
+                <p>Fresh ribeye, peppers, mushrooms, and melted cheese on diamond cut ciabatta.</p>
+                <p class="favorite-card__quote">“Simply outstanding! Easily top 5.”</p>
+              </div>
+            </article>
+            <article class="favorite-card">
+              <img src="/assets/desserts.svg" alt="Homemade desserts from our family bakery" loading="lazy" width="360" height="240" />
+              <div class="favorite-card__content">
+                <h3>Desserts &amp; Treats</h3>
+                <p>Cannoli, tiramisu cups, cakes, macaroons, and more &mdash; all homemade.</p>
+                <p class="favorite-card__quote">Sweet merciful goodness!</p>
+              </div>
+            </article>
+          </div>
+          <div class="section-cta">
+            <a class="btn btn--primary" href="/menu.html">See Full Menu</a>
+            <a class="btn btn--ghost" href="https://www.doordash.com" target="_blank" rel="noopener">Order Now</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--difference">
+        <div class="container difference-grid">
+          <div class="difference-text">
+            <h2>Not Just Coffee. A Community.</h2>
             <p>
-              Sunlight pours through our vaulted windows, jazz vinyl hums softly, and latte art swirls through
-              the air. Settle into our communal harvest table or claim a window seat overlooking the Lake
-              Quannapowitt trail.
+              In 2021, Charbel Wehbe opened Union Cafe with one goal: create a true alternative to corporate coffee chains. After a decade of working in Lynn restaurants and saving every dollar, he replaced a Dunkin&rsquo; Donuts with something better.
             </p>
-            <ul class="icon-list">
-              <li>
-                <span class="icon" aria-hidden="true">🥚</span>
-                <div>
-                  <h3>Egg Bar</h3>
-                  <p>Customize your omelette with chef-guided mix-ins and sauces for a bespoke breakfast.</p>
-                </div>
-              </li>
-              <li>
-                <span class="icon" aria-hidden="true">☕</span>
-                <div>
-                  <h3>Slow Coffee Bar</h3>
-                  <p>Single-origin pours, nitro cold brew, and seasonal mocktails crafted by our baristas.</p>
-                </div>
-              </li>
-              <li>
-                <span class="icon" aria-hidden="true">🎶</span>
-                <div>
-                  <h3>Weekend Vinyl Sessions</h3>
-                  <p>Local DJs spin mellow brunch sets every Saturday from 10 AM&ndash;1 PM.</p>
-                </div>
-              </li>
-            </ul>
-          </article>
-          <figure class="feature-card" aria-label="Interior photography">
-            <img
-              src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80"
-              alt="Sunlit café interior with breakfast counter"
-            />
-            <figcaption>Bright mornings inside Omelette Headquarters</figcaption>
+            <p>
+              Union Cafe is about real ingredients and real people. Real eggs in every breakfast sandwich. Desserts from our family bakery. Knowing your order by heart and greeting you with a smile every single morning.
+            </p>
+            <p>
+              We care about quality and service &mdash; not just making a quick buck. That&rsquo;s why our staff goes home with generous tips, why the cafe is spotless, and why Charbel is here every day. You&rsquo;ve tried the chains. Now try something real.
+            </p>
+          </div>
+          <figure class="difference-image">
+            <img src="/assets/owner-service.svg" alt="Exceptional customer service at Union Cafe Lynn MA" loading="lazy" width="560" height="420" />
           </figure>
         </div>
       </section>
 
-      <section class="section" id="events">
+      <section class="section section--testimonials" aria-label="Customer testimonials">
         <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Wakefield Community</p>
-            <h2>Upcoming Happenings</h2>
-            <p>We love sharing breakfast culture with our neighbors. Save the date for these special moments.</p>
+          <div class="section-header">
+            <h2>What Our Customers Are Saying</h2>
+            <p>Real reviews from the community that loves Union Cafe.</p>
           </div>
-          <div class="timeline">
-            <article class="timeline__item">
-              <h3>Egg Art Lab &middot; September 7</h3>
-              <p>Hands-on class exploring omelette folds, topping stylings, and plating wizardry.</p>
-            </article>
-            <article class="timeline__item">
-              <h3>Harvest Brunch &middot; October 12</h3>
-              <p>Five-course tasting menu featuring autumn ingredients from Middlesex County farms.</p>
-            </article>
-            <article class="timeline__item">
-              <h3>Lakefront Sunrise Run &middot; Every Friday</h3>
-              <p>Meet at 6 AM for a 3-mile jog followed by complimentary espresso shots.</p>
-            </article>
+          <div class="testimonials-grid">
+            <blockquote class="testimonial">
+              <p>&ldquo;Sweet merciful Lord Jesus on high did I find the right place. The greatest bacon egg and cheese I&rsquo;ve ever eaten.&rdquo;</p>
+              <cite>⭐⭐⭐⭐⭐</cite>
+            </blockquote>
+            <blockquote class="testimonial">
+              <p>&ldquo;I&rsquo;m extremely picky with my lattes and they have never messed it up. A hidden gem in Lynn.&rdquo;</p>
+              <cite>⭐⭐⭐⭐⭐</cite>
+            </blockquote>
+            <blockquote class="testimonial">
+              <p>&ldquo;Ten outta ten! The drinks and food made our morning, but Charbel and the staff made it even better.&rdquo;</p>
+              <cite>⭐⭐⭐⭐⭐</cite>
+            </blockquote>
+            <blockquote class="testimonial">
+              <p>&ldquo;I&rsquo;ve been hooked ever since. Each morning ends at this paradise of sweet treats and delicious coffee.&rdquo;</p>
+              <cite>⭐⭐⭐⭐⭐</cite>
+            </blockquote>
+            <blockquote class="testimonial">
+              <p>&ldquo;The ribeye cheesesteak was simply outstanding! Easily top five I&rsquo;ve ever had.&rdquo;</p>
+              <cite>⭐⭐⭐⭐⭐</cite>
+            </blockquote>
+            <blockquote class="testimonial">
+              <p>&ldquo;The food is tasty, the coffee perfect, and I never wait more than a few minutes even when it&rsquo;s busy.&rdquo;</p>
+              <cite>⭐⭐⭐⭐⭐</cite>
+            </blockquote>
           </div>
         </div>
       </section>
 
-      <section class="section section--visit" id="visit">
-        <div class="container section__grid">
-          <div class="section__content">
-            <p class="eyebrow">Visit</p>
-            <h2>Come by the Headquarters</h2>
-            <p>
-              Find us steps from Wakefield&rsquo;s commuter rail stop. We welcome walk-ins and limited
-              reservations for parties of six or more. Outdoor patio seating is available spring through fall.
-            </p>
-            <div class="contact-details">
-              <div>
-                <h3>Location</h3>
-                <p>
-                  12 Main Street<br />
-                  Wakefield, MA 01880
-                </p>
-              </div>
-              <div>
-                <h3>Hours</h3>
-                <p>Daily 7:00 AM &ndash; 3:00 PM<br />Brunch until 4:00 PM on weekends</p>
-              </div>
-              <div>
-                <h3>Contact</h3>
-                <p>
-                  <a href="tel:17815551234">(781) 555-1234</a><br />
-                  <a href="mailto:hello@omelettehq.com">hello@omelettehq.com</a>
-                </p>
-              </div>
-              <div>
-                <h3>Follow</h3>
-                <p>
-                  <a href="https://www.instagram.com" target="_blank" rel="noreferrer">Instagram</a>
-                  &middot;
-                  <a href="https://www.tiktok.com" target="_blank" rel="noreferrer">TikTok</a>
-                </p>
-              </div>
+      <section class="section section--delivery" aria-label="Delivery partners">
+        <div class="container delivery-grid">
+          <div>
+            <h2>Can&rsquo;t Come In? We Deliver!</h2>
+            <p>Order Union Cafe favorites for delivery or pickup on your favorite platform.</p>
+          </div>
+          <div class="delivery-buttons">
+            <a class="btn btn--delivery" href="https://www.doordash.com" target="_blank" rel="noopener">DoorDash</a>
+            <a class="btn btn--delivery" href="https://www.ubereats.com" target="_blank" rel="noopener">Uber Eats</a>
+            <a class="btn btn--delivery" href="https://www.seamless.com" target="_blank" rel="noopener">Seamless</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--location" id="visit">
+        <div class="container location-grid">
+          <div class="location-info">
+            <h2>Visit Us in Downtown Lynn</h2>
+            <p class="location-address">Union Cafe &middot; 1 Central Square, Lynn, MA 01901</p>
+            <ul class="location-details">
+              <li><strong>Phone:</strong> <a href="tel:17815844084">(781) 584-4084</a></li>
+              <li><strong>Hours:</strong> Mon 6am&ndash;7pm, Tue&ndash;Thu 5:30am&ndash;7pm, Fri 6am&ndash;7pm, Sat 7am&ndash;7pm, Sun 7am&ndash;1pm</li>
+              <li><strong>Services:</strong> Dine-in, takeout, delivery, seasonal outdoor seating, loyalty program coming soon</li>
+              <li><strong>Payment:</strong> Credit cards accepted</li>
+            </ul>
+            <div class="location-cta">
+              <a class="btn btn--primary" href="https://maps.google.com/?q=Union+Cafe+Lynn" target="_blank" rel="noopener">Get Directions</a>
+              <a class="btn btn--ghost" href="/contact.html">Contact Us</a>
             </div>
           </div>
-          <div class="map-card">
+          <div class="location-map">
             <iframe
-              title="Map of Omelette Headquarters in Wakefield MA"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2939.217417979731!2d-71.07318192355152!3d42.50393917117971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e36f78d1de7d21%3A0xa795882b58c2c299!2sWakefield%2C%20MA!5e0!3m2!1sen!2sus!4v1720384050002!5m2!1sen!2sus"
-              allowfullscreen=""
+              title="Map to Union Cafe in Lynn Massachusetts"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2943.091741963497!2d-70.94979652355572!3d42.46452387118251!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e36be0190f95f3%3A0x8fce1b74275aab31!2s1%20Central%20Square%2C%20Lynn%2C%20MA%2001901!5e0!3m2!1sen!2sus!4v1730930000000!5m2!1sen!2sus"
               loading="lazy"
+              allowfullscreen
               referrerpolicy="no-referrer-when-downgrade"
             ></iframe>
           </div>
@@ -234,27 +340,60 @@
       </section>
     </main>
 
-    <footer class="footer">
-      <div class="container footer__inner">
-        <p>© <span id="year"></span> Omelette Headquarters. Crafted with love in Wakefield, MA.</p>
-        <p>
-          Need catering? Email <a href="mailto:catering@omelettehq.com">catering@omelettehq.com</a> for custom
-          brunch spreads.
-        </p>
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <a class="brand brand--footer" href="/">
+            <img src="/assets/logo.svg" alt="Union Cafe Lynn MA logo - Local coffee and breakfast" width="150" height="48" />
+          </a>
+          <p>© <span data-year></span> Union Cafe. All rights reserved.</p>
+          <p class="footer-note">Serving Lynn, Swampscott, Nahant, Saugus, Salem, Revere, and the North Shore community.</p>
+        </div>
+        <div>
+          <h2 class="footer-heading">Quick Links</h2>
+          <ul class="footer-list">
+            <li><a href="/">Home</a></li>
+            <li><a href="/menu.html">Menu</a></li>
+            <li><a href="/about.html">About</a></li>
+            <li><a href="/location-hours.html">Location &amp; Hours</a></li>
+            <li><a href="/contact.html">Contact</a></li>
+            <li><a href="https://www.doordash.com" target="_blank" rel="noopener">Order Delivery</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="footer-heading">Why Choose Us</h2>
+          <ul class="footer-list">
+            <li>☕ Quality Coffee &mdash; Not a Chain</li>
+            <li>🥞 Real Eggs in Every Sandwich</li>
+            <li>🥐 Desserts from Our Family Bakery</li>
+            <li>😊 Owner-Operated, Exceptional Service</li>
+            <li>🧹 Spotlessly Clean</li>
+            <li>🌤️ Seasonal Outdoor Seating</li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="footer-heading">Connect</h2>
+          <p>
+            <strong>Phone:</strong> <a href="tel:17815844084">(781) 584-4084</a><br />
+            <strong>Email:</strong> <a href="mailto:hello@unioncafelynn.com">hello@unioncafelynn.com</a>
+          </p>
+          <p>
+            <a href="https://www.instagram.com/unioncafelynn" target="_blank" rel="noopener">Instagram @unioncafelynn</a>
+          </p>
+          <div class="delivery-buttons delivery-buttons--footer">
+            <a class="btn btn--delivery" href="https://www.doordash.com" target="_blank" rel="noopener">DoorDash</a>
+            <a class="btn btn--delivery" href="https://www.ubereats.com" target="_blank" rel="noopener">Uber Eats</a>
+            <a class="btn btn--delivery" href="https://www.seamless.com" target="_blank" rel="noopener">Seamless</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="container footer-bottom__inner">
+          <p>Privacy Policy</p>
+          <p>Terms &amp; Conditions</p>
+        </div>
       </div>
     </footer>
-
-    <script>
-      const navToggle = document.querySelector(".nav__toggle");
-      const navLinks = document.querySelector(".nav__links");
-
-      navToggle?.addEventListener("click", () => {
-        const expanded = navToggle.getAttribute("aria-expanded") === "true";
-        navToggle.setAttribute("aria-expanded", String(!expanded));
-        navLinks?.classList.toggle("nav__links--open");
-      });
-
-      document.getElementById("year").textContent = new Date().getFullYear();
-    </script>
+    <script src="/scripts.js" defer></script>
   </body>
 </html>
