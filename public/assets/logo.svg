@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 100" role="img" aria-labelledby="title desc">
+  <title id="title">Union Cafe logo</title>
+  <desc id="desc">Warm badge style logo placeholder for Union Cafe in Lynn, Massachusetts</desc>
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4A3228" />
+      <stop offset="100%" stop-color="#C47C48" />
+    </linearGradient>
+  </defs>
+  <rect width="320" height="100" rx="16" fill="url(#grad)" />
+  <text x="50%" y="48%" text-anchor="middle" font-family="'Montserrat', 'Arial', sans-serif" font-size="36" fill="#F5E6D3" font-weight="700">Union</text>
+  <text x="50%" y="78%" text-anchor="middle" font-family="'Open Sans', 'Arial', sans-serif" font-size="22" fill="#FFFBF5">Cafe</text>
+</svg>

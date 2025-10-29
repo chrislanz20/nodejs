@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Ribeye Cheesesteak</title>
+  <desc id="desc">Stylized placeholder illustration representing Customer Favorite at Union Cafe in Lynn, Massachusetts</desc>
+  <defs>
+    <linearGradient id="grad-cheesesteak" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4A3228" />
+      <stop offset="100%" stop-color="#C47C48" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="#F5E6D3" rx="24" />
+  <rect x="60" y="60" width="1080" height="680" rx="40" fill="url(#grad-cheesesteak)" opacity="0.92" />
+  <g fill="#FFFBF5" font-family="'Montserrat', 'Arial', sans-serif" text-anchor="middle">
+    <text x="600" y="380" font-size="88" font-weight="700">Ribeye Cheesesteak</text>
+    <text x="600" y="470" font-size="44" font-family="'Open Sans', 'Arial', sans-serif" opacity="0.85">Customer Favorite</text>
+  </g>
+</svg>
