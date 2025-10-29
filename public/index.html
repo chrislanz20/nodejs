@@ -1,231 +1,498 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Omelette Headquarters | Wakefield, Massachusetts</title>
+    <title>Casa Latina Restaurant & Tortilleria | Authentic Honduran Cuisine in Lynn MA</title>
     <meta
       name="description"
-      content="Omelette Headquarters in Wakefield, MA serves artfully crafted breakfast, brunch, and coffee in a sunlit café inspired by the perfect omelette."
+      content="Casa Latina Restaurant & Tortilleria in Lynn, Massachusetts serves authentic Central American and Honduran dishes with fresh handmade tortillas, pupusas, and baleadas."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Roboto:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23d32f2f'/%3E%3Ctext x='50%25' y='58%25' font-family='Nunito' font-size='32' fill='%23fff' text-anchor='middle'%3ECT%3C/text%3E%3C/svg%3E" />
+    <script defer src="/js/main.js"></script>
   </head>
-  <body>
-    <header class="hero" id="top">
-      <div class="hero__overlay"></div>
-      <div class="container hero__inner">
-        <nav class="nav" aria-label="Main">
-          <a class="nav__brand" href="#top">Omelette HQ</a>
-          <button class="nav__toggle" aria-expanded="false" aria-controls="primary-navigation">
-            <span class="nav__toggle-line"></span>
-            <span class="nav__toggle-line"></span>
-            <span class="nav__toggle-line"></span>
-            <span class="sr-only">Toggle navigation</span>
+  <body data-lang="en">
+    <a class="sr-only" href="#main">Skip to content</a>
+    <header class="header">
+      <div class="container top-bar">
+        <a class="brand" href="/index.html">
+          <span class="brand__mark">CL</span>
+          <span>
+            <span class="lang lang-en">Casa Latina Tortilleria</span>
+            <span class="lang lang-es">Casa Latina Tortilleria</span>
+          </span>
+        </a>
+        <nav class="nav" aria-label="Primary">
+          <button class="nav__toggle" aria-expanded="false" aria-controls="site-navigation">
+            <span></span>
+            <span></span>
+            <span></span>
           </button>
-          <ul class="nav__links" id="primary-navigation">
-            <li><a href="#about">Our Story</a></li>
-            <li><a href="#menu">Menu</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#events">Events</a></li>
-            <li><a href="#visit">Visit</a></li>
+          <ul class="nav__links" id="site-navigation" aria-hidden="true">
+            <li>
+              <a href="/index.html#top">
+                <span class="lang lang-en">Home</span>
+                <span class="lang lang-es">Inicio</span>
+              </a>
+            </li>
+            <li>
+              <a href="/menu.html">
+                <span class="lang lang-en">Menu</span>
+                <span class="lang lang-es">Menú</span>
+              </a>
+            </li>
+            <li>
+              <a href="/about.html">
+                <span class="lang lang-en">About</span>
+                <span class="lang lang-es">Nosotros</span>
+              </a>
+            </li>
+            <li>
+              <a href="/location.html">
+                <span class="lang lang-en">Location</span>
+                <span class="lang lang-es">Ubicación</span>
+              </a>
+            </li>
+            <li>
+              <a href="/contact.html">
+                <span class="lang lang-en">Contact</span>
+                <span class="lang lang-es">Contacto</span>
+              </a>
+            </li>
+            <li>
+              <a href="#delivery">
+                <span class="lang lang-en">Order Online</span>
+                <span class="lang lang-es">Ordenar en Línea</span>
+              </a>
+            </li>
           </ul>
         </nav>
-
-        <div class="hero__content">
-          <p class="eyebrow">Wakefield, Massachusetts</p>
-          <h1>Where Omelettes are an Art Form</h1>
-          <p>
-            Omelette Headquarters is a cheerful café devoted to one perfect dish. From locally sourced
-            eggs to inventive fillings, every plate is a canvas for comfort and creativity.
-          </p>
-          <div class="hero__cta">
-            <a class="btn btn--primary" href="#menu">Explore the Menu</a>
-            <a class="btn btn--ghost" href="#visit">Plan Your Visit</a>
+        <div class="nav__actions">
+          <div class="language-toggle" role="group" aria-label="Select language">
+            <button type="button" data-switch-language="en" aria-pressed="true">EN</button>
+            <button type="button" data-switch-language="es" aria-pressed="false">ES</button>
           </div>
+          <a class="phone-cta" href="tel:+17817809101">
+            <span>📞</span>
+            <span class="lang lang-en">Call (781) 780-9101</span>
+            <span class="lang lang-es">Llamar (781) 780-9101</span>
+          </a>
         </div>
       </div>
     </header>
 
-    <main>
-      <section class="section" id="about">
-        <div class="container section__grid">
-          <div class="section__content">
-            <h2>Born from a Breakfast Obsession</h2>
-            <p>
-              Omelette Headquarters began as a pop-up on Wakefield&rsquo;s lakefront farmer&rsquo;s market and
-              quickly became the town&rsquo;s favorite morning ritual. Founder and chef Dana Avery wanted a
-              place where guests could slow down, savor the moment, and experience eggs elevated beyond
-              expectations.
+    <main id="main">
+      <section class="hero" id="top">
+        <div class="container hero__inner">
+          <div class="hero__content">
+            <div class="hero__eyebrow">
+              <span>🇭🇳</span>
+              <span class="lang lang-en">Authentic Central American Flavor</span>
+              <span class="lang lang-es">Sabor Centroamericano Auténtico</span>
+            </div>
+            <h1 class="hero__title">
+              <span class="lang lang-en">Casa Latina Restaurant & Tortilleria</span>
+              <span class="lang lang-es">Casa Latina Restaurante & Tortilleria</span>
+            </h1>
+            <p class="hero__subtitle">
+              <span class="lang lang-en">Authentic Central American & Honduran cuisine made fresh daily with handmade tortillas, pupusas, and family recipes.</span>
+              <span class="lang lang-es">Comida centroamericana y hondureña auténtica preparada fresca todos los días con tortillas hechas a mano, pupusas y recetas familiares.</span>
             </p>
+            <div class="hero__cta">
+              <a class="btn btn--primary" href="tel:+17817809101">
+                <span class="lang lang-en">Call Now</span>
+                <span class="lang lang-es">Llamar Ahora</span>
+              </a>
+              <a class="btn btn--secondary" href="/menu.html">
+                <span class="lang lang-en">View Menu</span>
+                <span class="lang lang-es">Ver Menú</span>
+              </a>
+              <a class="btn btn--ghost" href="#delivery">
+                <span class="lang lang-en">Order Delivery</span>
+                <span class="lang lang-es">Ordenar Entrega</span>
+              </a>
+            </div>
             <p>
-              Today, our kitchen celebrates the craft of breakfast with seasonal ingredients, a zero-waste
-              mindset, and barista-crafted coffee drinks. Every omelette is folded to order, served with
-              toasted sourdough, and paired with playful sauces you won&rsquo;t find anywhere else.
+              <strong>
+                <span class="lang lang-en">Open Daily 9:00 AM – 10:00 PM</span>
+                <span class="lang lang-es">Abierto Diario 9:00 AM – 10:00 PM</span>
+              </strong>
             </p>
           </div>
-          <article class="highlight-card" aria-label="House values">
-            <h3>Our Guiding Ingredients</h3>
-            <ul class="checklist">
-              <li>Farm eggs sourced within 50 miles of Wakefield</li>
-              <li>House-fermented hot sauces and pickled vegetables</li>
-              <li>Compost-first kitchen with reusable packaging</li>
-              <li>Warm, neighborhood hospitality every day</li>
-            </ul>
-          </article>
+          <div class="hero__media">
+            <img
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 420'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop offset='0' stop-color='%23d32f2f'/%3E%3Cstop offset='1' stop-color='%23fbc02d'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='600' height='420' rx='42' fill='url(%23g)'/%3E%3Ctext x='50%25' y='52%25' fill='%23ffffff' font-size='42' font-family='Nunito' text-anchor='middle'%3EPupusas Caseras%3C/text%3E%3C/svg%3E"
+              alt="Authentic homemade pupusas at Casa Latina Lynn MA / Pupusas caseras auténticas en Casa Latina Lynn MA"
+            />
+          </div>
         </div>
       </section>
 
-      <section class="section section--accent" id="menu">
+      <section class="section" aria-labelledby="quick-info">
         <div class="container">
           <div class="section__header">
-            <p class="eyebrow">Signature Omelettes</p>
-            <h2>Crafted Classics & Bold Specials</h2>
+            <h2 id="quick-info">
+              <span class="lang lang-en">Quick Info</span>
+              <span class="lang lang-es">Información Rápida</span>
+            </h2>
             <p>
-              From timeless comforts to daring flavor mashups, these omelettes showcase the flair and fun of
-              Omelette HQ. Seasonal specials rotate monthly.
+              <span class="lang lang-en">Your neighborhood destination for handmade tortillas, Honduran comfort food, and warm hospitality in Lynn, Massachusetts.</span>
+              <span class="lang lang-es">Su destino en Lynn, Massachusetts para tortillas hechas a mano, comida hondureña reconfortante y una hospitalidad cálida.</span>
             </p>
           </div>
-          <div class="card-grid">
-            <article class="card">
-              <h3>Lake Quannapowitt Classic</h3>
-              <p>Applewood bacon, smoked cheddar, slow-roasted tomatoes, scallion crème fraîche.</p>
-              <span class="pill">$14</span>
+          <div class="quick-info">
+            <article class="quick-info__card">
+              <div class="quick-info__icon">📍</div>
+              <h3>
+                <span class="lang lang-en">Visit Us</span>
+                <span class="lang lang-es">Visítenos</span>
+              </h3>
+              <p>
+                <span class="lang lang-en">617 Chestnut Street, Lynn, MA 01904</span>
+                <span class="lang lang-es">617 Chestnut Street, Lynn, MA 01904</span>
+              </p>
+              <a href="/location.html" class="btn btn--ghost">
+                <span class="lang lang-en">Get Directions</span>
+                <span class="lang lang-es">Obtener Direcciones</span>
+              </a>
             </article>
-            <article class="card">
-              <h3>Garden Sunrise</h3>
-              <p>Charred broccolini, lemon ricotta, basil pesto drizzle, toasted almond crunch.</p>
-              <span class="pill">Vegetarian</span>
+            <article class="quick-info__card">
+              <div class="quick-info__icon">⏰</div>
+              <h3>
+                <span class="lang lang-en">Hours</span>
+                <span class="lang lang-es">Horario</span>
+              </h3>
+              <p>
+                <span class="lang lang-en">Open Daily 9:00 AM – 10:00 PM</span>
+                <span class="lang lang-es">Abierto Diario 9:00 AM – 10:00 PM</span>
+              </p>
+              <p>
+                <span class="lang lang-en">Breakfast, lunch, dinner, and late-night cravings.</span>
+                <span class="lang lang-es">Desayuno, almuerzo, cena y antojos nocturnos.</span>
+              </p>
             </article>
-            <article class="card">
-              <h3>North Shore Heat</h3>
-              <p>Chorizo, cotija, caramelized onions, pickled fresnos, house pineapple fire sauce.</p>
-              <span class="pill pill--spicy">Spicy</span>
-            </article>
-            <article class="card">
-              <h3>Wakefield Weekender</h3>
-              <p>Lobster tail medallions, brown butter hollandaise, champagne chive pearls.</p>
-              <span class="pill">Saturday & Sunday Only</span>
+            <article class="quick-info__card">
+              <div class="quick-info__icon">🌮</div>
+              <h3>
+                <span class="lang lang-en">Fresh Tortillas Daily</span>
+                <span class="lang lang-es">Tortillas Frescas Diarias</span>
+              </h3>
+              <p>
+                <span class="lang lang-en">Hand-pressed corn & flour tortillas crafted in our tortilleria every morning.</span>
+                <span class="lang lang-es">Tortillas de maíz y harina prensadas a mano en nuestra tortilleria cada mañana.</span>
+              </p>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="section section--experience" id="experience">
-        <div class="container section__grid section__grid--reverse">
-          <article class="section__content">
-            <h2>The Omelette HQ Experience</h2>
-            <p>
-              Sunlight pours through our vaulted windows, jazz vinyl hums softly, and latte art swirls through
-              the air. Settle into our communal harvest table or claim a window seat overlooking the Lake
-              Quannapowitt trail.
-            </p>
-            <ul class="icon-list">
-              <li>
-                <span class="icon" aria-hidden="true">🥚</span>
-                <div>
-                  <h3>Egg Bar</h3>
-                  <p>Customize your omelette with chef-guided mix-ins and sauces for a bespoke breakfast.</p>
-                </div>
-              </li>
-              <li>
-                <span class="icon" aria-hidden="true">☕</span>
-                <div>
-                  <h3>Slow Coffee Bar</h3>
-                  <p>Single-origin pours, nitro cold brew, and seasonal mocktails crafted by our baristas.</p>
-                </div>
-              </li>
-              <li>
-                <span class="icon" aria-hidden="true">🎶</span>
-                <div>
-                  <h3>Weekend Vinyl Sessions</h3>
-                  <p>Local DJs spin mellow brunch sets every Saturday from 10 AM&ndash;1 PM.</p>
-                </div>
-              </li>
-            </ul>
-          </article>
-          <figure class="feature-card" aria-label="Interior photography">
+      <section class="section" id="about">
+        <div class="container split">
+          <div>
+            <h2>
+              <span class="lang lang-en">Handmade Tortillas, Generations of Flavor</span>
+              <span class="lang lang-es">Tortillas Hechas a Mano, Generaciones de Sabor</span>
+            </h2>
+            <div class="lang-block lang-en">
+              <p>
+                Casa Latina Restaurant & Tortilleria is a family-owned kitchen sharing the vibrant flavors of
+                Honduras and Central America with the North Shore. Every day begins at dawn in our tortilleria
+                where masa is mixed, pressed, and toasted into warm tortillas ready for pupusas, baleadas, and
+                platos típicos bursting with tradition.
+              </p>
+              <p>
+                From curtido and salsas to hearty breakfasts and seafood platters, each recipe is rooted in the
+                dishes we grew up with. We proudly serve generous portions, friendly smiles, and the taste of home
+                for our Central American community and curious food lovers alike.
+              </p>
+            </div>
+            <div class="lang-block lang-es">
+              <p>
+                Casa Latina Restaurant & Tortilleria es una cocina familiar que comparte los vibrantes sabores de
+                Honduras y Centroamérica con la North Shore. Cada día comienza al amanecer en nuestra tortilleria,
+                donde mezclamos la masa, la prensamos y la tostamos hasta obtener tortillas calientitas listas para
+                pupusas, baleadas y platos típicos llenos de tradición.
+              </p>
+              <p>
+                Desde el curtido y las salsas hasta los desayunos abundantes y los platos de mariscos, cada receta
+                nace de los platillos con los que crecimos. Servimos porciones generosas, sonrisas amistosas y el
+                sabor de casa para nuestra comunidad centroamericana y para quienes desean descubrir nuestra
+                gastronomía.
+              </p>
+            </div>
+            <a class="btn btn--primary" href="/about.html">
+              <span class="lang lang-en">Discover Our Story</span>
+              <span class="lang lang-es">Conozca Nuestra Historia</span>
+            </a>
+          </div>
+          <figure class="map-card">
             <img
-              src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80"
-              alt="Sunlit café interior with breakfast counter"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 420'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop offset='0' stop-color='%231565c0'/%3E%3Cstop offset='1' stop-color='%2300897b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='600' height='420' rx='42' fill='url(%23g)'/%3E%3Ctext x='50%25' y='46%25' fill='%23fff' font-size='36' font-family='Nunito' text-anchor='middle'%3ETortilleria%3C/text%3E%3Ctext x='50%25' y='62%25' fill='%23fff' font-size='28' font-family='Nunito' text-anchor='middle'%3EHecha a Mano%3C/text%3E%3C/svg%3E"
+              alt="Handmade tortillas fresh daily at Casa Latina / Tortillas hechas a mano frescas todos los días en Casa Latina"
+              loading="lazy"
             />
-            <figcaption>Bright mornings inside Omelette Headquarters</figcaption>
           </figure>
         </div>
       </section>
 
-      <section class="section" id="events">
+      <section class="section pattern-section" id="menu">
         <div class="container">
           <div class="section__header">
-            <p class="eyebrow">Wakefield Community</p>
-            <h2>Upcoming Happenings</h2>
-            <p>We love sharing breakfast culture with our neighbors. Save the date for these special moments.</p>
+            <h2>
+              <span class="lang lang-en">Featured Dishes</span>
+              <span class="lang lang-es">Platos Destacados</span>
+            </h2>
+            <p>
+              <span class="lang lang-en">Signature Honduran favorites, fresh tortillas, and Central American classics ready for dine-in, takeout, or delivery.</span>
+              <span class="lang lang-es">Favoritos hondureños, tortillas frescas y clásicos centroamericanos listos para comer aquí, para llevar o para entrega.</span>
+            </p>
           </div>
-          <div class="timeline">
-            <article class="timeline__item">
-              <h3>Egg Art Lab &middot; September 7</h3>
-              <p>Hands-on class exploring omelette folds, topping stylings, and plating wizardry.</p>
+          <div class="featured-dishes">
+            <article class="dish-card">
+              <span class="badge">⭐</span>
+              <h3>Pupusas Caseras</h3>
+              <p>
+                <span class="lang lang-en">Handmade corn tortillas filled with queso con loroco, chicharrón, or revueltas, served with curtido and salsa.</span>
+                <span class="lang lang-es">Tortillas de maíz hechas a mano rellenas de queso con loroco, chicharrón o revueltas, servidas con curtido y salsa.</span>
+              </p>
+              <a class="btn btn--ghost" href="/menu.html#pupusas">
+                <span class="lang lang-en">Order Pupusas</span>
+                <span class="lang lang-es">Ordenar Pupusas</span>
+              </a>
             </article>
-            <article class="timeline__item">
-              <h3>Harvest Brunch &middot; October 12</h3>
-              <p>Five-course tasting menu featuring autumn ingredients from Middlesex County farms.</p>
+            <article class="dish-card">
+              <span class="badge badge--teal">🇭🇳</span>
+              <h3>Plato Típico Hondureño</h3>
+              <p>
+                <span class="lang lang-en">Carne asada, rice, beans, eggs, tajadas, avocado, cheese, and cream – the ultimate Honduran feast.</span>
+                <span class="lang lang-es">Carne asada, arroz, frijoles, huevos, tajadas, aguacate, queso y crema: el banquete hondureño por excelencia.</span>
+              </p>
             </article>
-            <article class="timeline__item">
-              <h3>Lakefront Sunrise Run &middot; Every Friday</h3>
-              <p>Meet at 6 AM for a 3-mile jog followed by complimentary espresso shots.</p>
+            <article class="dish-card">
+              <h3>Baleadas Tradicionales</h3>
+              <p>
+                <span class="lang lang-en">Warm flour tortillas folded with refried beans, cheese, crema, and your choice of eggs, avocado, or carne.</span>
+                <span class="lang lang-es">Tortillas de harina calientes dobladas con frijoles refritos, queso, crema y su elección de huevos, aguacate o carne.</span>
+              </p>
+            </article>
+            <article class="dish-card">
+              <h3>Tacos Mexicanos</h3>
+              <p>
+                <span class="lang lang-en">Homemade corn tortillas loaded with carne asada, pollo, carnitas, chorizo, or lengua with cilantro and lime.</span>
+                <span class="lang lang-es">Tortillas de maíz hechas en casa con carne asada, pollo, carnitas, chorizo o lengua con cilantro y limón.</span>
+              </p>
+            </article>
+            <article class="dish-card">
+              <h3>Mojarra Frita</h3>
+              <p>
+                <span class="lang lang-en">Whole fried tilapia with rice, salad, and house-made pickled vegetables.</span>
+                <span class="lang lang-es">Tilapia entera frita con arroz, ensalada y vegetales encurtidos de la casa.</span>
+              </p>
+            </article>
+            <article class="dish-card">
+              <h3>Desayuno Típico</h3>
+              <p>
+                <span class="lang lang-en">Eggs any style, beans, crema, queso, avocado, plantains, and handmade tortillas – breakfast served all day.</span>
+                <span class="lang lang-es">Huevos al gusto, frijoles, crema, queso, aguacate, plátanos y tortillas hechas a mano: desayuno todo el día.</span>
+              </p>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="section section--visit" id="visit">
-        <div class="container section__grid">
-          <div class="section__content">
-            <p class="eyebrow">Visit</p>
-            <h2>Come by the Headquarters</h2>
+      <section class="section" id="why-casa-latina">
+        <div class="container split">
+          <div>
+            <h2>
+              <span class="lang lang-en">Why Choose Casa Latina</span>
+              <span class="lang lang-es">Por Qué Elegir Casa Latina</span>
+            </h2>
+            <ul class="checklist">
+              <li>
+                <span>✅</span>
+                <span>
+                  <span class="lang lang-en">Authentic Honduran & Central American cuisine crafted with pride.</span>
+                  <span class="lang lang-es">Cocina hondureña y centroamericana auténtica preparada con orgullo.</span>
+                </span>
+              </li>
+              <li>
+                <span>✅</span>
+                <span>
+                  <span class="lang lang-en">Handmade tortillas and pupusas pressed fresh daily in our tortilleria.</span>
+                  <span class="lang lang-es">Tortillas y pupusas hechas a mano cada día en nuestra tortilleria.</span>
+                </span>
+              </li>
+              <li>
+                <span>✅</span>
+                <span>
+                  <span class="lang lang-en">Traditional family recipes with generous portions and great value.</span>
+                  <span class="lang lang-es">Recetas familiares tradicionales con porciones generosas y gran valor.</span>
+                </span>
+              </li>
+              <li>
+                <span>✅</span>
+                <span>
+                  <span class="lang lang-en">Friendly, welcoming atmosphere for families and friends.</span>
+                  <span class="lang lang-es">Ambiente amigable y acogedor para familias y amigos.</span>
+                </span>
+              </li>
+              <li>
+                <span>✅</span>
+                <span>
+                  <span class="lang lang-en">Delivery, takeout, and dine-in options available seven days a week.</span>
+                  <span class="lang lang-es">Opciones de entrega, para llevar y comer aquí disponibles los siete días de la semana.</span>
+                </span>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <img
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 420'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ff6f00'/%3E%3Cstop offset='1' stop-color='%2300897b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='500' height='420' rx='48' fill='url(%23g)'/%3E%3Ctext x='50%25' y='45%25' fill='%23fff' font-size='34' font-family='Nunito' text-anchor='middle'%3ERecetas%20de%20Familia%3C/text%3E%3Ctext x='50%25' y='62%25' fill='%23fff' font-size='28' font-family='Nunito' text-anchor='middle'%3ECentroamericanas%3C/text%3E%3C/svg%3E"
+              alt="Friendly welcoming atmosphere at Casa Latina Lynn / Ambiente acogedor y amigable en Casa Latina Lynn"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="reviews">
+        <div class="container">
+          <div class="section__header">
+            <h2>
+              <span class="lang lang-en">Guest Reviews</span>
+              <span class="lang lang-es">Reseñas de Nuestros Clientes</span>
+            </h2>
             <p>
-              Find us steps from Wakefield&rsquo;s commuter rail stop. We welcome walk-ins and limited
-              reservations for parties of six or more. Outdoor patio seating is available spring through fall.
+              <span class="lang lang-en">Real feedback from our community on Google, DoorDash, and Uber Eats.</span>
+              <span class="lang lang-es">Comentarios reales de nuestra comunidad en Google, DoorDash y Uber Eats.</span>
             </p>
-            <div class="contact-details">
-              <div>
-                <h3>Location</h3>
-                <p>
-                  12 Main Street<br />
-                  Wakefield, MA 01880
-                </p>
-              </div>
-              <div>
-                <h3>Hours</h3>
-                <p>Daily 7:00 AM &ndash; 3:00 PM<br />Brunch until 4:00 PM on weekends</p>
-              </div>
-              <div>
-                <h3>Contact</h3>
-                <p>
-                  <a href="tel:17815551234">(781) 555-1234</a><br />
-                  <a href="mailto:hello@omelettehq.com">hello@omelettehq.com</a>
-                </p>
-              </div>
-              <div>
-                <h3>Follow</h3>
-                <p>
-                  <a href="https://www.instagram.com" target="_blank" rel="noreferrer">Instagram</a>
-                  &middot;
-                  <a href="https://www.tiktok.com" target="_blank" rel="noreferrer">TikTok</a>
-                </p>
-              </div>
-            </div>
+          </div>
+          <div class="review-grid">
+            <article class="review-card">
+              <strong>★★★★★</strong>
+              <p class="lang-block lang-en">"My compliments to the cook, everything was made beautifully and very tasty. They never get my order wrong and always put in extra curtido and salsa."</p>
+              <p class="lang-block lang-es">"Mis felicitaciones al cocinero, todo está preparado con tanto cuidado y muy sabroso. Nunca se equivocan con mi orden y siempre incluyen curtido y salsa extra."</p>
+              <span class="lang lang-en">– Uber Eats Reviewer</span>
+              <span class="lang lang-es">– Reseña en Uber Eats</span>
+            </article>
+            <article class="review-card">
+              <strong>★★★★★</strong>
+              <p class="lang-block lang-en">"So much more food than I expected for the price. Everything was delicious!"</p>
+              <p class="lang-block lang-es">"¡Muchísima más comida de lo que esperaba por el precio. Todo delicioso!"</p>
+              <span class="lang lang-en">– DoorDash Guest</span>
+              <span class="lang lang-es">– Cliente de DoorDash</span>
+            </article>
+            <article class="review-card">
+              <strong>★★★★★</strong>
+              <p class="lang-block lang-en">"Friendly staff and always make the best pupusas!"</p>
+              <p class="lang-block lang-es">"¡El personal es muy amable y siempre preparan las mejores pupusas!"</p>
+              <span class="lang lang-en">– Google Review</span>
+              <span class="lang lang-es">– Reseña en Google</span>
+            </article>
+            <article class="review-card">
+              <strong>★★★★★</strong>
+              <p class="lang-block lang-en">"Tacos de excelente qualidade! Recomendo muito!"</p>
+              <p class="lang-block lang-es">"¡Tacos de excelente calidad! ¡Muy recomendados!"</p>
+              <span class="lang lang-en">– Happy Guest</span>
+              <span class="lang lang-es">– Cliente Feliz</span>
+            </article>
+            <article class="review-card">
+              <strong>★★★★☆</strong>
+              <p class="lang-block lang-en">"Always a sure fire way to satisfy your Latin food cravings."</p>
+              <p class="lang-block lang-es">"Siempre una apuesta segura para satisfacer tus antojos de comida latina."</p>
+              <span class="lang lang-en">– Community Favorite</span>
+              <span class="lang lang-es">– Favorito de la Comunidad</span>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section pattern-section" id="delivery">
+        <div class="container">
+          <div class="section__header">
+            <h2>
+              <span class="lang lang-en">Order Delivery & Takeout</span>
+              <span class="lang lang-es">Ordene Entrega o Para Llevar</span>
+            </h2>
+            <p>
+              <span class="lang lang-en">Enjoy Casa Latina at home with our trusted delivery partners or call ahead for pickup.</span>
+              <span class="lang lang-es">Disfrute Casa Latina en casa con nuestros socios de entrega o llame con anticipación para recoger.</span>
+            </p>
+          </div>
+          <div class="delivery-grid">
+            <a href="https://www.doordash.com" target="_blank" rel="noopener">
+              <span class="lang lang-en">DoorDash</span>
+              <span class="lang lang-es">DoorDash</span>
+            </a>
+            <a href="https://www.ubereats.com" target="_blank" rel="noopener">
+              <span class="lang lang-en">Uber Eats</span>
+              <span class="lang lang-es">Uber Eats</span>
+            </a>
+            <a href="https://www.grubhub.com" target="_blank" rel="noopener">
+              <span class="lang lang-en">Grubhub</span>
+              <span class="lang lang-es">Grubhub</span>
+            </a>
+          </div>
+          <p style="text-align: center; margin-top: 1.5rem;">
+            <span class="lang lang-en">Call <a href="tel:+17817809101">(781) 780-9101</a> or <a href="tel:+17819479354">(781) 947-9354</a> for takeout and large platters.</span>
+            <span class="lang lang-es">Llame al <a href="tel:+17817809101">(781) 780-9101</a> o al <a href="tel:+17819479354">(781) 947-9354</a> para pedidos para llevar y bandejas grandes.</span>
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="visit">
+        <div class="container split">
+          <div>
+            <h2>
+              <span class="lang lang-en">Visit Us in Lynn, Massachusetts</span>
+              <span class="lang lang-es">Visítenos en Lynn, Massachusetts</span>
+            </h2>
+            <p>
+              <span class="lang lang-en">We are minutes from downtown Lynn with street parking available. Serving Lynn, Revere, Saugus, Salem, Swampscott, Nahant, and the North Shore.</span>
+              <span class="lang lang-es">Estamos a minutos del centro de Lynn con estacionamiento en la calle disponible. Servimos a Lynn, Revere, Saugus, Salem, Swampscott, Nahant y toda la North Shore.</span>
+            </p>
+            <ul class="icon-list">
+              <li>
+                <span>📞</span>
+                <div>
+                  <strong>(781) 780-9101</strong>
+                  <p>
+                    <span class="lang lang-en">Call ahead for large orders and family gatherings.</span>
+                    <span class="lang lang-es">Llame con anticipación para órdenes grandes y reuniones familiares.</span>
+                  </p>
+                </div>
+              </li>
+              <li>
+                <span>💳</span>
+                <div>
+                  <p>
+                    <span class="lang lang-en">Credit cards accepted. Delivery, takeout, and dine-in available.</span>
+                    <span class="lang lang-es">Aceptamos tarjetas de crédito. Ofrecemos entrega, para llevar y comedor.</span>
+                  </p>
+                </div>
+              </li>
+              <li>
+                <span>🌮</span>
+                <div>
+                  <p>
+                    <span class="lang lang-en">Fresh tortillas made daily – the heart of Casa Latina.</span>
+                    <span class="lang lang-es">Tortillas frescas todos los días: el corazón de Casa Latina.</span>
+                  </p>
+                </div>
+              </li>
+            </ul>
           </div>
           <div class="map-card">
             <iframe
-              title="Map of Omelette Headquarters in Wakefield MA"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2939.217417979731!2d-71.07318192355152!3d42.50393917117971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e36f78d1de7d21%3A0xa795882b58c2c299!2sWakefield%2C%20MA!5e0!3m2!1sen!2sus!4v1720384050002!5m2!1sen!2sus"
-              allowfullscreen=""
+              title="Casa Latina Restaurant & Tortilleria map"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2949.552057600291!2d-70.96738682349872!3d42.46675997258737!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e36cb8af02da7f%3A0xde9ce59efc2f2b40!2s617%20Chestnut%20St%2C%20Lynn%2C%20MA%2001904!5e0!3m2!1sen!2sus!4v1700000000000"
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
             ></iframe>
@@ -235,26 +502,74 @@
     </main>
 
     <footer class="footer">
-      <div class="container footer__inner">
-        <p>© <span id="year"></span> Omelette Headquarters. Crafted with love in Wakefield, MA.</p>
-        <p>
-          Need catering? Email <a href="mailto:catering@omelettehq.com">catering@omelettehq.com</a> for custom
-          brunch spreads.
-        </p>
+      <div class="container footer__grid">
+        <div>
+          <h4>
+            <span class="lang lang-en">Quick Links</span>
+            <span class="lang lang-es">Enlaces Rápidos</span>
+          </h4>
+          <ul>
+            <li><a href="/index.html"><span class="lang lang-en">Home</span><span class="lang lang-es">Inicio</span></a></li>
+            <li><a href="/menu.html"><span class="lang lang-en">Menu</span><span class="lang lang-es">Menú</span></a></li>
+            <li><a href="/about.html"><span class="lang lang-en">About</span><span class="lang lang-es">Nosotros</span></a></li>
+            <li><a href="/location.html"><span class="lang lang-en">Location</span><span class="lang lang-es">Ubicación</span></a></li>
+            <li><a href="/contact.html"><span class="lang lang-en">Contact</span><span class="lang lang-es">Contacto</span></a></li>
+            <li><a href="#delivery"><span class="lang lang-en">Order Online</span><span class="lang lang-es">Ordenar en Línea</span></a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Casa Latina Restaurant & Tortilleria</h4>
+          <ul>
+            <li>617 Chestnut Street, Lynn, MA 01904</li>
+            <li><a href="tel:+17817809101">(781) 780-9101</a></li>
+            <li><a href="tel:+17819479354">(781) 947-9354</a></li>
+            <li>
+              <span class="lang lang-en">Hours: 9 AM – 10 PM Daily</span>
+              <span class="lang lang-es">Horario: 9 AM – 10 PM Diario</span>
+            </li>
+            <li>
+              <a href="https://www.facebook.com/casalatina617" target="_blank" rel="noopener">Facebook @casalatina617</a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h4>
+            <span class="lang lang-en">Specialties</span>
+            <span class="lang lang-es">Especialidades</span>
+          </h4>
+          <ul class="footer__badges">
+            <li>🌮 <span class="lang lang-en">Fresh Tortillas Daily</span><span class="lang lang-es">Tortillas Frescas Diarias</span></li>
+            <li>🇭🇳 <span class="lang lang-en">Authentic Honduran Plates</span><span class="lang lang-es">Platos Hondureños Auténticos</span></li>
+            <li>📦 <span class="lang lang-en">Takeout & Delivery</span><span class="lang lang-es">Para Llevar y Entrega</span></li>
+            <li>💳 <span class="lang lang-en">Credit Cards Accepted</span><span class="lang lang-es">Aceptamos Tarjetas</span></li>
+            <li>👨‍👩‍👧‍👦 <span class="lang lang-en">Family-Friendly</span><span class="lang lang-es">Para Toda la Familia</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="container footer__bottom">
+        <span>© 2025 Casa Latina Restaurant & Tortilleria. <span class="lang lang-en">All rights reserved.</span><span class="lang lang-es">Todos los derechos reservados.</span></span>
+        <span>
+          <a href="#">
+            <span class="lang lang-en">Privacy Policy</span>
+            <span class="lang lang-es">Política de Privacidad</span>
+          </a>
+          |
+          <a href="#">
+            <span class="lang lang-en">Terms</span>
+            <span class="lang lang-es">Términos</span>
+          </a>
+        </span>
+        <span>
+          <span class="lang lang-en">Delivery Partners:</span>
+          <span class="lang lang-es">Socios de Entrega:</span>
+          DoorDash · Uber Eats · Grubhub
+        </span>
       </div>
     </footer>
 
-    <script>
-      const navToggle = document.querySelector(".nav__toggle");
-      const navLinks = document.querySelector(".nav__links");
-
-      navToggle?.addEventListener("click", () => {
-        const expanded = navToggle.getAttribute("aria-expanded") === "true";
-        navToggle.setAttribute("aria-expanded", String(!expanded));
-        navLinks?.classList.toggle("nav__links--open");
-      });
-
-      document.getElementById("year").textContent = new Date().getFullYear();
-    </script>
+    <a class="mobile-call" href="tel:+17817809101">
+      <span class="lang lang-en">Call Casa Latina</span>
+      <span class="lang lang-es">Llamar a Casa Latina</span>
+    </a>
   </body>
 </html>
