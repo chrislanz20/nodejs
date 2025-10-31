@@ -82,42 +82,60 @@
               time. Whether you're a regular or first-time visitor, you're family here.
             </p>
             <dl class="about__stats">
-              <div>
+              <div class="stats-card">
                 <dt aria-label="Years serving Wakefield">📅</dt>
-                <dd><span>25+</span> Years Serving Wakefield</dd>
+                <dd>
+                  <span class="stats-number">25+</span>
+                  <span class="stats-label">Years Serving Wakefield</span>
+                </dd>
               </div>
-              <div>
+              <div class="stats-card">
                 <dt aria-label="Omelette varieties">🍳</dt>
-                <dd><span>30+</span> Omelette Varieties</dd>
+                <dd>
+                  <span class="stats-number">30+</span>
+                  <span class="stats-label">Omelette Varieties</span>
+                </dd>
               </div>
-              <div>
+              <div class="stats-card">
                 <dt aria-label="Customer rating">⭐</dt>
-                <dd><span>4.8/5</span> Customer Rating</dd>
+                <dd>
+                  <span class="stats-number">4.8/5</span>
+                  <span class="stats-label">Customer Rating</span>
+                </dd>
               </div>
-              <div>
+              <div class="stats-card">
                 <dt aria-label="Nostalgic vibes">🚂</dt>
-                <dd><span>100%</span> Nostalgic Vibes</dd>
+                <dd>
+                  <span class="stats-number">100%</span>
+                  <span class="stats-label">Nostalgic Vibes</span>
+                </dd>
               </div>
             </dl>
           </div>
-          <div class="about__gallery fade-in-section">
+          <div class="about__gallery about-photos fade-in-section">
             <figure class="about__image">
               <img
-                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690521f9edf4205fef9d5e59.jpeg"
+                class="lazy"
+                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                data-src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690521f9edf4205fef9d5e59.jpeg"
                 alt="Omelette Headquarters dining room with blue wainscoting and wooden booths"
                 loading="lazy"
               />
             </figure>
             <figure class="about__image">
               <img
-                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690522873db4b54e06052ded.jpeg"
+                class="lazy"
+                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                data-src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690522873db4b54e06052ded.jpeg"
                 alt="Pennsylvania Railroad vintage train wall art decoration"
                 loading="lazy"
               />
             </figure>
             <figure class="about__image">
               <img
-                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/6905227e9faf0156034d16c8.jpeg"
+                class="lazy"
+                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                data-src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/6905227e9faf0156034d16c8.jpeg"
                 alt="Vintage locomotive photograph in sepia tones"
                 loading="lazy"
               />
@@ -134,154 +152,154 @@
             <h2>Menu Highlights</h2>
             <p>Explore our guest-favorite omelettes, benedicts, and breakfast comforts inspired by the original menu.</p>
           </header>
-          <div class="menu__tabs" role="tablist" aria-label="Menu categories">
-            <button class="menu__tab is-active" role="tab" aria-selected="true" aria-controls="tab-omelettes" id="tab-omelettes-button">
+          <div class="menu__tabs menu-tabs" role="tablist" aria-label="Menu categories">
+            <button class="menu__tab menu-tab is-active" role="tab" aria-selected="true" aria-controls="tab-omelettes" id="tab-omelettes-button">
               Omelettes
             </button>
-            <button class="menu__tab" role="tab" aria-selected="false" aria-controls="tab-benedicts" id="tab-benedicts-button">
+            <button class="menu__tab menu-tab" role="tab" aria-selected="false" aria-controls="tab-benedicts" id="tab-benedicts-button">
               Benedicts
             </button>
-            <button class="menu__tab" role="tab" aria-selected="false" aria-controls="tab-sandwiches" id="tab-sandwiches-button">
+            <button class="menu__tab menu-tab" role="tab" aria-selected="false" aria-controls="tab-sandwiches" id="tab-sandwiches-button">
               Sandwiches &amp; Wraps
             </button>
-            <button class="menu__tab" role="tab" aria-selected="false" aria-controls="tab-waffles" id="tab-waffles-button">
+            <button class="menu__tab menu-tab" role="tab" aria-selected="false" aria-controls="tab-waffles" id="tab-waffles-button">
               Waffles &amp; Pancakes
             </button>
-            <button class="menu__tab" role="tab" aria-selected="false" aria-controls="tab-beverages" id="tab-beverages-button">
+            <button class="menu__tab menu-tab" role="tab" aria-selected="false" aria-controls="tab-beverages" id="tab-beverages-button">
               Juices &amp; Beverages
             </button>
-            <button class="menu__tab" role="tab" aria-selected="false" aria-controls="tab-sides" id="tab-sides-button">
+            <button class="menu__tab menu-tab" role="tab" aria-selected="false" aria-controls="tab-sides" id="tab-sides-button">
               Side Orders
             </button>
           </div>
 
           <div class="menu__panels">
             <div class="menu__panel is-active" id="tab-omelettes" role="tabpanel" aria-labelledby="tab-omelettes-button">
-              <div class="menu__grid">
+              <div class="menu__grid menu-grid">
                 <article class="menu-card" style="--index: 0">
-                  <h3>Headquarter Omelette</h3>
-                  <p>Ham, onions, peppers, tomato, and American cheese served with toast and home fries.</p>
-                  <span class="menu-card__price">$12.99</span>
+                  <h3 class="menu-card-title">Headquarter Omelette</h3>
+                  <p class="menu-card-description">Ham, onions, peppers, tomato, and American cheese served with toast and home fries.</p>
+                  <span class="menu-card-price">$12.99</span>
                 </article>
                 <article class="menu-card" style="--index: 1">
-                  <h3>Ultimate Omelette</h3>
-                  <p>Bacon, sausage, ham, onions, peppers, mushrooms, and cheddar. A crew favorite.</p>
-                  <span class="menu-card__price">$13.49</span>
+                  <h3 class="menu-card-title">Ultimate Omelette</h3>
+                  <p class="menu-card-description">Bacon, sausage, ham, onions, peppers, mushrooms, and cheddar. A crew favorite.</p>
+                  <span class="menu-card-price">$13.49</span>
                 </article>
                 <article class="menu-card" style="--index: 2">
-                  <h3>Buffalo Omelette</h3>
-                  <p>Chicken tenders tossed in buffalo sauce with blue cheese crumble and scallions.</p>
-                  <span class="menu-card__price">$12.49</span>
+                  <h3 class="menu-card-title">Buffalo Omelette</h3>
+                  <p class="menu-card-description">Chicken tenders tossed in buffalo sauce with blue cheese crumble and scallions.</p>
+                  <span class="menu-card-price">$12.49</span>
                 </article>
                 <article class="menu-card" style="--index: 3">
-                  <h3>Deluxe Omelette</h3>
-                  <p>Spinach, tomato, feta, and olives topped with tzatziki for a Mediterranean ride.</p>
-                  <span class="menu-card__price">$11.99</span>
+                  <h3 class="menu-card-title">Deluxe Omelette</h3>
+                  <p class="menu-card-description">Spinach, tomato, feta, and olives topped with tzatziki for a Mediterranean ride.</p>
+                  <span class="menu-card-price">$11.99</span>
                 </article>
-                <article class="menu-card menu-card--featured" style="--index: 4">
-                  <h3>Build Your Own</h3>
-                  <p>Choose three fillings from fresh veggies, artisanal cheeses, and premium meats.</p>
-                  <span class="menu-card__price">Starting at $9.99</span>
+                <article class="menu-card featured" style="--index: 4">
+                  <h3 class="menu-card-title">Build Your Own</h3>
+                  <p class="menu-card-description">Choose three fillings from fresh veggies, artisanal cheeses, and premium meats.</p>
+                  <span class="menu-card-price">Starting at $9.99</span>
                 </article>
               </div>
             </div>
 
             <div class="menu__panel" id="tab-benedicts" role="tabpanel" aria-labelledby="tab-benedicts-button">
-              <div class="menu__grid">
+              <div class="menu__grid menu-grid">
                 <article class="menu-card" style="--index: 0">
-                  <h3>Classic Eggs Benedict</h3>
-                  <p>Griddled English muffin, Canadian bacon, poached eggs, silky hollandaise.</p>
-                  <span class="menu-card__price">$11.99</span>
+                  <h3 class="menu-card-title">Classic Eggs Benedict</h3>
+                  <p class="menu-card-description">Griddled English muffin, Canadian bacon, poached eggs, silky hollandaise.</p>
+                  <span class="menu-card-price">$11.99</span>
                 </article>
                 <article class="menu-card" style="--index: 1">
-                  <h3>Irish Benedict</h3>
-                  <p>Corned beef hash, sautéed onions, and poached eggs smothered in hollandaise.</p>
-                  <span class="menu-card__price">$12.49</span>
+                  <h3 class="menu-card-title">Irish Benedict</h3>
+                  <p class="menu-card-description">Corned beef hash, sautéed onions, and poached eggs smothered in hollandaise.</p>
+                  <span class="menu-card-price">$12.49</span>
                 </article>
                 <article class="menu-card" style="--index: 2">
-                  <h3>Florentine Benedict</h3>
-                  <p>Sautéed spinach, tomato, and creamy feta with lemon-kissed hollandaise.</p>
-                  <span class="menu-card__price">$11.49</span>
+                  <h3 class="menu-card-title">Florentine Benedict</h3>
+                  <p class="menu-card-description">Sautéed spinach, tomato, and creamy feta with lemon-kissed hollandaise.</p>
+                  <span class="menu-card-price">$11.49</span>
                 </article>
               </div>
             </div>
 
             <div class="menu__panel" id="tab-sandwiches" role="tabpanel" aria-labelledby="tab-sandwiches-button">
-              <div class="menu__grid">
+              <div class="menu__grid menu-grid">
                 <article class="menu-card" style="--index: 0">
-                  <h3>Breakfast BLT</h3>
-                  <p>Thick-cut bacon, fried egg, lettuce, tomato, and diner sauce on toasted sourdough.</p>
-                  <span class="menu-card__price">$10.49</span>
+                  <h3 class="menu-card-title">Breakfast BLT</h3>
+                  <p class="menu-card-description">Thick-cut bacon, fried egg, lettuce, tomato, and diner sauce on toasted sourdough.</p>
+                  <span class="menu-card-price">$10.49</span>
                 </article>
                 <article class="menu-card" style="--index: 1">
-                  <h3>Railcar Wrap</h3>
-                  <p>Scrambled eggs, turkey sausage, peppers, onions, cheddar, and hash browns in a wrap.</p>
-                  <span class="menu-card__price">$10.99</span>
+                  <h3 class="menu-card-title">Railcar Wrap</h3>
+                  <p class="menu-card-description">Scrambled eggs, turkey sausage, peppers, onions, cheddar, and hash browns in a wrap.</p>
+                  <span class="menu-card-price">$10.99</span>
                 </article>
                 <article class="menu-card" style="--index: 2">
-                  <h3>Headlight Burger</h3>
-                  <p>Angus patty, fried egg, smoked gouda, caramelized onions, and house aioli.</p>
-                  <span class="menu-card__price">$12.99</span>
+                  <h3 class="menu-card-title">Headlight Burger</h3>
+                  <p class="menu-card-description">Angus patty, fried egg, smoked gouda, caramelized onions, and house aioli.</p>
+                  <span class="menu-card-price">$12.99</span>
                 </article>
               </div>
             </div>
 
             <div class="menu__panel" id="tab-waffles" role="tabpanel" aria-labelledby="tab-waffles-button">
-              <div class="menu__grid">
+              <div class="menu__grid menu-grid">
                 <article class="menu-card" style="--index: 0">
-                  <h3>Golden Malted Waffle</h3>
-                  <p>Freshly pressed waffle served with whipped butter, maple syrup, and powdered sugar.</p>
-                  <span class="menu-card__price">$8.99</span>
+                  <h3 class="menu-card-title">Golden Malted Waffle</h3>
+                  <p class="menu-card-description">Freshly pressed waffle served with whipped butter, maple syrup, and powdered sugar.</p>
+                  <span class="menu-card-price">$8.99</span>
                 </article>
                 <article class="menu-card" style="--index: 1">
-                  <h3>Strawberry Shortline</h3>
-                  <p>Buttermilk pancakes layered with macerated berries, vanilla cream, and gold dust.</p>
-                  <span class="menu-card__price">$10.49</span>
+                  <h3 class="menu-card-title">Strawberry Shortline</h3>
+                  <p class="menu-card-description">Buttermilk pancakes layered with macerated berries, vanilla cream, and gold dust.</p>
+                  <span class="menu-card-price">$10.49</span>
                 </article>
                 <article class="menu-card" style="--index: 2">
-                  <h3>Banana Walnut Express</h3>
-                  <p>Caramelized bananas, candied walnuts, and bourbon maple syrup drizzle.</p>
-                  <span class="menu-card__price">$10.99</span>
+                  <h3 class="menu-card-title">Banana Walnut Express</h3>
+                  <p class="menu-card-description">Caramelized bananas, candied walnuts, and bourbon maple syrup drizzle.</p>
+                  <span class="menu-card-price">$10.99</span>
                 </article>
               </div>
             </div>
 
             <div class="menu__panel" id="tab-beverages" role="tabpanel" aria-labelledby="tab-beverages-button">
-              <div class="menu__grid">
+              <div class="menu__grid menu-grid">
                 <article class="menu-card" style="--index: 0">
-                  <h3>Fresh Pressed Orange Juice</h3>
-                  <p>Sunrise-sweet Valencia oranges juiced to order.</p>
-                  <span class="menu-card__price">$4.49</span>
+                  <h3 class="menu-card-title">Fresh Pressed Orange Juice</h3>
+                  <p class="menu-card-description">Sunrise-sweet Valencia oranges juiced to order.</p>
+                  <span class="menu-card-price">$4.49</span>
                 </article>
                 <article class="menu-card" style="--index: 1">
-                  <h3>Cold Brew Coffee</h3>
-                  <p>Steeped 18 hours, served over ice with optional vanilla cream.</p>
-                  <span class="menu-card__price">$4.99</span>
+                  <h3 class="menu-card-title">Cold Brew Coffee</h3>
+                  <p class="menu-card-description">Steeped 18 hours, served over ice with optional vanilla cream.</p>
+                  <span class="menu-card-price">$4.99</span>
                 </article>
                 <article class="menu-card" style="--index: 2">
-                  <h3>Sunrise Smoothie</h3>
-                  <p>Mango, pineapple, banana, and Greek yogurt blended to order.</p>
-                  <span class="menu-card__price">$5.99</span>
+                  <h3 class="menu-card-title">Sunrise Smoothie</h3>
+                  <p class="menu-card-description">Mango, pineapple, banana, and Greek yogurt blended to order.</p>
+                  <span class="menu-card-price">$5.99</span>
                 </article>
               </div>
             </div>
 
             <div class="menu__panel" id="tab-sides" role="tabpanel" aria-labelledby="tab-sides-button">
-              <div class="menu__grid">
+              <div class="menu__grid menu-grid">
                 <article class="menu-card" style="--index: 0">
-                  <h3>Home Fries</h3>
-                  <p>Skillet-crisp potatoes seasoned with smoked paprika and herbs.</p>
-                  <span class="menu-card__price">$3.99</span>
+                  <h3 class="menu-card-title">Home Fries</h3>
+                  <p class="menu-card-description">Skillet-crisp potatoes seasoned with smoked paprika and herbs.</p>
+                  <span class="menu-card-price">$3.99</span>
                 </article>
                 <article class="menu-card" style="--index: 1">
-                  <h3>Applewood Bacon</h3>
-                  <p>Thick-cut slices cooked to order.</p>
-                  <span class="menu-card__price">$4.49</span>
+                  <h3 class="menu-card-title">Applewood Bacon</h3>
+                  <p class="menu-card-description">Thick-cut slices cooked to order.</p>
+                  <span class="menu-card-price">$4.49</span>
                 </article>
                 <article class="menu-card" style="--index: 2">
-                  <h3>Seasonal Fruit Bowl</h3>
-                  <p>Fresh cut fruit sourced from local farms whenever possible.</p>
-                  <span class="menu-card__price">$5.49</span>
+                  <h3 class="menu-card-title">Seasonal Fruit Bowl</h3>
+                  <p class="menu-card-description">Fresh cut fruit sourced from local farms whenever possible.</p>
+                  <span class="menu-card-price">$5.49</span>
                 </article>
               </div>
             </div>
@@ -302,49 +320,44 @@
         </div>
       </section>
 
-      <section class="section specials" id="specials">
-        <div class="chalkboard fade-in-section">
-          <div class="chalkboard__content">
-            <h2 class="chalkboard__title">Today's Specials</h2>
-            <ul class="chalkboard__list" aria-label="Daily specials">
-              <li>
-                <span class="chalkboard__item">Huevos Rancheros</span>
-                <span class="chalkboard__price">Steak $16.49</span>
-              </li>
-              <li>
-                <span class="chalkboard__item">Homemade Soups</span>
-                <span class="chalkboard__price">Beef Stew · Chicken Noodle · Greek Lemon</span>
-              </li>
-              <li>
-                <span class="chalkboard__item">Natural Smoothies</span>
-                <span class="chalkboard__price">Strawberry Banana · Tropical Mango</span>
-              </li>
-              <li>
-                <span class="chalkboard__item">Greek Yogurt Parfait</span>
-                <span class="chalkboard__price">With granola & seasonal fruit</span>
-              </li>
-              <li>
-                <span class="chalkboard__item">Chef's Choice</span>
-                <span class="chalkboard__price">Ask your server for this week's feature</span>
-              </li>
-            </ul>
-            <div class="chalkboard__cta">Ask your conductor for allergen and seasonal updates.</div>
-          </div>
-          <div class="chalkboard__photos" aria-hidden="true">
-            <figure>
+      <section class="section specials-section" id="specials">
+        <div class="container">
+          <div class="specials-layout fade-in-section">
+            <div class="specials-left">
+              <h2 class="specials-title">Today's Specials</h2>
+              <div class="specials-list" aria-label="Daily specials" role="list">
+                <div class="specials-item" role="listitem">
+                  <span class="specials-name">Huevos Rancheros</span>
+                  <span class="specials-price">Steak $16.49</span>
+                </div>
+                <div class="specials-item" role="listitem">
+                  <span class="specials-name">Homemade Soups</span>
+                  <span class="specials-price">Beef Stew · Chicken Noodle · Greek Lemon</span>
+                </div>
+                <div class="specials-item" role="listitem">
+                  <span class="specials-name">Natural Smoothies</span>
+                  <span class="specials-price">Strawberry Banana · Tropical Mango</span>
+                </div>
+                <div class="specials-item" role="listitem">
+                  <span class="specials-name">Greek Yogurt Parfait</span>
+                  <span class="specials-price">With granola & seasonal fruit</span>
+                </div>
+                <div class="specials-item" role="listitem">
+                  <span class="specials-name">Chef's Choice</span>
+                  <span class="specials-price">Ask your server for this week's feature</span>
+                </div>
+              </div>
+              <div class="specials-callout">Ask your conductor for allergen and seasonal updates.</div>
+            </div>
+            <div class="specials-right">
               <img
-                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/69052282de82832f5f1663ec.jpeg"
+                class="chalkboard-photo lazy"
+                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                data-src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/69052282de82832f5f1663ec.jpeg"
                 alt="Handwritten chalkboard menu featuring daily specials"
                 loading="lazy"
               />
-            </figure>
-            <figure>
-              <img
-                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/69052287de82833f821663ee.jpeg"
-                alt="Ice cream dessert menu display with sundaes and waffle cones"
-                loading="lazy"
-              />
-            </figure>
+            </div>
           </div>
         </div>
       </section>
@@ -356,54 +369,66 @@
             <h2>Gallery</h2>
             <p>Peek inside the rail-inspired décor, chalkboard specials, and mouthwatering plates.</p>
           </header>
-          <div class="gallery__grid">
-            <figure class="gallery__item" style="--parallax-speed: 0.4">
+          <div class="gallery__grid gallery-grid">
+            <figure class="gallery__item gallery-item" style="--parallax-speed: 0.4">
               <img
-                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690522873db4b54e06052ded.jpeg"
+                class="lazy"
+                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                data-src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690522873db4b54e06052ded.jpeg"
                 alt="Pennsylvania Railroad vintage train wall art decoration"
                 loading="lazy"
               />
-              <figcaption>Signature Pennsylvania Railroad engine art</figcaption>
+              <figcaption class="gallery-caption">Signature Pennsylvania Railroad engine art</figcaption>
             </figure>
-            <figure class="gallery__item" style="--parallax-speed: 0.6">
+            <figure class="gallery__item gallery-item" style="--parallax-speed: 0.6">
               <img
-                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690521f9edf4205fef9d5e59.jpeg"
+                class="lazy"
+                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                data-src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690521f9edf4205fef9d5e59.jpeg"
                 alt="Omelette Headquarters dining room with blue wainscoting and wooden booths"
                 loading="lazy"
               />
-              <figcaption>Classic diner booths with train memorabilia</figcaption>
+              <figcaption class="gallery-caption">Classic diner booths with train memorabilia</figcaption>
             </figure>
-            <figure class="gallery__item" style="--parallax-speed: 0.5">
+            <figure class="gallery__item gallery-item" style="--parallax-speed: 0.5">
               <img
-                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/69052282de82832f5f1663ec.jpeg"
+                class="lazy"
+                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                data-src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/69052282de82832f5f1663ec.jpeg"
                 alt="Handwritten chalkboard menu featuring daily specials"
                 loading="lazy"
               />
-              <figcaption>Daily chalkboard specials</figcaption>
+              <figcaption class="gallery-caption">Daily chalkboard specials</figcaption>
             </figure>
-            <figure class="gallery__item" style="--parallax-speed: 0.7">
+            <figure class="gallery__item gallery-item" style="--parallax-speed: 0.7">
               <img
-                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/6905227e9faf0156034d16c8.jpeg"
+                class="lazy"
+                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                data-src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/6905227e9faf0156034d16c8.jpeg"
                 alt="Vintage locomotive photograph in sepia tones"
                 loading="lazy"
               />
-              <figcaption>Vintage locomotive photography</figcaption>
+              <figcaption class="gallery-caption">Vintage locomotive photography</figcaption>
             </figure>
-            <figure class="gallery__item" style="--parallax-speed: 0.55">
+            <figure class="gallery__item gallery-item" style="--parallax-speed: 0.55">
               <img
-                src="https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?auto=format&fit=crop&w=800&q=80"
+                class="lazy"
+                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                data-src="https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?auto=format&fit=crop&w=800&q=80"
                 alt="Three-egg omelette with toast and roasted potatoes"
                 loading="lazy"
               />
-              <figcaption>Made-to-order omelettes</figcaption>
+              <figcaption class="gallery-caption">Made-to-order omelettes</figcaption>
             </figure>
-            <figure class="gallery__item" style="--parallax-speed: 0.45">
+            <figure class="gallery__item gallery-item" style="--parallax-speed: 0.45">
               <img
-                src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=800&q=80"
+                class="lazy"
+                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                data-src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=800&q=80"
                 alt="Stack of pancakes topped with fresh berries"
                 loading="lazy"
               />
-              <figcaption>Stacks of fluffy pancakes</figcaption>
+              <figcaption class="gallery-caption">Stacks of fluffy pancakes</figcaption>
             </figure>
           </div>
         </div>
@@ -430,10 +455,14 @@
               <p><strong>Address:</strong> 57 Water St, Wakefield, MA 01880</p>
               <p><strong>Phone:</strong> <a href="tel:17812243989">781-224-3989</a></p>
             </address>
-            <div class="hours">
+            <div class="hours-status">
+              <p class="current-status closed">Currently Closed</p>
+              <p class="next-open">Opens Friday at 6:00 AM</p>
+            </div>
+            <div class="hours-display">
               <h3>Hours</h3>
-              <p>Friday – Sunday: <strong>6:00 AM – 2:00 PM</strong></p>
-              <div class="hours__status" data-hours></div>
+              <p class="hours-text">Friday – Sunday: <strong>6:00 AM – 2:00 PM</strong></p>
+              <p class="hours-note">Closed Monday – Thursday</p>
             </div>
             <div class="visit__actions">
               <a class="btn btn--primary" href="tel:17812243989">Call Now</a>
@@ -450,10 +479,10 @@
         <div class="container cta__content fade-in-section">
           <h2>Ready to Start Your Day Right?</h2>
           <p>Join us for breakfast that feels like home. Order ahead or grab a booth and stay awhile.</p>
-          <div class="cta__buttons">
-            <a class="btn btn--primary" href="#visit">Order Takeout</a>
-            <a class="btn btn--secondary" href="#menu">View Full Menu</a>
-            <a class="btn btn--outline" href="tel:17812243989">Call Us: 781-224-3989</a>
+          <div class="cta-buttons">
+            <a class="btn btn-cta-primary" href="#visit">Order Takeout</a>
+            <a class="btn btn-cta-secondary" href="#menu">View Full Menu</a>
+            <a class="btn btn-cta-tertiary" href="tel:17812243989">Call Us: 781-224-3989</a>
           </div>
         </div>
       </section>
