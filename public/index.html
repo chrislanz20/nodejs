@@ -14,7 +14,8 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/responsive.css" />
   </head>
   <body>
     <header class="hero" id="top">
@@ -117,8 +118,8 @@
       </section>
 
       <section class="section section--experience" id="experience">
-        <div class="container section__grid section__grid--reverse">
-          <article class="section__content">
+        <div class="container experience__layout">
+          <article class="section__content experience__content">
             <h2>The Omelette HQ Experience</h2>
             <p>
               Sunlight pours through our vaulted windows, jazz vinyl hums softly, and latte art swirls through
@@ -149,13 +150,59 @@
               </li>
             </ul>
           </article>
-          <figure class="feature-card" aria-label="Interior photography">
-            <img
-              src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80"
-              alt="Sunlit café interior with breakfast counter"
-            />
-            <figcaption>Bright mornings inside Omelette Headquarters</figcaption>
-          </figure>
+          <div class="experience__media">
+            <figure class="photo-grid" aria-label="Interior photography collage">
+              <div class="photo-grid__item photo-grid__item--main">
+                <img
+                  src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80"
+                  alt="Sunlit café interior with breakfast counter"
+                />
+              </div>
+              <div class="photo-grid__item">
+                <img
+                  src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=800&q=80"
+                  alt="Barista pouring latte art into a ceramic mug"
+                />
+              </div>
+              <div class="photo-grid__item">
+                <img
+                  src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80"
+                  alt="Guests enjoying brunch at a communal café table"
+                />
+              </div>
+              <figcaption class="photo-grid__caption">Bright mornings inside Omelette Headquarters</figcaption>
+            </figure>
+            <div class="stats-grid" aria-label="Omelette Headquarters quick stats">
+              <article class="stat-card">
+                <span class="stat-card__icon" aria-hidden="true">🥚</span>
+                <div class="stat-card__content">
+                  <span class="stat-card__number">120</span>
+                  <span class="stat-card__label">Omelettes served daily</span>
+                </div>
+              </article>
+              <article class="stat-card">
+                <span class="stat-card__icon" aria-hidden="true">☕</span>
+                <div class="stat-card__content">
+                  <span class="stat-card__number">18</span>
+                  <span class="stat-card__label">Signature coffee pours</span>
+                </div>
+              </article>
+              <article class="stat-card">
+                <span class="stat-card__icon" aria-hidden="true">🍽️</span>
+                <div class="stat-card__content">
+                  <span class="stat-card__number">48</span>
+                  <span class="stat-card__label">Seats across the café</span>
+                </div>
+              </article>
+              <article class="stat-card">
+                <span class="stat-card__icon" aria-hidden="true">🎵</span>
+                <div class="stat-card__content">
+                  <span class="stat-card__number">3</span>
+                  <span class="stat-card__label">Weekly vinyl sessions</span>
+                </div>
+              </article>
+            </div>
+          </div>
         </div>
       </section>
 
