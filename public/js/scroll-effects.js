@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lazyImages.forEach((image) => lazyObserver.observe(image));
   }
 
-  const galleryItems = document.querySelectorAll('.gallery__item');
+  const galleryItems = document.querySelectorAll('.gallery-item');
   if (galleryItems.length) {
     const handleScroll = () => {
       if (reduceMotion) return;

@@ -48,7 +48,7 @@ html {
   }
 }
 
-.gallery__item {
+.gallery-item {
   will-change: transform;
 }
 

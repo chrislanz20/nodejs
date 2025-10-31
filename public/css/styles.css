@@ -789,20 +789,57 @@ summary:focus-visible {
   border: 8px solid var(--bronze-accent);
 }
 
+.gallery-section {
+  background: #fff8e7;
+  padding: 5rem 0;
+}
+
+.gallery-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.gallery-subtitle {
+  color: #d4af37;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.gallery-title {
+  font-size: 4rem;
+  font-weight: 800;
+  color: #2c2c2c;
+  margin-bottom: 1.5rem;
+}
+
+.gallery-description {
+  font-size: 1.25rem;
+  color: #666;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  padding: 4rem 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
 .gallery-item {
   position: relative;
   overflow: hidden;
-  border-radius: 16px;
-  aspect-ratio: 4 / 3;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transition: all 0.4s ease;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  background: #ffffff;
+  aspect-ratio: 4 / 3;
 }
 
 .gallery-item img {
@@ -810,11 +847,17 @@ summary:focus-visible {
   height: 100%;
   object-fit: cover;
   transition: transform 0.5s ease;
+  display: block;
+}
+
+.gallery-item:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
 }
 
 .gallery-item:hover img,
 .gallery-item:focus-within img {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .gallery-caption {
@@ -822,18 +865,28 @@ summary:focus-visible {
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.7) 50%,
+    transparent 100%
+  );
   color: var(--white);
-  padding: 2rem 1.5rem 1.5rem;
-  font-size: 1.25rem;
-  font-weight: 700;
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
+  padding: 3rem 1.5rem 1.5rem;
+  transform: translateY(calc(100% - 60px));
+  transition: transform 0.4s ease;
 }
 
 .gallery-item:hover .gallery-caption,
 .gallery-item:focus-within .gallery-caption {
   transform: translateY(0);
+}
+
+.gallery-caption-text {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .visit {
