@@ -119,26 +119,17 @@
 
 @media (min-width: 640px) {
   .about__grid {
-    grid-template-columns: 1.2fr 1fr;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   }
 }
 
 @media (min-width: 768px) {
-  .about__gallery {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-areas:
-      "primary primary"
-      "secondary tertiary";
-    grid-auto-rows: minmax(240px, auto);
+  .about__highlights {
+    gap: 2rem;
   }
 
-  .about__image--primary {
-    min-height: clamp(320px, 34vw, 420px);
-  }
-
-  .about__image--secondary,
-  .about__image--tertiary {
-    min-height: clamp(240px, 26vw, 340px);
+  .highlight-card {
+    padding: clamp(2rem, 3vw, 2.75rem);
   }
 
   .visit__grid {
@@ -147,11 +138,7 @@
 }
 
 @media (min-width: 1024px) {
-  .about__gallery {
-    gap: 2rem;
-  }
-
-  .about__image {
+  .highlight-card {
     border-radius: 24px;
   }
 
