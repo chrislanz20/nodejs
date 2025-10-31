@@ -125,7 +125,13 @@
 
 @media (min-width: 768px) {
   .about__gallery {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+    grid-auto-rows: 280px;
+  }
+
+  .about__image:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
   }
 
   .visit__grid {
@@ -140,6 +146,10 @@
 
   .hero__cta {
     justify-content: flex-start;
+  }
+
+  .about__gallery {
+    grid-auto-rows: 320px;
   }
 
   .menu__grid {

@@ -463,12 +463,11 @@ summary:focus-visible {
 .about__gallery {
   display: grid;
   gap: 1.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: 1fr;
+  grid-auto-rows: minmax(220px, auto);
 }
 
 .about-photos {
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
   margin-bottom: 3rem;
 }
 
@@ -476,11 +475,12 @@ summary:focus-visible {
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+  height: 100%;
 }
 
 .about__image img {
   width: 100%;
-  height: 250px;
+  height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
 }
