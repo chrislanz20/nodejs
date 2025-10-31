@@ -872,8 +872,12 @@ summary:focus-visible {
     transparent 100%
   );
   color: var(--white);
-  padding: 3rem 1.5rem 1.5rem;
-  transform: translateY(calc(100% - 60px));
+  padding: 2.25rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  transform: translateY(100%);
   transition: transform 0.4s ease;
 }
 
