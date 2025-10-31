@@ -1,0 +1,27 @@
+@media (max-width: 1024px) {
+  .about-gallery {
+    grid-auto-rows: clamp(200px, 32vw, 260px);
+  }
+
+  .about-gallery__item--featured {
+    min-height: clamp(300px, 60vw, 420px);
+  }
+}
+
+@media (max-width: 720px) {
+  .about-gallery {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+
+  .about-gallery__item,
+  .about-gallery__item:not(.about-gallery__item--featured) {
+    aspect-ratio: auto;
+    min-height: 240px;
+  }
+
+  .about-gallery__item--featured {
+    grid-row: auto;
+    min-height: 320px;
+  }
+}
