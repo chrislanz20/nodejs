@@ -464,7 +464,7 @@ summary:focus-visible {
 .about__gallery {
   display: grid;
   gap: 1.5rem;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   align-items: stretch;
 }
 
@@ -481,7 +481,7 @@ summary:focus-visible {
 }
 
 .about__image--feature {
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3;
 }
 
 .about__image img {
