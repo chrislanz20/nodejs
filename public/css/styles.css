@@ -463,8 +463,9 @@ summary:focus-visible {
 
 .about__gallery {
   display: grid;
-  gap: 1.5rem;
+  gap: 1.75rem;
   grid-template-columns: 1fr;
+  grid-auto-rows: minmax(220px, auto);
 }
 
 .about-photos {
@@ -476,18 +477,31 @@ summary:focus-visible {
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
-  aspect-ratio: 4 / 3;
+  height: 100%;
+  min-height: clamp(220px, 28vw, 340px);
 }
 
 .about__image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease;
 }
 
 .about__image:hover img {
-  transform: scale(1.05);
+  transform: scale(1.07);
+}
+
+.about__image--primary {
+  grid-area: primary;
+}
+
+.about__image--secondary {
+  grid-area: secondary;
+}
+
+.about__image--tertiary {
+  grid-area: tertiary;
 }
 
 .section-divider {
