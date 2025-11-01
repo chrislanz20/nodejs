@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The Omelette Headquarters - Wakefield's legendary breakfast spot with vintage railroad charm. Serving fresh omelettes, benedicts, waffles & classic diner favorites.">
+    <meta name="keywords" content="breakfast, brunch, omelettes, benedicts, Wakefield MA, diner, restaurant, train theme">
+    <title>The Omelette Headquarters | Classic Breakfast Diner | Wakefield, MA</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Quicksand:wght@400;600;700&family=Poppins:wght@400;500;600&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar" class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">THE OMELETTE HEADQUARTERS</span>
+            </div>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#menu">Menu</a></li>
+                <li><a href="#specials">Specials</a></li>
+                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#location">Location</a></li>
+                <li><a href="#contact" class="nav-cta">Order Now</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 1. HERO SECTION -->
+    <section id="home" class="hero" role="banner">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title fade-in">THE OMELETTE HEADQUARTERS</h1>
+            <p class="hero-tagline fade-in-delay-1">All Aboard for Breakfast!</p>
+            <p class="hero-subtitle fade-in-delay-2">Serving Fresh Omelettes, Benedicts & Classic Diner Favorites</p>
+            <div class="hero-ctas fade-in-delay-3">
+                <a href="#menu" class="btn btn-primary">View Full Menu</a>
+                <a href="tel:7812243989" class="btn btn-secondary">Order Online</a>
+            </div>
+            <div class="scroll-indicator">
+                <div class="scroll-arrow"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. ABOUT SECTION -->
+    <section id="about" class="about fade-in-section">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-content">
+                    <h2 class="section-title">A Breakfast Destination with Character</h2>
+                    <div class="train-divider"></div>
+                    <p class="about-text">
+                        Step into The Omelette Headquarters and step back in time. Our family-owned
+                        diner combines classic American breakfast traditions with nostalgic railroad
+                        charm. From our signature three-egg omelettes to made-from-scratch Benedicts,
+                        every dish is crafted with care and served with a smile.
+                    </p>
+                    <p class="about-text">
+                        Our walls tell stories of the golden age of rail travel, with vintage
+                        Pennsylvania Railroad memorabilia transporting you to a simpler time.
+                        Whether you're a regular or first-time visitor, you're family here.
+                    </p>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-icon">📅</span>
+                            <span class="stat-number">Serving</span>
+                            <span class="stat-label">Wakefield</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-icon">🍳</span>
+                            <span class="stat-number">30+</span>
+                            <span class="stat-label">Omelette Varieties</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-icon">⭐</span>
+                            <span class="stat-number">4.8/5</span>
+                            <span class="stat-label">Customer Rating</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-icon">🚂</span>
+                            <span class="stat-number">100%</span>
+                            <span class="stat-label">Nostalgic Vibes</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-gallery">
+                    <img src="images/dining-interior.jpeg" alt="Cozy dining area with blue wainscoting and wooden booths" loading="lazy">
+                    <img src="images/train-wall-art.jpeg" alt="Pennsylvania Railroad vintage train wall art decoration" loading="lazy">
+                    <img src="images/vintage-train-photo.jpeg" alt="Historical locomotive photograph in sepia tones" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. MENU SHOWCASE SECTION -->
+    <section id="menu" class="menu fade-in-section">
+        <div class="container">
+            <h2 class="section-title centered">Our Menu</h2>
+            <p class="section-subtitle centered">Discover Your New Favorite Breakfast</p>
+            <div class="train-divider centered"></div>
+
+            <!-- Menu Tabs -->
+            <div class="menu-tabs" role="tablist">
+                <button class="menu-tab active" data-tab="omelettes" role="tab" aria-selected="true">
+                    ⭐ Omelettes
+                </button>
+                <button class="menu-tab" data-tab="benedicts" role="tab" aria-selected="false">
+                    Benedicts
+                </button>
+                <button class="menu-tab" data-tab="waffles" role="tab" aria-selected="false">
+                    Waffles & Pancakes
+                </button>
+                <button class="menu-tab" data-tab="sandwiches" role="tab" aria-selected="false">
+                    Sandwiches & Wraps
+                </button>
+                <button class="menu-tab" data-tab="sides" role="tab" aria-selected="false">
+                    Sides & More
+                </button>
+            </div>
+
+            <!-- Menu Content -->
+            <div class="menu-content">
+                <!-- Omelettes Tab -->
+                <div id="omelettes" class="menu-tab-content active" role="tabpanel">
+                    <h3 class="menu-category-title">Signature Omelettes <span class="subtitle">(Three Eggs)</span></h3>
+                    <div class="menu-grid">
+                        <div class="menu-card" style="--index: 0">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Headquarter Omelette</h4>
+                                <p class="menu-item-description">Ham, bacon, sausage, peppers, onions, mushrooms & cheese</p>
+                                <span class="menu-item-price">$15.99</span>
+                            </div>
+                        </div>
+                        <div class="menu-card" style="--index: 1">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Ultimate Omelette</h4>
+                                <p class="menu-item-description">Ham, bacon, peppers, onions, tomatoes & cheese</p>
+                                <span class="menu-item-price">$14.99</span>
+                            </div>
+                        </div>
+                        <div class="menu-card" style="--index: 2">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Buffalo Omelette</h4>
+                                <p class="menu-item-description">Spicy buffalo chicken with peppers, onions & cheese</p>
+                                <span class="menu-item-price">$14.49</span>
+                            </div>
+                        </div>
+                        <div class="menu-card" style="--index: 3">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Western Omelette</h4>
+                                <p class="menu-item-description">Ham, peppers, onions & cheese</p>
+                                <span class="menu-item-price">$13.49</span>
+                            </div>
+                        </div>
+                        <div class="menu-card" style="--index: 4">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Greek Omelette</h4>
+                                <p class="menu-item-description">Feta cheese, tomatoes, onions & spinach</p>
+                                <span class="menu-item-price">$13.99</span>
+                            </div>
+                        </div>
+                        <div class="menu-card" style="--index: 5">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Veggie Omelette</h4>
+                                <p class="menu-item-description">Peppers, onions, mushrooms, tomatoes & cheese</p>
+                                <span class="menu-item-price">$12.99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Benedicts Tab -->
+                <div id="benedicts" class="menu-tab-content" role="tabpanel">
+                    <h3 class="menu-category-title">Eggs Benedict</h3>
+                    <div class="menu-grid">
+                        <div class="menu-card" style="--index: 0">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Classic Benedict</h4>
+                                <p class="menu-item-description">Canadian bacon, poached eggs, hollandaise on English muffin</p>
+                                <span class="menu-item-price">$14.49</span>
+                            </div>
+                        </div>
+                        <div class="menu-card" style="--index: 1">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Florentine Benedict</h4>
+                                <p class="menu-item-description">Fresh spinach, tomatoes, poached eggs & hollandaise</p>
+                                <span class="menu-item-price">$13.99</span>
+                            </div>
+                        </div>
+                        <div class="menu-card" style="--index: 2">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Steak Benedict</h4>
+                                <p class="menu-item-description">Grilled steak, poached eggs & hollandaise</p>
+                                <span class="menu-item-price">$16.99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Waffles & Pancakes Tab -->
+                <div id="waffles" class="menu-tab-content" role="tabpanel">
+                    <h3 class="menu-category-title">Waffles & Pancakes</h3>
+                    <div class="menu-grid">
+                        <div class="menu-card" style="--index: 0">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Belgian Waffle</h4>
+                                <p class="menu-item-description">Light, fluffy waffle with butter & syrup</p>
+                                <span class="menu-item-price">$9.99</span>
+                            </div>
+                        </div>
+                        <div class="menu-card" style="--index: 1">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Chocolate Chip Pancakes</h4>
+                                <p class="menu-item-description">Stack of 3 fluffy pancakes loaded with chocolate chips</p>
+                                <span class="menu-item-price">$10.49</span>
+                            </div>
+                        </div>
+                        <div class="menu-card" style="--index: 2">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Blueberry Pancakes</h4>
+                                <p class="menu-item-description">Fresh blueberries in fluffy buttermilk pancakes</p>
+                                <span class="menu-item-price">$10.99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sandwiches & Wraps Tab -->
+                <div id="sandwiches" class="menu-tab-content" role="tabpanel">
+                    <h3 class="menu-category-title">Sandwiches & Wraps</h3>
+                    <div class="menu-grid">
+                        <div class="menu-card" style="--index: 0">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Breakfast Sandwich</h4>
+                                <p class="menu-item-description">Egg, cheese & choice of meat on your choice of bread</p>
+                                <span class="menu-item-price">$8.99</span>
+                            </div>
+                        </div>
+                        <div class="menu-card" style="--index: 1">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Breakfast Wrap</h4>
+                                <p class="menu-item-description">Scrambled eggs, peppers, onions, cheese in a tortilla wrap</p>
+                                <span class="menu-item-price">$9.49</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sides & More Tab -->
+                <div id="sides" class="menu-tab-content" role="tabpanel">
+                    <h3 class="menu-category-title">Sides & Beverages</h3>
+                    <div class="menu-grid">
+                        <div class="menu-card" style="--index: 0">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Home Fries</h4>
+                                <p class="menu-item-description">Crispy seasoned potatoes</p>
+                                <span class="menu-item-price">$4.99</span>
+                            </div>
+                        </div>
+                        <div class="menu-card" style="--index: 1">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Bacon or Sausage</h4>
+                                <p class="menu-item-description">Premium quality breakfast meats</p>
+                                <span class="menu-item-price">$5.49</span>
+                            </div>
+                        </div>
+                        <div class="menu-card" style="--index: 2">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Fresh Coffee</h4>
+                                <p class="menu-item-description">Freshly brewed, unlimited refills</p>
+                                <span class="menu-item-price">$2.99</span>
+                            </div>
+                        </div>
+                        <div class="menu-card" style="--index: 3">
+                            <div class="menu-card-content">
+                                <h4 class="menu-item-name">Fresh Squeezed Orange Juice</h4>
+                                <p class="menu-item-description">100% fresh Florida oranges</p>
+                                <span class="menu-item-price">$5.99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-footer">
+                <a href="images/menu-page-2.jpeg" class="btn btn-outline" target="_blank">Download Full Menu (PDF)</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. CHALKBOARD SPECIALS SECTION -->
+    <section id="specials" class="chalkboard-specials fade-in-section">
+        <div class="container">
+            <div class="chalkboard-bg">
+                <h2 class="chalk-title">Look Now Serving!</h2>
+                <div class="specials-grid">
+                    <div class="special-item">
+                        <h3 class="chalk-heading">Homemade Soups</h3>
+                        <div class="special-dish">
+                            <span class="chalk-text">Beef Stew</span>
+                            <span class="chalk-price">$10.49</span>
+                        </div>
+                        <div class="special-dish">
+                            <span class="chalk-text">Chicken Noodle</span>
+                            <span class="chalk-price">$8.99</span>
+                        </div>
+                        <div class="special-dish">
+                            <span class="chalk-text">Greek Chicken Lemon</span>
+                            <span class="chalk-price">$9.49</span>
+                        </div>
+                    </div>
+
+                    <div class="special-item">
+                        <h3 class="chalk-heading">Daily Specials</h3>
+                        <div class="special-dish featured">
+                            <span class="chalk-text">Huevos Rancheros</span>
+                            <div class="chalk-options">
+                                <span>Chicken $14.49</span>
+                                <span>Steak $16.49</span>
+                            </div>
+                        </div>
+                        <div class="special-dish">
+                            <span class="chalk-text">Greek Yogurt Parfait</span>
+                            <span class="chalk-price">$8.99</span>
+                        </div>
+                    </div>
+
+                    <div class="special-item">
+                        <h3 class="chalk-heading">Fresh & Healthy</h3>
+                        <div class="special-dish">
+                            <span class="chalk-text">Natural Smoothies</span>
+                            <span class="chalk-price">$6.99</span>
+                        </div>
+                        <div class="special-dish">
+                            <span class="chalk-text">Fresh Fruit Bowl</span>
+                            <span class="chalk-price">$7.99</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="chalk-footer">Ask Your Server About Today's Chef Special!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. GALLERY SECTION -->
+    <section id="gallery" class="gallery fade-in-section">
+        <div class="container">
+            <h2 class="section-title centered">Experience The Atmosphere</h2>
+            <p class="section-subtitle centered">Step into our vintage railroad-themed diner</p>
+            <div class="train-divider centered"></div>
+
+            <div class="gallery-grid">
+                <div class="gallery-item" data-index="0">
+                    <img src="images/train-wall-art.jpeg" alt="Pennsylvania Railroad vintage train wall art - our signature decor piece" loading="lazy">
+                    <div class="gallery-overlay">
+                        <span class="gallery-caption">Our Signature Train Art</span>
+                    </div>
+                </div>
+                <div class="gallery-item" data-index="1">
+                    <img src="images/dining-interior.jpeg" alt="Cozy dining area with blue wainscoting and comfortable wooden booths" loading="lazy">
+                    <div class="gallery-overlay">
+                        <span class="gallery-caption">Comfortable Dining Area</span>
+                    </div>
+                </div>
+                <div class="gallery-item" data-index="2">
+                    <img src="images/vintage-train-photo.jpeg" alt="Historical locomotive photograph from the golden age of rail travel" loading="lazy">
+                    <div class="gallery-overlay">
+                        <span class="gallery-caption">Vintage Railroad History</span>
+                    </div>
+                </div>
+                <div class="gallery-item" data-index="3">
+                    <img src="images/chalkboard-specials.jpeg" alt="Hand-written daily specials board with fresh menu items" loading="lazy">
+                    <div class="gallery-overlay">
+                        <span class="gallery-caption">Fresh Daily Specials</span>
+                    </div>
+                </div>
+                <div class="gallery-item" data-index="4">
+                    <img src="images/ice-cream-display.jpeg" alt="Delicious ice cream and dessert menu display" loading="lazy">
+                    <div class="gallery-overlay">
+                        <span class="gallery-caption">Sweet Treats & Desserts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. HOURS & LOCATION SECTION -->
+    <section id="location" class="location fade-in-section">
+        <div class="container">
+            <h2 class="section-title centered white">Visit Us</h2>
+            <div class="train-divider centered"></div>
+
+            <div class="location-grid">
+                <div class="location-map">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2943.4!2d-71.0733!3d42.5066!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e3711e1c3c1c3d%3A0x1234567890abcdef!2s57%20Water%20St%2C%20Wakefield%2C%20MA%2001880!5e0!3m2!1sen!2sus!4v1234567890"
+                        width="100%"
+                        height="400"
+                        style="border:0;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        title="The Omelette Headquarters location map"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+                <div class="location-info">
+                    <div class="info-card">
+                        <h3 class="info-title">📍 Location</h3>
+                        <p class="info-text">
+                            57 Water St<br>
+                            Wakefield, MA 01880
+                        </p>
+                        <a href="https://maps.google.com/?q=57+Water+St,+Wakefield,+MA+01880"
+                           class="btn btn-outline-white"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            Get Directions
+                        </a>
+                    </div>
+
+                    <div class="info-card">
+                        <h3 class="info-title">🕐 Hours</h3>
+                        <div class="hours-board">
+                            <div class="hours-row">
+                                <span class="day">Friday - Sunday</span>
+                                <span class="time">6:00 AM - 2:00 PM</span>
+                            </div>
+                            <div class="hours-row">
+                                <span class="day">Monday - Thursday</span>
+                                <span class="time closed">Closed</span>
+                            </div>
+                        </div>
+                        <div class="status-indicator">
+                            <span class="status-dot" id="status-dot"></span>
+                            <span class="status-text" id="status-text">Check hours</span>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3 class="info-title">📞 Contact</h3>
+                        <p class="info-text">
+                            <a href="tel:7812243989" class="phone-link">781-224-3989</a>
+                        </p>
+                        <a href="tel:7812243989" class="btn btn-primary">Call Us Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. CALL-TO-ACTION SECTION -->
+    <section id="contact" class="cta-section fade-in-section">
+        <div class="cta-overlay"></div>
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to Start Your Day Right?</h2>
+                <p class="cta-subtitle">Join us for breakfast that feels like home</p>
+                <div class="cta-buttons">
+                    <a href="tel:7812243989" class="btn btn-large btn-primary">Call to Order: 781-224-3989</a>
+                    <a href="#menu" class="btn btn-large btn-secondary">View Full Menu</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. FOOTER -->
+    <footer class="footer">
+        <div class="footer-divider"></div>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3 class="footer-title">THE OMELETTE HEADQUARTERS</h3>
+                    <p class="footer-tagline">All Aboard for Breakfast!</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook" class="social-link">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+                            </svg>
+                        </a>
+                        <a href="#" aria-label="Instagram" class="social-link">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                                <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" fill="none" stroke="white" stroke-width="2"/>
+                                <circle cx="17.5" cy="6.5" r="1.5" fill="white"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4 class="footer-heading">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#menu">Menu</a></li>
+                        <li><a href="#gallery">Gallery</a></li>
+                        <li><a href="#location">Location</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4 class="footer-heading">Contact</h4>
+                    <ul class="footer-info">
+                        <li>📍 57 Water St, Wakefield, MA</li>
+                        <li>📞 <a href="tel:7812243989">781-224-3989</a></li>
+                        <li>🕐 Fri-Sun: 6AM - 2PM</li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4 class="footer-heading">Connect</h4>
+                    <p class="footer-text">Follow us for daily specials and updates!</p>
+                    <a href="#location" class="btn btn-outline-white btn-small">Visit Us</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 The Omelette Headquarters. All rights reserved.</p>
+                <p class="footer-credit">Crafted with ❤️ for breakfast lovers</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image gallery lightbox">
+        <button class="lightbox-close" aria-label="Close lightbox">&times;</button>
+        <button class="lightbox-prev" aria-label="Previous image">‹</button>
+        <button class="lightbox-next" aria-label="Next image">›</button>
+        <img src="" alt="" class="lightbox-image">
+        <div class="lightbox-caption"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/scroll-effects.js"></script>
+    <script src="js/menu-tabs.js"></script>
+</body>
+</html>
