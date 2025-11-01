@@ -605,6 +605,7 @@ summary:focus-visible {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
+  margin-top: 2.5rem;
 }
 
 .stats-card-compact {
