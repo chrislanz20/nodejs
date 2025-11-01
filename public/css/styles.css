@@ -238,11 +238,15 @@ summary:focus-visible {
 }
 
 .hero__content {
-  max-width: 620px;
+  max-width: 800px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  margin-top: 2rem; /* Push content down so nav doesn't block eyebrow text */
+  margin-top: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  align-items: center;
 }
 
 .hero__eyebrow {
@@ -279,6 +283,7 @@ summary:focus-visible {
   display: flex;
   flex-wrap: wrap;
   gap: 1.25rem;
+  justify-content: center;
 }
 
 .hero .btn--primary {
