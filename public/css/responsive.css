@@ -66,6 +66,20 @@
     min-height: 240px;
     max-height: 350px;
   }
+
+  .about-top-section {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .features-row {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .feature-box {
+    max-height: none;
+  }
 }
 
 @media (max-width: 768px) {
@@ -252,5 +266,14 @@
 
   .stat-number {
     font-size: 3rem;
+  }
+
+  .stats-grid-compact {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .stats-card-compact {
+    min-height: 160px;
   }
 }
