@@ -129,7 +129,8 @@
 
 @media (min-width: 640px) {
   .about__grid {
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    grid-template-columns: 1fr 1.2fr;
+    gap: 4rem;
   }
 }
 
@@ -168,7 +169,17 @@
   .menu__grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
 
+@media (max-width: 1200px) {
+  .about__highlights {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .highlight-card__title {
+    font-size: 1.65rem;
+  }
 }
 
 @media (min-width: 1280px) {
@@ -225,5 +236,21 @@
 
   .specials-price {
     margin-left: 0;
+  }
+
+  .about__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .about__grid {
+    gap: 2rem;
+  }
+
+  .highlight-card__title {
+    font-size: 1.5rem;
+  }
+
+  .stat-number {
+    font-size: 3rem;
   }
 }
