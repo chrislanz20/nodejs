@@ -16,6 +16,11 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -23,6 +28,8 @@ body {
   color: var(--color-ink);
   line-height: 1.7;
   text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
@@ -858,6 +865,190 @@ ul {
   border: 0;
 }
 
+/* Back to Top Button */
+.back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-yolk), #ffd36b);
+  color: #3c2a17;
+  border: none;
+  box-shadow: 0 8px 24px rgba(255, 179, 71, 0.35);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.8);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.back-to-top:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 12px 32px rgba(255, 179, 71, 0.45);
+}
+
+.back-to-top:active {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.back-to-top svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Focus Styles for Accessibility */
+a:focus-visible,
+button:focus-visible,
+.btn:focus-visible {
+  outline: 3px solid var(--color-yolk);
+  outline-offset: 3px;
+}
+
+/* Minimum Touch Targets (44x44px for accessibility) */
+@media (hover: none) and (pointer: coarse) {
+  .nav__links a,
+  .btn,
+  .topbar__close,
+  .nav__toggle,
+  .event-card__cta,
+  .footer__social,
+  a[href^="mailto"],
+  a[href^="tel"] {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Increase spacing on mobile for better tap targets */
+  .nav__links {
+    gap: 0.5rem;
+  }
+
+  .nav__links a {
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-muted: rgba(53, 44, 39, 0.85);
+  }
+
+  .btn--ghost,
+  .nav__cta {
+    border-width: 2px;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  .hero__copy,
+  .hero__media {
+    animation: none;
+  }
+
+  img {
+    animation: none;
+  }
+}
+
+/* Improved Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero__copy,
+.hero__media {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.hero__media {
+  animation-delay: 0.2s;
+}
+
+/* Image Loading State */
+img {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+img[loading="lazy"] {
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Print Styles */
+@media print {
+  .topbar,
+  .nav__toggle,
+  .back-to-top,
+  .footer__social {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+  }
+
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
+
+  .hero,
+  .section {
+    page-break-inside: avoid;
+  }
+}
+
 @media (max-width: 960px) {
   .hero__layout {
     grid-template-columns: 1fr;
@@ -948,5 +1139,17 @@ ul {
 
   .visit-card__map iframe {
     width: 100%;
+  }
+
+  .back-to-top {
+    width: 3rem;
+    height: 3rem;
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+
+  .back-to-top svg {
+    width: 1.25rem;
+    height: 1.25rem;
   }
 }
