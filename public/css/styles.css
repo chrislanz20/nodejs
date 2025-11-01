@@ -1097,26 +1097,48 @@ summary:focus-visible {
 }
 
 .visit {
-  background: var(--navy-primary);
+  background: #2C3E50;
   color: var(--cream-bg);
+  padding: 6rem 0;
 }
 
 .visit__grid {
   display: grid;
-  gap: 2rem;
-  align-items: center;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.visit__map {
+  background: white;
+  border-radius: 20px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  height: 500px;
 }
 
 .visit__map iframe {
-  border-radius: 24px;
-  min-height: 320px;
   width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.visit__details {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-start;
 }
 
 .visit__details h2 {
   font-family: var(--font-heading);
   letter-spacing: 0.1em;
   margin-top: 0;
+  margin-bottom: 2.5rem;
   color: var(--gold-accent);
 }
 
@@ -1125,8 +1147,15 @@ summary:focus-visible {
   margin-bottom: 1.5rem;
 }
 
+.visit__details address p {
+  font-size: 1.125rem;
+  color: white;
+  margin-bottom: 1.5rem;
+}
+
 .visit__details a {
-  color: var(--white);
+  color: #FFD700;
+  text-decoration: underline;
 }
 
 .hours-status {
@@ -1138,57 +1167,88 @@ summary:focus-visible {
 
 .current-status {
   display: inline-block;
-  padding: 0.75rem 2rem;
+  padding: 0.875rem 2rem;
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 50px;
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
+  color: #B0B0B0;
   margin-bottom: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .current-status.open {
-  background: #4caf50;
-  color: #ffffff;
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+  border-color: #4caf50;
 }
 
 .current-status.closed {
-  background: #666666;
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+  color: #B0B0B0;
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .next-open {
-  font-size: 1.1rem;
-  color: var(--orange-primary);
-  font-weight: 600;
+  font-size: 1.25rem;
+  color: #FF8C42;
+  font-weight: 700;
+  margin-bottom: 2.5rem;
 }
 
 .hours-display {
-  background: rgba(255, 255, 255, 0.08);
-  padding: 1.5rem;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.hours-display h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
 }
 
 .hours-text {
   font-size: 1.5rem;
-  color: var(--white);
+  color: white;
+  margin-bottom: 1rem;
 }
 
 .hours-text strong {
-  color: var(--orange-primary);
+  color: #FFD700;
   font-weight: 800;
 }
 
 .hours-note {
   font-size: 1rem;
   color: rgba(255, 255, 255, 0.7);
-  font-style: italic;
+  font-style: normal;
 }
 
 .visit__actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+
+.visit__actions .btn--primary {
+  background: #8B1538;
+  padding: 1rem 2.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  border-radius: 50px;
+}
+
+.visit__actions .btn--secondary {
+  background: #FF8C42;
+  padding: 1rem 2.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  border-radius: 50px;
 }
 
 .cta {
