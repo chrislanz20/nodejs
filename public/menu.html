@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Menu | The Omelette Headquarters</title>
+    <meta
+      name="description"
+      content="Explore The Omelette Headquarters menu featuring signature omelettes, benedicts, waffles, sandwiches, and daily specials."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@400;500;600&family=Nunito:wght@400;500;600;700&family=Oswald:wght@400;500;600&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/animations.css" />
+    <link rel="stylesheet" href="/css/responsive.css" />
+  </head>
+  <body>
+    <nav class="nav" aria-label="Primary">
+      <div class="nav__inner">
+        <a class="nav__brand" href="/" aria-label="The Omelette Headquarters home">
+          <span class="nav__logo">🚂</span>
+          <span class="nav__brand-text">Omelette HQ</span>
+        </a>
+        <button
+          class="nav__toggle"
+          aria-expanded="false"
+          aria-controls="primary-navigation"
+          aria-label="Toggle navigation"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <ul class="nav__links" id="primary-navigation">
+          <li><a href="/">Home</a></li>
+          <li><a href="/about.html">About</a></li>
+          <li><a href="/menu.html" class="active">Menu</a></li>
+          <li><a href="/gallery.html">Gallery</a></li>
+          <li><a href="/contact.html">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main id="main-content" style="padding-top: 100px;">
+      <section class="section menu">
+        <div class="container">
+          <header class="section__header fade-in-section">
+            <p class="eyebrow">Signature Dishes</p>
+            <h1>Menu Highlights</h1>
+            <p>Explore our guest-favorite omelettes, benedicts, and breakfast comforts inspired by the original menu.</p>
+          </header>
+          <div class="menu__tabs menu-tabs" role="tablist" aria-label="Menu categories">
+            <button class="menu__tab menu-tab is-active" role="tab" aria-selected="true" aria-controls="tab-omelettes" id="tab-omelettes-button">
+              Omelettes
+            </button>
+            <button class="menu__tab menu-tab" role="tab" aria-selected="false" aria-controls="tab-benedicts" id="tab-benedicts-button">
+              Benedicts
+            </button>
+            <button class="menu__tab menu-tab" role="tab" aria-selected="false" aria-controls="tab-sandwiches" id="tab-sandwiches-button">
+              Sandwiches &amp; Wraps
+            </button>
+            <button class="menu__tab menu-tab" role="tab" aria-selected="false" aria-controls="tab-waffles" id="tab-waffles-button">
+              Waffles &amp; Pancakes
+            </button>
+            <button class="menu__tab menu-tab" role="tab" aria-selected="false" aria-controls="tab-beverages" id="tab-beverages-button">
+              Juices &amp; Beverages
+            </button>
+            <button class="menu__tab menu-tab" role="tab" aria-selected="false" aria-controls="tab-sides" id="tab-sides-button">
+              Side Orders
+            </button>
+          </div>
+
+          <div class="menu__panels">
+            <div class="menu__panel is-active" id="tab-omelettes" role="tabpanel" aria-labelledby="tab-omelettes-button">
+              <div class="menu__grid menu-grid">
+                <article class="menu-card" style="--index: 0">
+                  <h3 class="menu-card-title">Headquarter Omelette</h3>
+                  <p class="menu-card-description">Ham, onions, peppers, tomato, and American cheese served with toast and home fries.</p>
+                  <span class="menu-card-price">$12.99</span>
+                </article>
+                <article class="menu-card" style="--index: 1">
+                  <h3 class="menu-card-title">Ultimate Omelette</h3>
+                  <p class="menu-card-description">Bacon, sausage, ham, onions, peppers, mushrooms, and cheddar. A crew favorite.</p>
+                  <span class="menu-card-price">$13.49</span>
+                </article>
+                <article class="menu-card" style="--index: 2">
+                  <h3 class="menu-card-title">Buffalo Omelette</h3>
+                  <p class="menu-card-description">Chicken tenders tossed in buffalo sauce with blue cheese crumble and scallions.</p>
+                  <span class="menu-card-price">$12.49</span>
+                </article>
+                <article class="menu-card" style="--index: 3">
+                  <h3 class="menu-card-title">Deluxe Omelette</h3>
+                  <p class="menu-card-description">Spinach, tomato, feta, and olives topped with tzatziki for a Mediterranean ride.</p>
+                  <span class="menu-card-price">$11.99</span>
+                </article>
+                <article class="menu-card featured" style="--index: 4">
+                  <h3 class="menu-card-title">Build Your Own</h3>
+                  <p class="menu-card-description">Choose three fillings from fresh veggies, artisanal cheeses, and premium meats.</p>
+                  <span class="menu-card-price">Starting at $9.99</span>
+                </article>
+              </div>
+            </div>
+
+            <div class="menu__panel" id="tab-benedicts" role="tabpanel" aria-labelledby="tab-benedicts-button">
+              <div class="menu__grid menu-grid">
+                <article class="menu-card" style="--index: 0">
+                  <h3 class="menu-card-title">Classic Eggs Benedict</h3>
+                  <p class="menu-card-description">Griddled English muffin, Canadian bacon, poached eggs, silky hollandaise.</p>
+                  <span class="menu-card-price">$11.99</span>
+                </article>
+                <article class="menu-card" style="--index: 1">
+                  <h3 class="menu-card-title">Irish Benedict</h3>
+                  <p class="menu-card-description">Corned beef hash, sautéed onions, and poached eggs smothered in hollandaise.</p>
+                  <span class="menu-card-price">$12.49</span>
+                </article>
+                <article class="menu-card" style="--index: 2">
+                  <h3 class="menu-card-title">Florentine Benedict</h3>
+                  <p class="menu-card-description">Sautéed spinach, tomato, and creamy feta with lemon-kissed hollandaise.</p>
+                  <span class="menu-card-price">$11.49</span>
+                </article>
+              </div>
+            </div>
+
+            <div class="menu__panel" id="tab-sandwiches" role="tabpanel" aria-labelledby="tab-sandwiches-button">
+              <div class="menu__grid menu-grid">
+                <article class="menu-card" style="--index: 0">
+                  <h3 class="menu-card-title">Breakfast BLT</h3>
+                  <p class="menu-card-description">Thick-cut bacon, fried egg, lettuce, tomato, and diner sauce on toasted sourdough.</p>
+                  <span class="menu-card-price">$10.49</span>
+                </article>
+                <article class="menu-card" style="--index: 1">
+                  <h3 class="menu-card-title">Railcar Wrap</h3>
+                  <p class="menu-card-description">Scrambled eggs, turkey sausage, peppers, onions, cheddar, and hash browns in a wrap.</p>
+                  <span class="menu-card-price">$10.99</span>
+                </article>
+                <article class="menu-card" style="--index: 2">
+                  <h3 class="menu-card-title">Headlight Burger</h3>
+                  <p class="menu-card-description">Angus patty, fried egg, smoked gouda, caramelized onions, and house aioli.</p>
+                  <span class="menu-card-price">$12.99</span>
+                </article>
+              </div>
+            </div>
+
+            <div class="menu__panel" id="tab-waffles" role="tabpanel" aria-labelledby="tab-waffles-button">
+              <div class="menu__grid menu-grid">
+                <article class="menu-card" style="--index: 0">
+                  <h3 class="menu-card-title">Golden Malted Waffle</h3>
+                  <p class="menu-card-description">Freshly pressed waffle served with whipped butter, maple syrup, and powdered sugar.</p>
+                  <span class="menu-card-price">$8.99</span>
+                </article>
+                <article class="menu-card" style="--index: 1">
+                  <h3 class="menu-card-title">Strawberry Shortline</h3>
+                  <p class="menu-card-description">Buttermilk pancakes layered with macerated berries, vanilla cream, and gold dust.</p>
+                  <span class="menu-card-price">$10.49</span>
+                </article>
+                <article class="menu-card" style="--index: 2">
+                  <h3 class="menu-card-title">Banana Walnut Express</h3>
+                  <p class="menu-card-description">Caramelized bananas, candied walnuts, and bourbon maple syrup drizzle.</p>
+                  <span class="menu-card-price">$10.99</span>
+                </article>
+              </div>
+            </div>
+
+            <div class="menu__panel" id="tab-beverages" role="tabpanel" aria-labelledby="tab-beverages-button">
+              <div class="menu__grid menu-grid">
+                <article class="menu-card" style="--index: 0">
+                  <h3 class="menu-card-title">Fresh Pressed Orange Juice</h3>
+                  <p class="menu-card-description">Sunrise-sweet Valencia oranges juiced to order.</p>
+                  <span class="menu-card-price">$4.49</span>
+                </article>
+                <article class="menu-card" style="--index: 1">
+                  <h3 class="menu-card-title">Cold Brew Coffee</h3>
+                  <p class="menu-card-description">Steeped 18 hours, served over ice with optional vanilla cream.</p>
+                  <span class="menu-card-price">$4.99</span>
+                </article>
+                <article class="menu-card" style="--index: 2">
+                  <h3 class="menu-card-title">Sunrise Smoothie</h3>
+                  <p class="menu-card-description">Mango, pineapple, banana, and Greek yogurt blended to order.</p>
+                  <span class="menu-card-price">$5.99</span>
+                </article>
+              </div>
+            </div>
+
+            <div class="menu__panel" id="tab-sides" role="tabpanel" aria-labelledby="tab-sides-button">
+              <div class="menu__grid menu-grid">
+                <article class="menu-card" style="--index: 0">
+                  <h3 class="menu-card-title">Home Fries</h3>
+                  <p class="menu-card-description">Skillet-crisp potatoes seasoned with smoked paprika and herbs.</p>
+                  <span class="menu-card-price">$3.99</span>
+                </article>
+                <article class="menu-card" style="--index: 1">
+                  <h3 class="menu-card-title">Applewood Bacon</h3>
+                  <p class="menu-card-description">Thick-cut slices cooked to order.</p>
+                  <span class="menu-card-price">$4.49</span>
+                </article>
+                <article class="menu-card" style="--index: 2">
+                  <h3 class="menu-card-title">Seasonal Fruit Bowl</h3>
+                  <p class="menu-card-description">Fresh cut fruit sourced from local farms whenever possible.</p>
+                  <span class="menu-card-price">$5.49</span>
+                </article>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu__actions fade-in-section">
+            <a class="btn btn--primary" href="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690521f6306550d7256caed1.jpeg" target="_blank" rel="noopener noreferrer">
+              Download Full Menu (PDF)
+            </a>
+            <details class="menu__accordion">
+              <summary>See All Options</summary>
+              <p>
+                Browse omelettes, benedicts, waffles, sandwiches, wraps, beverages, and sides crafted from the original Omelette Headquarters menu.
+                Ask about seasonal specialties and rotating chef's features inspired by our chalkboard board.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="section specials-section">
+        <div class="container">
+          <div class="specials-layout fade-in-section">
+            <div class="specials-left">
+              <h2 class="specials-title">Specials</h2>
+              <div class="specials-list" aria-label="Daily specials" role="list">
+                <div class="specials-item" role="listitem">
+                  <span class="specials-name">Huevos Rancheros</span>
+                  <span class="specials-price">Steak $16.49</span>
+                </div>
+                <div class="specials-item" role="listitem">
+                  <span class="specials-name">Homemade Soups</span>
+                  <span class="specials-price">Beef Stew · Chicken Noodle · Greek Lemon</span>
+                </div>
+                <div class="specials-item" role="listitem">
+                  <span class="specials-name">Natural Smoothies</span>
+                  <span class="specials-price">Strawberry Banana · Tropical Mango</span>
+                </div>
+                <div class="specials-item" role="listitem">
+                  <span class="specials-name">Greek Yogurt Parfait</span>
+                  <span class="specials-price">With granola & seasonal fruit</span>
+                </div>
+                <div class="specials-item" role="listitem">
+                  <span class="specials-name">Chef's Choice</span>
+                  <span class="specials-price">Ask your server for this week's feature</span>
+                </div>
+              </div>
+              <div class="specials-callout">Ask your conductor for allergen and seasonal updates.</div>
+            </div>
+            <div class="specials-right">
+              <img
+                class="chalkboard-photo lazy"
+                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                data-src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/69052282de82832f5f1663ec.jpeg"
+                alt="Handwritten chalkboard menu featuring daily specials"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer__divider" aria-hidden="true"></div>
+      <div class="container footer__grid">
+        <div class="footer__column">
+          <a class="footer__brand" href="/">
+            <span class="footer__logo">🚂</span>
+            <span>The Omelette Headquarters</span>
+          </a>
+          <p>Wakefield's family-owned breakfast destination blending nostalgic diner comfort with vintage rail style.</p>
+        </div>
+        <div class="footer__column">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about.html">About</a></li>
+            <li><a href="/menu.html">Menu</a></li>
+            <li><a href="/gallery.html">Gallery</a></li>
+            <li><a href="/contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer__column">
+          <h3>Visit</h3>
+          <p>57 Water St<br />Wakefield, MA 01880</p>
+          <p><a href="tel:17812243989">781-224-3989</a></p>
+          <p>Fri – Sun: 6:00 AM – 2:00 PM</p>
+        </div>
+        <div class="footer__column">
+          <h3>Connect</h3>
+          <ul class="footer__social">
+            <li><a href="https://www.facebook.com" target="_blank" rel="noopener">Facebook</a></li>
+            <li><a href="https://www.instagram.com" target="_blank" rel="noopener">Instagram</a></li>
+            <li><a href="mailto:hello@omelettehq.com">hello@omelettehq.com</a></li>
+            <li>
+              <form class="footer__form">
+                <label for="newsletter" class="sr-only">Email address</label>
+                <input type="email" id="newsletter" name="newsletter" placeholder="Join our newsletter" required />
+                <button type="submit">Subscribe</button>
+              </form>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer__copy">© 2025 The Omelette Headquarters. All rights reserved.</p>
+    </footer>
+
+    <script src="/js/menu-tabs.js" defer></script>
+    <script src="/js/scroll-effects.js" defer></script>
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>
