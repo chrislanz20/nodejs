@@ -231,6 +231,7 @@ summary:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  margin-top: 2rem; /* Push content down so nav doesn't block eyebrow text */
 }
 
 .hero__eyebrow {
@@ -470,6 +471,7 @@ summary:focus-visible {
 
 .about__highlights {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 

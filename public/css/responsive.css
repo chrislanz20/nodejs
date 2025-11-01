@@ -152,6 +152,11 @@
     border-radius: 24px;
   }
 
+  .about__highlights {
+    grid-template-columns: repeat(3, 1fr);
+    /* Force 3 columns on larger screens for horizontal layout */
+  }
+
   .hero__inner {
     padding-block: 3rem 6rem;
   }
