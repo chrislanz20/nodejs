@@ -984,7 +984,7 @@ summary:focus-visible {
   text-align: center;
   margin-bottom: 8rem;
   position: relative;
-  z-index: 10;
+  z-index: 1;
   padding-bottom: 2rem;
 }
 
