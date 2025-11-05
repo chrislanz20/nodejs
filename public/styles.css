@@ -10,11 +10,35 @@ body {
 .hero-section {
   position: relative;
   background-color: #1f1f24;
-  background-image: linear-gradient(135deg, rgba(31, 31, 36, 0.76), rgba(31, 31, 36, 0.55)),
-    url('https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690a9e132b2c7586915eb8b0.jpeg');
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690a9e132b2c7586915eb8b0.jpeg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  filter: brightness(1.12) saturate(1.06);
+  transform: scale(1.02);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+      135deg,
+      rgba(31, 31, 36, 0.58),
+      rgba(31, 31, 36, 0.32)
+    ),
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.18), transparent 55%);
+  z-index: 1;
+  pointer-events: none;
 }
 
 .nav-link {
