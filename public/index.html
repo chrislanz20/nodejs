@@ -1,260 +1,492 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Omelette Headquarters | Wakefield, Massachusetts</title>
+    <title>Kennedy's Cafe | Stoneham, MA</title>
     <meta
       name="description"
-      content="Omelette Headquarters in Wakefield, MA serves artfully crafted breakfast, brunch, and coffee in a sunlit café inspired by the perfect omelette."
+      content="Kennedy's Cafe in Stoneham, MA is home of the viral Bucket Latte, offering gourmet coffee, acai bowls, sandwiches, and more. Order online for pickup or delivery."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/styles.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              turquoise: '#7AAAC5',
+              navy: '#353F44',
+              mist: '#ACBCCA'
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif']
+            }
+          }
+        }
+      }
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8WDLwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #ffffff;
+        color: #353F44;
+      }
+    </style>
   </head>
-  <body>
-    <header class="hero" id="top">
-      <div class="hero__overlay"></div>
-      <div class="container hero__inner">
-        <nav class="nav" aria-label="Main">
-          <a class="nav__brand" href="#top">Omelette HQ</a>
-          <button class="nav__toggle" aria-expanded="false" aria-controls="primary-navigation">
-            <span class="nav__toggle-line"></span>
-            <span class="nav__toggle-line"></span>
-            <span class="nav__toggle-line"></span>
-            <span class="sr-only">Toggle navigation</span>
+  <body class="bg-white text-navy">
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur shadow">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 lg:px-6">
+        <a href="#hero" class="flex items-center gap-3 text-lg font-semibold text-navy transition-all hover:opacity-80">
+          <img
+            src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75cc095b9c3bfecfa29f.jpg"
+            alt="Kennedy's Cafe logo"
+            class="h-12 w-12 rounded-full object-cover shadow-xl"
+            onerror="this.onerror=null;this.src='https://via.placeholder.com/64?text=KC';"
+          />
+          Kennedy's Cafe
+        </a>
+        <button
+          class="rounded-full bg-turquoise/20 p-2 text-navy transition-all hover:bg-turquoise/30 focus:outline-none focus:ring-2 focus:ring-turquoise lg:hidden"
+          aria-expanded="false"
+          aria-controls="primary-navigation"
+          id="navToggle"
+        >
+          <span class="sr-only">Toggle navigation</span>
+          <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+        <nav id="primary-navigation" class="hidden w-full flex-col items-center gap-6 lg:flex lg:w-auto lg:flex-row">
+          <a href="#hero" class="font-medium text-navy transition-all hover:text-turquoise">Home</a>
+          <a href="#signatures" class="font-medium text-navy transition-all hover:text-turquoise">Viral Signatures</a>
+          <a href="#menu" class="font-medium text-navy transition-all hover:text-turquoise">Full Menu</a>
+          <a href="#about" class="font-medium text-navy transition-all hover:text-turquoise">About</a>
+          <a href="#visit" class="font-medium text-navy transition-all hover:text-turquoise">Visit</a>
+          <button
+            id="orderNowNav"
+            class="rounded-full bg-turquoise px-6 py-2 text-sm font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-turquoise/90"
+          >
+            Order Now
           </button>
-          <ul class="nav__links" id="primary-navigation">
-            <li><a href="#about">Our Story</a></li>
-            <li><a href="#menu">Menu</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#events">Events</a></li>
-            <li><a href="#visit">Visit</a></li>
-          </ul>
         </nav>
-
-        <div class="hero__content">
-          <p class="eyebrow">Wakefield, Massachusetts</p>
-          <h1>Where Omelettes are an Art Form</h1>
-          <p>
-            Omelette Headquarters is a cheerful café devoted to one perfect dish. From locally sourced
-            eggs to inventive fillings, every plate is a canvas for comfort and creativity.
-          </p>
-          <div class="hero__cta">
-            <a class="btn btn--primary" href="#menu">Explore the Menu</a>
-            <a class="btn btn--ghost" href="#visit">Plan Your Visit</a>
-          </div>
+      </div>
+      <div id="mobileMenu" class="hidden border-t border-turquoise/20 bg-white px-4 pb-4 shadow-lg lg:hidden">
+        <div class="flex flex-col gap-4 text-center">
+          <a href="#signatures" class="font-medium text-navy transition-all hover:text-turquoise">Viral Signatures</a>
+          <a href="#menu" class="font-medium text-navy transition-all hover:text-turquoise">Full Menu</a>
+          <a href="#about" class="font-medium text-navy transition-all hover:text-turquoise">About</a>
+          <a href="#visit" class="font-medium text-navy transition-all hover:text-turquoise">Visit</a>
+          <button
+            id="orderNowMobile"
+            class="rounded-full bg-turquoise px-6 py-2 text-sm font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-turquoise/90"
+          >
+            Order Now
+          </button>
         </div>
       </div>
     </header>
 
     <main>
-      <section class="section" id="about">
-        <div class="container section__grid">
-          <div class="section__content">
-            <h2>Born from a Breakfast Obsession</h2>
-            <p>
-              Omelette Headquarters began as a pop-up on Wakefield&rsquo;s lakefront farmer&rsquo;s market and
-              quickly became the town&rsquo;s favorite morning ritual. Founder and chef Dana Avery wanted a
-              place where guests could slow down, savor the moment, and experience eggs elevated beyond
-              expectations.
-            </p>
-            <p>
-              Today, our kitchen celebrates the craft of breakfast with seasonal ingredients, a zero-waste
-              mindset, and barista-crafted coffee drinks. Every omelette is folded to order, served with
-              toasted sourdough, and paired with playful sauces you won&rsquo;t find anywhere else.
-            </p>
-          </div>
-          <article class="highlight-card" aria-label="House values">
-            <h3>Our Guiding Ingredients</h3>
-            <ul class="checklist">
-              <li>Farm eggs sourced within 50 miles of Wakefield</li>
-              <li>House-fermented hot sauces and pickled vegetables</li>
-              <li>Compost-first kitchen with reusable packaging</li>
-              <li>Warm, neighborhood hospitality every day</li>
-            </ul>
-          </article>
+      <section
+        id="hero"
+        class="relative flex min-h-screen items-center overflow-hidden bg-navy"
+      >
+        <div
+          class="absolute inset-0 bg-cover bg-center"
+          style="background-image: url('https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b760a6e306f2acd5d8186.jpg');"
+        >
+          <img
+            src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b760a6e306f2acd5d8186.jpg"
+            alt="Ice Latte Bucket"
+            class="h-0 w-0"
+            aria-hidden="true"
+            onerror="this.onerror=null;this.src='https://via.placeholder.com/1920x1080?text=Kennedys+Cafe';"
+          />
         </div>
-      </section>
-
-      <section class="section section--accent" id="menu">
-        <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Signature Omelettes</p>
-            <h2>Crafted Classics & Bold Specials</h2>
-            <p>
-              From timeless comforts to daring flavor mashups, these omelettes showcase the flair and fun of
-              Omelette HQ. Seasonal specials rotate monthly.
-            </p>
-          </div>
-          <div class="card-grid">
-            <article class="card">
-              <h3>Lake Quannapowitt Classic</h3>
-              <p>Applewood bacon, smoked cheddar, slow-roasted tomatoes, scallion crème fraîche.</p>
-              <span class="pill">$14</span>
-            </article>
-            <article class="card">
-              <h3>Garden Sunrise</h3>
-              <p>Charred broccolini, lemon ricotta, basil pesto drizzle, toasted almond crunch.</p>
-              <span class="pill">Vegetarian</span>
-            </article>
-            <article class="card">
-              <h3>North Shore Heat</h3>
-              <p>Chorizo, cotija, caramelized onions, pickled fresnos, house pineapple fire sauce.</p>
-              <span class="pill pill--spicy">Spicy</span>
-            </article>
-            <article class="card">
-              <h3>Wakefield Weekender</h3>
-              <p>Lobster tail medallions, brown butter hollandaise, champagne chive pearls.</p>
-              <span class="pill">Saturday & Sunday Only</span>
-            </article>
+        <div class="absolute inset-0 bg-navy/75"></div>
+        <div class="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-24 text-white lg:px-8">
+          <p class="text-sm uppercase tracking-[0.3em] text-white/80">Stoneham, Massachusetts</p>
+          <h1 class="max-w-3xl text-4xl font-extrabold leading-tight text-white drop-shadow-2xl sm:text-5xl lg:text-6xl">
+            Home of the Viral Bucket Latte. Stoneham, MA.
+          </h1>
+          <p class="max-w-2xl text-lg text-white/90 sm:text-xl">
+            Kennedy's Cafe is a local gem with global buzz. Sip the legendary 34oz Bucket Latte, indulge in Dubai Chocolate Donuts, and discover why our creations go viral daily.
+          </p>
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <button
+              id="orderNowHero"
+              class="inline-flex items-center justify-center rounded-full bg-turquoise px-8 py-4 text-base font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-turquoise/90"
+            >
+              Order Now for Pickup or Delivery
+            </button>
+            <a
+              href="#signatures"
+              class="inline-flex items-center justify-center rounded-full bg-white/10 px-8 py-4 text-base font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-white/20"
+            >
+              Explore Viral Signatures
+            </a>
           </div>
         </div>
       </section>
 
-      <section class="section section--experience" id="experience">
-        <div class="container section__grid section__grid--reverse">
-          <article class="section__content">
-            <h2>The Omelette HQ Experience</h2>
-            <p>
-              Sunlight pours through our vaulted windows, jazz vinyl hums softly, and latte art swirls through
-              the air. Settle into our communal harvest table or claim a window seat overlooking the Lake
-              Quannapowitt trail.
+      <section id="signatures" class="bg-mist/40 py-20">
+        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:px-8">
+          <div class="max-w-3xl">
+            <p class="text-sm uppercase tracking-[0.3em] text-navy/70">Taste the Trends</p>
+            <h2 class="mt-4 text-3xl font-extrabold text-navy sm:text-4xl">The Viral Signatures</h2>
+            <p class="mt-4 text-lg text-navy/80">
+              Crafted for the camera and the palate, these creations put Kennedy's Cafe on the map. Swipe through the fan favorites lighting up your feed.
             </p>
-            <ul class="icon-list">
-              <li>
-                <span class="icon" aria-hidden="true">🥚</span>
-                <div>
-                  <h3>Egg Bar</h3>
-                  <p>Customize your omelette with chef-guided mix-ins and sauces for a bespoke breakfast.</p>
+          </div>
+          <div class="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4">
+            <article class="snap-start shrink-0 rounded-3xl bg-white p-6 shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl sm:w-80">
+              <img
+                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75eddc2a5462eb7af258.jpg"
+                alt="Ice Latte Bucket"
+                class="h-48 w-full rounded-2xl object-cover"
+                onerror="this.onerror=null;this.src='https://via.placeholder.com/320x240?text=Bucket+Latte';"
+              />
+              <h3 class="mt-6 text-2xl font-bold text-navy">Ice Latte Bucket</h3>
+              <p class="mt-3 text-navy/80">
+                The legendary 34oz latte spectacle—house espresso, velvety milk, and cold foam cascading over a bucket of ice.
+              </p>
+            </article>
+            <article class="snap-start shrink-0 rounded-3xl bg-white p-6 shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl sm:w-80">
+              <img
+                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75896e306f01dd5d6efd.jpg"
+                alt="Dubai Chocolate Donuts"
+                class="h-48 w-full rounded-2xl object-cover"
+                onerror="this.onerror=null;this.src='https://via.placeholder.com/320x240?text=Chocolate+Donuts';"
+              />
+              <h3 class="mt-6 text-2xl font-bold text-navy">Dubai Chocolate Donuts</h3>
+              <p class="mt-3 text-navy/80">
+                Dripped in gold dust chocolate glaze and filled with whipped ganache. Luxurious, decadent, Instagram-ready.
+              </p>
+            </article>
+            <article class="snap-start shrink-0 rounded-3xl bg-white p-6 shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl sm:w-80">
+              <img
+                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75636fadaa54cd567e8b.jpg"
+                alt="Cinno-Honey Bear Iced Latte"
+                class="h-48 w-full rounded-2xl object-cover"
+                onerror="this.onerror=null;this.src='https://via.placeholder.com/320x240?text=Cinno+Honey+Latte';"
+              />
+              <h3 class="mt-6 text-2xl font-bold text-navy">Cinno-Honey Bear Iced Latte</h3>
+              <p class="mt-3 text-navy/80">
+                Cinnamon, honey drizzle, and a creamy bear-shaped cold foam crown for a signature sip worth sharing.
+              </p>
+            </article>
+            <article class="snap-start shrink-0 rounded-3xl bg-white p-6 shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl sm:w-80">
+              <img
+                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b7592bbb4c8cff024d53c.jpg"
+                alt="Fluffy Spartan Iced Latte"
+                class="h-48 w-full rounded-2xl object-cover"
+                onerror="this.onerror=null;this.src='https://via.placeholder.com/320x240?text=Fluffy+Spartan';"
+              />
+              <h3 class="mt-6 text-2xl font-bold text-navy">Fluffy Spartan Iced Latte</h3>
+              <p class="mt-3 text-navy/80">
+                Signature cold foam over espresso, pistachio syrup, and microfoam swirls inspired by Spartan pride.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="menu" class="py-20">
+        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:px-8">
+          <div class="max-w-3xl">
+            <p class="text-sm uppercase tracking-[0.3em] text-navy/70">Fuel Every Craving</p>
+            <h2 class="mt-4 text-3xl font-extrabold text-navy sm:text-4xl">Full Menu & Flavor Diversity</h2>
+            <p class="mt-4 text-lg text-navy/80">
+              From nutrient-packed bowls to hearty breakfast classics, our menu balances wellness with indulgence. Explore the line-up that keeps Stoneham energized.
+            </p>
+          </div>
+          <div class="grid gap-10 lg:grid-cols-2">
+            <div class="rounded-3xl bg-mist/60 p-6 shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl">
+              <div class="flex flex-col gap-6 md:flex-row">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b74fcbbb4c8861a24bfd7.jpg"
+                  alt="Acai bowls"
+                  class="h-48 w-full rounded-2xl object-cover md:h-auto md:w-48"
+                  onerror="this.onerror=null;this.src='https://via.placeholder.com/320x320?text=Acai+Bowls';"
+                />
+                <div class="flex flex-col gap-4">
+                  <h3 class="text-2xl font-bold text-navy">Acai Bowls & Smoothies</h3>
+                  <p class="text-navy/80">
+                    Blended superfruits, house-made granola, and fresh toppings crafted to fuel your morning hustle.
+                  </p>
+                  <ul class="space-y-2 text-navy/90">
+                    <li><span class="font-semibold text-navy">Peanut Butter Acai Bowl</span> – Creamy peanut butter swirl, cacao nib crunch, banana ribbons.</li>
+                    <li><span class="font-semibold text-navy">Green Monstah Smoothie</span> – Kale, pineapple, coconut water, and matcha boost.</li>
+                  </ul>
                 </div>
-              </li>
-              <li>
-                <span class="icon" aria-hidden="true">☕</span>
-                <div>
-                  <h3>Slow Coffee Bar</h3>
-                  <p>Single-origin pours, nitro cold brew, and seasonal mocktails crafted by our baristas.</p>
+              </div>
+            </div>
+            <div class="rounded-3xl bg-mist/60 p-6 shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl">
+              <div class="flex flex-col gap-6 md:flex-row">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75af7b2dc520653415e8.jpg"
+                  alt="Gluten Free Sandwiches"
+                  class="h-48 w-full rounded-2xl object-cover md:h-auto md:w-48"
+                  onerror="this.onerror=null;this.src='https://via.placeholder.com/320x320?text=Sandwiches';"
+                />
+                <div class="flex flex-col gap-4">
+                  <div class="flex flex-wrap items-center justify-between gap-3">
+                    <h3 class="text-2xl font-bold text-navy">Sandwiches & Breakfast</h3>
+                    <span class="rounded-full bg-white px-4 py-1 text-xs font-semibold uppercase tracking-widest text-turquoise shadow">Gluten-Free Sandwiches Available</span>
+                  </div>
+                  <p class="text-navy/80">
+                    Savory sensations built on artisanal breads, breakfast classics reinvented, and all-day comfort eats.
+                  </p>
+                  <ul class="space-y-2 text-navy/90">
+                    <li><span class="font-semibold text-navy">Breakfast Burrito</span> – Cage-free eggs, roasted potatoes, cheddar, chipotle crema.</li>
+                    <li><span class="font-semibold text-navy">Linguica Egg & Cheese</span> – Local sausage, melted provolone, garlic aioli on brioche.</li>
+                  </ul>
                 </div>
-              </li>
-              <li>
-                <span class="icon" aria-hidden="true">🎶</span>
-                <div>
-                  <h3>Weekend Vinyl Sessions</h3>
-                  <p>Local DJs spin mellow brunch sets every Saturday from 10 AM&ndash;1 PM.</p>
-                </div>
-              </li>
-            </ul>
-          </article>
-          <figure class="feature-card" aria-label="Interior photography">
-            <img
-              src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80"
-              alt="Sunlit café interior with breakfast counter"
-            />
-            <figcaption>Bright mornings inside Omelette Headquarters</figcaption>
-          </figure>
-        </div>
-      </section>
-
-      <section class="section" id="events">
-        <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Wakefield Community</p>
-            <h2>Upcoming Happenings</h2>
-            <p>We love sharing breakfast culture with our neighbors. Save the date for these special moments.</p>
-          </div>
-          <div class="timeline">
-            <article class="timeline__item">
-              <h3>Egg Art Lab &middot; September 7</h3>
-              <p>Hands-on class exploring omelette folds, topping stylings, and plating wizardry.</p>
-            </article>
-            <article class="timeline__item">
-              <h3>Harvest Brunch &middot; October 12</h3>
-              <p>Five-course tasting menu featuring autumn ingredients from Middlesex County farms.</p>
-            </article>
-            <article class="timeline__item">
-              <h3>Lakefront Sunrise Run &middot; Every Friday</h3>
-              <p>Meet at 6 AM for a 3-mile jog followed by complimentary espresso shots.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section section--visit" id="visit">
-        <div class="container section__grid">
-          <div class="section__content">
-            <p class="eyebrow">Visit</p>
-            <h2>Come by the Headquarters</h2>
-            <p>
-              Find us steps from Wakefield&rsquo;s commuter rail stop. We welcome walk-ins and limited
-              reservations for parties of six or more. Outdoor patio seating is available spring through fall.
-            </p>
-            <div class="contact-details">
-              <div>
-                <h3>Location</h3>
-                <p>
-                  12 Main Street<br />
-                  Wakefield, MA 01880
-                </p>
-              </div>
-              <div>
-                <h3>Hours</h3>
-                <p>Daily 7:00 AM &ndash; 3:00 PM<br />Brunch until 4:00 PM on weekends</p>
-              </div>
-              <div>
-                <h3>Contact</h3>
-                <p>
-                  <a href="tel:17815551234">(781) 555-1234</a><br />
-                  <a href="mailto:hello@omelettehq.com">hello@omelettehq.com</a>
-                </p>
-              </div>
-              <div>
-                <h3>Follow</h3>
-                <p>
-                  <a href="https://www.instagram.com" target="_blank" rel="noreferrer">Instagram</a>
-                  &middot;
-                  <a href="https://www.tiktok.com" target="_blank" rel="noreferrer">TikTok</a>
-                </p>
               </div>
             </div>
           </div>
-          <div class="map-card">
-            <iframe
-              title="Map of Omelette Headquarters in Wakefield MA"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2939.217417979731!2d-71.07318192355152!3d42.50393917117971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e36f78d1de7d21%3A0xa795882b58c2c299!2sWakefield%2C%20MA!5e0!3m2!1sen!2sus!4v1720384050002!5m2!1sen!2sus"
-              allowfullscreen=""
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-            ></iframe>
+        </div>
+      </section>
+
+      <section id="about" class="bg-mist/40 py-20">
+        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:flex-row lg:items-center lg:gap-16 lg:px-8">
+          <div class="relative flex-1">
+            <div class="absolute -left-6 -top-6 hidden h-24 w-24 rounded-3xl bg-turquoise/40 blur-3xl lg:block"></div>
+            <img
+              src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b78ca7b2dc57bee34abe4.jpg"
+              alt="Kennedy's Cafe storefront"
+              class="relative z-10 w-full rounded-3xl object-cover shadow-2xl"
+              onerror="this.onerror=null;this.src='https://via.placeholder.com/640x480?text=Kennedys+Cafe';"
+            />
           </div>
+          <div class="flex-1 space-y-6">
+            <p class="text-sm uppercase tracking-[0.3em] text-navy/70">Local Gem, Global Buzz</p>
+            <h2 class="text-3xl font-extrabold text-navy sm:text-4xl">More than a Cafe, it's a Community.</h2>
+            <p class="text-lg text-navy/80">
+              Kennedy's Cafe has been a Stoneham staple, known for our commitment to quality, unique flavor innovation, and friendly atmosphere. We pride ourselves on sourcing the best ingredients for every item, from our Acai Bowls to our signature Bucket Lattes. Come visit the spot where local charm meets viral fame.
+            </p>
+            <div class="grid gap-4 sm:grid-cols-3">
+              <div class="rounded-2xl bg-white p-4 text-center shadow-xl">
+                <i class="fa-solid fa-wifi text-2xl text-turquoise"></i>
+                <p class="mt-2 text-sm font-semibold text-navy">Free Wi-Fi</p>
+              </div>
+              <div class="rounded-2xl bg-white p-4 text-center shadow-xl">
+                <i class="fa-solid fa-chair text-2xl text-turquoise"></i>
+                <p class="mt-2 text-sm font-semibold text-navy">Outdoor Seating</p>
+              </div>
+              <div class="rounded-2xl bg-white p-4 text-center shadow-xl">
+                <i class="fa-solid fa-square-parking text-2xl text-turquoise"></i>
+                <p class="mt-2 text-sm font-semibold text-navy">Plenty of Parking</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="visit" class="bg-navy py-20 text-white">
+        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:px-8">
+          <div class="grid gap-12 lg:grid-cols-3">
+            <div class="space-y-6">
+              <h2 class="text-3xl font-extrabold">Visit Kennedy's Cafe</h2>
+              <div>
+                <h3 class="text-xl font-semibold">Location</h3>
+                <p class="mt-2 text-white/80">362 Main St, Stoneham, MA 02180</p>
+                <a
+                  href="https://maps.google.com/?q=Kennedy's+Cafe+Stoneham"
+                  class="mt-3 inline-flex items-center gap-2 text-turquoise transition-all hover:text-white"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <i class="fa-solid fa-location-dot"></i>
+                  Open in Google Maps
+                </a>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold">Hours</h3>
+                <p class="mt-2 text-white/80">Mon-Sat: 6:00 AM - 4:00 PM</p>
+                <p class="text-white/80">Sun: 7:00 AM - 1:00 PM</p>
+              </div>
+            </div>
+            <div class="rounded-3xl bg-white/10 p-6 shadow-2xl">
+              <div class="rounded-2xl bg-white p-4 text-center text-navy shadow-xl">
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-turquoise">Map Preview</p>
+                <div class="mt-4 flex h-48 items-center justify-center rounded-xl bg-mist text-navy/70">
+                  <span class="text-sm">Interactive Map Coming Soon</span>
+                </div>
+              </div>
+              <div class="mt-6 space-y-4">
+                <h3 class="text-xl font-semibold">Delivery Partners</h3>
+                <div class="flex flex-wrap items-center gap-4 text-2xl text-white">
+                  <a
+                    href="https://www.ubereats.com"
+                    class="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 transition-all hover:-translate-y-0.5 hover:bg-white/20"
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="Order on UberEats"
+                  >
+                    <i class="fa-brands fa-uber"></i>
+                  </a>
+                  <a
+                    href="https://www.doordash.com"
+                    class="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 transition-all hover:-translate-y-0.5 hover:bg-white/20"
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="Order on DoorDash"
+                  >
+                    <i class="fa-solid fa-truck-fast"></i>
+                  </a>
+                  <a
+                    href="https://www.grubhub.com"
+                    class="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 transition-all hover:-translate-y-0.5 hover:bg-white/20"
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="Order on GrubHub"
+                  >
+                    <i class="fa-solid fa-burger"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="space-y-6">
+              <h3 class="text-xl font-semibold">Stay Connected</h3>
+              <p class="text-white/80">
+                Follow us for the latest drops, limited-edition flavors, and behind-the-scenes moments.
+              </p>
+              <div class="flex flex-wrap items-center gap-4 text-2xl">
+                <a
+                  href="https://www.instagram.com"
+                  class="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 transition-all hover:-translate-y-0.5 hover:bg-white/20"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <i class="fa-brands fa-instagram text-white"></i>
+                  <span class="text-sm font-semibold text-white">Instagram</span>
+                </a>
+                <a
+                  href="https://www.tiktok.com"
+                  class="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 transition-all hover:-translate-y-0.5 hover:bg-white/20"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <i class="fa-brands fa-tiktok text-white"></i>
+                  <span class="text-sm font-semibold text-white">TikTok</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <p class="text-center text-sm text-white/60">© <span id="currentYear"></span> Kennedy's Cafe. Crafted with love in Stoneham, MA.</p>
         </div>
       </section>
     </main>
 
-    <footer class="footer">
-      <div class="container footer__inner">
-        <p>© <span id="year"></span> Omelette Headquarters. Crafted with love in Wakefield, MA.</p>
-        <p>
-          Need catering? Email <a href="mailto:catering@omelettehq.com">catering@omelettehq.com</a> for custom
-          brunch spreads.
-        </p>
+    <div
+      id="orderModal"
+      class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/60 px-4 py-6"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="orderModalTitle"
+    >
+      <div class="max-w-lg rounded-3xl bg-white p-8 text-navy shadow-2xl">
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 id="orderModalTitle" class="text-2xl font-bold">Order Kennedy's Cafe</h2>
+            <p class="mt-2 text-navy/70">
+              Choose your favorite delivery partner or call ahead for pickup. We can't wait to craft your order!
+            </p>
+          </div>
+          <button id="closeModal" class="text-2xl text-navy/50 transition-all hover:text-turquoise">
+            <span class="sr-only">Close modal</span>
+            &times;
+          </button>
+        </div>
+        <div class="mt-6 grid gap-4 sm:grid-cols-3">
+          <a
+            href="https://www.ubereats.com"
+            target="_blank"
+            rel="noopener"
+            class="flex flex-col items-center gap-2 rounded-2xl bg-mist/60 p-4 text-center shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl"
+          >
+            <i class="fa-brands fa-uber text-3xl text-turquoise"></i>
+            <span class="text-sm font-semibold">UberEats</span>
+          </a>
+          <a
+            href="https://www.doordash.com"
+            target="_blank"
+            rel="noopener"
+            class="flex flex-col items-center gap-2 rounded-2xl bg-mist/60 p-4 text-center shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl"
+          >
+            <i class="fa-solid fa-truck-fast text-3xl text-turquoise"></i>
+            <span class="text-sm font-semibold">DoorDash</span>
+          </a>
+          <a
+            href="https://www.grubhub.com"
+            target="_blank"
+            rel="noopener"
+            class="flex flex-col items-center gap-2 rounded-2xl bg-mist/60 p-4 text-center shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl"
+          >
+            <i class="fa-solid fa-burger text-3xl text-turquoise"></i>
+            <span class="text-sm font-semibold">GrubHub</span>
+          </a>
+        </div>
+        <div class="mt-6 rounded-2xl bg-white p-4 text-center text-sm text-navy/70">
+          Prefer to call? <a href="tel:17813856000" class="font-semibold text-turquoise transition-all hover:text-navy">(781) 385-6000</a>
+        </div>
       </div>
-    </footer>
+    </div>
 
     <script>
-      const navToggle = document.querySelector(".nav__toggle");
-      const navLinks = document.querySelector(".nav__links");
+      const navToggle = document.getElementById('navToggle');
+      const mobileMenu = document.getElementById('mobileMenu');
+      const orderButtons = document.querySelectorAll('#orderNowHero, #orderNowNav, #orderNowMobile');
+      const orderModal = document.getElementById('orderModal');
+      const closeModal = document.getElementById('closeModal');
+      const currentYear = document.getElementById('currentYear');
 
-      navToggle?.addEventListener("click", () => {
-        const expanded = navToggle.getAttribute("aria-expanded") === "true";
-        navToggle.setAttribute("aria-expanded", String(!expanded));
-        navLinks?.classList.toggle("nav__links--open");
+      if (currentYear) {
+        currentYear.textContent = new Date().getFullYear();
+      }
+
+      if (navToggle && mobileMenu) {
+        navToggle.addEventListener('click', () => {
+          const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+          navToggle.setAttribute('aria-expanded', (!expanded).toString());
+          mobileMenu.classList.toggle('hidden');
+        });
+      }
+
+      const openModal = () => {
+        if (orderModal) {
+          orderModal.classList.remove('hidden');
+          document.body.classList.add('overflow-hidden');
+        }
+      };
+
+      orderButtons.forEach((btn) => {
+        btn?.addEventListener('click', openModal);
       });
 
-      document.getElementById("year").textContent = new Date().getFullYear();
+      closeModal?.addEventListener('click', () => {
+        orderModal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+      });
+
+      orderModal?.addEventListener('click', (event) => {
+        if (event.target === orderModal) {
+          orderModal.classList.add('hidden');
+          document.body.classList.remove('overflow-hidden');
+        }
+      });
     </script>
   </body>
 </html>
