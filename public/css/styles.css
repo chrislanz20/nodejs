@@ -95,7 +95,11 @@ summary:focus-visible {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.65) 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.28) 0%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
   z-index: 1;
 }
 
@@ -108,6 +112,7 @@ summary:focus-visible {
   background-attachment: fixed;
   transform: translateY(0);
   transition: transform 0.3s ease-out;
+  filter: brightness(1.2) saturate(1.05);
 }
 
 .hero__inner {
