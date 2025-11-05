@@ -3,15 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Kennedy's Cafe | Stoneham, MA</title>
+    <title>Kennedy's Cafe | Best Coffee & Breakfast in Stoneham, MA</title>
     <meta
       name="description"
-      content="Kennedy's Cafe in Stoneham, MA is home of the viral Bucket Latte, offering gourmet coffee, acai bowls, sandwiches, and more. Order online for pickup or delivery."
+      content="Kennedy's Cafe is Stoneham's viral coffee destination. Enjoy famous Ice Latte Buckets, Dubai Chocolate Donuts, acai bowls, breakfast sandwiches, and more. Order online for pickup or delivery."
     />
+    <link rel="canonical" href="https://www.thekennedyscafe.com/" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -29,7 +30,7 @@
             }
           }
         }
-      }
+      };
     </script>
     <link
       rel="stylesheet"
@@ -38,455 +39,456 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <style>
-      body {
-        font-family: 'Inter', sans-serif;
-        background-color: #ffffff;
-        color: #353F44;
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
   </head>
-  <body class="bg-white text-navy">
-    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur shadow">
+  <body class="bg-white font-sans text-navy">
+    <a href="#main" class="skip-link">Skip to content</a>
+    <header class="site-header">
       <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 lg:px-6">
-        <a href="#hero" class="flex items-center gap-3 text-lg font-semibold text-navy transition-all hover:opacity-80">
+        <a href="index.html" class="flex items-center gap-3 text-lg font-semibold transition-all hover:opacity-80">
           <img
             src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75cc095b9c3bfecfa29f.jpg"
             alt="Kennedy's Cafe logo"
             class="h-12 w-12 rounded-full object-cover shadow-xl"
+            loading="lazy"
             onerror="this.onerror=null;this.src='https://via.placeholder.com/64?text=KC';"
           />
-          Kennedy's Cafe
+          <span class="sr-only">Kennedy's Cafe</span>
         </a>
         <button
-          class="rounded-full bg-turquoise/20 p-2 text-navy transition-all hover:bg-turquoise/30 focus:outline-none focus:ring-2 focus:ring-turquoise lg:hidden"
+          class="inline-flex items-center justify-center rounded-full bg-turquoise/20 p-2 text-2xl text-navy transition-all hover:bg-turquoise/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-turquoise lg:hidden"
           aria-expanded="false"
-          aria-controls="primary-navigation"
+          aria-controls="mobileNav"
           id="navToggle"
         >
           <span class="sr-only">Toggle navigation</span>
-          <i class="fa-solid fa-bars text-2xl"></i>
+          <i class="fa-solid fa-bars"></i>
         </button>
-        <nav id="primary-navigation" class="hidden w-full flex-col items-center gap-6 lg:flex lg:w-auto lg:flex-row">
-          <a href="#hero" class="font-medium text-navy transition-all hover:text-turquoise">Home</a>
-          <a href="#signatures" class="font-medium text-navy transition-all hover:text-turquoise">Viral Signatures</a>
-          <a href="#menu" class="font-medium text-navy transition-all hover:text-turquoise">Full Menu</a>
-          <a href="#about" class="font-medium text-navy transition-all hover:text-turquoise">About</a>
-          <a href="#visit" class="font-medium text-navy transition-all hover:text-turquoise">Visit</a>
-          <button
-            id="orderNowNav"
-            class="rounded-full bg-turquoise px-6 py-2 text-sm font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-turquoise/90"
-          >
-            Order Now
-          </button>
+        <nav class="hidden items-center gap-6 lg:flex" aria-label="Primary">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="menu.html" class="nav-link">Menu</a>
+          <a href="about.html" class="nav-link">About</a>
+          <a href="order.html" class="nav-link">Order Online</a>
+          <a href="contact.html" class="nav-link">Contact</a>
+          <a href="order.html" class="inline-flex items-center rounded-full bg-turquoise px-6 py-2 text-sm font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-turquoise/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-turquoise">Order Now</a>
         </nav>
       </div>
-      <div id="mobileMenu" class="hidden border-t border-turquoise/20 bg-white px-4 pb-4 shadow-lg lg:hidden">
-        <div class="flex flex-col gap-4 text-center">
-          <a href="#signatures" class="font-medium text-navy transition-all hover:text-turquoise">Viral Signatures</a>
-          <a href="#menu" class="font-medium text-navy transition-all hover:text-turquoise">Full Menu</a>
-          <a href="#about" class="font-medium text-navy transition-all hover:text-turquoise">About</a>
-          <a href="#visit" class="font-medium text-navy transition-all hover:text-turquoise">Visit</a>
-          <button
-            id="orderNowMobile"
-            class="rounded-full bg-turquoise px-6 py-2 text-sm font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-turquoise/90"
-          >
-            Order Now
-          </button>
-        </div>
-      </div>
+      <nav id="mobileNav" class="mobile-nav" aria-label="Mobile"></nav>
     </header>
 
-    <main>
-      <section
-        id="hero"
-        class="relative flex min-h-screen items-center overflow-hidden bg-navy"
-      >
+    <main id="main">
+      <section class="relative flex min-h-screen items-center justify-center overflow-hidden bg-navy text-white">
         <div
           class="absolute inset-0 bg-cover bg-center"
           style="background-image: url('https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b760a6e306f2acd5d8186.jpg');"
-        >
-          <img
-            src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b760a6e306f2acd5d8186.jpg"
-            alt="Ice Latte Bucket"
-            class="h-0 w-0"
-            aria-hidden="true"
-            onerror="this.onerror=null;this.src='https://via.placeholder.com/1920x1080?text=Kennedys+Cafe';"
-          />
-        </div>
-        <div class="absolute inset-0 bg-navy/75"></div>
-        <div class="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-24 text-white lg:px-8">
-          <p class="text-sm uppercase tracking-[0.3em] text-white/80">Stoneham, Massachusetts</p>
-          <h1 class="max-w-3xl text-4xl font-extrabold leading-tight text-white drop-shadow-2xl sm:text-5xl lg:text-6xl">
-            Home of the Viral Bucket Latte. Stoneham, MA.
-          </h1>
+          role="presentation"
+        ></div>
+        <div class="absolute inset-0 bg-navy/75" aria-hidden="true"></div>
+        <div class="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-24 text-center sm:text-left lg:px-8">
+          <p class="text-sm uppercase tracking-[0.35em] text-white/80">Stoneham, Massachusetts</p>
+          <h1 class="text-4xl font-extrabold leading-tight drop-shadow-2xl sm:text-5xl lg:text-6xl">Stoneham's Viral Coffee Destination</h1>
           <p class="max-w-2xl text-lg text-white/90 sm:text-xl">
-            Kennedy's Cafe is a local gem with global buzz. Sip the legendary 34oz Bucket Latte, indulge in Dubai Chocolate Donuts, and discover why our creations go viral daily.
+            Home of the famous Ice Latte Buckets, Dubai Chocolate Donuts, premium acai bowls, and handcrafted breakfast made fresh daily by owner Lisa Kennedy.
           </p>
           <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <button
-              id="orderNowHero"
-              class="inline-flex items-center justify-center rounded-full bg-turquoise px-8 py-4 text-base font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-turquoise/90"
+            <a
+              href="order.html"
+              class="inline-flex items-center justify-center rounded-full bg-turquoise px-8 py-4 text-base font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-turquoise/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-turquoise"
             >
               Order Now for Pickup or Delivery
-            </button>
+            </a>
             <a
-              href="#signatures"
-              class="inline-flex items-center justify-center rounded-full bg-white/10 px-8 py-4 text-base font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-white/20"
+              href="menu.html"
+              class="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/10 px-8 py-4 text-base font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/60"
             >
-              Explore Viral Signatures
+              Explore the Menu
+            </a>
+          </div>
+          <div class="flex flex-col gap-3 rounded-3xl bg-white/10 p-6 text-left shadow-2xl backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl" aria-hidden="true">⭐</span>
+              <div>
+                <p class="text-sm uppercase tracking-[0.3em] text-white/70">Customer Loved</p>
+                <p class="text-lg font-semibold">4.7 Stars &middot; 100+ Five-Star Reviews</p>
+              </div>
+            </div>
+            <a href="#reviews" class="text-sm font-medium text-white/80 underline-offset-4 hover:text-white hover:underline">Read reviews</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="reviews" class="bg-white py-20">
+        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:px-8">
+          <div class="max-w-3xl">
+            <p class="text-sm uppercase tracking-[0.3em] text-navy/60">Social Proof</p>
+            <h2 class="mt-3 text-3xl font-extrabold sm:text-4xl">What Our Customers Say</h2>
+            <p class="mt-4 text-lg text-navy/80">Real reviews from neighbors who can’t get enough of Kennedy’s Cafe.</p>
+          </div>
+          <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <article class="review-card">
+              <p>"My favorite local cafe!! So personal and friendly and the food is GREAT!"</p>
+              <footer>
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold">Marissa M.</span>
+                  <span aria-label="Five star review">⭐⭐⭐⭐⭐</span>
+                </div>
+              </footer>
+            </article>
+            <article class="review-card">
+              <p>"Best coffee!"</p>
+              <footer>
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold">Dee M.</span>
+                  <span aria-label="Five star review">⭐⭐⭐⭐⭐</span>
+                </div>
+              </footer>
+            </article>
+            <article class="review-card">
+              <p>"Very kind owner and great staff :)"</p>
+              <footer>
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold">Michell V.</span>
+                  <span aria-label="Five star review">⭐⭐⭐⭐⭐</span>
+                </div>
+              </footer>
+            </article>
+            <article class="review-card">
+              <p>"The Twix latte was SO good! Staff is so friendly here. Definitely will be back!"</p>
+              <footer>
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold">Breanna G.</span>
+                  <span aria-label="Five star review">⭐⭐⭐⭐⭐</span>
+                </div>
+              </footer>
+            </article>
+            <article class="review-card">
+              <p>"Yummy donuts! Croissants so buttery and fresh!"</p>
+              <footer>
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold">Customer Review</span>
+                  <span aria-label="Five star review">⭐⭐⭐⭐⭐</span>
+                </div>
+              </footer>
+            </article>
+            <article class="review-card">
+              <p>"I had a ham, egg and cheese on a croissant. The croissant was large, buttery and fresh made. I will no longer get one at DnD."</p>
+              <footer>
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold">Local Regular</span>
+                  <span aria-label="Five star review">⭐⭐⭐⭐⭐</span>
+                </div>
+              </footer>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="bg-mist/40 py-20">
+        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:px-8">
+          <div class="max-w-3xl">
+            <p class="text-sm uppercase tracking-[0.3em] text-navy/60">Signature Hits</p>
+            <h2 class="mt-3 text-3xl font-extrabold sm:text-4xl">Our Signature Specialties</h2>
+            <p class="mt-4 text-lg text-navy/80">
+              Share-worthy drinks, craveable eats, and premium bowls crafted for the camera and your cravings.
+            </p>
+          </div>
+          <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <article class="feature-card">
+              <div class="feature-card-media">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75eddc2a5462eb7af258.jpg"
+                  alt="Kennedy's Cafe Ice Latte Bucket 32 ounce viral iced coffee with whipped cream"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://via.placeholder.com/400x280?text=Ice+Latte+Bucket';"
+                />
+                <span class="feature-badge">🔥 Viral</span>
+              </div>
+              <h3>Ice Latte Buckets</h3>
+              <p>Legendary 32oz iced latte buckets that put Kennedy’s Cafe on the map. Perfect for sharing or savoring all day.</p>
+            </article>
+            <article class="feature-card">
+              <div class="feature-card-media">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75896e306f01dd5d6efd.jpg"
+                  alt="Dubai chocolate donuts with pistachio toppings from Kennedy's Cafe"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://via.placeholder.com/400x280?text=Dubai+Donuts';"
+                />
+                <span class="feature-badge">✨ Trending</span>
+              </div>
+              <h3>Dubai Chocolate Donuts</h3>
+              <p>Luxurious, trend-inspired donuts layered with premium chocolate and pistachio finishes for viral-level indulgence.</p>
+            </article>
+            <article class="feature-card">
+              <div class="feature-card-media">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b74fcbbb4c8861a24bfd7.jpg"
+                  alt="Premium acai bowl with strawberries banana and granola from Kennedy's Cafe"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://via.placeholder.com/400x280?text=Acai+Bowl';"
+                />
+              </div>
+              <h3>Premium Acai Bowls</h3>
+              <p>Organic acai topped with fresh fruit, house-toasted granola, and optional peanut butter for a nutrient-packed treat.</p>
+            </article>
+            <article class="feature-card">
+              <div class="feature-card-media">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b755e6e306f323f5d68d0.jpg"
+                  alt="Tiramisu iced latte with whipped topping from Kennedy's Cafe"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://via.placeholder.com/400x280?text=Tiramisu+Latte';"
+                />
+              </div>
+              <h3>Specialty Iced Lattes</h3>
+              <p>Tiramisu, Cookie Butter, Fluffy Spartan, Cinno-Honey Bear &amp; more. Each crafted with premium espresso.</p>
+            </article>
+            <article class="feature-card">
+              <div class="feature-card-media">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75af7b2dc520653415e8.jpg"
+                  alt="Gluten-free breakfast sandwich on bread from Kennedy's Cafe"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://via.placeholder.com/400x280?text=Breakfast+Sandwiches';"
+                />
+                <span class="feature-badge">🌾 GF Friendly</span>
+              </div>
+              <h3>Breakfast Sandwiches</h3>
+              <p>Stacked on croissants, bagels, or gluten-free bread. Try the Linguica, Egg &amp; Cheese or the hearty breakfast burrito.</p>
+            </article>
+            <article class="feature-card">
+              <div class="feature-card-media">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b74a6dc2a545c8b7abf3f.jpg"
+                  alt="Green Monstah smoothie in clear cup from Kennedy's Cafe"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://via.placeholder.com/400x280?text=Smoothies';"
+                />
+              </div>
+              <h3>Fresh Smoothies</h3>
+              <p>Green Monster, Strawberry Sunrise, Start Up, Acai Dream, and Peanut Butter Bliss &mdash; all blended to order for $10.</p>
+            </article>
+          </div>
+          <div>
+            <a
+              href="menu.html"
+              class="inline-flex items-center gap-2 text-base font-semibold text-navy transition-all hover:text-turquoise"
+            >
+              View the complete menu
+              <i class="fa-solid fa-arrow-right"></i>
             </a>
           </div>
         </div>
       </section>
 
-      <section id="signatures" class="bg-mist/40 py-20">
-        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:px-8">
-          <div class="max-w-3xl">
-            <p class="text-sm uppercase tracking-[0.3em] text-navy/70">Taste the Trends</p>
-            <h2 class="mt-4 text-3xl font-extrabold text-navy sm:text-4xl">The Viral Signatures</h2>
+      <section class="bg-white py-20">
+        <div class="mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-3 lg:px-8">
+          <div class="lg:col-span-2">
+            <p class="text-sm uppercase tracking-[0.3em] text-navy/60">Why Kennedy's?</p>
+            <h2 class="mt-3 text-3xl font-extrabold sm:text-4xl">Modern cafe energy, small-town heart</h2>
             <p class="mt-4 text-lg text-navy/80">
-              Crafted for the camera and the palate, these creations put Kennedy's Cafe on the map. Swipe through the fan favorites lighting up your feed.
+              Kennedy's Cafe is family-owned, female-led, and proudly rooted in Stoneham. Owner Lisa Kennedy and team craft every drink, bowl, and sandwich with premium ingredients and next-level hospitality.
             </p>
+            <div class="mt-8 grid gap-6 md:grid-cols-3">
+              <article class="value-card">
+                <span class="text-3xl" aria-hidden="true">🥐</span>
+                <h3>Fresh Daily</h3>
+                <p>Breakfast sandwiches, pastries, and acai bowls made to order every morning. Nothing day-old.</p>
+              </article>
+              <article class="value-card">
+                <span class="text-3xl" aria-hidden="true">❤️</span>
+                <h3>Locally Loved</h3>
+                <p>Family owned by Lisa Kennedy. Proud Stoneham Chamber of Commerce member supporting local events.</p>
+              </article>
+              <article class="value-card">
+                <span class="text-3xl" aria-hidden="true">📱</span>
+                <h3>Order &amp; Earn</h3>
+                <p>Save favorites, schedule ahead, and earn loyalty rewards when you order online.</p>
+              </article>
+            </div>
           </div>
-          <div class="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4">
-            <article class="snap-start shrink-0 rounded-3xl bg-white p-6 shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl sm:w-80">
-              <img
-                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75eddc2a5462eb7af258.jpg"
-                alt="Ice Latte Bucket"
-                class="h-48 w-full rounded-2xl object-cover"
-                onerror="this.onerror=null;this.src='https://via.placeholder.com/320x240?text=Bucket+Latte';"
-              />
-              <h3 class="mt-6 text-2xl font-bold text-navy">Ice Latte Bucket</h3>
-              <p class="mt-3 text-navy/80">
-                The legendary 34oz latte spectacle—house espresso, velvety milk, and cold foam cascading over a bucket of ice.
-              </p>
-            </article>
-            <article class="snap-start shrink-0 rounded-3xl bg-white p-6 shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl sm:w-80">
-              <img
-                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75896e306f01dd5d6efd.jpg"
-                alt="Dubai Chocolate Donuts"
-                class="h-48 w-full rounded-2xl object-cover"
-                onerror="this.onerror=null;this.src='https://via.placeholder.com/320x240?text=Chocolate+Donuts';"
-              />
-              <h3 class="mt-6 text-2xl font-bold text-navy">Dubai Chocolate Donuts</h3>
-              <p class="mt-3 text-navy/80">
-                Dripped in gold dust chocolate glaze and filled with whipped ganache. Luxurious, decadent, Instagram-ready.
-              </p>
-            </article>
-            <article class="snap-start shrink-0 rounded-3xl bg-white p-6 shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl sm:w-80">
-              <img
-                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75636fadaa54cd567e8b.jpg"
-                alt="Cinno-Honey Bear Iced Latte"
-                class="h-48 w-full rounded-2xl object-cover"
-                onerror="this.onerror=null;this.src='https://via.placeholder.com/320x240?text=Cinno+Honey+Latte';"
-              />
-              <h3 class="mt-6 text-2xl font-bold text-navy">Cinno-Honey Bear Iced Latte</h3>
-              <p class="mt-3 text-navy/80">
-                Cinnamon, honey drizzle, and a creamy bear-shaped cold foam crown for a signature sip worth sharing.
-              </p>
-            </article>
-            <article class="snap-start shrink-0 rounded-3xl bg-white p-6 shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl sm:w-80">
-              <img
-                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b7592bbb4c8cff024d53c.jpg"
-                alt="Fluffy Spartan Iced Latte"
-                class="h-48 w-full rounded-2xl object-cover"
-                onerror="this.onerror=null;this.src='https://via.placeholder.com/320x240?text=Fluffy+Spartan';"
-              />
-              <h3 class="mt-6 text-2xl font-bold text-navy">Fluffy Spartan Iced Latte</h3>
-              <p class="mt-3 text-navy/80">
-                Signature cold foam over espresso, pistachio syrup, and microfoam swirls inspired by Spartan pride.
-              </p>
-            </article>
-          </div>
+          <aside class="rounded-3xl bg-mist/30 p-8 shadow-xl">
+            <h3 class="text-xl font-semibold">Amenities</h3>
+            <ul class="mt-4 space-y-3 text-navy/80">
+              <li class="flex items-center gap-3"><i class="fa-solid fa-wifi text-turquoise"></i> Free Wi-Fi</li>
+              <li class="flex items-center gap-3"><i class="fa-solid fa-chair text-turquoise"></i> Outdoor Seating</li>
+              <li class="flex items-center gap-3"><i class="fa-solid fa-square-parking text-turquoise"></i> Plenty of Parking</li>
+            </ul>
+            <a
+              href="about.html"
+              class="mt-6 inline-flex items-center rounded-full bg-white px-5 py-2 text-sm font-semibold text-navy shadow transition-all hover:-translate-y-0.5 hover:text-turquoise"
+            >
+              Learn more about us
+            </a>
+          </aside>
         </div>
       </section>
 
-      <section id="menu" class="py-20">
-        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:px-8">
-          <div class="max-w-3xl">
-            <p class="text-sm uppercase tracking-[0.3em] text-navy/70">Fuel Every Craving</p>
-            <h2 class="mt-4 text-3xl font-extrabold text-navy sm:text-4xl">Full Menu & Flavor Diversity</h2>
-            <p class="mt-4 text-lg text-navy/80">
-              From nutrient-packed bowls to hearty breakfast classics, our menu balances wellness with indulgence. Explore the line-up that keeps Stoneham energized.
+      <section class="bg-navy text-white">
+        <div class="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-2 lg:px-8">
+          <div class="flex flex-col justify-center gap-6">
+            <p class="text-sm uppercase tracking-[0.3em] text-white/70">Visit Us</p>
+            <h2 class="text-3xl font-extrabold sm:text-4xl">In the heart of downtown Stoneham</h2>
+            <p class="text-lg text-white/80">
+              362 Main St, Suite 1 · Stoneham, MA 02180
+              <br />
+              (781) 438-4004
             </p>
-          </div>
-          <div class="grid gap-10 lg:grid-cols-2">
-            <div class="rounded-3xl bg-mist/60 p-6 shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl">
-              <div class="flex flex-col gap-6 md:flex-row">
-                <img
-                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b74fcbbb4c8861a24bfd7.jpg"
-                  alt="Acai bowls"
-                  class="h-48 w-full rounded-2xl object-cover md:h-auto md:w-48"
-                  onerror="this.onerror=null;this.src='https://via.placeholder.com/320x320?text=Acai+Bowls';"
-                />
-                <div class="flex flex-col gap-4">
-                  <h3 class="text-2xl font-bold text-navy">Acai Bowls & Smoothies</h3>
-                  <p class="text-navy/80">
-                    Blended superfruits, house-made granola, and fresh toppings crafted to fuel your morning hustle.
-                  </p>
-                  <ul class="space-y-2 text-navy/90">
-                    <li><span class="font-semibold text-navy">Peanut Butter Acai Bowl</span> – Creamy peanut butter swirl, cacao nib crunch, banana ribbons.</li>
-                    <li><span class="font-semibold text-navy">Green Monstah Smoothie</span> – Kale, pineapple, coconut water, and matcha boost.</li>
-                  </ul>
-                </div>
+            <div class="grid gap-4 text-sm text-white/80 sm:grid-cols-2">
+              <div>
+                <h3 class="font-semibold text-white">Cafe Hours</h3>
+                <p>Mon-Sat: 6:00 AM - 3:00 PM<br />Sun: 7:00 AM - 1:00 PM</p>
+              </div>
+              <div>
+                <h3 class="font-semibold text-white">Service Hours</h3>
+                <p>Pickup: 6:00 AM - 3:00 PM daily<br />Delivery: 6:30 AM - 2:30 PM daily</p>
               </div>
             </div>
-            <div class="rounded-3xl bg-mist/60 p-6 shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl">
-              <div class="flex flex-col gap-6 md:flex-row">
-                <img
-                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75af7b2dc520653415e8.jpg"
-                  alt="Gluten Free Sandwiches"
-                  class="h-48 w-full rounded-2xl object-cover md:h-auto md:w-48"
-                  onerror="this.onerror=null;this.src='https://via.placeholder.com/320x320?text=Sandwiches';"
-                />
-                <div class="flex flex-col gap-4">
-                  <div class="flex flex-wrap items-center justify-between gap-3">
-                    <h3 class="text-2xl font-bold text-navy">Sandwiches & Breakfast</h3>
-                    <span class="rounded-full bg-white px-4 py-1 text-xs font-semibold uppercase tracking-widest text-turquoise shadow">Gluten-Free Sandwiches Available</span>
-                  </div>
-                  <p class="text-navy/80">
-                    Savory sensations built on artisanal breads, breakfast classics reinvented, and all-day comfort eats.
-                  </p>
-                  <ul class="space-y-2 text-navy/90">
-                    <li><span class="font-semibold text-navy">Breakfast Burrito</span> – Cage-free eggs, roasted potatoes, cheddar, chipotle crema.</li>
-                    <li><span class="font-semibold text-navy">Linguica Egg & Cheese</span> – Local sausage, melted provolone, garlic aioli on brioche.</li>
-                  </ul>
-                </div>
-              </div>
+            <div class="flex flex-wrap items-center gap-4">
+              <a
+                href="https://maps.google.com/?q=Kennedy's+Cafe+Stoneham"
+                class="inline-flex items-center gap-2 rounded-full bg-turquoise px-6 py-3 font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-turquoise/90"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Get Directions
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+              <a href="tel:17814384004" class="inline-flex items-center gap-2 rounded-full border border-white/40 px-6 py-3 font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-white/10">
+                <i class="fa-solid fa-phone"></i>
+                Call Now
+              </a>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section id="about" class="bg-mist/40 py-20">
-        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:flex-row lg:items-center lg:gap-16 lg:px-8">
-          <div class="relative flex-1">
-            <div class="absolute -left-6 -top-6 hidden h-24 w-24 rounded-3xl bg-turquoise/40 blur-3xl lg:block"></div>
+          <div class="flex flex-col gap-6">
+            <div class="overflow-hidden rounded-3xl shadow-2xl">
+              <iframe
+                title="Map showing Kennedy's Cafe in Stoneham Massachusetts"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2948.014803960111!2d-71.10161752337996!3d42.480701227742865!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e376bde57c05c1%3A0x11729c9693e2c34d!2sKennedy's%20Cafe!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus"
+                loading="lazy"
+                width="100%"
+                height="360"
+                style="border:0"
+                allowfullscreen=""
+                referrerpolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
             <img
               src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b78ca7b2dc57bee34abe4.jpg"
-              alt="Kennedy's Cafe storefront"
-              class="relative z-10 w-full rounded-3xl object-cover shadow-2xl"
-              onerror="this.onerror=null;this.src='https://via.placeholder.com/640x480?text=Kennedys+Cafe';"
+              alt="Kennedy's Cafe storefront exterior in downtown Stoneham Massachusetts"
+              class="h-64 w-full rounded-3xl object-cover shadow-2xl"
+              loading="lazy"
+              onerror="this.onerror=null;this.src='https://via.placeholder.com/640x360?text=Kennedys+Cafe';"
             />
-          </div>
-          <div class="flex-1 space-y-6">
-            <p class="text-sm uppercase tracking-[0.3em] text-navy/70">Local Gem, Global Buzz</p>
-            <h2 class="text-3xl font-extrabold text-navy sm:text-4xl">More than a Cafe, it's a Community.</h2>
-            <p class="text-lg text-navy/80">
-              Kennedy's Cafe has been a Stoneham staple, known for our commitment to quality, unique flavor innovation, and friendly atmosphere. We pride ourselves on sourcing the best ingredients for every item, from our Acai Bowls to our signature Bucket Lattes. Come visit the spot where local charm meets viral fame.
-            </p>
-            <div class="grid gap-4 sm:grid-cols-3">
-              <div class="rounded-2xl bg-white p-4 text-center shadow-xl">
-                <i class="fa-solid fa-wifi text-2xl text-turquoise"></i>
-                <p class="mt-2 text-sm font-semibold text-navy">Free Wi-Fi</p>
-              </div>
-              <div class="rounded-2xl bg-white p-4 text-center shadow-xl">
-                <i class="fa-solid fa-chair text-2xl text-turquoise"></i>
-                <p class="mt-2 text-sm font-semibold text-navy">Outdoor Seating</p>
-              </div>
-              <div class="rounded-2xl bg-white p-4 text-center shadow-xl">
-                <i class="fa-solid fa-square-parking text-2xl text-turquoise"></i>
-                <p class="mt-2 text-sm font-semibold text-navy">Plenty of Parking</p>
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
-      <section id="visit" class="bg-navy py-20 text-white">
-        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:px-8">
-          <div class="grid gap-12 lg:grid-cols-3">
-            <div class="space-y-6">
-              <h2 class="text-3xl font-extrabold">Visit Kennedy's Cafe</h2>
-              <div>
-                <h3 class="text-xl font-semibold">Location</h3>
-                <p class="mt-2 text-white/80">362 Main St, Stoneham, MA 02180</p>
-                <a
-                  href="https://maps.google.com/?q=Kennedy's+Cafe+Stoneham"
-                  class="mt-3 inline-flex items-center gap-2 text-turquoise transition-all hover:text-white"
-                  target="_blank"
-                  rel="noopener"
-                >
-                  <i class="fa-solid fa-location-dot"></i>
-                  Open in Google Maps
-                </a>
-              </div>
-              <div>
-                <h3 class="text-xl font-semibold">Hours</h3>
-                <p class="mt-2 text-white/80">Mon-Sat: 6:00 AM - 4:00 PM</p>
-                <p class="text-white/80">Sun: 7:00 AM - 1:00 PM</p>
-              </div>
-            </div>
-            <div class="rounded-3xl bg-white/10 p-6 shadow-2xl">
-              <div class="rounded-2xl bg-white p-4 text-center text-navy shadow-xl">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-turquoise">Map Preview</p>
-                <div class="mt-4 flex h-48 items-center justify-center rounded-xl bg-mist text-navy/70">
-                  <span class="text-sm">Interactive Map Coming Soon</span>
-                </div>
-              </div>
-              <div class="mt-6 space-y-4">
-                <h3 class="text-xl font-semibold">Delivery Partners</h3>
-                <div class="flex flex-wrap items-center gap-4 text-2xl text-white">
-                  <a
-                    href="https://www.ubereats.com"
-                    class="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 transition-all hover:-translate-y-0.5 hover:bg-white/20"
-                    target="_blank"
-                    rel="noopener"
-                    aria-label="Order on UberEats"
-                  >
-                    <i class="fa-brands fa-uber"></i>
-                  </a>
-                  <a
-                    href="https://www.doordash.com"
-                    class="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 transition-all hover:-translate-y-0.5 hover:bg-white/20"
-                    target="_blank"
-                    rel="noopener"
-                    aria-label="Order on DoorDash"
-                  >
-                    <i class="fa-solid fa-truck-fast"></i>
-                  </a>
-                  <a
-                    href="https://www.grubhub.com"
-                    class="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 transition-all hover:-translate-y-0.5 hover:bg-white/20"
-                    target="_blank"
-                    rel="noopener"
-                    aria-label="Order on GrubHub"
-                  >
-                    <i class="fa-solid fa-burger"></i>
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div class="space-y-6">
-              <h3 class="text-xl font-semibold">Stay Connected</h3>
-              <p class="text-white/80">
-                Follow us for the latest drops, limited-edition flavors, and behind-the-scenes moments.
-              </p>
-              <div class="flex flex-wrap items-center gap-4 text-2xl">
-                <a
-                  href="https://www.instagram.com"
-                  class="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 transition-all hover:-translate-y-0.5 hover:bg-white/20"
-                  target="_blank"
-                  rel="noopener"
-                >
-                  <i class="fa-brands fa-instagram text-white"></i>
-                  <span class="text-sm font-semibold text-white">Instagram</span>
-                </a>
-                <a
-                  href="https://www.tiktok.com"
-                  class="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 transition-all hover:-translate-y-0.5 hover:bg-white/20"
-                  target="_blank"
-                  rel="noopener"
-                >
-                  <i class="fa-brands fa-tiktok text-white"></i>
-                  <span class="text-sm font-semibold text-white">TikTok</span>
-                </a>
-              </div>
-            </div>
+      <section class="bg-mist/30 py-16">
+        <div class="mx-auto flex max-w-5xl flex-col items-center gap-6 px-6 text-center lg:px-8">
+          <h2 class="text-3xl font-extrabold sm:text-4xl">Ready to Order?</h2>
+          <p class="max-w-2xl text-lg text-navy/80">Order direct for the best pricing, loyalty rewards, and the fastest pickup. Delivery available via Uber Eats, DoorDash, and Grubhub.</p>
+          <div class="flex flex-col gap-4 sm:flex-row">
+            <a
+              href="order.html"
+              class="inline-flex items-center justify-center rounded-full bg-navy px-8 py-4 text-base font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-navy/90"
+            >
+              Order Now
+            </a>
+            <a
+              href="menu.html"
+              class="inline-flex items-center justify-center rounded-full border border-navy/40 px-8 py-4 text-base font-semibold text-navy shadow-xl transition-all hover:-translate-y-0.5 hover:bg-white"
+            >
+              View Full Menu
+            </a>
           </div>
-          <p class="text-center text-sm text-white/60">© <span id="currentYear"></span> Kennedy's Cafe. Crafted with love in Stoneham, MA.</p>
         </div>
       </section>
     </main>
 
-    <div
-      id="orderModal"
-      class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/60 px-4 py-6"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="orderModalTitle"
-    >
-      <div class="max-w-lg rounded-3xl bg-white p-8 text-navy shadow-2xl">
-        <div class="flex items-start justify-between">
-          <div>
-            <h2 id="orderModalTitle" class="text-2xl font-bold">Order Kennedy's Cafe</h2>
-            <p class="mt-2 text-navy/70">
-              Choose your favorite delivery partner or call ahead for pickup. We can't wait to craft your order!
-            </p>
+    <footer class="site-footer">
+      <div class="mx-auto grid max-w-6xl gap-12 px-6 py-16 lg:grid-cols-4 lg:px-8">
+        <div class="space-y-4">
+          <img
+            src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75cc095b9c3bfecfa29f.jpg"
+            alt="Kennedy's Cafe logo"
+            class="h-14 w-14 rounded-full object-cover shadow-xl"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='https://via.placeholder.com/56?text=KC';"
+          />
+          <p class="text-sm text-white/80">
+            Kennedy's Cafe<br />362 Main St, Suite 1<br />Stoneham, MA 02180<br />Phone: <a href="tel:17814384004" class="underline">(781) 438-4004</a>
+          </p>
+          <p class="text-xs text-white/60">Family-owned by Lisa Kennedy. Proud Stoneham Chamber of Commerce member.</p>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold uppercase tracking-widest text-white">Hours</h3>
+          <ul class="mt-4 space-y-2 text-sm text-white/80">
+            <li>Mon-Sat: 6:00 AM - 3:00 PM</li>
+            <li>Sun: 7:00 AM - 1:00 PM</li>
+            <li>Pickup: 6:00 AM - 3:00 PM daily</li>
+            <li>Delivery: 6:30 AM - 2:30 PM daily</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold uppercase tracking-widest text-white">Quick Links</h3>
+          <ul class="mt-4 space-y-2 text-sm text-white/80">
+            <li><a href="menu.html" class="footer-link">Menu</a></li>
+            <li><a href="order.html" class="footer-link">Order Online</a></li>
+            <li><a href="about.html" class="footer-link">About</a></li>
+            <li><a href="contact.html" class="footer-link">Contact</a></li>
+            <li><a href="order.html#catering" class="footer-link">Catering</a></li>
+          </ul>
+        </div>
+        <div class="space-y-4">
+          <h3 class="text-sm font-semibold uppercase tracking-widest text-white">Stay Connected</h3>
+          <div class="flex items-center gap-4 text-xl text-white">
+            <a href="https://www.instagram.com/kennedyscafestoneham" target="_blank" rel="noreferrer" aria-label="Instagram" class="transition-all hover:text-turquoise"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook" class="transition-all hover:text-turquoise"><i class="fa-brands fa-facebook"></i></a>
+            <a href="https://www.tiktok.com" target="_blank" rel="noreferrer" aria-label="TikTok" class="transition-all hover:text-turquoise"><i class="fa-brands fa-tiktok"></i></a>
           </div>
-          <button id="closeModal" class="text-2xl text-navy/50 transition-all hover:text-turquoise">
-            <span class="sr-only">Close modal</span>
-            &times;
-          </button>
-        </div>
-        <div class="mt-6 grid gap-4 sm:grid-cols-3">
-          <a
-            href="https://www.ubereats.com"
-            target="_blank"
-            rel="noopener"
-            class="flex flex-col items-center gap-2 rounded-2xl bg-mist/60 p-4 text-center shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl"
-          >
-            <i class="fa-brands fa-uber text-3xl text-turquoise"></i>
-            <span class="text-sm font-semibold">UberEats</span>
-          </a>
-          <a
-            href="https://www.doordash.com"
-            target="_blank"
-            rel="noopener"
-            class="flex flex-col items-center gap-2 rounded-2xl bg-mist/60 p-4 text-center shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl"
-          >
-            <i class="fa-solid fa-truck-fast text-3xl text-turquoise"></i>
-            <span class="text-sm font-semibold">DoorDash</span>
-          </a>
-          <a
-            href="https://www.grubhub.com"
-            target="_blank"
-            rel="noopener"
-            class="flex flex-col items-center gap-2 rounded-2xl bg-mist/60 p-4 text-center shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl"
-          >
-            <i class="fa-solid fa-burger text-3xl text-turquoise"></i>
-            <span class="text-sm font-semibold">GrubHub</span>
-          </a>
-        </div>
-        <div class="mt-6 rounded-2xl bg-white p-4 text-center text-sm text-navy/70">
-          Prefer to call? <a href="tel:17813856000" class="font-semibold text-turquoise transition-all hover:text-navy">(781) 385-6000</a>
+          <a href="order.html" class="inline-flex items-center rounded-full bg-turquoise px-5 py-2 text-sm font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-turquoise/90">Order Now</a>
+          <p class="text-xs text-white/60">© <span id="year"></span> Kennedy's Cafe. All rights reserved.</p>
         </div>
       </div>
-    </div>
+    </footer>
 
-    <script>
-      const navToggle = document.getElementById('navToggle');
-      const mobileMenu = document.getElementById('mobileMenu');
-      const orderButtons = document.querySelectorAll('#orderNowHero, #orderNowNav, #orderNowMobile');
-      const orderModal = document.getElementById('orderModal');
-      const closeModal = document.getElementById('closeModal');
-      const currentYear = document.getElementById('currentYear');
+    <a href="order.html" class="order-fab" aria-label="Order now">
+      <i class="fa-solid fa-mug-saucer"></i>
+      <span>Order Now</span>
+    </a>
 
-      if (currentYear) {
-        currentYear.textContent = new Date().getFullYear();
-      }
-
-      if (navToggle && mobileMenu) {
-        navToggle.addEventListener('click', () => {
-          const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-          navToggle.setAttribute('aria-expanded', (!expanded).toString());
-          mobileMenu.classList.toggle('hidden');
-        });
-      }
-
-      const openModal = () => {
-        if (orderModal) {
-          orderModal.classList.remove('hidden');
-          document.body.classList.add('overflow-hidden');
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "CafeOrCoffeeShop",
+        "name": "Kennedy's Cafe",
+        "image": "https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b760a6e306f2acd5d8186.jpg",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "362 Main St, Suite 1",
+          "addressLocality": "Stoneham",
+          "addressRegion": "MA",
+          "postalCode": "02180",
+          "addressCountry": "US"
+        },
+        "telephone": "+1-781-438-4004",
+        "url": "https://www.thekennedyscafe.com",
+        "priceRange": "$$",
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 42.4807012,
+          "longitude": -71.0990429
+        },
+        "openingHours": "Mo-Sa 06:00-15:00, Su 07:00-13:00",
+        "servesCuisine": ["Coffee", "Breakfast", "Bakery", "Smoothies"],
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.7",
+          "reviewCount": "100"
         }
-      };
-
-      orderButtons.forEach((btn) => {
-        btn?.addEventListener('click', openModal);
-      });
-
-      closeModal?.addEventListener('click', () => {
-        orderModal.classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
-      });
-
-      orderModal?.addEventListener('click', (event) => {
-        if (event.target === orderModal) {
-          orderModal.classList.add('hidden');
-          document.body.classList.remove('overflow-hidden');
-        }
-      });
+      }
     </script>
+    <script src="scripts.js"></script>
   </body>
 </html>
