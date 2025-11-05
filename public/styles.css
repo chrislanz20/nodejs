@@ -156,6 +156,27 @@ body {
   transform: scale(1.02);
 }
 
+.grand-opening-figure {
+  border-radius: 1.25rem;
+  overflow: hidden;
+  border: 1px solid rgba(74, 47, 39, 0.2);
+  box-shadow: 0 26px 50px -24px rgba(31, 31, 36, 0.35);
+  background: radial-gradient(circle at top, rgba(249, 246, 241, 0.65), transparent 60%);
+  padding: 1rem;
+}
+
+.grand-opening-figure img {
+  width: 100%;
+  border-radius: 0.85rem;
+  display: block;
+  object-fit: cover;
+  filter: saturate(1.04) contrast(1.08) brightness(1.02);
+}
+
+.grand-opening-figure figcaption {
+  letter-spacing: 0.16em;
+}
+
 @media (max-width: 1023px) {
   #primary-navigation {
     background-color: rgba(249, 246, 241, 0.98);
