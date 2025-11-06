@@ -19,10 +19,27 @@ const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 // Initialize Google Sheets client
 let sheetsClient;
 async function initializeSheetsClient() {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: process.env.GOOGLE_SERVICE_ACCOUNT_KEY_PATH,
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  });
+  let auth;
+
+  // For Vercel deployment: use credentials from environment variable
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+    const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+    auth = new google.auth.GoogleAuth({
+      credentials,
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+  }
+  // For local development: use keyFile
+  else if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY_PATH) {
+    auth = new google.auth.GoogleAuth({
+      keyFile: process.env.GOOGLE_SERVICE_ACCOUNT_KEY_PATH,
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+  }
+  else {
+    throw new Error('No Google service account credentials found. Set either GOOGLE_SERVICE_ACCOUNT_JSON or GOOGLE_SERVICE_ACCOUNT_KEY_PATH');
+  }
+
   sheetsClient = google.sheets({ version: 'v4', auth });
 }
 
