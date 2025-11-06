@@ -6,7 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "start": "node server.js",
-    "scrape": "node business-scraper.js"
+    "scrape": "node business-scraper.js",
+    "web": "node web-server.js"
   },
   "engines": {
     "node": ">=18"

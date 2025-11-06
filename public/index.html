@@ -1,260 +1,366 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Omelette Headquarters | Wakefield, Massachusetts</title>
-    <meta
-      name="description"
-      content="Omelette Headquarters in Wakefield, MA serves artfully crafted breakfast, brunch, and coffee in a sunlit café inspired by the perfect omelette."
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
-  <body>
-    <header class="hero" id="top">
-      <div class="hero__overlay"></div>
-      <div class="container hero__inner">
-        <nav class="nav" aria-label="Main">
-          <a class="nav__brand" href="#top">Omelette HQ</a>
-          <button class="nav__toggle" aria-expanded="false" aria-controls="primary-navigation">
-            <span class="nav__toggle-line"></span>
-            <span class="nav__toggle-line"></span>
-            <span class="nav__toggle-line"></span>
-            <span class="sr-only">Toggle navigation</span>
-          </button>
-          <ul class="nav__links" id="primary-navigation">
-            <li><a href="#about">Our Story</a></li>
-            <li><a href="#menu">Menu</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#events">Events</a></li>
-            <li><a href="#visit">Visit</a></li>
-          </ul>
-        </nav>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Website Finder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        <div class="hero__content">
-          <p class="eyebrow">Wakefield, Massachusetts</p>
-          <h1>Where Omelettes are an Art Form</h1>
-          <p>
-            Omelette Headquarters is a cheerful café devoted to one perfect dish. From locally sourced
-            eggs to inventive fillings, every plate is a canvas for comfort and creativity.
-          </p>
-          <div class="hero__cta">
-            <a class="btn btn--primary" href="#menu">Explore the Menu</a>
-            <a class="btn btn--ghost" href="#visit">Plan Your Visit</a>
-          </div>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .status {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .status.success {
+            border-left-color: #10b981;
+        }
+
+        .status.error {
+            border-left-color: #ef4444;
+        }
+
+        .progress {
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border: 1px solid #b8dce8;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h3 {
+            color: #2c5f7a;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            color: #456b7e;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .example {
+            color: #888;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Business Website Finder</h1>
+        <p class="subtitle">Find businesses without websites in your target area</p>
+
+        <div class="info-box">
+            <h3>How it works:</h3>
+            <p>Enter an industry and ZIP code below. We'll search Google Places and find all businesses that DON'T have websites - perfect for your web development outreach!</p>
         </div>
-      </div>
-    </header>
 
-    <main>
-      <section class="section" id="about">
-        <div class="container section__grid">
-          <div class="section__content">
-            <h2>Born from a Breakfast Obsession</h2>
-            <p>
-              Omelette Headquarters began as a pop-up on Wakefield&rsquo;s lakefront farmer&rsquo;s market and
-              quickly became the town&rsquo;s favorite morning ritual. Founder and chef Dana Avery wanted a
-              place where guests could slow down, savor the moment, and experience eggs elevated beyond
-              expectations.
-            </p>
-            <p>
-              Today, our kitchen celebrates the craft of breakfast with seasonal ingredients, a zero-waste
-              mindset, and barista-crafted coffee drinks. Every omelette is folded to order, served with
-              toasted sourdough, and paired with playful sauces you won&rsquo;t find anywhere else.
-            </p>
-          </div>
-          <article class="highlight-card" aria-label="House values">
-            <h3>Our Guiding Ingredients</h3>
-            <ul class="checklist">
-              <li>Farm eggs sourced within 50 miles of Wakefield</li>
-              <li>House-fermented hot sauces and pickled vegetables</li>
-              <li>Compost-first kitchen with reusable packaging</li>
-              <li>Warm, neighborhood hospitality every day</li>
-            </ul>
-          </article>
-        </div>
-      </section>
-
-      <section class="section section--accent" id="menu">
-        <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Signature Omelettes</p>
-            <h2>Crafted Classics & Bold Specials</h2>
-            <p>
-              From timeless comforts to daring flavor mashups, these omelettes showcase the flair and fun of
-              Omelette HQ. Seasonal specials rotate monthly.
-            </p>
-          </div>
-          <div class="card-grid">
-            <article class="card">
-              <h3>Lake Quannapowitt Classic</h3>
-              <p>Applewood bacon, smoked cheddar, slow-roasted tomatoes, scallion crème fraîche.</p>
-              <span class="pill">$14</span>
-            </article>
-            <article class="card">
-              <h3>Garden Sunrise</h3>
-              <p>Charred broccolini, lemon ricotta, basil pesto drizzle, toasted almond crunch.</p>
-              <span class="pill">Vegetarian</span>
-            </article>
-            <article class="card">
-              <h3>North Shore Heat</h3>
-              <p>Chorizo, cotija, caramelized onions, pickled fresnos, house pineapple fire sauce.</p>
-              <span class="pill pill--spicy">Spicy</span>
-            </article>
-            <article class="card">
-              <h3>Wakefield Weekender</h3>
-              <p>Lobster tail medallions, brown butter hollandaise, champagne chive pearls.</p>
-              <span class="pill">Saturday & Sunday Only</span>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section section--experience" id="experience">
-        <div class="container section__grid section__grid--reverse">
-          <article class="section__content">
-            <h2>The Omelette HQ Experience</h2>
-            <p>
-              Sunlight pours through our vaulted windows, jazz vinyl hums softly, and latte art swirls through
-              the air. Settle into our communal harvest table or claim a window seat overlooking the Lake
-              Quannapowitt trail.
-            </p>
-            <ul class="icon-list">
-              <li>
-                <span class="icon" aria-hidden="true">🥚</span>
-                <div>
-                  <h3>Egg Bar</h3>
-                  <p>Customize your omelette with chef-guided mix-ins and sauces for a bespoke breakfast.</p>
-                </div>
-              </li>
-              <li>
-                <span class="icon" aria-hidden="true">☕</span>
-                <div>
-                  <h3>Slow Coffee Bar</h3>
-                  <p>Single-origin pours, nitro cold brew, and seasonal mocktails crafted by our baristas.</p>
-                </div>
-              </li>
-              <li>
-                <span class="icon" aria-hidden="true">🎶</span>
-                <div>
-                  <h3>Weekend Vinyl Sessions</h3>
-                  <p>Local DJs spin mellow brunch sets every Saturday from 10 AM&ndash;1 PM.</p>
-                </div>
-              </li>
-            </ul>
-          </article>
-          <figure class="feature-card" aria-label="Interior photography">
-            <img
-              src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80"
-              alt="Sunlit café interior with breakfast counter"
-            />
-            <figcaption>Bright mornings inside Omelette Headquarters</figcaption>
-          </figure>
-        </div>
-      </section>
-
-      <section class="section" id="events">
-        <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Wakefield Community</p>
-            <h2>Upcoming Happenings</h2>
-            <p>We love sharing breakfast culture with our neighbors. Save the date for these special moments.</p>
-          </div>
-          <div class="timeline">
-            <article class="timeline__item">
-              <h3>Egg Art Lab &middot; September 7</h3>
-              <p>Hands-on class exploring omelette folds, topping stylings, and plating wizardry.</p>
-            </article>
-            <article class="timeline__item">
-              <h3>Harvest Brunch &middot; October 12</h3>
-              <p>Five-course tasting menu featuring autumn ingredients from Middlesex County farms.</p>
-            </article>
-            <article class="timeline__item">
-              <h3>Lakefront Sunrise Run &middot; Every Friday</h3>
-              <p>Meet at 6 AM for a 3-mile jog followed by complimentary espresso shots.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section section--visit" id="visit">
-        <div class="container section__grid">
-          <div class="section__content">
-            <p class="eyebrow">Visit</p>
-            <h2>Come by the Headquarters</h2>
-            <p>
-              Find us steps from Wakefield&rsquo;s commuter rail stop. We welcome walk-ins and limited
-              reservations for parties of six or more. Outdoor patio seating is available spring through fall.
-            </p>
-            <div class="contact-details">
-              <div>
-                <h3>Location</h3>
-                <p>
-                  12 Main Street<br />
-                  Wakefield, MA 01880
-                </p>
-              </div>
-              <div>
-                <h3>Hours</h3>
-                <p>Daily 7:00 AM &ndash; 3:00 PM<br />Brunch until 4:00 PM on weekends</p>
-              </div>
-              <div>
-                <h3>Contact</h3>
-                <p>
-                  <a href="tel:17815551234">(781) 555-1234</a><br />
-                  <a href="mailto:hello@omelettehq.com">hello@omelettehq.com</a>
-                </p>
-              </div>
-              <div>
-                <h3>Follow</h3>
-                <p>
-                  <a href="https://www.instagram.com" target="_blank" rel="noreferrer">Instagram</a>
-                  &middot;
-                  <a href="https://www.tiktok.com" target="_blank" rel="noreferrer">TikTok</a>
-                </p>
-              </div>
+        <form id="scraperForm">
+            <div class="form-group">
+                <label for="industry">Industry or Business Type</label>
+                <input
+                    type="text"
+                    id="industry"
+                    name="industry"
+                    placeholder="e.g., law firms, restaurants, dentists"
+                    required
+                >
+                <div class="example">Examples: "law firms", "plumbers", "italian restaurants"</div>
             </div>
-          </div>
-          <div class="map-card">
-            <iframe
-              title="Map of Omelette Headquarters in Wakefield MA"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2939.217417979731!2d-71.07318192355152!3d42.50393917117971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e36f78d1de7d21%3A0xa795882b58c2c299!2sWakefield%2C%20MA!5e0!3m2!1sen!2sus!4v1720384050002!5m2!1sen!2sus"
-              allowfullscreen=""
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-            ></iframe>
-          </div>
-        </div>
-      </section>
-    </main>
 
-    <footer class="footer">
-      <div class="container footer__inner">
-        <p>© <span id="year"></span> Omelette Headquarters. Crafted with love in Wakefield, MA.</p>
-        <p>
-          Need catering? Email <a href="mailto:catering@omelettehq.com">catering@omelettehq.com</a> for custom
-          brunch spreads.
-        </p>
-      </div>
-    </footer>
+            <div class="form-group">
+                <label for="zipCode">ZIP Code</label>
+                <input
+                    type="text"
+                    id="zipCode"
+                    name="zipCode"
+                    placeholder="e.g., 02180"
+                    pattern="[0-9]{5}"
+                    required
+                >
+                <div class="example">5-digit US ZIP code</div>
+            </div>
+
+            <button type="submit" id="submitBtn">
+                Start Search
+            </button>
+        </form>
+
+        <div id="results" class="results">
+            <div id="statusMessages"></div>
+            <div class="progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            <div id="resultStats"></div>
+        </div>
+    </div>
 
     <script>
-      const navToggle = document.querySelector(".nav__toggle");
-      const navLinks = document.querySelector(".nav__links");
+        const form = document.getElementById('scraperForm');
+        const resultsDiv = document.getElementById('results');
+        const statusMessages = document.getElementById('statusMessages');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressFill = document.getElementById('progressFill');
+        const resultStats = document.getElementById('resultStats');
 
-      navToggle?.addEventListener("click", () => {
-        const expanded = navToggle.getAttribute("aria-expanded") === "true";
-        navToggle.setAttribute("aria-expanded", String(!expanded));
-        navLinks?.classList.toggle("nav__links--open");
-      });
+        let originalButtonText = 'Start Search';
 
-      document.getElementById("year").textContent = new Date().getFullYear();
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const industry = document.getElementById('industry').value;
+            const zipCode = document.getElementById('zipCode').value;
+
+            // Reset UI
+            resultsDiv.classList.add('show');
+            statusMessages.innerHTML = '';
+            resultStats.innerHTML = '';
+            progressFill.style.width = '0%';
+
+            // Disable button
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span>Searching...';
+
+            addStatus('Starting search...', 'info');
+            progressFill.style.width = '10%';
+
+            try {
+                const response = await fetch('/api/scrape', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ industry, zipCode }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    progressFill.style.width = '100%';
+                    addStatus(`✓ Success! Found ${data.businessesWithoutWebsites} businesses without websites`, 'success');
+
+                    // Show stats
+                    resultStats.innerHTML = `
+                        <div class="result-stats">
+                            <div class="stat-card">
+                                <div class="stat-number">${data.totalBusinesses}</div>
+                                <div class="stat-label">Total Businesses</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">${data.businessesWithoutWebsites}</div>
+                                <div class="stat-label">Without Websites</div>
+                            </div>
+                        </div>
+                    `;
+
+                    if (data.sheetUrl) {
+                        addStatus(`<a href="${data.sheetUrl}" target="_blank" style="color: #667eea; text-decoration: underline;">View Results in Google Sheets →</a>`, 'success');
+                    }
+                } else {
+                    addStatus(`Error: ${data.error}`, 'error');
+                    progressFill.style.width = '0%';
+                }
+            } catch (error) {
+                addStatus(`Error: ${error.message}`, 'error');
+                progressFill.style.width = '0%';
+            } finally {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalButtonText;
+            }
+        });
+
+        function addStatus(message, type = 'info') {
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status ${type}`;
+            statusDiv.innerHTML = message;
+            statusMessages.appendChild(statusDiv);
+        }
+
+        // Update progress every few seconds while searching
+        let progressInterval;
+        form.addEventListener('submit', () => {
+            let progress = 10;
+            progressInterval = setInterval(() => {
+                if (progress < 90) {
+                    progress += 5;
+                    progressFill.style.width = progress + '%';
+                }
+            }, 1000);
+        });
+
+        // Clear interval when done
+        window.addEventListener('beforeunload', () => {
+            clearInterval(progressInterval);
+        });
     </script>
-  </body>
+</body>
 </html>
