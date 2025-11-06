@@ -8,7 +8,7 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Initialize Google APIs
 const placesClient = new Client({});
@@ -240,6 +240,11 @@ app.post('/api/scrape', async (req, res) => {
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Business Website Finder API is running' });
+});
+
+// Serve index.html for root path
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Export for Vercel
