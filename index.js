@@ -89,6 +89,21 @@ async function getBusinessDetails(placeId) {
   }
 }
 
+// Extract city from address
+function extractCity(formattedAddress) {
+  if (!formattedAddress) return 'N/A';
+
+  // Address format is usually: "Street, City, State ZIP, Country"
+  const parts = formattedAddress.split(',');
+
+  // City is typically the second part
+  if (parts.length >= 2) {
+    return parts[1].trim();
+  }
+
+  return 'N/A';
+}
+
 // Filter businesses without websites
 async function filterBusinessesWithoutWebsites(businesses) {
   const businessesWithoutWebsites = [];
@@ -99,11 +114,8 @@ async function filterBusinessesWithoutWebsites(businesses) {
     if (details && !details.website) {
       businessesWithoutWebsites.push({
         name: details.name,
-        address: details.formatted_address,
+        city: extractCity(details.formatted_address),
         phone: details.formatted_phone_number || 'N/A',
-        rating: details.rating || 'N/A',
-        reviewCount: details.user_ratings_total || 0,
-        placeId: business.place_id
       });
     }
 
@@ -119,9 +131,11 @@ async function writeToGoogleSheets(businesses, industry, zipCode) {
   const timestamp = new Date().toLocaleString();
   const sheetName = `${industry} - ${zipCode}`.substring(0, 100);
 
+  let sheetId;
+
   // Create a new sheet
   try {
-    await sheetsClient.spreadsheets.batchUpdate({
+    const response = await sheetsClient.spreadsheets.batchUpdate({
       spreadsheetId,
       resource: {
         requests: [{
@@ -133,40 +147,91 @@ async function writeToGoogleSheets(businesses, industry, zipCode) {
         }]
       }
     });
+    sheetId = response.data.replies[0].addSheet.properties.sheetId;
   } catch (error) {
-    // Sheet might already exist
-    if (!error.message.includes('already exists')) {
+    // Sheet might already exist, get its ID
+    if (error.message.includes('already exists')) {
+      const spreadsheet = await sheetsClient.spreadsheets.get({
+        spreadsheetId,
+      });
+      const sheet = spreadsheet.data.sheets.find(s => s.properties.title === sheetName);
+      sheetId = sheet.properties.sheetId;
+    } else {
       throw error;
     }
   }
 
-  // Prepare data
+  // Prepare data with new column structure
   const headers = [
-    ['Search Date', 'Industry', 'ZIP Code', '', 'Businesses Without Websites'],
+    ['Search Date', 'Industry', 'ZIP Code'],
     [timestamp, industry, zipCode],
     [],
-    ['Business Name', 'Address', 'Phone', 'Rating', 'Review Count', 'Google Place ID']
+    ['Business Name', 'City', 'Phone Number', 'Called?', 'Notes on Call']
   ];
 
   const dataRows = businesses.map(b => [
     b.name,
-    b.address,
+    b.city,
     b.phone,
-    b.rating,
-    b.reviewCount,
-    b.placeId
+    false, // Checkbox will be added here
+    '' // Empty notes column
   ]);
 
   const allRows = [...headers, ...dataRows];
 
-  // Write to sheet
+  // Write data to sheet
   await sheetsClient.spreadsheets.values.update({
     spreadsheetId,
     range: `${sheetName}!A1`,
-    valueInputOption: 'RAW',
+    valueInputOption: 'USER_ENTERED',
     resource: {
       values: allRows
     }
+  });
+
+  // Format the sheet: make header row bold and add checkboxes
+  const requests = [
+    // Make the header row (row 4) bold
+    {
+      repeatCell: {
+        range: {
+          sheetId: sheetId,
+          startRowIndex: 3,
+          endRowIndex: 4,
+        },
+        cell: {
+          userEnteredFormat: {
+            textFormat: {
+              bold: true
+            }
+          }
+        },
+        fields: 'userEnteredFormat.textFormat.bold'
+      }
+    },
+    // Add checkboxes to the "Called?" column (column D, index 3)
+    {
+      setDataValidation: {
+        range: {
+          sheetId: sheetId,
+          startRowIndex: 4, // Start after header
+          endRowIndex: 4 + businesses.length,
+          startColumnIndex: 3,
+          endColumnIndex: 4
+        },
+        rule: {
+          condition: {
+            type: 'BOOLEAN'
+          },
+          showCustomUi: true
+        }
+      }
+    }
+  ];
+
+  await sheetsClient.spreadsheets.batchUpdate({
+    spreadsheetId,
+    resource: { requests }
   });
 
   return sheetName;
