@@ -570,13 +570,26 @@
       content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading agent details...</p></div>';
 
       try {
+        // Ensure allAgents is loaded
+        if (!allAgents || allAgents.length === 0) {
+          console.log('allAgents not loaded, fetching now...');
+          const res = await fetch('/api/agents');
+          const data = await res.json();
+          allAgents = Array.isArray(data) ? data : (data.agents || []);
+        }
+
+        console.log('Looking for agent:', agentName);
+        console.log('Total agents available:', allAgents.length);
+
         // Find all agent_ids that match this agent name
         const matchingAgents = allAgents.filter(agent =>
           (agent.agent_name || 'Unnamed Agent') === agentName
         );
 
+        console.log('Matching agents found:', matchingAgents.length);
+
         if (matchingAgents.length === 0) {
-          content.innerHTML = '<div class="error">Agent not found</div>';
+          content.innerHTML = `<div class="error">Agent not found: "${agentName}"<br><br>Available agents: ${allAgents.map(a => a.agent_name).join(', ')}</div>`;
           return;
         }
 
@@ -584,16 +597,33 @@
         const representativeAgent = matchingAgents[0];
 
         // Fetch analytics for all versions of this agent
+        console.log('Fetching analytics for agent IDs:', matchingAgents.map(a => a.agent_id));
         const allVersionAnalytics = await Promise.all(
           matchingAgents.map(agent =>
             fetch(`/api/analytics/${agent.agent_id}`)
-              .then(r => r.json())
+              .then(r => {
+                if (!r.ok) {
+                  console.error(`Analytics API returned ${r.status} for ${agent.agent_id}`);
+                  return { total_calls: 0, total_cost: 0, total_duration_minutes: 0, calls: [] };
+                }
+                return r.json();
+              })
+              .then(data => {
+                console.log(`Analytics for ${agent.agent_id}:`, {
+                  total_calls: data.total_calls,
+                  total_cost: data.total_cost,
+                  calls_count: data.calls?.length || 0
+                });
+                return data;
+              })
               .catch(err => {
                 console.error(`Failed to fetch analytics for ${agent.agent_id}:`, err);
                 return { total_calls: 0, total_cost: 0, total_duration_minutes: 0, calls: [] };
               })
           )
         );
+
+        console.log('All version analytics:', allVersionAnalytics);
 
         // Aggregate analytics across all versions
         const aggregatedAnalytics = allVersionAnalytics.reduce((acc, analytics) => {
@@ -608,6 +638,8 @@
           }
           return acc;
         }, { total_calls: 0, total_cost: 0, total_duration_minutes: 0, calls: [] });
+
+        console.log('Aggregated analytics:', aggregatedAnalytics);
 
         // Calculate average cost per call
         aggregatedAnalytics.average_cost_per_call = aggregatedAnalytics.total_calls > 0
