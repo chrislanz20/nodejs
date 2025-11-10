@@ -393,7 +393,10 @@
             : 0);
         }, 0);
 
-        const estimatedCost = totalDuration * 0.14; // Average cost per minute
+        // Use actual cost data from Retell
+        const totalCost = allCalls.reduce((sum, call) => {
+          return sum + (call.call_cost?.combined_cost || 0);
+        }, 0);
 
         content.innerHTML = `
           <div class="stats-grid">
@@ -413,9 +416,9 @@
               <div class="stat-subtext">Minutes</div>
             </div>
             <div class="stat-card">
-              <div class="stat-label">Estimated Cost</div>
-              <div class="stat-value cost-highlight">$${estimatedCost.toFixed(2)}</div>
-              <div class="stat-subtext">Based on call duration</div>
+              <div class="stat-label">Total Cost</div>
+              <div class="stat-value cost-highlight">$${totalCost.toFixed(2)}</div>
+              <div class="stat-subtext">Actual cost from Retell</div>
             </div>
           </div>
 
@@ -439,7 +442,7 @@
                   const duration = call.end_timestamp && call.start_timestamp
                     ? ((call.end_timestamp - call.start_timestamp) / 1000 / 60).toFixed(2)
                     : 'N/A';
-                  const cost = duration !== 'N/A' ? (duration * 0.14).toFixed(2) : '0.00';
+                  const cost = call.call_cost?.combined_cost || 0;
                   const date = call.start_timestamp
                     ? new Date(call.start_timestamp).toLocaleString()
                     : 'N/A';
@@ -452,7 +455,7 @@
                       <td>${date}</td>
                       <td>${duration} min</td>
                       <td><span class="status-badge status-${status}">${status}</span></td>
-                      <td class="cost-highlight">$${cost}</td>
+                      <td class="cost-highlight">$${cost.toFixed(2)}</td>
                     </tr>
                   `;
                 }).join('')}
@@ -792,7 +795,7 @@
                   <th>Date</th>
                   <th>Duration</th>
                   <th>Status</th>
-                  <th>Est. Cost</th>
+                  <th>Cost</th>
                 </tr>
               </thead>
               <tbody>
@@ -800,7 +803,7 @@
                   const duration = call.end_timestamp && call.start_timestamp
                     ? ((call.end_timestamp - call.start_timestamp) / 1000 / 60).toFixed(2)
                     : 'N/A';
-                  const cost = duration !== 'N/A' ? (duration * 0.14).toFixed(2) : '0.00';
+                  const cost = call.call_cost?.combined_cost || 0;
                   const date = call.start_timestamp
                     ? new Date(call.start_timestamp).toLocaleString()
                     : 'N/A';
@@ -813,7 +816,7 @@
                       <td>${date}</td>
                       <td>${duration} min</td>
                       <td><span class="status-badge status-${status}">${status}</span></td>
-                      <td class="cost-highlight">$${cost}</td>
+                      <td class="cost-highlight">$${cost.toFixed(2)}</td>
                     </tr>
                   `;
                 }).join('')}

@@ -171,7 +171,7 @@ app.get("/api/analytics/:agentId", async (req, res) => {
       paginationKey = data.pagination_key || null;
     } while (paginationKey && calls.length < 10000); // Safety limit
 
-    // Calculate statistics
+    // Calculate statistics using ACTUAL cost data from Retell
     const totalCalls = calls.length;
     const totalDuration = calls.reduce((sum, call) => {
       const duration = call.end_timestamp && call.start_timestamp
@@ -180,29 +180,11 @@ app.get("/api/analytics/:agentId", async (req, res) => {
       return sum + duration;
     }, 0);
 
-    // Calculate cost based on agent configuration
-    const calculateCallCost = (call, agentConfig) => {
-      if (!call.end_timestamp || !call.start_timestamp) return 0;
-      const minutes = (call.end_timestamp - call.start_timestamp) / 1000 / 60;
+    // Use actual cost from Retell API
+    const totalCost = calls.reduce((sum, call) => {
+      return sum + (call.call_cost?.combined_cost || 0);
+    }, 0);
 
-      // Base costs (these are estimates, adjust based on actual config)
-      let voiceCost = 0.07; // ElevenLabs default
-      let llmCost = 0.06;   // Claude 3.5 default
-      let telephonyCost = 0.01;
-
-      // Adjust based on agent configuration
-      // Voice ID is at top level
-      if (agentConfig.voice_id?.includes('openai')) voiceCost = 0.08;
-
-      // LLM ID is nested in response_engine
-      const llmId = agentConfig.response_engine?.llm_id || agentConfig.llm_id || '';
-      if (llmId.includes('gpt-4')) llmCost = 0.06;
-      if (llmId.includes('gpt-3')) llmCost = 0.02;
-
-      return minutes * (voiceCost + llmCost + telephonyCost);
-    };
-
-    const totalCost = calls.reduce((sum, call) => sum + calculateCallCost(call, agent), 0);
     const avgDuration = totalCalls > 0 ? totalDuration / totalCalls : 0;
     const avgCost = totalCalls > 0 ? totalCost / totalCalls : 0;
 
@@ -219,7 +201,7 @@ app.get("/api/analytics/:agentId", async (req, res) => {
         duration_minutes: call.end_timestamp && call.start_timestamp
           ? Math.round((call.end_timestamp - call.start_timestamp) / 1000 / 60 * 100) / 100
           : 0,
-        cost: Math.round(calculateCallCost(call, agent) * 100) / 100,
+        cost: call.call_cost?.combined_cost || 0,
       })),
     });
   } catch (error) {
