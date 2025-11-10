@@ -341,6 +341,7 @@
   <script>
     let allAgents = [];
     let allCalls = [];
+    let agentSummaries = [];  // Cached aggregated data
     let currentAgentId = null;
 
     // Switch between tabs
@@ -362,57 +363,23 @@
       content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading overview...</p></div>';
 
       try {
-        const [agentsRes, callsRes] = await Promise.all([
-          fetch('/api/agents'),
-          fetch('/api/calls') // Fetches ALL calls with automatic pagination
-        ]);
-
-        if (!agentsRes.ok) {
-          console.error('Agents API failed:', agentsRes.status);
-          throw new Error(`Failed to fetch agents: ${agentsRes.status}`);
+        // Fetch all data in ONE request to avoid rate limiting
+        const res = await fetch('/api/agent-summary');
+        if (!res.ok) {
+          throw new Error(`Failed to fetch data: ${res.status}`);
         }
 
-        if (!callsRes.ok) {
-          console.error('Calls API failed:', callsRes.status);
-          throw new Error(`Failed to fetch calls: ${callsRes.status}`);
-        }
+        const data = await res.json();
+        agentSummaries = data.agents || [];
+        allCalls = data.all_calls || [];
 
-        const agentsData = await agentsRes.json();
-        const callsData = await callsRes.json();
+        console.log('Overview - loaded', agentSummaries.length, 'agents and', allCalls.length, 'calls');
 
-        console.log('Overview - agentsData:', agentsData);
-        console.log('Overview - callsData:', callsData);
-
-        // Properly handle API responses - ensure we get arrays
-        allAgents = Array.isArray(agentsData) ? agentsData : (agentsData.agents || []);
-        allCalls = Array.isArray(callsData) ? callsData : (callsData.calls || []);
-
-        console.log('Overview - allAgents count:', allAgents.length);
-        console.log('Overview - allCalls count:', allCalls.length);
-
-        // Deduplicate agents by name, keeping the first occurrence
-        const uniqueAgentsMap = new Map();
-        allAgents.forEach(agent => {
-          const name = agent.agent_name || 'Unnamed Agent';
-          if (!uniqueAgentsMap.has(name)) {
-            uniqueAgentsMap.set(name, agent);
-          }
-        });
-        const uniqueAgents = Array.from(uniqueAgentsMap.values());
-
-        const totalAgents = uniqueAgents.length;
+        // Calculate totals from agentSummaries (already aggregated by name)
+        const totalAgents = agentSummaries.length;
         const totalCalls = allCalls.length;
-
-        const totalDuration = allCalls.reduce((sum, call) => {
-          return sum + (call.end_timestamp && call.start_timestamp
-            ? (call.end_timestamp - call.start_timestamp) / 1000 / 60
-            : 0);
-        }, 0);
-
-        // Use actual cost data from Retell
-        const totalCost = allCalls.reduce((sum, call) => {
-          return sum + (call.call_cost?.combined_cost || 0);
-        }, 0);
+        const totalDuration = allCalls.reduce((sum, call) => sum + (call.duration_minutes || 0), 0);
+        const totalCost = allCalls.reduce((sum, call) => sum + (call.cost || 0), 0);
 
         content.innerHTML = `
           <div class="stats-grid">
@@ -455,10 +422,8 @@
               </thead>
               <tbody>
                 ${allCalls.slice(0, 10).map(call => {
-                  const duration = call.end_timestamp && call.start_timestamp
-                    ? ((call.end_timestamp - call.start_timestamp) / 1000 / 60).toFixed(2)
-                    : 'N/A';
-                  const cost = call.call_cost?.combined_cost || 0;
+                  const duration = call.duration_minutes || 0;
+                  const cost = call.cost || 0;
                   const date = call.start_timestamp
                     ? new Date(call.start_timestamp).toLocaleString()
                     : 'N/A';
@@ -469,7 +434,7 @@
                       <td>${call.call_id?.slice(0, 12)}...</td>
                       <td>${call.agent_id?.slice(0, 12)}...</td>
                       <td>${date}</td>
-                      <td>${duration} min</td>
+                      <td>${duration.toFixed(2)} min</td>
                       <td><span class="status-badge status-${status}">${status}</span></td>
                       <td class="cost-highlight">$${cost.toFixed(2)}</td>
                     </tr>
@@ -490,85 +455,46 @@
       content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading agents...</p></div>';
 
       try {
-        const res = await fetch('/api/agents');
-        const data = await res.json();
-        allAgents = Array.isArray(data) ? data : (data.agents || []);
+        // Use cached data if available, otherwise fetch
+        if (agentSummaries.length === 0) {
+          const res = await fetch('/api/agent-summary');
+          if (!res.ok) {
+            throw new Error(`Failed to fetch data: ${res.status}`);
+          }
+          const data = await res.json();
+          agentSummaries = data.agents || [];
+          allCalls = data.all_calls || [];
+        }
 
-        if (allAgents.length === 0) {
+        if (agentSummaries.length === 0) {
           content.innerHTML = '<div class="stat-card"><p>No agents found</p></div>';
           return;
         }
 
-        // Group agents by name to aggregate across versions
-        const agentsByName = new Map();
-        allAgents.forEach(agent => {
-          const name = agent.agent_name || 'Unnamed Agent';
-          if (!agentsByName.has(name)) {
-            agentsByName.set(name, {
-              name: name,
-              agent_ids: [],
-              representative: agent // Keep first agent as representative
-            });
-          }
-          agentsByName.get(name).agent_ids.push(agent.agent_id);
-        });
-
-        // Fetch and aggregate analytics for all versions of each agent
-        const uniqueAgents = Array.from(agentsByName.values());
-        const agentAnalytics = await Promise.all(
-          uniqueAgents.map(async (agentGroup) => {
-            // Fetch analytics for all versions of this agent
-            const allVersionAnalytics = await Promise.all(
-              agentGroup.agent_ids.map(id =>
-                fetch(`/api/analytics/${id}`)
-                  .then(r => r.json())
-                  .catch(() => ({ total_calls: 0, total_cost: 0, total_duration_minutes: 0 }))
-              )
-            );
-
-            // Aggregate across all versions
-            return allVersionAnalytics.reduce((acc, analytics) => ({
-              total_calls: acc.total_calls + (analytics.total_calls || 0),
-              total_cost: acc.total_cost + (analytics.total_cost || 0),
-              total_duration_minutes: acc.total_duration_minutes + (analytics.total_duration_minutes || 0),
-              average_cost_per_call: 0 // Will calculate after
-            }), { total_calls: 0, total_cost: 0, total_duration_minutes: 0 });
-          })
-        );
-
-        // Calculate average cost per call
-        agentAnalytics.forEach(analytics => {
-          analytics.average_cost_per_call = analytics.total_calls > 0
-            ? analytics.total_cost / analytics.total_calls
-            : 0;
-        });
-
         content.innerHTML = `
           <div class="agents-grid" id="agents-grid-container">
-            ${uniqueAgents.map((agentGroup, idx) => {
-              const analytics = agentAnalytics[idx];
-              const agent = agentGroup.representative;
+            ${agentSummaries.map(agent => {
               // Use data attribute to safely pass agent name
-              const escapedName = agentGroup.name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+              const escapedName = agent.agent_name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
               return `
                 <div class="agent-card" data-agent-name="${escapedName}">
-                  <div class="agent-name">${agentGroup.name}</div>
+                  <div class="agent-name">${agent.agent_name}</div>
                   <div class="agent-stats">
                     <div class="agent-stat">
                       <span class="agent-stat-label">Total Calls</span>
-                      <span class="agent-stat-value">${analytics.total_calls || 0}</span>
+                      <span class="agent-stat-value">${agent.total_calls || 0}</span>
                     </div>
                     <div class="agent-stat">
                       <span class="agent-stat-label">Total Duration</span>
-                      <span class="agent-stat-value">${analytics.total_duration_minutes?.toFixed(2) || 0} min</span>
+                      <span class="agent-stat-value">${agent.total_duration_minutes?.toFixed(2) || 0} min</span>
                     </div>
                     <div class="agent-stat">
                       <span class="agent-stat-label">Total Cost</span>
-                      <span class="agent-stat-value cost-highlight">$${analytics.total_cost?.toFixed(2) || '0.00'}</span>
+                      <span class="agent-stat-value cost-highlight">$${agent.total_cost?.toFixed(2) || '0.00'}</span>
                     </div>
                     <div class="agent-stat">
                       <span class="agent-stat-label">Avg Cost/Call</span>
-                      <span class="agent-stat-value">$${analytics.average_cost_per_call?.toFixed(2) || '0.00'}</span>
+                      <span class="agent-stat-value">$${agent.average_cost_per_call?.toFixed(2) || '0.00'}</span>
                     </div>
                   </div>
                 </div>
@@ -601,101 +527,32 @@
       content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading agent details...</p></div>';
 
       try {
-        // Ensure allAgents is loaded
-        if (!allAgents || allAgents.length === 0) {
-          console.log('allAgents not loaded, fetching now...');
-          const res = await fetch('/api/agents');
+        // Use cached data if available
+        if (agentSummaries.length === 0) {
+          const res = await fetch('/api/agent-summary');
+          if (!res.ok) {
+            throw new Error(`Failed to fetch data: ${res.status}`);
+          }
           const data = await res.json();
-          allAgents = Array.isArray(data) ? data : (data.agents || []);
+          agentSummaries = data.agents || [];
+          allCalls = data.all_calls || [];
         }
 
-        console.log('Looking for agent:', agentName);
-        console.log('Total agents available:', allAgents.length);
+        // Find agent summary
+        const agentData = agentSummaries.find(a => a.agent_name === agentName);
 
-        // Find all agent_ids that match this agent name
-        const matchingAgents = allAgents.filter(agent =>
-          (agent.agent_name || 'Unnamed Agent') === agentName
-        );
-
-        console.log('Matching agents found:', matchingAgents.length);
-
-        if (matchingAgents.length === 0) {
-          content.innerHTML = `<div class="error">Agent not found: "${agentName}"<br><br>Available agents: ${allAgents.map(a => a.agent_name).join(', ')}</div>`;
+        if (!agentData) {
+          content.innerHTML = `<div class="error">Agent not found: "${agentName}"</div>`;
           return;
         }
 
-        // Use the first agent as representative for display
-        const representativeAgent = matchingAgents[0];
-
-        // Fetch analytics for ALL versions of this agent
-        console.log('Fetching analytics for agent IDs:', matchingAgents.map(a => a.agent_id));
-        const allVersionAnalytics = await Promise.all(
-          matchingAgents.map(agent =>
-            fetch(`/api/analytics/${agent.agent_id}`)
-              .then(r => {
-                if (!r.ok) {
-                  console.error(`Analytics API returned ${r.status} for ${agent.agent_id}`);
-                  return { total_calls: 0, total_cost: 0, total_duration_minutes: 0, calls: [] };
-                }
-                return r.json();
-              })
-              .then(data => {
-                console.log(`Analytics for ${agent.agent_id}:`, {
-                  total_calls: data.total_calls,
-                  total_cost: data.total_cost,
-                  total_duration_minutes: data.total_duration_minutes,
-                  calls_count: data.calls?.length || 0
-                });
-                return data;
-              })
-              .catch(err => {
-                console.error(`Failed to fetch analytics for ${agent.agent_id}:`, err);
-                return { total_calls: 0, total_cost: 0, total_duration_minutes: 0, calls: [] };
-              })
-          )
-        );
-
-        console.log('All version analytics:', allVersionAnalytics);
-
-        // Aggregate analytics across all versions - DEDUPLICATE calls by call_id
-        const allCalls = [];
-        const seenCallIds = new Set();
-
-        allVersionAnalytics.forEach(analytics => {
-          if (analytics && analytics.calls) {
-            analytics.calls.forEach(call => {
-              if (!seenCallIds.has(call.call_id)) {
-                seenCallIds.add(call.call_id);
-                allCalls.push(call);
-              }
-            });
-          }
-        });
-
-        console.log('Deduplicated calls:', allCalls.length, 'unique calls from', allVersionAnalytics.reduce((sum, a) => sum + (a.calls?.length || 0), 0), 'total');
-
-        // Calculate aggregated stats from deduplicated calls
-        const aggregatedAnalytics = {
-          total_calls: allCalls.length,
-          total_duration_minutes: allCalls.reduce((sum, call) => sum + (call.duration_minutes || 0), 0),
-          total_cost: allCalls.reduce((sum, call) => sum + (call.cost || 0), 0),
-          calls: allCalls
-        };
-
-        console.log('Aggregated analytics:', aggregatedAnalytics);
-
-        // Calculate average cost per call
-        aggregatedAnalytics.average_cost_per_call = aggregatedAnalytics.total_calls > 0
-          ? aggregatedAnalytics.total_cost / aggregatedAnalytics.total_calls
-          : 0;
-
         // Sort calls by timestamp (newest first)
-        const calls = aggregatedAnalytics.calls.sort((a, b) =>
+        const calls = agentData.calls.sort((a, b) =>
           (b.start_timestamp || 0) - (a.start_timestamp || 0)
         );
 
         // Get LLM ID from nested response_engine structure
-        const llmId = representativeAgent.response_engine?.llm_id || representativeAgent.llm_id || 'N/A';
+        const llmId = agentData.representative.response_engine?.llm_id || agentData.representative.llm_id || 'N/A';
 
         content.innerHTML = `
           <div class="stat-card" style="margin-bottom: 24px;">
@@ -703,11 +560,11 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
               <div>
                 <div class="stat-label">Versions</div>
-                <div style="font-size: 13px; color: #4a5568;">${matchingAgents.length} version${matchingAgents.length !== 1 ? 's' : ''}</div>
+                <div style="font-size: 13px; color: #4a5568;">${agentData.version_count} version${agentData.version_count !== 1 ? 's' : ''}</div>
               </div>
               <div>
                 <div class="stat-label">Voice</div>
-                <div style="font-size: 13px; color: #4a5568;">${representativeAgent.voice_id || 'N/A'}</div>
+                <div style="font-size: 13px; color: #4a5568;">${agentData.representative.voice_id || 'N/A'}</div>
               </div>
               <div>
                 <div class="stat-label">LLM</div>
@@ -719,20 +576,20 @@
           <div class="stats-grid">
             <div class="stat-card">
               <div class="stat-label">Total Calls</div>
-              <div class="stat-value">${aggregatedAnalytics.total_calls || 0}</div>
+              <div class="stat-value">${agentData.total_calls || 0}</div>
             </div>
             <div class="stat-card">
               <div class="stat-label">Total Duration</div>
-              <div class="stat-value">${(aggregatedAnalytics.total_duration_minutes || 0).toFixed(2)}</div>
+              <div class="stat-value">${(agentData.total_duration_minutes || 0).toFixed(2)}</div>
               <div class="stat-subtext">Minutes</div>
             </div>
             <div class="stat-card">
               <div class="stat-label">Total Cost</div>
-              <div class="stat-value cost-highlight">$${(aggregatedAnalytics.total_cost || 0).toFixed(2)}</div>
+              <div class="stat-value cost-highlight">$${(agentData.total_cost || 0).toFixed(2)}</div>
             </div>
             <div class="stat-card">
               <div class="stat-label">Avg Cost/Call</div>
-              <div class="stat-value">$${(aggregatedAnalytics.average_cost_per_call || 0).toFixed(2)}</div>
+              <div class="stat-value">$${(agentData.average_cost_per_call || 0).toFixed(2)}</div>
             </div>
           </div>
 
@@ -805,9 +662,16 @@
       content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all calls...</p></div>';
 
       try {
-        const res = await fetch('/api/calls'); // Fetches ALL calls with automatic pagination
-        const data = await res.json();
-        allCalls = Array.isArray(data) ? data : (data.calls || []);
+        // Use cached data if available
+        if (allCalls.length === 0) {
+          const res = await fetch('/api/agent-summary');
+          if (!res.ok) {
+            throw new Error(`Failed to fetch data: ${res.status}`);
+          }
+          const data = await res.json();
+          agentSummaries = data.agents || [];
+          allCalls = data.all_calls || [];
+        }
 
         content.innerHTML = `
           <div class="calls-table">
@@ -828,10 +692,8 @@
               </thead>
               <tbody>
                 ${allCalls.map(call => {
-                  const duration = call.end_timestamp && call.start_timestamp
-                    ? ((call.end_timestamp - call.start_timestamp) / 1000 / 60).toFixed(2)
-                    : 'N/A';
-                  const cost = call.call_cost?.combined_cost || 0;
+                  const duration = call.duration_minutes || 0;
+                  const cost = call.cost || 0;
                   const date = call.start_timestamp
                     ? new Date(call.start_timestamp).toLocaleString()
                     : 'N/A';
@@ -842,7 +704,7 @@
                       <td>${call.call_id?.slice(0, 20)}...</td>
                       <td>${call.agent_id?.slice(0, 20)}...</td>
                       <td>${date}</td>
-                      <td>${duration} min</td>
+                      <td>${duration.toFixed(2)} min</td>
                       <td><span class="status-badge status-${status}">${status}</span></td>
                       <td class="cost-highlight">$${cost.toFixed(2)}</td>
                     </tr>

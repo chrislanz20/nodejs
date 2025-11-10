@@ -127,21 +127,103 @@ app.get("/api/calls/:callId", async (req, res) => {
   }
 });
 
-// DEBUG: Get raw call data to see what Retell provides
-app.get("/api/debug/call-sample", async (req, res) => {
+// Get aggregated agent summary - fetches ALL data once and aggregates by agent name
+app.get("/api/agent-summary", async (req, res) => {
   try {
-    // Get first call to see what fields are available
-    const data = await retellClient.call.list({ limit: 1 });
-    const calls = data.calls || data || [];
-    if (calls.length > 0) {
-      console.log("Sample call data:", JSON.stringify(calls[0], null, 2));
-      res.json({ sample_call: calls[0], available_fields: Object.keys(calls[0]) });
-    } else {
-      res.json({ message: "No calls found" });
-    }
+    console.log('Fetching agent summary...');
+
+    // Fetch all agents
+    const agentsData = await retellClient.agent.list();
+    const allAgents = agentsData.agents || agentsData || [];
+    console.log(`Fetched ${allAgents.length} total agent versions`);
+
+    // Fetch ALL calls with pagination (no agent filter to minimize API calls)
+    let allCalls = [];
+    let paginationKey = undefined;
+    const pageSize = 1000;
+    let pageCount = 0;
+
+    do {
+      const data = await retellClient.call.list({ limit: pageSize, pagination_key: paginationKey });
+      const calls = data.calls || [];
+      pageCount++;
+      console.log(`Fetched page ${pageCount}: ${calls.length} calls`);
+
+      if (calls.length > 0) {
+        allCalls = allCalls.concat(calls);
+      }
+
+      paginationKey = data.pagination_key || null;
+    } while (paginationKey && allCalls.length < 10000); // Safety limit
+
+    console.log(`Total calls fetched: ${allCalls.length}`);
+
+    // Group agents by name
+    const agentsByName = new Map();
+    allAgents.forEach(agent => {
+      const name = agent.agent_name || 'Unnamed Agent';
+      if (!agentsByName.has(name)) {
+        agentsByName.set(name, {
+          name: name,
+          agent_ids: [],
+          representative: agent
+        });
+      }
+      agentsByName.get(name).agent_ids.push(agent.agent_id);
+    });
+
+    // Calculate stats for each unique agent name
+    const agentSummaries = Array.from(agentsByName.values()).map(agentGroup => {
+      // Find all calls for this agent (across all versions)
+      const agentCalls = allCalls.filter(call =>
+        agentGroup.agent_ids.includes(call.agent_id)
+      );
+
+      // Calculate stats
+      const totalCalls = agentCalls.length;
+      const totalDuration = agentCalls.reduce((sum, call) => {
+        return sum + (call.end_timestamp && call.start_timestamp
+          ? (call.end_timestamp - call.start_timestamp) / 1000 / 60
+          : 0);
+      }, 0);
+      const totalCost = agentCalls.reduce((sum, call) => {
+        return sum + (call.call_cost?.combined_cost || 0);
+      }, 0);
+
+      return {
+        agent_name: agentGroup.name,
+        agent_ids: agentGroup.agent_ids,
+        version_count: agentGroup.agent_ids.length,
+        representative: agentGroup.representative,
+        total_calls: totalCalls,
+        total_duration_minutes: Math.round(totalDuration * 100) / 100,
+        total_cost: Math.round(totalCost * 100) / 100,
+        average_cost_per_call: totalCalls > 0 ? Math.round((totalCost / totalCalls) * 100) / 100 : 0,
+        calls: agentCalls.map(call => ({
+          ...call,
+          duration_minutes: call.end_timestamp && call.start_timestamp
+            ? Math.round((call.end_timestamp - call.start_timestamp) / 1000 / 60 * 100) / 100
+            : 0,
+          cost: call.call_cost?.combined_cost || 0
+        }))
+      };
+    });
+
+    res.json({
+      agents: agentSummaries,
+      all_calls: allCalls.map(call => ({
+        ...call,
+        duration_minutes: call.end_timestamp && call.start_timestamp
+          ? Math.round((call.end_timestamp - call.start_timestamp) / 1000 / 60 * 100) / 100
+          : 0,
+        cost: call.call_cost?.combined_cost || 0
+      })),
+      total_calls: allCalls.length
+    });
   } catch (error) {
-    console.error("Error fetching sample call:", error.message);
-    res.status(500).json({ error: error.message });
+    console.error("Error in agent-summary endpoint:", error.message);
+    console.error("Error details:", error);
+    res.status(500).json({ error: "Failed to fetch agent summary", details: error.message });
   }
 });
 
