@@ -24,9 +24,14 @@ app.get("/dashboard", (_req, res) => {
 // Now serve static files (styles.css, etc.)
 app.use(express.static(publicDir));
 
-// --- ENV VARS (we'll set these in Railway) ---
-const RETELL_API_KEY = process.env.RETELL_API_KEY || "key_adeebba4f1f28fe45fce4a999ea2";
-const RETELL_AGENT_ID = process.env.RETELL_AGENT_ID; // your Chat Agent ID
+// --- ENV VARS ---
+const RETELL_API_KEY = process.env.RETELL_API_KEY;
+const RETELL_AGENT_ID = process.env.RETELL_AGENT_ID;
+
+if (!RETELL_API_KEY) {
+  console.error("ERROR: RETELL_API_KEY environment variable is not set!");
+  console.error("Please set it in your environment or Vercel project settings.");
+}
 
 const RETELL_API_BASE = "https://api.retellai.com";
 
