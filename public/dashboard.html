@@ -608,22 +608,65 @@
           return;
         }
 
-        // Use the agent with the highest version number (most recent)
-        const representativeAgent = matchingAgents.sort((a, b) =>
-          (b.agent_version || 0) - (a.agent_version || 0)
-        )[0];
+        // Use the first agent as representative for display
+        const representativeAgent = matchingAgents[0];
 
-        console.log('Using latest version:', representativeAgent.agent_id, 'version', representativeAgent.agent_version);
+        // Fetch analytics for ALL versions of this agent
+        console.log('Fetching analytics for agent IDs:', matchingAgents.map(a => a.agent_id));
+        const allVersionAnalytics = await Promise.all(
+          matchingAgents.map(agent =>
+            fetch(`/api/analytics/${agent.agent_id}`)
+              .then(r => {
+                if (!r.ok) {
+                  console.error(`Analytics API returned ${r.status} for ${agent.agent_id}`);
+                  return { total_calls: 0, total_cost: 0, total_duration_minutes: 0, calls: [] };
+                }
+                return r.json();
+              })
+              .then(data => {
+                console.log(`Analytics for ${agent.agent_id}:`, {
+                  total_calls: data.total_calls,
+                  total_cost: data.total_cost,
+                  total_duration_minutes: data.total_duration_minutes,
+                  calls_count: data.calls?.length || 0
+                });
+                return data;
+              })
+              .catch(err => {
+                console.error(`Failed to fetch analytics for ${agent.agent_id}:`, err);
+                return { total_calls: 0, total_cost: 0, total_duration_minutes: 0, calls: [] };
+              })
+          )
+        );
 
-        // Fetch analytics for ONLY the latest version
-        const analyticsRes = await fetch(`/api/analytics/${representativeAgent.agent_id}`);
-        if (!analyticsRes.ok) {
-          throw new Error(`Analytics API returned ${analyticsRes.status}`);
-        }
+        console.log('All version analytics:', allVersionAnalytics);
 
-        const aggregatedAnalytics = await analyticsRes.json();
+        // Aggregate analytics across all versions - DEDUPLICATE calls by call_id
+        const allCalls = [];
+        const seenCallIds = new Set();
 
-        console.log('Analytics for latest version:', aggregatedAnalytics);
+        allVersionAnalytics.forEach(analytics => {
+          if (analytics && analytics.calls) {
+            analytics.calls.forEach(call => {
+              if (!seenCallIds.has(call.call_id)) {
+                seenCallIds.add(call.call_id);
+                allCalls.push(call);
+              }
+            });
+          }
+        });
+
+        console.log('Deduplicated calls:', allCalls.length, 'unique calls from', allVersionAnalytics.reduce((sum, a) => sum + (a.calls?.length || 0), 0), 'total');
+
+        // Calculate aggregated stats from deduplicated calls
+        const aggregatedAnalytics = {
+          total_calls: allCalls.length,
+          total_duration_minutes: allCalls.reduce((sum, call) => sum + (call.duration_minutes || 0), 0),
+          total_cost: allCalls.reduce((sum, call) => sum + (call.cost || 0), 0),
+          calls: allCalls
+        };
+
+        console.log('Aggregated analytics:', aggregatedAnalytics);
 
         // Calculate average cost per call
         aggregatedAnalytics.average_cost_per_call = aggregatedAnalytics.total_calls > 0
@@ -643,8 +686,8 @@
             <h2 style="margin-bottom: 16px;">${agentName}</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
               <div>
-                <div class="stat-label">Version</div>
-                <div style="font-size: 13px; color: #4a5568;">v${representativeAgent.agent_version || 'unknown'} (latest of ${matchingAgents.length})</div>
+                <div class="stat-label">Versions</div>
+                <div style="font-size: 13px; color: #4a5568;">${matchingAgents.length} version${matchingAgents.length !== 1 ? 's' : ''}</div>
               </div>
               <div>
                 <div class="stat-label">Voice</div>
@@ -679,7 +722,7 @@
 
           <div class="calls-table">
             <div class="table-header">
-              <div class="table-title">Call History (Version ${representativeAgent.agent_version || 'latest'})</div>
+              <div class="table-title">Call History (All Versions Combined)</div>
               <input type="text" class="search-box" placeholder="Search calls..." onkeyup="filterAgentCalls(event)">
             </div>
             <table id="agent-calls-table">
