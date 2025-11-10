@@ -530,7 +530,7 @@
               const analytics = agentAnalytics[idx];
               const agent = agentGroup.representative;
               return `
-                <div class="agent-card" onclick="viewAgentDetail('${agent.agent_id}')">
+                <div class="agent-card" onclick="viewAgentDetail('${agentGroup.name}')">
                   <div class="agent-name">${agentGroup.name}</div>
                   <div class="agent-stats">
                     <div class="agent-stat">
@@ -561,9 +561,7 @@
     }
 
     // View agent detail
-    async function viewAgentDetail(agentId) {
-      currentAgentId = agentId;
-
+    async function viewAgentDetail(agentName) {
       document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
       document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
       document.getElementById('agent-detail').classList.add('active');
@@ -572,32 +570,73 @@
       content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading agent details...</p></div>';
 
       try {
-        const [agentRes, analyticsRes] = await Promise.all([
-          fetch(`/api/agents/${agentId}`),
-          fetch(`/api/analytics/${agentId}`)
-        ]);
+        // Find all agent_ids that match this agent name
+        const matchingAgents = allAgents.filter(agent =>
+          (agent.agent_name || 'Unnamed Agent') === agentName
+        );
 
-        const agent = await agentRes.json();
-        const analytics = await analyticsRes.json();
+        if (matchingAgents.length === 0) {
+          content.innerHTML = '<div class="error">Agent not found</div>';
+          return;
+        }
 
-        // Ensure calls is an array
-        const calls = Array.isArray(analytics.calls) ? analytics.calls : [];
+        // Use the first matching agent as representative for display
+        const representativeAgent = matchingAgents[0];
+
+        // Fetch analytics for all versions of this agent
+        const allVersionAnalytics = await Promise.all(
+          matchingAgents.map(agent =>
+            fetch(`/api/analytics/${agent.agent_id}`)
+              .then(r => r.json())
+              .catch(err => {
+                console.error(`Failed to fetch analytics for ${agent.agent_id}:`, err);
+                return { total_calls: 0, total_cost: 0, total_duration_minutes: 0, calls: [] };
+              })
+          )
+        );
+
+        // Aggregate analytics across all versions
+        const aggregatedAnalytics = allVersionAnalytics.reduce((acc, analytics) => {
+          // Only aggregate if analytics is valid (not an error object)
+          if (analytics && !analytics.error) {
+            return {
+              total_calls: acc.total_calls + (analytics.total_calls || 0),
+              total_cost: acc.total_cost + (analytics.total_cost || 0),
+              total_duration_minutes: acc.total_duration_minutes + (analytics.total_duration_minutes || 0),
+              calls: acc.calls.concat(analytics.calls || [])
+            };
+          }
+          return acc;
+        }, { total_calls: 0, total_cost: 0, total_duration_minutes: 0, calls: [] });
+
+        // Calculate average cost per call
+        aggregatedAnalytics.average_cost_per_call = aggregatedAnalytics.total_calls > 0
+          ? aggregatedAnalytics.total_cost / aggregatedAnalytics.total_calls
+          : 0;
+
+        // Sort calls by timestamp (newest first)
+        const calls = aggregatedAnalytics.calls.sort((a, b) =>
+          (b.start_timestamp || 0) - (a.start_timestamp || 0)
+        );
+
+        // Get LLM ID from nested response_engine structure
+        const llmId = representativeAgent.response_engine?.llm_id || representativeAgent.llm_id || 'N/A';
 
         content.innerHTML = `
           <div class="stat-card" style="margin-bottom: 24px;">
-            <h2 style="margin-bottom: 16px;">${agent.agent_name || 'Unnamed Agent'}</h2>
+            <h2 style="margin-bottom: 16px;">${agentName}</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
               <div>
-                <div class="stat-label">Agent ID</div>
-                <div style="font-size: 13px; color: #4a5568;">${agent.agent_id}</div>
+                <div class="stat-label">Versions</div>
+                <div style="font-size: 13px; color: #4a5568;">${matchingAgents.length} version${matchingAgents.length !== 1 ? 's' : ''}</div>
               </div>
               <div>
                 <div class="stat-label">Voice</div>
-                <div style="font-size: 13px; color: #4a5568;">${agent.voice_id || 'N/A'}</div>
+                <div style="font-size: 13px; color: #4a5568;">${representativeAgent.voice_id || 'N/A'}</div>
               </div>
               <div>
                 <div class="stat-label">LLM</div>
-                <div style="font-size: 13px; color: #4a5568;">${agent.llm_id || 'N/A'}</div>
+                <div style="font-size: 13px; color: #4a5568;">${llmId}</div>
               </div>
             </div>
           </div>
@@ -605,26 +644,26 @@
           <div class="stats-grid">
             <div class="stat-card">
               <div class="stat-label">Total Calls</div>
-              <div class="stat-value">${analytics.total_calls}</div>
+              <div class="stat-value">${aggregatedAnalytics.total_calls || 0}</div>
             </div>
             <div class="stat-card">
               <div class="stat-label">Total Duration</div>
-              <div class="stat-value">${analytics.total_duration_minutes?.toFixed(2)}</div>
+              <div class="stat-value">${(aggregatedAnalytics.total_duration_minutes || 0).toFixed(2)}</div>
               <div class="stat-subtext">Minutes</div>
             </div>
             <div class="stat-card">
               <div class="stat-label">Total Cost</div>
-              <div class="stat-value cost-highlight">$${analytics.total_cost?.toFixed(2)}</div>
+              <div class="stat-value cost-highlight">$${(aggregatedAnalytics.total_cost || 0).toFixed(2)}</div>
             </div>
             <div class="stat-card">
               <div class="stat-label">Avg Cost/Call</div>
-              <div class="stat-value">$${analytics.average_cost_per_call?.toFixed(2)}</div>
+              <div class="stat-value">$${(aggregatedAnalytics.average_cost_per_call || 0).toFixed(2)}</div>
             </div>
           </div>
 
           <div class="calls-table">
             <div class="table-header">
-              <div class="table-title">Call History</div>
+              <div class="table-title">Call History (All Versions)</div>
               <input type="text" class="search-box" placeholder="Search calls..." onkeyup="filterAgentCalls(event)">
             </div>
             <table id="agent-calls-table">
@@ -648,9 +687,9 @@
                     <tr>
                       <td>${call.call_id?.slice(0, 20)}...</td>
                       <td>${date}</td>
-                      <td>${call.duration_minutes} min</td>
+                      <td>${call.duration_minutes || 0} min</td>
                       <td><span class="status-badge status-${status}">${status}</span></td>
-                      <td class="cost-highlight">$${call.cost.toFixed(2)}</td>
+                      <td class="cost-highlight">$${(call.cost || 0).toFixed(2)}</td>
                     </tr>
                   `;
                 }).join('') : '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #718096;">No calls found for this agent</td></tr>'}
