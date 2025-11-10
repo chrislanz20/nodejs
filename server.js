@@ -176,6 +176,16 @@ app.get("/api/agent-summary", async (req, res) => {
       const data = await retryWithBackoff(() =>
         retellClient.call.list({ limit: pageSize, pagination_key: paginationKey })
       );
+
+      // DEBUG: Log the raw response structure
+      console.log('Raw API response type:', typeof data);
+      console.log('Response keys:', Object.keys(data || {}));
+      console.log('Has calls property:', 'calls' in (data || {}));
+      console.log('Has data property:', 'data' in (data || {}));
+      if (data) {
+        console.log('Response sample:', JSON.stringify(data).substring(0, 500));
+      }
+
       const calls = data.calls || [];
       pageCount++;
       console.log(`Fetched page ${pageCount}: ${calls.length} calls`);
