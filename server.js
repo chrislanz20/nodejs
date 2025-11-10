@@ -291,7 +291,8 @@ app.get("/api/agent-summary", async (req, res) => {
           : 0);
       }, 0);
       const totalCost = agentCalls.reduce((sum, call) => {
-        return sum + (call.call_cost?.combined_cost || 0);
+        // Retell API returns costs in cents, convert to dollars
+        return sum + ((call.call_cost?.combined_cost || 0) / 100);
       }, 0);
 
       return {
@@ -308,7 +309,7 @@ app.get("/api/agent-summary", async (req, res) => {
           duration_minutes: call.end_timestamp && call.start_timestamp
             ? Math.round((call.end_timestamp - call.start_timestamp) / 1000 / 60 * 100) / 100
             : 0,
-          cost: call.call_cost?.combined_cost || 0
+          cost: (call.call_cost?.combined_cost || 0) / 100  // Convert cents to dollars
         }))
       };
     });
@@ -320,7 +321,7 @@ app.get("/api/agent-summary", async (req, res) => {
         duration_minutes: call.end_timestamp && call.start_timestamp
           ? Math.round((call.end_timestamp - call.start_timestamp) / 1000 / 60 * 100) / 100
           : 0,
-        cost: call.call_cost?.combined_cost || 0
+        cost: (call.call_cost?.combined_cost || 0) / 100  // Convert cents to dollars
       })),
       total_calls: allCalls.length
     });
@@ -374,9 +375,9 @@ app.get("/api/analytics/:agentId", async (req, res) => {
       return sum + duration;
     }, 0);
 
-    // Use actual cost from Retell API
+    // Use actual cost from Retell API (returned in cents, convert to dollars)
     const totalCost = calls.reduce((sum, call) => {
-      return sum + (call.call_cost?.combined_cost || 0);
+      return sum + ((call.call_cost?.combined_cost || 0) / 100);
     }, 0);
 
     const avgDuration = totalCalls > 0 ? totalDuration / totalCalls : 0;
@@ -395,7 +396,7 @@ app.get("/api/analytics/:agentId", async (req, res) => {
         duration_minutes: call.end_timestamp && call.start_timestamp
           ? Math.round((call.end_timestamp - call.start_timestamp) / 1000 / 60 * 100) / 100
           : 0,
-        cost: call.call_cost?.combined_cost || 0,
+        cost: (call.call_cost?.combined_cost || 0) / 100,  // Convert cents to dollars
       })),
     });
   } catch (error) {
