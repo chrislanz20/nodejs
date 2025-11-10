@@ -364,7 +364,7 @@
       try {
         const [agentsRes, callsRes] = await Promise.all([
           fetch('/api/agents'),
-          fetch('/api/calls?limit=1000')
+          fetch('/api/calls') // Fetches ALL calls with automatic pagination
         ]);
 
         const agentsData = await agentsRes.json();
@@ -685,10 +685,10 @@
     // Load all calls
     async function loadAllCalls() {
       const content = document.getElementById('calls-content');
-      content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading calls...</p></div>';
+      content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all calls...</p></div>';
 
       try {
-        const res = await fetch('/api/calls?limit=1000');
+        const res = await fetch('/api/calls'); // Fetches ALL calls with automatic pagination
         const data = await res.json();
         allCalls = Array.isArray(data) ? data : (data.calls || []);
 
