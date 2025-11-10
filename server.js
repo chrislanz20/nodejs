@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
 const path = require("path");
+const Retell = require('retell-sdk').default;
 
 const app = express();
 app.use(express.json());
@@ -35,27 +36,10 @@ if (!RETELL_API_KEY) {
   console.error("Please set it in your environment or Vercel project settings.");
 }
 
-const RETELL_API_BASE = "https://api.retellai.com";
-
-// Helper function for Retell API calls
-async function retellAPI(endpoint, method = "GET", body = null) {
-  try {
-    const config = {
-      method,
-      url: `${RETELL_API_BASE}${endpoint}`,
-      headers: {
-        Authorization: `Bearer ${RETELL_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-    };
-    if (body) config.data = body;
-    const response = await axios(config);
-    return response.data;
-  } catch (error) {
-    console.error(`Retell API Error (${endpoint}):`, error?.response?.data || error.message);
-    throw error;
-  }
-}
+// Initialize Retell SDK client
+const retellClient = new Retell({
+  apiKey: RETELL_API_KEY,
+});
 
 // Health check (handy for Railway)
 app.get("/healthz", (_req, res) => res.send("ok"));
@@ -65,9 +49,10 @@ app.get("/healthz", (_req, res) => res.send("ok"));
 // Get all agents
 app.get("/api/agents", async (_req, res) => {
   try {
-    const data = await retellAPI("/list-agents");
+    const data = await retellClient.agent.list();
     res.json(data);
   } catch (error) {
+    console.error("Error fetching agents:", error.message);
     res.status(500).json({ error: "Failed to fetch agents" });
   }
 });
@@ -75,9 +60,10 @@ app.get("/api/agents", async (_req, res) => {
 // Get specific agent details
 app.get("/api/agents/:agentId", async (req, res) => {
   try {
-    const data = await retellAPI(`/get-agent/${req.params.agentId}`);
+    const data = await retellClient.agent.retrieve(req.params.agentId);
     res.json(data);
   } catch (error) {
+    console.error("Error fetching agent details:", error.message);
     res.status(500).json({ error: "Failed to fetch agent details" });
   }
 });
@@ -88,47 +74,39 @@ app.get("/api/calls", async (req, res) => {
     const { agent_id, get_all = 'true' } = req.query;
 
     if (get_all === 'true') {
-      // Fetch ALL calls with pagination
+      // Fetch ALL calls with pagination using SDK
       let allCalls = [];
-      let hasMore = true;
-      let lastCallId = null;
-      const pageSize = 1000; // Max per request
+      let paginationKey = undefined;
+      const pageSize = 1000;
 
-      while (hasMore) {
-        let endpoint = `/list-calls?limit=${pageSize}`;
-        if (agent_id) {
-          endpoint += `&filter_criteria=${JSON.stringify({ agent_id })}`;
-        }
-        if (lastCallId) {
-          endpoint += `&starting_after=${lastCallId}`;
-        }
+      do {
+        const params = { limit: pageSize };
+        if (agent_id) params.filter_criteria = { agent_id };
+        if (paginationKey) params.pagination_key = paginationKey;
 
-        const data = await retellAPI(endpoint);
+        const data = await retellClient.call.list(params);
         const calls = data.calls || data || [];
 
-        if (calls.length === 0) {
-          hasMore = false;
-        } else {
+        if (calls.length > 0) {
           allCalls = allCalls.concat(calls);
-          lastCallId = calls[calls.length - 1].call_id;
-
-          // If we got fewer calls than the page size, we've reached the end
-          if (calls.length < pageSize) {
-            hasMore = false;
-          }
         }
-      }
+
+        // Check if there's more data
+        paginationKey = data.pagination_key || null;
+      } while (paginationKey && allCalls.length < 10000); // Safety limit
 
       res.json({ calls: allCalls, total: allCalls.length });
     } else {
       // Single page request
       const { limit = 100 } = req.query;
-      let endpoint = `/list-calls?limit=${limit}`;
-      if (agent_id) endpoint += `&filter_criteria=${JSON.stringify({ agent_id })}`;
-      const data = await retellAPI(endpoint);
+      const params = { limit: parseInt(limit) };
+      if (agent_id) params.filter_criteria = { agent_id };
+
+      const data = await retellClient.call.list(params);
       res.json(data);
     }
   } catch (error) {
+    console.error("Error fetching calls:", error.message);
     res.status(500).json({ error: "Failed to fetch calls" });
   }
 });
@@ -136,9 +114,10 @@ app.get("/api/calls", async (req, res) => {
 // Get specific call details
 app.get("/api/calls/:callId", async (req, res) => {
   try {
-    const data = await retellAPI(`/get-call/${req.params.callId}`);
+    const data = await retellClient.call.retrieve(req.params.callId);
     res.json(data);
   } catch (error) {
+    console.error("Error fetching call details:", error.message);
     res.status(500).json({ error: "Failed to fetch call details" });
   }
 });
@@ -149,35 +128,30 @@ app.get("/api/analytics/:agentId", async (req, res) => {
     const { agentId } = req.params;
     const { start_date, end_date } = req.query;
 
-    // Fetch agent details
-    const agent = await retellAPI(`/get-agent/${agentId}`);
+    // Fetch agent details using SDK
+    const agent = await retellClient.agent.retrieve(agentId);
 
-    // Fetch ALL calls for this agent with pagination
+    // Fetch ALL calls for this agent with pagination using SDK
     let calls = [];
-    let hasMore = true;
-    let lastCallId = null;
+    let paginationKey = undefined;
     const pageSize = 1000;
 
-    while (hasMore) {
-      let endpoint = `/list-calls?limit=${pageSize}&filter_criteria=${JSON.stringify({ agent_id: agentId })}`;
-      if (lastCallId) {
-        endpoint += `&starting_after=${lastCallId}`;
-      }
+    do {
+      const params = {
+        limit: pageSize,
+        filter_criteria: { agent_id: agentId }
+      };
+      if (paginationKey) params.pagination_key = paginationKey;
 
-      const data = await retellAPI(endpoint);
+      const data = await retellClient.call.list(params);
       const pageCalls = data.calls || data || [];
 
-      if (pageCalls.length === 0) {
-        hasMore = false;
-      } else {
+      if (pageCalls.length > 0) {
         calls = calls.concat(pageCalls);
-        lastCallId = pageCalls[pageCalls.length - 1].call_id;
-
-        if (pageCalls.length < pageSize) {
-          hasMore = false;
-        }
       }
-    }
+
+      paginationKey = data.pagination_key || null;
+    } while (paginationKey && calls.length < 10000); // Safety limit
 
     // Calculate statistics
     const totalCalls = calls.length;
