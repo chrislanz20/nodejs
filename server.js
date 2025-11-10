@@ -86,17 +86,21 @@ app.get("/api/calls", async (req, res) => {
         if (paginationKey) params.pagination_key = paginationKey;
 
         const data = await retellClient.call.list(params);
-        const calls = data.calls || [];
+
+        // Handle both array responses and object responses
+        const calls = Array.isArray(data) ? data : (data.calls || []);
+        const nextPaginationKey = Array.isArray(data) ? null : (data.pagination_key || null);
+
         pageCount++;
 
-        console.log(`Fetched page ${pageCount}: ${calls.length} calls, has pagination_key: ${!!data.pagination_key}`);
+        console.log(`Fetched page ${pageCount}: ${calls.length} calls, has pagination_key: ${!!nextPaginationKey}`);
 
         if (calls.length > 0) {
           allCalls = allCalls.concat(calls);
         }
 
         // Check if there's more data
-        paginationKey = data.pagination_key || null;
+        paginationKey = nextPaginationKey;
       } while (paginationKey && allCalls.length < 10000); // Safety limit
 
       console.log(`Total calls fetched: ${allCalls.length} across ${pageCount} pages`);
@@ -224,18 +228,35 @@ app.get("/api/agent-summary", async (req, res) => {
 
       console.log('Raw API response status: success');
       console.log('Response type:', typeof response);
+      console.log('Response is array?:', Array.isArray(response));
       console.log('Response keys:', Object.keys(response || {}));
       console.log('Response sample:', JSON.stringify(response).substring(0, 1000));
 
-      const calls = response.calls || response.data?.calls || [];
+      // Handle different response structures from Retell API
+      let calls = [];
+      let nextPaginationKey = null;
+
+      if (Array.isArray(response)) {
+        // Response is directly an array of calls (some API endpoints return this)
+        console.log('Response is array - using directly');
+        calls = response;
+        // No pagination key available in this format
+        nextPaginationKey = null;
+      } else if (response && typeof response === 'object') {
+        // Response is an object with calls property
+        calls = response.calls || response.data?.calls || [];
+        nextPaginationKey = response.pagination_key || response.data?.pagination_key || null;
+      }
+
       pageCount++;
       console.log(`Fetched page ${pageCount}: ${calls.length} calls`);
+      console.log('Sample call structure:', calls[0] ? JSON.stringify(calls[0]).substring(0, 200) : 'No calls');
 
       if (calls.length > 0) {
         allCalls = allCalls.concat(calls);
       }
 
-      paginationKey = response.pagination_key || response.data?.pagination_key || null;
+      paginationKey = nextPaginationKey;
       console.log('Next pagination key:', paginationKey ? 'exists' : 'none');
     } while (paginationKey && allCalls.length < 50000); // Increased safety limit
 
@@ -332,13 +353,16 @@ app.get("/api/analytics/:agentId", async (req, res) => {
       if (paginationKey) params.pagination_key = paginationKey;
 
       const data = await retellClient.call.list(params);
-      const pageCalls = data.calls || data || [];
+
+      // Handle both array responses and object responses
+      const pageCalls = Array.isArray(data) ? data : (data.calls || []);
+      const nextPaginationKey = Array.isArray(data) ? null : (data.pagination_key || null);
 
       if (pageCalls.length > 0) {
         calls = calls.concat(pageCalls);
       }
 
-      paginationKey = data.pagination_key || null;
+      paginationKey = nextPaginationKey;
     } while (paginationKey && calls.length < 10000); // Safety limit
 
     // Calculate statistics using ACTUAL cost data from Retell
