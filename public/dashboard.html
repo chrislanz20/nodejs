@@ -370,10 +370,21 @@
         const agentsData = await agentsRes.json();
         const callsData = await callsRes.json();
 
-        allAgents = agentsData.agents || agentsData || [];
-        allCalls = callsData.calls || callsData || [];
+        // Properly handle API responses - ensure we get arrays
+        allAgents = Array.isArray(agentsData) ? agentsData : (agentsData.agents || []);
+        allCalls = Array.isArray(callsData) ? callsData : (callsData.calls || []);
 
-        const totalAgents = allAgents.length;
+        // Deduplicate agents by name, keeping the first occurrence
+        const uniqueAgentsMap = new Map();
+        allAgents.forEach(agent => {
+          const name = agent.agent_name || 'Unnamed Agent';
+          if (!uniqueAgentsMap.has(name)) {
+            uniqueAgentsMap.set(name, agent);
+          }
+        });
+        const uniqueAgents = Array.from(uniqueAgentsMap.values());
+
+        const totalAgents = uniqueAgents.length;
         const totalCalls = allCalls.length;
 
         const totalDuration = allCalls.reduce((sum, call) => {
@@ -462,29 +473,65 @@
       try {
         const res = await fetch('/api/agents');
         const data = await res.json();
-        allAgents = data.agents || data || [];
+        allAgents = Array.isArray(data) ? data : (data.agents || []);
 
         if (allAgents.length === 0) {
           content.innerHTML = '<div class="stat-card"><p>No agents found</p></div>';
           return;
         }
 
-        // Fetch analytics for each agent
+        // Group agents by name to aggregate across versions
+        const agentsByName = new Map();
+        allAgents.forEach(agent => {
+          const name = agent.agent_name || 'Unnamed Agent';
+          if (!agentsByName.has(name)) {
+            agentsByName.set(name, {
+              name: name,
+              agent_ids: [],
+              representative: agent // Keep first agent as representative
+            });
+          }
+          agentsByName.get(name).agent_ids.push(agent.agent_id);
+        });
+
+        // Fetch and aggregate analytics for all versions of each agent
+        const uniqueAgents = Array.from(agentsByName.values());
         const agentAnalytics = await Promise.all(
-          allAgents.map(agent =>
-            fetch(`/api/analytics/${agent.agent_id}`)
-              .then(r => r.json())
-              .catch(() => ({ total_calls: 0, total_cost: 0 }))
-          )
+          uniqueAgents.map(async (agentGroup) => {
+            // Fetch analytics for all versions of this agent
+            const allVersionAnalytics = await Promise.all(
+              agentGroup.agent_ids.map(id =>
+                fetch(`/api/analytics/${id}`)
+                  .then(r => r.json())
+                  .catch(() => ({ total_calls: 0, total_cost: 0, total_duration_minutes: 0 }))
+              )
+            );
+
+            // Aggregate across all versions
+            return allVersionAnalytics.reduce((acc, analytics) => ({
+              total_calls: acc.total_calls + (analytics.total_calls || 0),
+              total_cost: acc.total_cost + (analytics.total_cost || 0),
+              total_duration_minutes: acc.total_duration_minutes + (analytics.total_duration_minutes || 0),
+              average_cost_per_call: 0 // Will calculate after
+            }), { total_calls: 0, total_cost: 0, total_duration_minutes: 0 });
+          })
         );
+
+        // Calculate average cost per call
+        agentAnalytics.forEach(analytics => {
+          analytics.average_cost_per_call = analytics.total_calls > 0
+            ? analytics.total_cost / analytics.total_calls
+            : 0;
+        });
 
         content.innerHTML = `
           <div class="agents-grid">
-            ${allAgents.map((agent, idx) => {
+            ${uniqueAgents.map((agentGroup, idx) => {
               const analytics = agentAnalytics[idx];
+              const agent = agentGroup.representative;
               return `
                 <div class="agent-card" onclick="viewAgentDetail('${agent.agent_id}')">
-                  <div class="agent-name">${agent.agent_name || 'Unnamed Agent'}</div>
+                  <div class="agent-name">${agentGroup.name}</div>
                   <div class="agent-stats">
                     <div class="agent-stat">
                       <span class="agent-stat-label">Total Calls</span>
@@ -643,7 +690,7 @@
       try {
         const res = await fetch('/api/calls?limit=1000');
         const data = await res.json();
-        allCalls = data.calls || data || [];
+        allCalls = Array.isArray(data) ? data : (data.calls || []);
 
         content.innerHTML = `
           <div class="calls-table">
