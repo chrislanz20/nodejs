@@ -580,6 +580,9 @@
         const agent = await agentRes.json();
         const analytics = await analyticsRes.json();
 
+        // Ensure calls is an array
+        const calls = Array.isArray(analytics.calls) ? analytics.calls : [];
+
         content.innerHTML = `
           <div class="stat-card" style="margin-bottom: 24px;">
             <h2 style="margin-bottom: 16px;">${agent.agent_name || 'Unnamed Agent'}</h2>
@@ -635,7 +638,7 @@
                 </tr>
               </thead>
               <tbody>
-                ${analytics.calls.map(call => {
+                ${calls.length > 0 ? calls.map(call => {
                   const date = call.start_timestamp
                     ? new Date(call.start_timestamp).toLocaleString()
                     : 'N/A';
@@ -650,7 +653,7 @@
                       <td class="cost-highlight">$${call.cost.toFixed(2)}</td>
                     </tr>
                   `;
-                }).join('')}
+                }).join('') : '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #718096;">No calls found for this agent</td></tr>'}
               </tbody>
             </table>
           </div>
