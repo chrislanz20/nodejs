@@ -128,96 +128,125 @@ async function filterBusinessesWithoutWebsites(businesses) {
 
 // Write results to Google Sheets
 async function writeToGoogleSheets(businesses, industry, zipCode) {
+  const MASTER_SHEET_NAME = 'All Businesses';
   const timestamp = new Date().toLocaleString();
-  const sheetName = `${industry} - ${zipCode}`.substring(0, 100);
 
   let sheetId;
+  let isNewSheet = false;
 
-  // Create a new sheet
+  // Get or create the master sheet
   try {
-    const response = await sheetsClient.spreadsheets.batchUpdate({
+    const spreadsheet = await sheetsClient.spreadsheets.get({
+      spreadsheetId,
+    });
+
+    const masterSheet = spreadsheet.data.sheets.find(s => s.properties.title === MASTER_SHEET_NAME);
+
+    if (masterSheet) {
+      // Sheet exists, get its ID
+      sheetId = masterSheet.properties.sheetId;
+    } else {
+      // Sheet doesn't exist, create it
+      const response = await sheetsClient.spreadsheets.batchUpdate({
+        spreadsheetId,
+        resource: {
+          requests: [{
+            addSheet: {
+              properties: {
+                title: MASTER_SHEET_NAME
+              }
+            }
+          }]
+        }
+      });
+      sheetId = response.data.replies[0].addSheet.properties.sheetId;
+      isNewSheet = true;
+    }
+  } catch (error) {
+    console.error('Error accessing/creating sheet:', error);
+    throw error;
+  }
+
+  // If new sheet, add headers
+  if (isNewSheet) {
+    const headers = [
+      ['Business Name', 'City', 'Phone Number', 'Industry', 'ZIP Code', 'Called?', 'Notes']
+    ];
+
+    await sheetsClient.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${MASTER_SHEET_NAME}!A1`,
+      valueInputOption: 'USER_ENTERED',
+      resource: {
+        values: headers
+      }
+    });
+
+    // Make header row bold
+    await sheetsClient.spreadsheets.batchUpdate({
       spreadsheetId,
       resource: {
         requests: [{
-          addSheet: {
-            properties: {
-              title: sheetName
-            }
+          repeatCell: {
+            range: {
+              sheetId: sheetId,
+              startRowIndex: 0,
+              endRowIndex: 1,
+            },
+            cell: {
+              userEnteredFormat: {
+                textFormat: {
+                  bold: true
+                }
+              }
+            },
+            fields: 'userEnteredFormat.textFormat.bold'
           }
         }]
       }
     });
-    sheetId = response.data.replies[0].addSheet.properties.sheetId;
-  } catch (error) {
-    // Sheet might already exist, get its ID
-    if (error.message.includes('already exists')) {
-      const spreadsheet = await sheetsClient.spreadsheets.get({
-        spreadsheetId,
-      });
-      const sheet = spreadsheet.data.sheets.find(s => s.properties.title === sheetName);
-      sheetId = sheet.properties.sheetId;
-    } else {
-      throw error;
-    }
   }
 
-  // Prepare data with new column structure
-  const headers = [
-    ['Search Date', 'Industry', 'ZIP Code'],
-    [timestamp, industry, zipCode],
-    [],
-    ['Business Name', 'City', 'Phone Number', 'Called?', 'Notes on Call']
-  ];
+  // Find the next empty row
+  const existingData = await sheetsClient.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${MASTER_SHEET_NAME}!A:A`,
+  });
 
+  const nextRow = existingData.data.values ? existingData.data.values.length + 1 : 2;
+
+  // Prepare new data rows with new column order
   const dataRows = businesses.map(b => [
-    b.name,
-    b.city,
-    b.phone,
-    false, // Checkbox will be added here
-    '' // Empty notes column
+    b.name,           // Business Name
+    b.city,           // City
+    b.phone,          // Phone Number
+    industry,         // Industry
+    zipCode,          // ZIP Code
+    false,            // Called? (checkbox)
+    ''                // Notes
   ]);
 
-  const allRows = [...headers, ...dataRows];
-
-  // Write data to sheet
-  await sheetsClient.spreadsheets.values.update({
+  // Append data to the bottom
+  await sheetsClient.spreadsheets.values.append({
     spreadsheetId,
-    range: `${sheetName}!A1`,
+    range: `${MASTER_SHEET_NAME}!A${nextRow}`,
     valueInputOption: 'USER_ENTERED',
     resource: {
-      values: allRows
+      values: dataRows
     }
   });
 
-  // Format the sheet: make header row bold and add checkboxes
+  // Add checkboxes and conditional formatting for new rows
   const requests = [
-    // Make the header row (row 4) bold
-    {
-      repeatCell: {
-        range: {
-          sheetId: sheetId,
-          startRowIndex: 3,
-          endRowIndex: 4,
-        },
-        cell: {
-          userEnteredFormat: {
-            textFormat: {
-              bold: true
-            }
-          }
-        },
-        fields: 'userEnteredFormat.textFormat.bold'
-      }
-    },
-    // Add checkboxes to the "Called?" column (column D, index 3)
+    // Add checkboxes to the "Called?" column (column F, index 5)
     {
       setDataValidation: {
         range: {
           sheetId: sheetId,
-          startRowIndex: 4, // Start after header
-          endRowIndex: 4 + businesses.length,
-          startColumnIndex: 3,
-          endColumnIndex: 4
+          startRowIndex: nextRow - 1,
+          endRowIndex: nextRow - 1 + businesses.length,
+          startColumnIndex: 5,
+          endColumnIndex: 6
         },
         rule: {
           condition: {
@@ -225,6 +254,36 @@ async function writeToGoogleSheets(businesses, industry, zipCode) {
           },
           showCustomUi: true
         }
+      }
+    },
+    // Add conditional formatting: gray out checked rows
+    {
+      addConditionalFormatRule: {
+        rule: {
+          ranges: [{
+            sheetId: sheetId,
+            startRowIndex: nextRow - 1,
+            endRowIndex: nextRow - 1 + businesses.length,
+            startColumnIndex: 0,
+            endColumnIndex: 7
+          }],
+          booleanRule: {
+            condition: {
+              type: 'CUSTOM_FORMULA',
+              values: [{
+                userEnteredValue: `=$F${nextRow}=TRUE`
+              }]
+            },
+            format: {
+              backgroundColor: {
+                red: 0.85,
+                green: 0.85,
+                blue: 0.85
+              }
+            }
+          }
+        },
+        index: 0
       }
     }
   ];
@@ -234,7 +293,8 @@ async function writeToGoogleSheets(businesses, industry, zipCode) {
     resource: { requests }
   });
 
-  return sheetName;
+  console.log(`Added ${businesses.length} businesses to "${MASTER_SHEET_NAME}" sheet`);
+  return MASTER_SHEET_NAME;
 }
 
 // Initialize sheets client on startup
