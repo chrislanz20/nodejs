@@ -78,6 +78,7 @@ app.get("/api/calls", async (req, res) => {
       let allCalls = [];
       let paginationKey = undefined;
       const pageSize = 1000;
+      let pageCount = 0;
 
       do {
         const params = { limit: pageSize };
@@ -85,7 +86,10 @@ app.get("/api/calls", async (req, res) => {
         if (paginationKey) params.pagination_key = paginationKey;
 
         const data = await retellClient.call.list(params);
-        const calls = data.calls || data || [];
+        const calls = data.calls || [];
+        pageCount++;
+
+        console.log(`Fetched page ${pageCount}: ${calls.length} calls, has pagination_key: ${!!data.pagination_key}`);
 
         if (calls.length > 0) {
           allCalls = allCalls.concat(calls);
@@ -95,6 +99,7 @@ app.get("/api/calls", async (req, res) => {
         paginationKey = data.pagination_key || null;
       } while (paginationKey && allCalls.length < 10000); // Safety limit
 
+      console.log(`Total calls fetched: ${allCalls.length} across ${pageCount} pages`);
       res.json({ calls: allCalls, total: allCalls.length });
     } else {
       // Single page request
