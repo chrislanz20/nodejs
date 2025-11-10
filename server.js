@@ -147,6 +147,35 @@ async function retryWithBackoff(fn, maxRetries = 3) {
   }
 }
 
+// Test endpoint to see raw API response
+app.get("/api/test-calls", async (req, res) => {
+  try {
+    console.log('Testing raw Retell API call...');
+
+    const requestBody = { limit: 10 };
+
+    const response = await axios.post('https://api.retellai.com/v2/list-calls', requestBody, {
+      headers: {
+        'Authorization': `Bearer ${process.env.RETELL_API_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    res.json({
+      success: true,
+      responseType: typeof response.data,
+      responseKeys: Object.keys(response.data || {}),
+      fullResponse: response.data,
+      callsCount: (response.data.calls || []).length
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+      details: error.response?.data || 'No additional details'
+    });
+  }
+});
+
 // Get aggregated agent summary - fetches ALL data once and aggregates by agent name
 app.get("/api/agent-summary", async (req, res) => {
   try {
