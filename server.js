@@ -173,9 +173,13 @@ app.get("/api/analytics/:agentId", async (req, res) => {
       let telephonyCost = 0.01;
 
       // Adjust based on agent configuration
+      // Voice ID is at top level
       if (agentConfig.voice_id?.includes('openai')) voiceCost = 0.08;
-      if (agentConfig.llm_id?.includes('gpt-4')) llmCost = 0.06;
-      if (agentConfig.llm_id?.includes('gpt-3')) llmCost = 0.02;
+
+      // LLM ID is nested in response_engine
+      const llmId = agentConfig.response_engine?.llm_id || agentConfig.llm_id || '';
+      if (llmId.includes('gpt-4')) llmCost = 0.06;
+      if (llmId.includes('gpt-3')) llmCost = 0.02;
 
       return minutes * (voiceCost + llmCost + telephonyCost);
     };
