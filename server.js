@@ -11,8 +11,8 @@ app.use(cors());
 
 // Serve the marketing site
 const publicDir = path.join(__dirname, "public");
-app.use(express.static(publicDir));
 
+// Define routes BEFORE static middleware to override index.html
 app.get("/", (_req, res) => {
   res.sendFile(path.join(publicDir, "dashboard.html"));
 });
@@ -21,8 +21,11 @@ app.get("/dashboard", (_req, res) => {
   res.sendFile(path.join(publicDir, "dashboard.html"));
 });
 
+// Now serve static files (styles.css, etc.)
+app.use(express.static(publicDir));
+
 // --- ENV VARS (we'll set these in Railway) ---
-const RETELL_API_KEY = process.env.RETELL_API_KEY || "key_2b025c76697990df02799b672713";
+const RETELL_API_KEY = process.env.RETELL_API_KEY || "key_15dbddf703e85fc49ae4df1ac632";
 const RETELL_AGENT_ID = process.env.RETELL_AGENT_ID; // your Chat Agent ID
 
 const RETELL_API_BASE = "https://api.retellai.com";
