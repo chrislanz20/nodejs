@@ -608,53 +608,22 @@
           return;
         }
 
-        // Use the first matching agent as representative for display
-        const representativeAgent = matchingAgents[0];
+        // Use the agent with the highest version number (most recent)
+        const representativeAgent = matchingAgents.sort((a, b) =>
+          (b.agent_version || 0) - (a.agent_version || 0)
+        )[0];
 
-        // Fetch analytics for all versions of this agent
-        console.log('Fetching analytics for agent IDs:', matchingAgents.map(a => a.agent_id));
-        const allVersionAnalytics = await Promise.all(
-          matchingAgents.map(agent =>
-            fetch(`/api/analytics/${agent.agent_id}`)
-              .then(r => {
-                if (!r.ok) {
-                  console.error(`Analytics API returned ${r.status} for ${agent.agent_id}`);
-                  return { total_calls: 0, total_cost: 0, total_duration_minutes: 0, calls: [] };
-                }
-                return r.json();
-              })
-              .then(data => {
-                console.log(`Analytics for ${agent.agent_id}:`, {
-                  total_calls: data.total_calls,
-                  total_cost: data.total_cost,
-                  calls_count: data.calls?.length || 0
-                });
-                return data;
-              })
-              .catch(err => {
-                console.error(`Failed to fetch analytics for ${agent.agent_id}:`, err);
-                return { total_calls: 0, total_cost: 0, total_duration_minutes: 0, calls: [] };
-              })
-          )
-        );
+        console.log('Using latest version:', representativeAgent.agent_id, 'version', representativeAgent.agent_version);
 
-        console.log('All version analytics:', allVersionAnalytics);
+        // Fetch analytics for ONLY the latest version
+        const analyticsRes = await fetch(`/api/analytics/${representativeAgent.agent_id}`);
+        if (!analyticsRes.ok) {
+          throw new Error(`Analytics API returned ${analyticsRes.status}`);
+        }
 
-        // Aggregate analytics across all versions
-        const aggregatedAnalytics = allVersionAnalytics.reduce((acc, analytics) => {
-          // Only aggregate if analytics is valid (not an error object)
-          if (analytics && !analytics.error) {
-            return {
-              total_calls: acc.total_calls + (analytics.total_calls || 0),
-              total_cost: acc.total_cost + (analytics.total_cost || 0),
-              total_duration_minutes: acc.total_duration_minutes + (analytics.total_duration_minutes || 0),
-              calls: acc.calls.concat(analytics.calls || [])
-            };
-          }
-          return acc;
-        }, { total_calls: 0, total_cost: 0, total_duration_minutes: 0, calls: [] });
+        const aggregatedAnalytics = await analyticsRes.json();
 
-        console.log('Aggregated analytics:', aggregatedAnalytics);
+        console.log('Analytics for latest version:', aggregatedAnalytics);
 
         // Calculate average cost per call
         aggregatedAnalytics.average_cost_per_call = aggregatedAnalytics.total_calls > 0
@@ -674,8 +643,8 @@
             <h2 style="margin-bottom: 16px;">${agentName}</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
               <div>
-                <div class="stat-label">Versions</div>
-                <div style="font-size: 13px; color: #4a5568;">${matchingAgents.length} version${matchingAgents.length !== 1 ? 's' : ''}</div>
+                <div class="stat-label">Version</div>
+                <div style="font-size: 13px; color: #4a5568;">v${representativeAgent.agent_version || 'unknown'} (latest of ${matchingAgents.length})</div>
               </div>
               <div>
                 <div class="stat-label">Voice</div>
@@ -710,7 +679,7 @@
 
           <div class="calls-table">
             <div class="table-header">
-              <div class="table-title">Call History (All Versions)</div>
+              <div class="table-title">Call History (Version ${representativeAgent.agent_version || 'latest'})</div>
               <input type="text" class="search-box" placeholder="Search calls..." onkeyup="filterAgentCalls(event)">
             </div>
             <table id="agent-calls-table">
