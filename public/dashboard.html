@@ -360,7 +360,7 @@
     // Load overview data
     async function loadOverview() {
       const content = document.getElementById('overview-content');
-      content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading overview...</p></div>';
+      content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all call data from Retell...</p><p style="color: #718096; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p></div>';
 
       try {
         // Fetch all data in ONE request to avoid rate limiting

@@ -127,15 +127,38 @@ app.get("/api/calls/:callId", async (req, res) => {
   }
 });
 
+// Helper function to wait/sleep
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Helper function to retry API calls with exponential backoff
+async function retryWithBackoff(fn, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (error.status === 429 && i < maxRetries - 1) {
+        const waitTime = Math.pow(2, i) * 2000; // 2s, 4s, 8s
+        console.log(`Rate limited, waiting ${waitTime}ms before retry ${i + 1}...`);
+        await sleep(waitTime);
+      } else {
+        throw error;
+      }
+    }
+  }
+}
+
 // Get aggregated agent summary - fetches ALL data once and aggregates by agent name
 app.get("/api/agent-summary", async (req, res) => {
   try {
     console.log('Fetching agent summary...');
 
     // Fetch all agents
-    const agentsData = await retellClient.agent.list();
+    const agentsData = await retryWithBackoff(() => retellClient.agent.list());
     const allAgents = agentsData.agents || agentsData || [];
     console.log(`Fetched ${allAgents.length} total agent versions`);
+
+    // Add a small delay after fetching agents
+    await sleep(500);
 
     // Fetch ALL calls with pagination (no agent filter to minimize API calls)
     let allCalls = [];
@@ -144,7 +167,15 @@ app.get("/api/agent-summary", async (req, res) => {
     let pageCount = 0;
 
     do {
-      const data = await retellClient.call.list({ limit: pageSize, pagination_key: paginationKey });
+      // Add delay between pagination requests to avoid rate limiting (1.5 seconds)
+      if (pageCount > 0) {
+        console.log('Waiting 1.5s before next page to avoid rate limiting...');
+        await sleep(1500);
+      }
+
+      const data = await retryWithBackoff(() =>
+        retellClient.call.list({ limit: pageSize, pagination_key: paginationKey })
+      );
       const calls = data.calls || [];
       pageCount++;
       console.log(`Fetched page ${pageCount}: ${calls.length} calls`);
@@ -154,7 +185,7 @@ app.get("/api/agent-summary", async (req, res) => {
       }
 
       paginationKey = data.pagination_key || null;
-    } while (paginationKey && allCalls.length < 10000); // Safety limit
+    } while (paginationKey && allCalls.length < 50000); // Increased safety limit
 
     console.log(`Total calls fetched: ${allCalls.length}`);
 
