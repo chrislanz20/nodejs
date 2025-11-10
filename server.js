@@ -81,7 +81,7 @@ app.get("/api/calls", async (req, res) => {
 
       do {
         const params = { limit: pageSize };
-        if (agent_id) params.filter_criteria = { agent_id };
+        if (agent_id) params.filter_criteria = { agent_id: [agent_id] };  // agent_id must be an array
         if (paginationKey) params.pagination_key = paginationKey;
 
         const data = await retellClient.call.list(params);
@@ -100,7 +100,7 @@ app.get("/api/calls", async (req, res) => {
       // Single page request
       const { limit = 100 } = req.query;
       const params = { limit: parseInt(limit) };
-      if (agent_id) params.filter_criteria = { agent_id };
+      if (agent_id) params.filter_criteria = { agent_id: [agent_id] };  // agent_id must be an array
 
       const data = await retellClient.call.list(params);
       res.json(data);
@@ -157,7 +157,7 @@ app.get("/api/analytics/:agentId", async (req, res) => {
     do {
       const params = {
         limit: pageSize,
-        filter_criteria: { agent_id: agentId }
+        filter_criteria: { agent_id: [agentId] }  // agent_id must be an array
       };
       if (paginationKey) params.pagination_key = paginationKey;
 
