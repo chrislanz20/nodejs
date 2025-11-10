@@ -25,7 +25,7 @@ app.get("/dashboard", (_req, res) => {
 app.use(express.static(publicDir));
 
 // --- ENV VARS (we'll set these in Railway) ---
-const RETELL_API_KEY = process.env.RETELL_API_KEY || "key_15dbddf703e85fc49ae4df1ac632";
+const RETELL_API_KEY = process.env.RETELL_API_KEY || "key_adeebba4f1f28fe45fce4a999ea2";
 const RETELL_AGENT_ID = process.env.RETELL_AGENT_ID; // your Chat Agent ID
 
 const RETELL_API_BASE = "https://api.retellai.com";
