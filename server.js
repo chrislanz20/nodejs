@@ -122,6 +122,24 @@ app.get("/api/calls/:callId", async (req, res) => {
   }
 });
 
+// DEBUG: Get raw call data to see what Retell provides
+app.get("/api/debug/call-sample", async (req, res) => {
+  try {
+    // Get first call to see what fields are available
+    const data = await retellClient.call.list({ limit: 1 });
+    const calls = data.calls || data || [];
+    if (calls.length > 0) {
+      console.log("Sample call data:", JSON.stringify(calls[0], null, 2));
+      res.json({ sample_call: calls[0], available_fields: Object.keys(calls[0]) });
+    } else {
+      res.json({ message: "No calls found" });
+    }
+  } catch (error) {
+    console.error("Error fetching sample call:", error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get analytics summary (custom endpoint that aggregates data)
 app.get("/api/analytics/:agentId", async (req, res) => {
   try {
@@ -205,7 +223,9 @@ app.get("/api/analytics/:agentId", async (req, res) => {
       })),
     });
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch analytics" });
+    console.error("Error in analytics endpoint:", error.message);
+    console.error("Error details:", error);
+    res.status(500).json({ error: "Failed to fetch analytics", details: error.message });
   }
 });
 
