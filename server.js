@@ -88,18 +88,24 @@ app.get("/api/calls", async (req, res) => {
         const data = await retellClient.call.list(params);
 
         // Handle both array responses and object responses
-        const calls = Array.isArray(data) ? data : (data.calls || []);
-        const nextPaginationKey = Array.isArray(data) ? null : (data.pagination_key || null);
+        let calls, nextPaginationKey;
+        if (Array.isArray(data)) {
+          calls = data;
+          nextPaginationKey = null;  // Arrays don't have pagination keys
+          console.log('SDK returned array format');
+        } else {
+          calls = data.calls || [];
+          nextPaginationKey = data.pagination_key || null;
+        }
 
         pageCount++;
 
-        console.log(`Fetched page ${pageCount}: ${calls.length} calls, has pagination_key: ${!!nextPaginationKey}`);
+        console.log(`Fetched page ${pageCount}: ${calls.length} calls (requested ${pageSize}), has pagination_key: ${!!nextPaginationKey}`);
 
         if (calls.length > 0) {
           allCalls = allCalls.concat(calls);
         }
 
-        // Check if there's more data
         paginationKey = nextPaginationKey;
       } while (paginationKey && allCalls.length < 10000); // Safety limit
 
@@ -240,7 +246,7 @@ app.get("/api/agent-summary", async (req, res) => {
         // Response is directly an array of calls (some API endpoints return this)
         console.log('Response is array - using directly');
         calls = response;
-        // No pagination key available in this format
+        // Arrays don't have pagination keys - this is all the data
         nextPaginationKey = null;
       } else if (response && typeof response === 'object') {
         // Response is an object with calls property
@@ -249,15 +255,15 @@ app.get("/api/agent-summary", async (req, res) => {
       }
 
       pageCount++;
-      console.log(`Fetched page ${pageCount}: ${calls.length} calls`);
+      console.log(`Fetched page ${pageCount}: ${calls.length} calls (requested ${pageSize})`);
       console.log('Sample call structure:', calls[0] ? JSON.stringify(calls[0]).substring(0, 200) : 'No calls');
+      console.log('Next pagination key:', nextPaginationKey ? 'exists' : 'none');
 
       if (calls.length > 0) {
         allCalls = allCalls.concat(calls);
       }
 
       paginationKey = nextPaginationKey;
-      console.log('Next pagination key:', paginationKey ? 'exists' : 'none');
     } while (paginationKey && allCalls.length < 50000); // Increased safety limit
 
     console.log(`Total calls fetched: ${allCalls.length}`);
@@ -275,6 +281,8 @@ app.get("/api/agent-summary", async (req, res) => {
       }
       agentsByName.get(name).agent_ids.push(agent.agent_id);
     });
+
+    console.log(`Grouped into ${agentsByName.size} unique agent names from ${allAgents.length} total versions`);
 
     // Calculate stats for each unique agent name
     const agentSummaries = Array.from(agentsByName.values()).map(agentGroup => {

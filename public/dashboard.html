@@ -343,6 +343,7 @@
     let allCalls = [];
     let agentSummaries = [];  // Cached aggregated data
     let currentAgentId = null;
+    let dataLoaded = false;  // Track if data has been loaded
 
     // Switch between tabs
     function switchTab(tabName) {
@@ -352,14 +353,105 @@
       event.target.classList.add('active');
       document.getElementById(tabName).classList.add('active');
 
-      if (tabName === 'overview') loadOverview();
+      // Only load overview if data hasn't been loaded yet
+      if (tabName === 'overview') loadOverview(false);  // false = don't force reload
       if (tabName === 'agents') loadAgents();
       if (tabName === 'calls') loadAllCalls();
     }
 
+    // Render overview with current data
+    function renderOverview(content) {
+      // Calculate totals from agentSummaries (already aggregated by name)
+      const totalAgents = agentSummaries.length;
+      const totalCalls = allCalls.length;
+      const totalDuration = allCalls.reduce((sum, call) => sum + (call.duration_minutes || 0), 0);
+      const totalCost = allCalls.reduce((sum, call) => sum + (call.cost || 0), 0);
+
+      content.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <div style="color: #718096; font-size: 14px;">
+            Last updated: ${new Date().toLocaleString()} | ${totalCalls.toLocaleString()} total calls loaded
+          </div>
+          <button class="back-button" onclick="loadOverview(true)" style="margin: 0;">
+            🔄 Reload Data
+          </button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Total Agents</div>
+            <div class="stat-value">${totalAgents}</div>
+            <div class="stat-subtext">Active voice agents</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Calls</div>
+            <div class="stat-value">${totalCalls.toLocaleString()}</div>
+            <div class="stat-subtext">All time</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Duration</div>
+            <div class="stat-value">${Math.round(totalDuration)}</div>
+            <div class="stat-subtext">Minutes</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Cost</div>
+            <div class="stat-value cost-highlight">$${totalCost.toFixed(2)}</div>
+            <div class="stat-subtext">Actual cost from Retell</div>
+          </div>
+        </div>
+
+        <div class="calls-table">
+          <div class="table-header">
+            <div class="table-title">Recent Calls</div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Call ID</th>
+                <th>Agent</th>
+                <th>Date</th>
+                <th>Duration</th>
+                <th>Status</th>
+                <th>Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${allCalls.slice(0, 10).map(call => {
+                const duration = call.duration_minutes || 0;
+                const cost = call.cost || 0;
+                const date = call.start_timestamp
+                  ? new Date(call.start_timestamp).toLocaleString()
+                  : 'N/A';
+                const status = call.end_timestamp ? 'completed' : 'ongoing';
+
+                return `
+                  <tr>
+                    <td>${call.call_id?.slice(0, 12)}...</td>
+                    <td>${call.agent_id?.slice(0, 12)}...</td>
+                    <td>${date}</td>
+                    <td>${duration.toFixed(2)} min</td>
+                    <td><span class="status-badge status-${status}">${status}</span></td>
+                    <td class="cost-highlight">$${cost.toFixed(2)}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
     // Load overview data
-    async function loadOverview() {
+    async function loadOverview(forceReload = false) {
       const content = document.getElementById('overview-content');
+
+      // If data is already loaded and not forcing reload, just render it
+      if (dataLoaded && !forceReload && agentSummaries.length > 0) {
+        console.log('Using cached data:', agentSummaries.length, 'agents and', allCalls.length, 'calls');
+        renderOverview(content);
+        return;
+      }
+
       content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all call data from Retell...</p><p style="color: #718096; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p></div>';
 
       try {
@@ -372,78 +464,12 @@
         const data = await res.json();
         agentSummaries = data.agents || [];
         allCalls = data.all_calls || [];
+        dataLoaded = true;  // Mark data as loaded
 
         console.log('Overview - loaded', agentSummaries.length, 'agents and', allCalls.length, 'calls');
 
-        // Calculate totals from agentSummaries (already aggregated by name)
-        const totalAgents = agentSummaries.length;
-        const totalCalls = allCalls.length;
-        const totalDuration = allCalls.reduce((sum, call) => sum + (call.duration_minutes || 0), 0);
-        const totalCost = allCalls.reduce((sum, call) => sum + (call.cost || 0), 0);
-
-        content.innerHTML = `
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-label">Total Agents</div>
-              <div class="stat-value">${totalAgents}</div>
-              <div class="stat-subtext">Active voice agents</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Total Calls</div>
-              <div class="stat-value">${totalCalls.toLocaleString()}</div>
-              <div class="stat-subtext">All time</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Total Duration</div>
-              <div class="stat-value">${Math.round(totalDuration)}</div>
-              <div class="stat-subtext">Minutes</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Total Cost</div>
-              <div class="stat-value cost-highlight">$${totalCost.toFixed(2)}</div>
-              <div class="stat-subtext">Actual cost from Retell</div>
-            </div>
-          </div>
-
-          <div class="calls-table">
-            <div class="table-header">
-              <div class="table-title">Recent Calls</div>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Call ID</th>
-                  <th>Agent</th>
-                  <th>Date</th>
-                  <th>Duration</th>
-                  <th>Status</th>
-                  <th>Cost</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${allCalls.slice(0, 10).map(call => {
-                  const duration = call.duration_minutes || 0;
-                  const cost = call.cost || 0;
-                  const date = call.start_timestamp
-                    ? new Date(call.start_timestamp).toLocaleString()
-                    : 'N/A';
-                  const status = call.end_timestamp ? 'completed' : 'ongoing';
-
-                  return `
-                    <tr>
-                      <td>${call.call_id?.slice(0, 12)}...</td>
-                      <td>${call.agent_id?.slice(0, 12)}...</td>
-                      <td>${date}</td>
-                      <td>${duration.toFixed(2)} min</td>
-                      <td><span class="status-badge status-${status}">${status}</span></td>
-                      <td class="cost-highlight">$${cost.toFixed(2)}</td>
-                    </tr>
-                  `;
-                }).join('')}
-              </tbody>
-            </table>
-          </div>
-        `;
+        // Render the overview with the fetched data
+        renderOverview(content);
       } catch (error) {
         content.innerHTML = `<div class="error">Failed to load overview: ${error.message}</div>`;
       }
