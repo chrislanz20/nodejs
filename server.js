@@ -160,7 +160,7 @@ app.get("/api/agent-summary", async (req, res) => {
     // Add a small delay after fetching agents
     await sleep(500);
 
-    // Fetch ALL calls with pagination (no agent filter to minimize API calls)
+    // Fetch ALL calls with pagination - using direct API call instead of SDK
     let allCalls = [];
     let paginationKey = undefined;
     const pageSize = 1000;
@@ -173,20 +173,32 @@ app.get("/api/agent-summary", async (req, res) => {
         await sleep(1500);
       }
 
-      const data = await retryWithBackoff(() =>
-        retellClient.call.list({ limit: pageSize, pagination_key: paginationKey })
-      );
-
-      // DEBUG: Log the raw response structure
-      console.log('Raw API response type:', typeof data);
-      console.log('Response keys:', Object.keys(data || {}));
-      console.log('Has calls property:', 'calls' in (data || {}));
-      console.log('Has data property:', 'data' in (data || {}));
-      if (data) {
-        console.log('Response sample:', JSON.stringify(data).substring(0, 500));
+      // Call API directly to see raw response
+      const requestBody = {
+        limit: pageSize
+      };
+      if (paginationKey) {
+        requestBody.pagination_key = paginationKey;
       }
 
-      const calls = data.calls || [];
+      console.log('Calling Retell API with:', JSON.stringify(requestBody));
+
+      const response = await retryWithBackoff(async () => {
+        const result = await axios.post('https://api.retellai.com/v2/list-calls', requestBody, {
+          headers: {
+            'Authorization': `Bearer ${process.env.RETELL_API_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        return result.data;
+      });
+
+      console.log('Raw API response status: success');
+      console.log('Response type:', typeof response);
+      console.log('Response keys:', Object.keys(response || {}));
+      console.log('Response sample:', JSON.stringify(response).substring(0, 1000));
+
+      const calls = response.calls || response.data?.calls || [];
       pageCount++;
       console.log(`Fetched page ${pageCount}: ${calls.length} calls`);
 
@@ -194,7 +206,8 @@ app.get("/api/agent-summary", async (req, res) => {
         allCalls = allCalls.concat(calls);
       }
 
-      paginationKey = data.pagination_key || null;
+      paginationKey = response.pagination_key || response.data?.pagination_key || null;
+      console.log('Next pagination key:', paginationKey ? 'exists' : 'none');
     } while (paginationKey && allCalls.length < 50000); // Increased safety limit
 
     console.log(`Total calls fetched: ${allCalls.length}`);
