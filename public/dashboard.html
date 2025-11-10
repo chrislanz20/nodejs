@@ -367,12 +367,28 @@
           fetch('/api/calls') // Fetches ALL calls with automatic pagination
         ]);
 
+        if (!agentsRes.ok) {
+          console.error('Agents API failed:', agentsRes.status);
+          throw new Error(`Failed to fetch agents: ${agentsRes.status}`);
+        }
+
+        if (!callsRes.ok) {
+          console.error('Calls API failed:', callsRes.status);
+          throw new Error(`Failed to fetch calls: ${callsRes.status}`);
+        }
+
         const agentsData = await agentsRes.json();
         const callsData = await callsRes.json();
+
+        console.log('Overview - agentsData:', agentsData);
+        console.log('Overview - callsData:', callsData);
 
         // Properly handle API responses - ensure we get arrays
         allAgents = Array.isArray(agentsData) ? agentsData : (agentsData.agents || []);
         allCalls = Array.isArray(callsData) ? callsData : (callsData.calls || []);
+
+        console.log('Overview - allAgents count:', allAgents.length);
+        console.log('Overview - allCalls count:', allCalls.length);
 
         // Deduplicate agents by name, keeping the first occurrence
         const uniqueAgentsMap = new Map();
