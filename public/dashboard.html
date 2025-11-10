@@ -344,6 +344,7 @@
     let agentSummaries = [];  // Cached aggregated data
     let currentAgentId = null;
     let dataLoaded = false;  // Track if data has been loaded
+    let totalCallsAvailable = null;  // Total calls from API if provided
 
     // Switch between tabs
     function switchTab(tabName) {
@@ -386,7 +387,11 @@
           <div class="stat-card">
             <div class="stat-label">Total Calls</div>
             <div class="stat-value">${totalCalls.toLocaleString()}</div>
-            <div class="stat-subtext">All time</div>
+            <div class="stat-subtext">${
+              totalCallsAvailable && totalCallsAvailable > totalCalls
+                ? `Showing ${totalCalls.toLocaleString()} of ${totalCallsAvailable.toLocaleString()} total`
+                : 'All time'
+            }</div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Total Duration</div>
@@ -464,9 +469,17 @@
         const data = await res.json();
         agentSummaries = data.agents || [];
         allCalls = data.all_calls || [];
+        totalCallsAvailable = data.total_calls_available;  // Store total if provided
         dataLoaded = true;  // Mark data as loaded
 
         console.log('Overview - loaded', agentSummaries.length, 'agents and', allCalls.length, 'calls');
+        console.log('Pages fetched:', data.pages_fetched);
+        if (totalCallsAvailable) {
+          console.log(`API reports ${totalCallsAvailable} total calls available`);
+          if (totalCallsAvailable > allCalls.length) {
+            console.warn(`⚠️ Only loaded ${allCalls.length} of ${totalCallsAvailable} total calls!`);
+          }
+        }
 
         // Render the overview with the fetched data
         renderOverview(content);

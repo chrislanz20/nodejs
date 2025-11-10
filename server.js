@@ -204,6 +204,7 @@ app.get("/api/agent-summary", async (req, res) => {
     let paginationKey = undefined;
     const pageSize = 1000;
     let pageCount = 0;
+    let totalCallsFromAPI = null;  // Track if API provides a total count
 
     do {
       // Add delay between pagination requests to avoid rate limiting (1.5 seconds)
@@ -232,11 +233,26 @@ app.get("/api/agent-summary", async (req, res) => {
         return result.data;
       });
 
-      console.log('Raw API response status: success');
+      console.log('\n========== PAGE', pageCount + 1, 'RESPONSE ==========');
       console.log('Response type:', typeof response);
       console.log('Response is array?:', Array.isArray(response));
-      console.log('Response keys:', Object.keys(response || {}));
-      console.log('Response sample:', JSON.stringify(response).substring(0, 1000));
+      console.log('Response has calls property?:', response?.calls ? 'YES' : 'NO');
+      console.log('Response has pagination_key?:', response?.pagination_key ? 'YES' : 'NO');
+      console.log('All response keys:', Object.keys(response || {}));
+
+      // Log the full structure of pagination-related fields
+      if (response && typeof response === 'object' && !Array.isArray(response)) {
+        console.log('Pagination key value:', response.pagination_key || 'NONE');
+        console.log('Has_more field:', response.has_more);
+        console.log('Total field:', response.total);
+        console.log('Count field:', response.count);
+
+        // Capture total if provided by API
+        if (response.total && !totalCallsFromAPI) {
+          totalCallsFromAPI = response.total;
+          console.log(`🎯 API reports total of ${totalCallsFromAPI} calls available!`);
+        }
+      }
 
       // Handle different response structures from Retell API
       let calls = [];
@@ -244,29 +260,46 @@ app.get("/api/agent-summary", async (req, res) => {
 
       if (Array.isArray(response)) {
         // Response is directly an array of calls (some API endpoints return this)
-        console.log('Response is array - using directly');
+        console.log('⚠️  WARNING: Response is array - no pagination metadata available!');
         calls = response;
-        // Arrays don't have pagination keys - this is all the data
         nextPaginationKey = null;
       } else if (response && typeof response === 'object') {
         // Response is an object with calls property
         calls = response.calls || response.data?.calls || [];
         nextPaginationKey = response.pagination_key || response.data?.pagination_key || null;
+
+        console.log(`Extracted ${calls.length} calls from response`);
+        console.log('Pagination key extracted:', nextPaginationKey ? 'YES' : 'NO');
       }
 
       pageCount++;
-      console.log(`Fetched page ${pageCount}: ${calls.length} calls (requested ${pageSize})`);
-      console.log('Sample call structure:', calls[0] ? JSON.stringify(calls[0]).substring(0, 200) : 'No calls');
-      console.log('Next pagination key:', nextPaginationKey ? 'exists' : 'none');
+      console.log(`\n📊 SUMMARY: Page ${pageCount}: Got ${calls.length} calls (requested ${pageSize})`);
+
+      // Warning if we got exactly the limit - might be more data
+      if (calls.length === pageSize && !nextPaginationKey) {
+        console.log('⚠️  WARNING: Got exactly the limit but no pagination key - there might be more data!');
+      }
 
       if (calls.length > 0) {
         allCalls = allCalls.concat(calls);
+        console.log(`✅ Total accumulated: ${allCalls.length} calls`);
       }
 
       paginationKey = nextPaginationKey;
+      console.log('Will continue?:', !!paginationKey);
+      console.log('========================================\n');
     } while (paginationKey && allCalls.length < 50000); // Increased safety limit
 
+    console.log(`\n📈 FINAL TOTALS:`);
     console.log(`Total calls fetched: ${allCalls.length}`);
+    console.log(`Total pages fetched: ${pageCount}`);
+    console.log(`Average calls per page: ${Math.round(allCalls.length / pageCount)}`);
+    if (totalCallsFromAPI) {
+      console.log(`📊 API reported total available: ${totalCallsFromAPI}`);
+      if (totalCallsFromAPI > allCalls.length) {
+        console.log(`⚠️  WARNING: Only fetched ${allCalls.length} of ${totalCallsFromAPI} total calls!`);
+      }
+    }
 
     // Group agents by name
     const agentsByName = new Map();
@@ -331,7 +364,9 @@ app.get("/api/agent-summary", async (req, res) => {
           : 0,
         cost: (call.call_cost?.combined_cost || 0) / 100  // Convert cents to dollars
       })),
-      total_calls: allCalls.length
+      total_calls: allCalls.length,
+      total_calls_available: totalCallsFromAPI,  // Total from API if provided
+      pages_fetched: pageCount
     });
   } catch (error) {
     console.error("Error in agent-summary endpoint:", error.message);
