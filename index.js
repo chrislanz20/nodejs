@@ -133,15 +133,17 @@ function extractState(formattedAddress) {
 // Verify if business has a website via Google Custom Search
 async function verifyWebsiteViaGoogleSearch(businessName, city, state) {
   if (!customSearchApiKey || !customSearchEngineId) {
-    console.log('Google Custom Search not configured, skipping verification');
+    console.log('⚠️  Google Custom Search not configured, skipping verification');
     return false; // Assume no website if we can't verify
   }
 
   try {
+    console.log(`🔍 Google Search: Checking "${businessName}" in ${city}, ${state}`);
     const query = `"${businessName}" "${city}" "${state}" website`;
     const url = `https://www.googleapis.com/customsearch/v1?key=${customSearchApiKey}&cx=${customSearchEngineId}&q=${encodeURIComponent(query)}&num=5`;
 
     const response = await axios.get(url);
+    console.log(`✓ Google Search API responded (${response.data.searchInformation?.totalResults || 0} results)`);
 
     if (response.data.items && response.data.items.length > 0) {
       // Check if any of the top results contain a website for this business
@@ -158,15 +160,16 @@ async function verifyWebsiteViaGoogleSearch(businessName, city, state) {
         // Check if the domain contains the business name
         if (link.includes(businessNameLower.replace(/\s+/g, '')) ||
             link.includes(businessNameLower.replace(/\s+/g, '-'))) {
-          console.log(`Found potential website for ${businessName}: ${item.link}`);
+          console.log(`✓ Found website for ${businessName}: ${item.link}`);
           return true; // Website found!
         }
       }
     }
 
+    console.log(`✓ No website found in search results for ${businessName}`);
     return false; // No website found
   } catch (error) {
-    console.error(`Error verifying website for ${businessName}:`, error.message);
+    console.error(`❌ Error verifying website for ${businessName}:`, error.message);
     return false; // Assume no website if error
   }
 }
@@ -174,11 +177,12 @@ async function verifyWebsiteViaGoogleSearch(businessName, city, state) {
 // Lookup decision maker via Apollo API
 async function lookupDecisionMaker(businessName, city, state) {
   if (!apolloApiKey) {
-    console.log('Apollo API not configured, skipping decision maker lookup');
+    console.log('⚠️  Apollo API not configured, skipping decision maker lookup');
     return null;
   }
 
   try {
+    console.log(`👤 Apollo: Looking up decision maker for "${businessName}"`);
     // Search for the organization in Apollo
     const searchResponse = await axios.post(
       'https://api.apollo.io/v1/organizations/search',
@@ -199,6 +203,7 @@ async function lookupDecisionMaker(businessName, city, state) {
     if (searchResponse.data.organizations && searchResponse.data.organizations.length > 0) {
       const org = searchResponse.data.organizations[0];
       const orgId = org.id;
+      console.log(`✓ Found organization in Apollo: ${org.name}`);
 
       // Get people at the organization
       const peopleResponse = await axios.post(
@@ -227,17 +232,22 @@ async function lookupDecisionMaker(businessName, city, state) {
           phone = person.phone_numbers[0].sanitized_number || person.phone_numbers[0].raw_number || '';
         }
 
+        console.log(`✓ Found decision maker: ${person.first_name} ${person.last_name} (${person.title || 'N/A'})`);
         return {
           name: `${person.first_name} ${person.last_name}`,
           title: person.title || 'Decision Maker',
           phone: phone
         };
+      } else {
+        console.log(`ℹ️  No decision maker found for ${businessName}`);
       }
+    } else {
+      console.log(`ℹ️  Organization "${businessName}" not found in Apollo`);
     }
 
     return null; // No decision maker found
   } catch (error) {
-    console.error(`Error looking up decision maker for ${businessName}:`, error.message);
+    console.error(`❌ Apollo API error for ${businessName}:`, error.message);
     return null;
   }
 }
