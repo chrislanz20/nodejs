@@ -301,9 +301,9 @@ async function filterBusinessesWithoutWebsites(businesses) {
       name: details.name,
       city: city,
       businessPhone: details.formatted_phone_number || 'N/A',
-      dmName: decisionMaker ? decisionMaker.name : '',
-      dmTitle: decisionMaker ? decisionMaker.title : '',
-      dmPhone: decisionMaker ? decisionMaker.phone : '',
+      dmName: decisionMaker ? decisionMaker.name : 'N/A',
+      dmTitle: decisionMaker ? decisionMaker.title : 'N/A',
+      dmPhone: decisionMaker ? decisionMaker.phone : 'N/A',
     });
 
     if (decisionMaker) {
