@@ -209,7 +209,9 @@ async function lookupDecisionMaker(businessName, city, state) {
           organization_ids: [orgId],
           person_titles: ['owner', 'ceo', 'president', 'managing partner', 'founder', 'partner'],
           page: 1,
-          per_page: 1
+          per_page: 1,
+          reveal_personal_phones: true,
+          reveal_direct_phone: true
         },
         {
           headers: {
