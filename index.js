@@ -123,8 +123,8 @@ function extractState(formattedAddress) {
 
 // Verify if business has a website via Google Custom Search
 async function verifyWebsiteViaGoogleSearch(businessName, city, state) {
-  const customSearchApiKey = process.env.GOOGLE_CUSTOM_SEARCH_API_KEY;
-  const customSearchEngineId = process.env.GOOGLE_CUSTOM_SEARCH_ENGINE_ID;
+  const customSearchApiKey = process.env.CUSTOM_SEARCH_KEY;
+  const customSearchEngineId = process.env.CUSTOM_SEARCH_ID;
 
   if (!customSearchApiKey || !customSearchEngineId) {
     console.log('⚠️  Google Custom Search not configured, skipping verification');
@@ -170,7 +170,7 @@ async function verifyWebsiteViaGoogleSearch(businessName, city, state) {
 
 // Lookup decision maker via Apollo API
 async function lookupDecisionMaker(businessName, city, state) {
-  const apolloApiKey = process.env.APOLLO_API_KEY;
+  const apolloApiKey = process.env.APOLLO_KEY;
 
   if (!apolloApiKey) {
     console.log('⚠️  Apollo API not configured, skipping decision maker lookup');
@@ -506,13 +506,13 @@ app.post('/api/scrape', async (req, res) => {
 
     // Debug: Check API configuration
     console.log('🔧 API Configuration Check:');
-    console.log('  Custom Search Key:', process.env.GOOGLE_CUSTOM_SEARCH_API_KEY ? '✓ SET' : '❌ MISSING');
-    console.log('  Custom Search Engine ID:', process.env.GOOGLE_CUSTOM_SEARCH_ENGINE_ID ? '✓ SET' : '❌ MISSING');
-    console.log('  Apollo Key:', process.env.APOLLO_API_KEY ? '✓ SET' : '❌ MISSING');
+    console.log('  Custom Search Key:', process.env.CUSTOM_SEARCH_KEY ? '✓ SET' : '❌ MISSING');
+    console.log('  Custom Search Engine ID:', process.env.CUSTOM_SEARCH_ID ? '✓ SET' : '❌ MISSING');
+    console.log('  Apollo Key:', process.env.APOLLO_KEY ? '✓ SET' : '❌ MISSING');
 
     // Debug: Show all environment variable names (not values)
-    console.log('🔍 All env vars starting with GOOGLE_ or APOLLO_:');
-    Object.keys(process.env).filter(key => key.startsWith('GOOGLE_') || key.startsWith('APOLLO_')).forEach(key => {
+    console.log('🔍 All env vars starting with GOOGLE_ or APOLLO_ or CUSTOM_:');
+    Object.keys(process.env).filter(key => key.startsWith('GOOGLE_') || key.startsWith('APOLLO_') || key.startsWith('CUSTOM_')).forEach(key => {
       console.log(`  ${key}: ${process.env[key] ? 'has value' : 'empty'}`);
     });
 
