@@ -12,95 +12,215 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: linear-gradient(135deg, #232638 0%, #202F3F 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            color: #FFFFFF;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        .container {
-            background: white;
-            border-radius: 20px;
+        /* Subtle background lighting effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -20%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(89, 172, 183, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Top Header Bar */
+        .header {
+            background: #232638;
+            padding: 20px 40px;
+            border-bottom: 1px solid rgba(89, 172, 183, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 800px;
+            margin: 60px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Glassmorphic Card */
+        .card {
+            background: rgba(31, 48, 63, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(89, 172, 183, 0.15);
+            border-radius: 24px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
-            width: 100%;
-        }
-
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-
-        .subtitle {
-            color: #666;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             margin-bottom: 30px;
-            font-size: 14px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(89, 172, 183, 0.15);
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: #B0B3BC;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        /* Form Styling */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
-            color: #333;
+            margin-bottom: 10px;
+            color: #B0B3BC;
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         input {
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            padding: 16px 20px;
+            background: rgba(35, 38, 56, 0.8);
+            border: 1px solid rgba(89, 172, 183, 0.2);
+            border-radius: 12px;
             font-size: 16px;
-            transition: border-color 0.3s;
+            color: #FFFFFF;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input::placeholder {
+            color: rgba(176, 179, 188, 0.5);
         }
 
         input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #59ACB7;
+            box-shadow: 0 0 0 3px rgba(89, 172, 183, 0.1);
+            background: rgba(35, 38, 56, 0.95);
         }
 
+        .example {
+            color: rgba(176, 179, 188, 0.6);
+            font-size: 12px;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* Primary Button */
         button {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 16px;
+            background: #59ACB7;
+            color: #0D111B;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+            transform: scale(1.03);
+            box-shadow: 0 8px 24px rgba(89, 172, 183, 0.4);
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         button:active {
-            transform: translateY(0);
+            transform: scale(1.01);
         }
 
         button:disabled {
-            background: #ccc;
+            background: rgba(89, 172, 183, 0.3);
             cursor: not-allowed;
             transform: none;
         }
 
-        .results {
-            margin-top: 30px;
+        button:disabled:hover::before {
+            width: 0;
+            height: 0;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: rgba(89, 172, 183, 0.1);
+            border: 1px solid rgba(89, 172, 183, 0.2);
+            border-radius: 12px;
             padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .info-box h3 {
+            color: #59ACB7;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-box p {
+            color: #B0B3BC;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Results Section */
+        .results {
             display: none;
         }
 
@@ -109,157 +229,240 @@
         }
 
         .status {
-            margin-bottom: 15px;
-            padding: 12px;
-            background: white;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
+            margin-bottom: 16px;
+            padding: 16px 20px;
+            background: rgba(31, 48, 63, 0.8);
+            border-radius: 12px;
+            border-left: 3px solid #59ACB7;
+            color: #FFFFFF;
+            font-size: 14px;
         }
 
         .status.success {
             border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
         }
 
         .status.error {
             border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
         }
 
+        .status a {
+            color: #59ACB7;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .status a:hover {
+            color: #00D8FF;
+        }
+
+        /* Progress Bar */
         .progress {
-            margin: 15px 0;
+            margin: 24px 0;
         }
 
         .progress-bar {
             width: 100%;
-            height: 8px;
-            background: #e0e0e0;
+            height: 6px;
+            background: rgba(31, 48, 63, 0.8);
             border-radius: 10px;
             overflow: hidden;
+            position: relative;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(90deg, #59ACB7 0%, #00D8FF 100%);
             width: 0%;
-            transition: width 0.3s;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(89, 172, 183, 0.5);
         }
 
-        .info-box {
-            background: #e8f4f8;
-            border: 1px solid #b8dce8;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
+        /* Stats Grid */
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
         }
 
-        .info-box h3 {
-            color: #2c5f7a;
-            font-size: 14px;
+        .stat-card {
+            background: rgba(31, 48, 63, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(89, 172, 183, 0.2);
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: #59ACB7;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(89, 172, 183, 0.2);
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #59ACB7;
             margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(89, 172, 183, 0.3);
         }
 
-        .info-box p {
-            color: #456b7e;
-            font-size: 13px;
-            line-height: 1.5;
+        .stat-label {
+            font-size: 12px;
+            color: #B0B3BC;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
         }
 
-        .example {
-            color: #888;
-            font-size: 13px;
-            margin-top: 4px;
-        }
-
+        /* Spinner */
         .spinner {
             display: inline-block;
             width: 16px;
             height: 16px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(13, 17, 27, 0.3);
             border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s linear infinite;
-            margin-right: 8px;
+            border-top-color: #0D111B;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        .result-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 15px;
+        /* Pulsing dot animation (AI thinking indicator) */
+        .ai-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 10px;
         }
 
-        .stat-card {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
+        .ai-indicator span {
+            width: 6px;
+            height: 6px;
+            background: #59ACB7;
+            border-radius: 50%;
+            animation: pulse 1.4s ease-in-out infinite;
         }
 
-        .stat-number {
-            font-size: 32px;
-            font-weight: bold;
-            color: #667eea;
+        .ai-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
         }
 
-        .stat-label {
-            font-size: 12px;
-            color: #666;
-            margin-top: 4px;
+        .ai-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes pulse {
+            0%, 80%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            40% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 16px 20px;
+            }
+
+            .header h1 {
+                font-size: 14px;
+            }
+
+            .main-container {
+                margin: 40px auto;
+                padding: 0 16px;
+            }
+
+            .card {
+                padding: 28px 20px;
+                border-radius: 20px;
+            }
+
+            .card-title {
+                font-size: 20px;
+            }
+
+            .stat-number {
+                font-size: 36px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎯 Business Website Finder</h1>
-        <p class="subtitle">Find businesses without websites in your target area</p>
+    <!-- Top Header Bar -->
+    <div class="header">
+        <h1>Business Finder AI</h1>
+    </div>
 
-        <div class="info-box">
-            <h3>How it works:</h3>
-            <p>Enter an industry and ZIP code below. We'll search Google Places and find all businesses that DON'T have websites - perfect for your web development outreach!</p>
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="card">
+            <div class="card-title">Find Businesses Without Websites</div>
+            <div class="card-subtitle">Target businesses that need your web development services. Powered by AI-enhanced verification.</div>
+
+            <div class="info-box">
+                <h3>How It Works</h3>
+                <p>Enter an industry and ZIP code. Our system searches Google Places, verifies website status across multiple sources, and finds decision maker contact info.</p>
+            </div>
+
+            <form id="scraperForm">
+                <div class="form-group">
+                    <label for="industry">Industry or Business Type</label>
+                    <input
+                        type="text"
+                        id="industry"
+                        name="industry"
+                        placeholder="law firms, restaurants, dentists"
+                        required
+                    >
+                    <div class="example">Examples: "law firms", "plumbers", "italian restaurants"</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="zipCode">ZIP Code</label>
+                    <input
+                        type="text"
+                        id="zipCode"
+                        name="zipCode"
+                        placeholder="02180"
+                        pattern="[0-9]{5}"
+                        required
+                    >
+                    <div class="example">5-digit US ZIP code</div>
+                </div>
+
+                <button type="submit" id="submitBtn">
+                    <span>Start Search</span>
+                </button>
+            </form>
         </div>
 
-        <form id="scraperForm">
-            <div class="form-group">
-                <label for="industry">Industry or Business Type</label>
-                <input
-                    type="text"
-                    id="industry"
-                    name="industry"
-                    placeholder="e.g., law firms, restaurants, dentists"
-                    required
-                >
-                <div class="example">Examples: "law firms", "plumbers", "italian restaurants"</div>
-            </div>
-
-            <div class="form-group">
-                <label for="zipCode">ZIP Code</label>
-                <input
-                    type="text"
-                    id="zipCode"
-                    name="zipCode"
-                    placeholder="e.g., 02180"
-                    pattern="[0-9]{5}"
-                    required
-                >
-                <div class="example">5-digit US ZIP code</div>
-            </div>
-
-            <button type="submit" id="submitBtn">
-                Start Search
-            </button>
-        </form>
-
         <div id="results" class="results">
-            <div id="statusMessages"></div>
-            <div class="progress">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
+            <div class="card">
+                <div id="statusMessages"></div>
+                <div class="progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
                 </div>
+                <div id="resultStats"></div>
             </div>
-            <div id="resultStats"></div>
         </div>
     </div>
 
@@ -271,7 +474,7 @@
         const progressFill = document.getElementById('progressFill');
         const resultStats = document.getElementById('resultStats');
 
-        let originalButtonText = 'Start Search';
+        let originalButtonText = '<span>Start Search</span>';
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -287,9 +490,9 @@
 
             // Disable button
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner"></span>Searching...';
+            submitBtn.innerHTML = '<span class="spinner"></span>Analyzing<div class="ai-indicator"><span></span><span></span><span></span></div>';
 
-            addStatus('Starting search...', 'info');
+            addStatus('Initializing search parameters...', 'info');
             progressFill.style.width = '10%';
 
             try {
@@ -305,24 +508,24 @@
 
                 if (response.ok) {
                     progressFill.style.width = '100%';
-                    addStatus(`✓ Success! Found ${data.businessesWithoutWebsites} businesses without websites`, 'success');
+                    addStatus(`✓ Complete! Found ${data.businessesWithoutWebsites} businesses without websites`, 'success');
 
                     // Show stats
                     resultStats.innerHTML = `
                         <div class="result-stats">
                             <div class="stat-card">
                                 <div class="stat-number">${data.totalBusinesses}</div>
-                                <div class="stat-label">Total Businesses</div>
+                                <div class="stat-label">Total Found</div>
                             </div>
                             <div class="stat-card">
                                 <div class="stat-number">${data.businessesWithoutWebsites}</div>
-                                <div class="stat-label">Without Websites</div>
+                                <div class="stat-label">Need Websites</div>
                             </div>
                         </div>
                     `;
 
                     if (data.sheetUrl) {
-                        addStatus(`<a href="${data.sheetUrl}" target="_blank" style="color: #667eea; text-decoration: underline;">View Results in Google Sheets →</a>`, 'success');
+                        addStatus(`<a href="${data.sheetUrl}" target="_blank">→ Open Google Sheets</a>`, 'success');
                     }
                 } else {
                     addStatus(`Error: ${data.error}`, 'error');
@@ -345,13 +548,13 @@
             statusMessages.appendChild(statusDiv);
         }
 
-        // Update progress every few seconds while searching
+        // Smooth progress animation
         let progressInterval;
         form.addEventListener('submit', () => {
             let progress = 10;
             progressInterval = setInterval(() => {
                 if (progress < 90) {
-                    progress += 5;
+                    progress += 3;
                     progressFill.style.width = progress + '%';
                 }
             }, 1000);
