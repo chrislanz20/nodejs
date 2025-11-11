@@ -351,7 +351,7 @@ async function writeToGoogleSheets(businesses, industry, zipCode) {
   // If new sheet, add headers
   if (isNewSheet) {
     const headers = [
-      ['Business Name', 'City', 'Phone Number', 'DM Name', 'DM Title', 'DM Phone', 'Industry', 'ZIP Code', 'Called?', 'Notes']
+      ['Business Name', 'City', 'Phone Number', 'Industry', 'ZIP Code', 'DM Name', 'DM Title', 'DM Phone', 'Called?', 'Notes']
     ];
 
     await sheetsClient.spreadsheets.values.update({
@@ -400,12 +400,12 @@ async function writeToGoogleSheets(businesses, industry, zipCode) {
   const dataRows = businesses.map(b => [
     b.name,           // Business Name
     b.city,           // City
-    b.businessPhone,  // Business Phone
+    b.businessPhone,  // Phone Number
+    industry,         // Industry
+    zipCode,          // ZIP Code
     b.dmName,         // DM Name
     b.dmTitle,        // DM Title
     b.dmPhone,        // DM Phone
-    industry,         // Industry
-    zipCode,          // ZIP Code
     false,            // Called? (checkbox)
     ''                // Notes
   ]);
