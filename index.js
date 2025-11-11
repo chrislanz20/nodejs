@@ -227,13 +227,15 @@ async function lookupDecisionMaker(businessName, city, state) {
         let phone = '';
         if (person.phone_numbers && person.phone_numbers.length > 0) {
           phone = person.phone_numbers[0].sanitized_number || person.phone_numbers[0].raw_number || '';
+          console.log(`✓ Found decision maker: ${person.first_name} ${person.last_name} (${person.title || 'N/A'}) - Phone: ${phone || 'NOT PROVIDED BY APOLLO'}`);
+        } else {
+          console.log(`✓ Found decision maker: ${person.first_name} ${person.last_name} (${person.title || 'N/A'}) - Phone: NOT PROVIDED BY APOLLO`);
         }
 
-        console.log(`✓ Found decision maker: ${person.first_name} ${person.last_name} (${person.title || 'N/A'})`);
         return {
           name: `${person.first_name} ${person.last_name}`,
           title: person.title || 'Decision Maker',
-          phone: phone
+          phone: phone || 'N/A'
         };
       } else {
         console.log(`ℹ️  No decision maker found for ${businessName}`);
