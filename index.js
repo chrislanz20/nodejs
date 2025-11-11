@@ -12,24 +12,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Initialize Google APIs
 const placesClient = new Client({});
-const placesApiKey = process.env.GOOGLE_PLACES_API_KEY;
-const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-
-// Google Custom Search API
-const customSearchApiKey = process.env.GOOGLE_CUSTOM_SEARCH_API_KEY;
-const customSearchEngineId = process.env.GOOGLE_CUSTOM_SEARCH_ENGINE_ID;
-
-// Apollo API
-const apolloApiKey = process.env.APOLLO_API_KEY;
 const axios = require('axios');
-
-// Debug: Log API configuration status on startup
-console.log('🔧 API Configuration Status:');
-console.log('  Google Places API:', placesApiKey ? '✓ Configured' : '❌ Missing');
-console.log('  Google Custom Search API Key:', customSearchApiKey ? '✓ Configured' : '❌ Missing');
-console.log('  Google Custom Search Engine ID:', customSearchEngineId ? '✓ Configured' : '❌ Missing');
-console.log('  Apollo API Key:', apolloApiKey ? '✓ Configured' : '❌ Missing');
-console.log('  Google Sheet ID:', spreadsheetId ? '✓ Configured' : '❌ Missing');
 
 // Initialize Google Sheets client
 let sheetsClient;
@@ -67,7 +50,7 @@ async function searchBusinesses(industry, zipCode) {
     const requestParams = {
       params: {
         query: `${industry} in ${zipCode}`,
-        key: placesApiKey,
+        key: process.env.GOOGLE_PLACES_API_KEY,
       }
     };
 
@@ -95,7 +78,7 @@ async function getBusinessDetails(placeId) {
       params: {
         place_id: placeId,
         fields: 'name,formatted_address,formatted_phone_number,website,rating,user_ratings_total',
-        key: placesApiKey,
+        key: process.env.GOOGLE_PLACES_API_KEY,
       }
     });
     return response.data.result;
@@ -140,6 +123,9 @@ function extractState(formattedAddress) {
 
 // Verify if business has a website via Google Custom Search
 async function verifyWebsiteViaGoogleSearch(businessName, city, state) {
+  const customSearchApiKey = process.env.GOOGLE_CUSTOM_SEARCH_API_KEY;
+  const customSearchEngineId = process.env.GOOGLE_CUSTOM_SEARCH_ENGINE_ID;
+
   if (!customSearchApiKey || !customSearchEngineId) {
     console.log('⚠️  Google Custom Search not configured, skipping verification');
     return false; // Assume no website if we can't verify
@@ -184,6 +170,8 @@ async function verifyWebsiteViaGoogleSearch(businessName, city, state) {
 
 // Lookup decision maker via Apollo API
 async function lookupDecisionMaker(businessName, city, state) {
+  const apolloApiKey = process.env.APOLLO_API_KEY;
+
   if (!apolloApiKey) {
     console.log('⚠️  Apollo API not configured, skipping decision maker lookup');
     return null;
@@ -327,6 +315,7 @@ async function filterBusinessesWithoutWebsites(businesses) {
 
 // Write results to Google Sheets
 async function writeToGoogleSheets(businesses, industry, zipCode) {
+  const spreadsheetId = process.env.GOOGLE_SHEET_ID;
   const MASTER_SHEET_NAME = 'All Businesses';
   const timestamp = new Date().toLocaleString();
 
@@ -517,9 +506,9 @@ app.post('/api/scrape', async (req, res) => {
 
     // Debug: Check API configuration
     console.log('🔧 API Configuration Check:');
-    console.log('  Custom Search Key:', customSearchApiKey ? '✓ SET' : '❌ MISSING');
-    console.log('  Custom Search Engine ID:', customSearchEngineId ? '✓ SET' : '❌ MISSING');
-    console.log('  Apollo Key:', apolloApiKey ? '✓ SET' : '❌ MISSING');
+    console.log('  Custom Search Key:', process.env.GOOGLE_CUSTOM_SEARCH_API_KEY ? '✓ SET' : '❌ MISSING');
+    console.log('  Custom Search Engine ID:', process.env.GOOGLE_CUSTOM_SEARCH_ENGINE_ID ? '✓ SET' : '❌ MISSING');
+    console.log('  Apollo Key:', process.env.APOLLO_API_KEY ? '✓ SET' : '❌ MISSING');
 
     // Debug: Show all environment variable names (not values)
     console.log('🔍 All env vars starting with GOOGLE_ or APOLLO_:');
@@ -560,7 +549,7 @@ app.post('/api/scrape', async (req, res) => {
         totalBusinesses: businesses.length,
         businessesWithoutWebsites: businessesWithoutWebsites.length,
         sheetName,
-        sheetUrl: `https://docs.google.com/spreadsheets/d/${spreadsheetId}`
+        sheetUrl: `https://docs.google.com/spreadsheets/d/${process.env.GOOGLE_SHEET_ID}`
       });
     } else {
       return res.json({
