@@ -505,15 +505,15 @@ app.post('/api/scrape', async (req, res) => {
     // Ensure sheets client is initialized
     await ensureSheetsClient();
 
-    // Debug: Check API configuration (v2)
-    console.log('🔧 API Configuration Check:');
-    console.log('  Custom Search Key:', process.env.CUSTOM_SEARCH_KEY ? '✓ SET' : '❌ MISSING');
-    console.log('  Custom Search Engine ID:', process.env.CUSTOM_SEARCH_ID ? '✓ SET' : '❌ MISSING');
-    console.log('  Apollo Key:', process.env.APOLLO_KEY ? '✓ SET' : '❌ MISSING');
+    // Debug: Check API configuration
+    console.log('🔧 API Configuration Check (v3):');
+    console.log('  Places API Key:', process.env.GOOGLE_PLACES_API_KEY ? '✓ SET' : '❌ MISSING');
+    console.log('  Search Engine ID:', process.env.SEARCH_ENGINE_ID ? '✓ SET' : '❌ MISSING');
+    console.log('  Apollo API:', process.env.APOLLO_API ? '✓ SET' : '❌ MISSING');
 
-    // Debug: Show all environment variable names (not values)
-    console.log('🔍 All env vars starting with GOOGLE_ or APOLLO_ or CUSTOM_:');
-    Object.keys(process.env).filter(key => key.startsWith('GOOGLE_') || key.startsWith('APOLLO_') || key.startsWith('CUSTOM_')).forEach(key => {
+    // Debug: Show ALL environment variable names (not values)
+    console.log('🔍 ALL environment variables available:');
+    Object.keys(process.env).sort().forEach(key => {
       console.log(`  ${key}: ${process.env[key] ? 'has value' : 'empty'}`);
     });
 
