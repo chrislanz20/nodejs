@@ -504,7 +504,7 @@ app.post('/api/scrape', async (req, res) => {
     // Ensure sheets client is initialized
     await ensureSheetsClient();
 
-    // Debug: Check API configuration
+    // Debug: Check API configuration (v2)
     console.log('🔧 API Configuration Check:');
     console.log('  Custom Search Key:', process.env.CUSTOM_SEARCH_KEY ? '✓ SET' : '❌ MISSING');
     console.log('  Custom Search Engine ID:', process.env.CUSTOM_SEARCH_ID ? '✓ SET' : '❌ MISSING');
