@@ -23,6 +23,14 @@ const customSearchEngineId = process.env.GOOGLE_CUSTOM_SEARCH_ENGINE_ID;
 const apolloApiKey = process.env.APOLLO_API_KEY;
 const axios = require('axios');
 
+// Debug: Log API configuration status on startup
+console.log('🔧 API Configuration Status:');
+console.log('  Google Places API:', placesApiKey ? '✓ Configured' : '❌ Missing');
+console.log('  Google Custom Search API Key:', customSearchApiKey ? '✓ Configured' : '❌ Missing');
+console.log('  Google Custom Search Engine ID:', customSearchEngineId ? '✓ Configured' : '❌ Missing');
+console.log('  Apollo API Key:', apolloApiKey ? '✓ Configured' : '❌ Missing');
+console.log('  Google Sheet ID:', spreadsheetId ? '✓ Configured' : '❌ Missing');
+
 // Initialize Google Sheets client
 let sheetsClient;
 async function initializeSheetsClient() {
