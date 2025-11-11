@@ -123,8 +123,9 @@ function extractState(formattedAddress) {
 
 // Verify if business has a website via Google Custom Search
 async function verifyWebsiteViaGoogleSearch(businessName, city, state) {
-  const customSearchApiKey = process.env.CUSTOM_SEARCH_KEY || 'AIzaSyA546wawf_vgvA9ajyK4StkNeJ5I-018sg';
-  const customSearchEngineId = process.env.CUSTOM_SEARCH_ID || 'b583eb0a98d234fac';
+  // Use same API key as Places (it's unrestricted)
+  const customSearchApiKey = process.env.GOOGLE_PLACES_API_KEY;
+  const customSearchEngineId = process.env.SEARCH_ENGINE_ID;
 
   if (!customSearchApiKey || !customSearchEngineId) {
     console.log('⚠️  Google Custom Search not configured, skipping verification');
@@ -170,7 +171,7 @@ async function verifyWebsiteViaGoogleSearch(businessName, city, state) {
 
 // Lookup decision maker via Apollo API
 async function lookupDecisionMaker(businessName, city, state) {
-  const apolloApiKey = process.env.APOLLO_KEY || 'g6V9QgQ7OLpoklPp3uXTWg';
+  const apolloApiKey = process.env.APOLLO_API;
 
   if (!apolloApiKey) {
     console.log('⚠️  Apollo API not configured, skipping decision maker lookup');
