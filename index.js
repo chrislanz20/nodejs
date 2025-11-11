@@ -351,7 +351,7 @@ async function writeToGoogleSheets(businesses, industry, zipCode) {
   // If new sheet, add headers
   if (isNewSheet) {
     const headers = [
-      ['Business Name', 'City', 'Business Phone', 'DM Name', 'DM Title', 'DM Phone', 'Industry', 'ZIP Code', 'Called?', 'Notes']
+      ['Business Name', 'City', 'Phone Number', 'DM Name', 'DM Title', 'DM Phone', 'Industry', 'ZIP Code', 'Called?', 'Notes']
     ];
 
     await sheetsClient.spreadsheets.values.update({
