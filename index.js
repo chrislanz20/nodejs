@@ -521,6 +521,12 @@ app.post('/api/scrape', async (req, res) => {
     console.log('  Custom Search Engine ID:', customSearchEngineId ? '✓ SET' : '❌ MISSING');
     console.log('  Apollo Key:', apolloApiKey ? '✓ SET' : '❌ MISSING');
 
+    // Debug: Show all environment variable names (not values)
+    console.log('🔍 All env vars starting with GOOGLE_ or APOLLO_:');
+    Object.keys(process.env).filter(key => key.startsWith('GOOGLE_') || key.startsWith('APOLLO_')).forEach(key => {
+      console.log(`  ${key}: ${process.env[key] ? 'has value' : 'empty'}`);
+    });
+
     const { industry, zipCode } = req.body;
 
     if (!industry || !zipCode) {
