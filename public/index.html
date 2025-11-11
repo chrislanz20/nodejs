@@ -584,6 +584,7 @@
         const resultStats = document.getElementById('resultStats');
 
         let originalButtonText = '<span class="button-icon">🚀</span><span>START SEARCH</span>';
+        let progressInterval = null;
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -597,12 +598,35 @@
             resultStats.innerHTML = '';
             progressFill.style.width = '0%';
 
+            // Clear any existing interval
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+
             // Disable button
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="spinner"></span>Searching... Please wait';
 
             addStatus('🔍 Searching for businesses...', 'info');
-            progressFill.style.width = '10%';
+
+            // Start smooth progress animation
+            let progress = 0;
+            progressFill.style.width = '0%';
+
+            progressInterval = setInterval(() => {
+                if (progress < 85) {
+                    // Fast progress at start, then slow down
+                    if (progress < 30) {
+                        progress += 5; // Fast: 0-30% in 1.2 seconds
+                    } else if (progress < 60) {
+                        progress += 3; // Medium: 30-60% in 2 seconds
+                    } else {
+                        progress += 1.5; // Slow: 60-85% in 3.3 seconds
+                    }
+                    progressFill.style.width = progress + '%';
+                }
+            }, 200); // Update every 200ms for smooth animation
 
             try {
                 const response = await fetch('/api/scrape', {
@@ -615,7 +639,14 @@
 
                 const data = await response.json();
 
+                // Clear the interval
+                if (progressInterval) {
+                    clearInterval(progressInterval);
+                    progressInterval = null;
+                }
+
                 if (response.ok) {
+                    // Complete the progress bar
                     progressFill.style.width = '100%';
                     addStatus(`✅ Done! Found ${data.businessesWithoutWebsites} businesses without websites`, 'success');
 
@@ -641,6 +672,11 @@
                     progressFill.style.width = '0%';
                 }
             } catch (error) {
+                // Clear the interval on error
+                if (progressInterval) {
+                    clearInterval(progressInterval);
+                    progressInterval = null;
+                }
                 addStatus(`❌ Something went wrong: ${error.message}`, 'error');
                 progressFill.style.width = '0%';
             } finally {
@@ -657,21 +693,11 @@
             statusMessages.appendChild(statusDiv);
         }
 
-        // Smooth progress animation
-        let progressInterval;
-        form.addEventListener('submit', () => {
-            let progress = 10;
-            progressInterval = setInterval(() => {
-                if (progress < 90) {
-                    progress += 3;
-                    progressFill.style.width = progress + '%';
-                }
-            }, 1000);
-        });
-
-        // Clear interval when done
+        // Clear interval when page unloads
         window.addEventListener('beforeunload', () => {
-            clearInterval(progressInterval);
+            if (progressInterval) {
+                clearInterval(progressInterval);
+            }
         });
     </script>
 </body>
