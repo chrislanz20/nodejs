@@ -15,6 +15,14 @@ const placesClient = new Client({});
 const placesApiKey = process.env.GOOGLE_PLACES_API_KEY;
 const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
+// Google Custom Search API
+const customSearchApiKey = process.env.GOOGLE_CUSTOM_SEARCH_API_KEY;
+const customSearchEngineId = process.env.GOOGLE_CUSTOM_SEARCH_ENGINE_ID;
+
+// Apollo API
+const apolloApiKey = process.env.APOLLO_API_KEY;
+const axios = require('axios');
+
 // Initialize Google Sheets client
 let sheetsClient;
 async function initializeSheetsClient() {
@@ -104,23 +112,196 @@ function extractCity(formattedAddress) {
   return 'N/A';
 }
 
+// Extract state from address
+function extractState(formattedAddress) {
+  if (!formattedAddress) return '';
+
+  // Address format is usually: "Street, City, State ZIP, Country"
+  const parts = formattedAddress.split(',');
+
+  // State is typically the third part
+  if (parts.length >= 3) {
+    // Extract just the state abbreviation (e.g., "MA" from "MA 02180")
+    const statePart = parts[2].trim();
+    const stateMatch = statePart.match(/^([A-Z]{2})/);
+    return stateMatch ? stateMatch[1] : '';
+  }
+
+  return '';
+}
+
+// Verify if business has a website via Google Custom Search
+async function verifyWebsiteViaGoogleSearch(businessName, city, state) {
+  if (!customSearchApiKey || !customSearchEngineId) {
+    console.log('Google Custom Search not configured, skipping verification');
+    return false; // Assume no website if we can't verify
+  }
+
+  try {
+    const query = `"${businessName}" "${city}" "${state}" website`;
+    const url = `https://www.googleapis.com/customsearch/v1?key=${customSearchApiKey}&cx=${customSearchEngineId}&q=${encodeURIComponent(query)}&num=5`;
+
+    const response = await axios.get(url);
+
+    if (response.data.items && response.data.items.length > 0) {
+      // Check if any of the top results contain a website for this business
+      const results = response.data.items;
+
+      for (const item of results) {
+        const title = item.title.toLowerCase();
+        const snippet = item.snippet.toLowerCase();
+        const link = item.link.toLowerCase();
+
+        // Look for indicators this is an official website
+        const businessNameLower = businessName.toLowerCase();
+
+        // Check if the domain contains the business name
+        if (link.includes(businessNameLower.replace(/\s+/g, '')) ||
+            link.includes(businessNameLower.replace(/\s+/g, '-'))) {
+          console.log(`Found potential website for ${businessName}: ${item.link}`);
+          return true; // Website found!
+        }
+      }
+    }
+
+    return false; // No website found
+  } catch (error) {
+    console.error(`Error verifying website for ${businessName}:`, error.message);
+    return false; // Assume no website if error
+  }
+}
+
+// Lookup decision maker via Apollo API
+async function lookupDecisionMaker(businessName, city, state) {
+  if (!apolloApiKey) {
+    console.log('Apollo API not configured, skipping decision maker lookup');
+    return null;
+  }
+
+  try {
+    // Search for the organization in Apollo
+    const searchResponse = await axios.post(
+      'https://api.apollo.io/v1/organizations/search',
+      {
+        q_organization_name: businessName,
+        page: 1,
+        per_page: 1
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'X-Api-Key': apolloApiKey
+        }
+      }
+    );
+
+    if (searchResponse.data.organizations && searchResponse.data.organizations.length > 0) {
+      const org = searchResponse.data.organizations[0];
+      const orgId = org.id;
+
+      // Get people at the organization
+      const peopleResponse = await axios.post(
+        'https://api.apollo.io/v1/mixed_people/search',
+        {
+          organization_ids: [orgId],
+          person_titles: ['owner', 'ceo', 'president', 'managing partner', 'founder', 'partner'],
+          page: 1,
+          per_page: 1
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache',
+            'X-Api-Key': apolloApiKey
+          }
+        }
+      );
+
+      if (peopleResponse.data.people && peopleResponse.data.people.length > 0) {
+        const person = peopleResponse.data.people[0];
+
+        // Get phone number if available
+        let phone = '';
+        if (person.phone_numbers && person.phone_numbers.length > 0) {
+          phone = person.phone_numbers[0].sanitized_number || person.phone_numbers[0].raw_number || '';
+        }
+
+        return {
+          name: `${person.first_name} ${person.last_name}`,
+          title: person.title || 'Decision Maker',
+          phone: phone
+        };
+      }
+    }
+
+    return null; // No decision maker found
+  } catch (error) {
+    console.error(`Error looking up decision maker for ${businessName}:`, error.message);
+    return null;
+  }
+}
+
 // Filter businesses without websites
 async function filterBusinessesWithoutWebsites(businesses) {
   const businessesWithoutWebsites = [];
 
-  for (const business of businesses) {
+  for (let i = 0; i < businesses.length; i++) {
+    const business = businesses[i];
+
+    // Show progress
+    if ((i + 1) % 5 === 0) {
+      console.log(`Checking ${i + 1}/${businesses.length} businesses...`);
+    }
+
     const details = await getBusinessDetails(business.place_id);
 
-    if (details && !details.website) {
-      businessesWithoutWebsites.push({
-        name: details.name,
-        city: extractCity(details.formatted_address),
-        phone: details.formatted_phone_number || 'N/A',
-      });
+    if (!details) {
+      continue; // Skip if we couldn't get details
+    }
+
+    // Step 1: Check if website is listed in Google Places
+    if (details.website) {
+      console.log(`${details.name}: Has website in Google Places (${details.website}) - SKIPPING`);
+      await new Promise(resolve => setTimeout(resolve, 100));
+      continue; // Skip this business
+    }
+
+    console.log(`${details.name}: No website in Google Places - Verifying...`);
+
+    // Step 2: Verify via Google Custom Search
+    const city = extractCity(details.formatted_address);
+    const state = extractState(details.formatted_address);
+
+    const hasWebsiteViaSearch = await verifyWebsiteViaGoogleSearch(details.name, city, state);
+
+    if (hasWebsiteViaSearch) {
+      console.log(`${details.name}: Found website via Google Search - SKIPPING`);
+      await new Promise(resolve => setTimeout(resolve, 100));
+      continue; // Skip this business
+    }
+
+    console.log(`${details.name}: No website found - Adding to list`);
+
+    // Step 3: Lookup decision maker via Apollo
+    const decisionMaker = await lookupDecisionMaker(details.name, city, state);
+
+    // Add to list with all information
+    businessesWithoutWebsites.push({
+      name: details.name,
+      city: city,
+      businessPhone: details.formatted_phone_number || 'N/A',
+      dmName: decisionMaker ? decisionMaker.name : '',
+      dmTitle: decisionMaker ? decisionMaker.title : '',
+      dmPhone: decisionMaker ? decisionMaker.phone : '',
+    });
+
+    if (decisionMaker) {
+      console.log(`${details.name}: Found decision maker - ${decisionMaker.name} (${decisionMaker.title})`);
     }
 
     // Rate limiting
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 200));
   }
 
   return businessesWithoutWebsites;
@@ -170,7 +351,7 @@ async function writeToGoogleSheets(businesses, industry, zipCode) {
   // If new sheet, add headers
   if (isNewSheet) {
     const headers = [
-      ['Business Name', 'City', 'Phone Number', 'Industry', 'ZIP Code', 'Called?', 'Notes']
+      ['Business Name', 'City', 'Business Phone', 'DM Name', 'DM Title', 'DM Phone', 'Industry', 'ZIP Code', 'Called?', 'Notes']
     ];
 
     await sheetsClient.spreadsheets.values.update({
@@ -219,7 +400,10 @@ async function writeToGoogleSheets(businesses, industry, zipCode) {
   const dataRows = businesses.map(b => [
     b.name,           // Business Name
     b.city,           // City
-    b.phone,          // Phone Number
+    b.businessPhone,  // Business Phone
+    b.dmName,         // DM Name
+    b.dmTitle,        // DM Title
+    b.dmPhone,        // DM Phone
     industry,         // Industry
     zipCode,          // ZIP Code
     false,            // Called? (checkbox)
@@ -238,15 +422,15 @@ async function writeToGoogleSheets(businesses, industry, zipCode) {
 
   // Add checkboxes and conditional formatting for new rows
   const requests = [
-    // Add checkboxes to the "Called?" column (column F, index 5)
+    // Add checkboxes to the "Called?" column (column I, index 8)
     {
       setDataValidation: {
         range: {
           sheetId: sheetId,
           startRowIndex: nextRow - 1,
           endRowIndex: nextRow - 1 + businesses.length,
-          startColumnIndex: 5,
-          endColumnIndex: 6
+          startColumnIndex: 8,
+          endColumnIndex: 9
         },
         rule: {
           condition: {
@@ -265,13 +449,13 @@ async function writeToGoogleSheets(businesses, industry, zipCode) {
             startRowIndex: nextRow - 1,
             endRowIndex: nextRow - 1 + businesses.length,
             startColumnIndex: 0,
-            endColumnIndex: 7
+            endColumnIndex: 10
           }],
           booleanRule: {
             condition: {
               type: 'CUSTOM_FORMULA',
               values: [{
-                userEnteredValue: `=$F${nextRow}=TRUE`
+                userEnteredValue: `=$I${nextRow}=TRUE`
               }]
             },
             format: {
