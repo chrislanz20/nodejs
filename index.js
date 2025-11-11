@@ -515,6 +515,12 @@ app.post('/api/scrape', async (req, res) => {
     // Ensure sheets client is initialized
     await ensureSheetsClient();
 
+    // Debug: Check API configuration
+    console.log('🔧 API Configuration Check:');
+    console.log('  Custom Search Key:', customSearchApiKey ? '✓ SET' : '❌ MISSING');
+    console.log('  Custom Search Engine ID:', customSearchEngineId ? '✓ SET' : '❌ MISSING');
+    console.log('  Apollo Key:', apolloApiKey ? '✓ SET' : '❌ MISSING');
+
     const { industry, zipCode } = req.body;
 
     if (!industry || !zipCode) {
