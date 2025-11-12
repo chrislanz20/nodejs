@@ -1,18 +1,42 @@
 {
-  "name": "retell-greeting-proxy",
-  "private": true,
+  "name": "fitness-coach-ai",
   "version": "1.0.0",
-  "main": "server.js",
-  "type": "commonjs",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postinstall": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "create-admin": "node scripts/create-admin.js"
   },
-  "engines": {
-    "node": ">=18"
-  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "axios": "^1.7.4",
-    "cors": "^2.8.5",
-    "express": "^4.19.2"
+    "@anthropic-ai/sdk": "^0.68.0",
+    "@auth/prisma-adapter": "^2.11.1",
+    "@prisma/client": "^6.19.0",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.3",
+    "@types/react-dom": "^19.2.2",
+    "autoprefixer": "^10.4.22",
+    "bcryptjs": "^3.0.3",
+    "chromadb": "^3.1.2",
+    "next": "^16.0.1",
+    "next-auth": "^4.24.13",
+    "openai": "^6.8.1",
+    "postcss": "^8.5.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^4.1.17",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "prisma": "^6.19.0"
   }
 }
