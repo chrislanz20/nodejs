@@ -36,17 +36,22 @@ export async function addDocumentToVectorStore(
     [key: string]: any;
   }
 ) {
-  const collection = await initializeVectorStore();
-  const embedding = await generateEmbedding(text);
+  try {
+    const collection = await initializeVectorStore();
+    const embedding = await generateEmbedding(text);
 
-  await collection.add({
-    ids: [id],
-    embeddings: [embedding],
-    documents: [text],
-    metadatas: [metadata],
-  });
+    await collection.add({
+      ids: [id],
+      embeddings: [embedding],
+      documents: [text],
+      metadatas: [metadata],
+    });
 
-  return id;
+    return id;
+  } catch (error) {
+    console.warn('ChromaDB not available, skipping vector storage:', error);
+    return id;
+  }
 }
 
 export async function searchSimilarDocuments(
@@ -58,27 +63,36 @@ export async function searchSimilarDocuments(
   metadata: any;
   similarity: number;
 }>> {
-  const collection = await initializeVectorStore();
-  const queryEmbedding = await generateEmbedding(query);
+  try {
+    const collection = await initializeVectorStore();
+    const queryEmbedding = await generateEmbedding(query);
 
-  const results = await collection.query({
-    queryEmbeddings: [queryEmbedding],
-    nResults: limit,
-  });
+    const results = await collection.query({
+      queryEmbeddings: [queryEmbedding],
+      nResults: limit,
+    });
 
-  if (!results.ids[0] || !results.documents[0] || !results.metadatas[0] || !results.distances[0]) {
+    if (!results.ids[0] || !results.documents[0] || !results.metadatas[0] || !results.distances[0]) {
+      return [];
+    }
+
+    return results.ids[0].map((id, i) => ({
+      id,
+      content: results.documents[0]![i] as string,
+      metadata: results.metadatas[0]![i],
+      similarity: 1 - (results.distances[0]![i] || 0), // Convert distance to similarity
+    }));
+  } catch (error) {
+    console.warn('ChromaDB not available, returning empty results:', error);
     return [];
   }
-
-  return results.ids[0].map((id, i) => ({
-    id,
-    content: results.documents[0]![i] as string,
-    metadata: results.metadatas[0]![i],
-    similarity: 1 - (results.distances[0]![i] || 0), // Convert distance to similarity
-  }));
 }
 
 export async function deleteDocumentFromVectorStore(id: string) {
-  const collection = await initializeVectorStore();
-  await collection.delete({ ids: [id] });
+  try {
+    const collection = await initializeVectorStore();
+    await collection.delete({ ids: [id] });
+  } catch (error) {
+    console.warn('ChromaDB not available, skipping vector deletion:', error);
+  }
 }
