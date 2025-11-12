@@ -1,20 +1,22 @@
-import { ChromaClient } from 'chromadb';
 import { generateEmbedding } from './embeddings';
 
 const chromaUrl = process.env.CHROMA_URL || 'http://localhost:8000';
-let chromaClient: ChromaClient | null = null;
 
-export async function getChromaClient() {
-  if (!chromaClient) {
-    chromaClient = new ChromaClient({ path: chromaUrl });
+async function getChromaClient() {
+  try {
+    const { ChromaClient } = await import('chromadb');
+    return new ChromaClient({ path: chromaUrl });
+  } catch (error) {
+    console.warn('ChromaDB not available:', error);
+    return null;
   }
-  return chromaClient;
 }
 
 const COLLECTION_NAME = 'coach_knowledge';
 
 export async function initializeVectorStore() {
   const client = await getChromaClient();
+  if (!client) return null;
 
   try {
     return await client.getOrCreateCollection({
@@ -23,7 +25,7 @@ export async function initializeVectorStore() {
     });
   } catch (error) {
     console.error('Error initializing vector store:', error);
-    throw error;
+    return null;
   }
 }
 
@@ -38,6 +40,11 @@ export async function addDocumentToVectorStore(
 ) {
   try {
     const collection = await initializeVectorStore();
+    if (!collection) {
+      console.warn('ChromaDB not available, skipping vector storage');
+      return id;
+    }
+
     const embedding = await generateEmbedding(text);
 
     await collection.add({
@@ -65,6 +72,11 @@ export async function searchSimilarDocuments(
 }>> {
   try {
     const collection = await initializeVectorStore();
+    if (!collection) {
+      console.warn('ChromaDB not available, returning empty results');
+      return [];
+    }
+
     const queryEmbedding = await generateEmbedding(query);
 
     const results = await collection.query({
@@ -91,6 +103,10 @@ export async function searchSimilarDocuments(
 export async function deleteDocumentFromVectorStore(id: string) {
   try {
     const collection = await initializeVectorStore();
+    if (!collection) {
+      console.warn('ChromaDB not available, skipping vector deletion');
+      return;
+    }
     await collection.delete({ ids: [id] });
   } catch (error) {
     console.warn('ChromaDB not available, skipping vector deletion:', error);
