@@ -25,7 +25,6 @@
     "@types/react-dom": "^19.2.2",
     "autoprefixer": "^10.4.22",
     "bcryptjs": "^3.0.3",
-    "chromadb": "^3.1.2",
     "next": "^16.0.1",
     "next-auth": "^4.24.13",
     "openai": "^6.8.1",
