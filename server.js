@@ -247,12 +247,6 @@ app.get("/api/agent-summary", async (req, res) => {
     console.log(`Total calls fetched: ${allCalls.length}`);
     console.log(`Total pages fetched: ${pageCount}`);
     console.log(`Average calls per page: ${Math.round(allCalls.length / pageCount)}`);
-    if (totalCallsFromAPI) {
-      console.log(`📊 API reported total available: ${totalCallsFromAPI}`);
-      if (totalCallsFromAPI > allCalls.length) {
-        console.log(`⚠️  WARNING: Only fetched ${allCalls.length} of ${totalCallsFromAPI} total calls!`);
-      }
-    }
 
     // Group agents by name
     const agentsByName = new Map();
@@ -318,7 +312,6 @@ app.get("/api/agent-summary", async (req, res) => {
         cost: (call.call_cost?.combined_cost || 0) / 100  // Convert cents to dollars
       })),
       total_calls: allCalls.length,
-      total_calls_available: totalCallsFromAPI,  // Total from API if provided
       pages_fetched: pageCount
     });
   } catch (error) {
