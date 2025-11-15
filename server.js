@@ -4,7 +4,9 @@ const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
 const path = require("path");
+const fs = require("fs").promises;
 const Retell = require('retell-sdk').default;
+const Anthropic = require('@anthropic-ai/sdk');
 
 const app = express();
 app.use(express.json());
@@ -30,9 +32,15 @@ app.use(express.static(publicDir));
 // --- ENV VARS ---
 const RETELL_API_KEY = process.env.RETELL_API_KEY;
 const RETELL_AGENT_ID = process.env.RETELL_AGENT_ID;
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
 if (!RETELL_API_KEY) {
   console.error("ERROR: RETELL_API_KEY environment variable is not set!");
+  console.error("Please set it in your environment or Vercel project settings.");
+}
+
+if (!ANTHROPIC_API_KEY) {
+  console.error("ERROR: ANTHROPIC_API_KEY environment variable is not set!");
   console.error("Please set it in your environment or Vercel project settings.");
 }
 
@@ -40,6 +48,14 @@ if (!RETELL_API_KEY) {
 const retellClient = new Retell({
   apiKey: RETELL_API_KEY,
 });
+
+// Initialize Anthropic client
+const anthropic = new Anthropic({
+  apiKey: ANTHROPIC_API_KEY,
+});
+
+// Categories file path
+const CATEGORIES_FILE = path.join(__dirname, 'categories.json');
 
 // Health check (handy for Railway)
 app.get("/healthz", (_req, res) => res.send("ok"));
@@ -453,6 +469,172 @@ app.post("/greet", async (_req, res) => {
   } catch (err) {
     console.error("Greeting error:", err?.response?.data || err.message);
     res.status(500).json({ error: "failed" });
+  }
+});
+
+// ============ CATEGORIZATION API ROUTES ============
+
+// Helper: Read categories from file
+async function readCategories() {
+  try {
+    const data = await fs.readFile(CATEGORIES_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    // File doesn't exist or is empty, return empty object
+    return {};
+  }
+}
+
+// Helper: Write categories to file
+async function writeCategories(categories) {
+  await fs.writeFile(CATEGORIES_FILE, JSON.stringify(categories, null, 2));
+}
+
+// Helper: Categorize a single transcript using Claude
+async function categorizeTranscript(transcript) {
+  if (!transcript || transcript.length === 0) {
+    return 'Other';
+  }
+
+  // Format transcript for Claude
+  let transcriptText = '';
+  if (Array.isArray(transcript)) {
+    transcriptText = transcript.map(msg => `${msg.role}: ${msg.content}`).join('\n');
+  } else if (typeof transcript === 'string') {
+    transcriptText = transcript;
+  } else {
+    return 'Other';
+  }
+
+  const prompt = `You are analyzing a phone call transcript for a personal injury law firm's AI receptionist.
+
+Read the following call transcript and categorize it into ONE of these categories:
+
+- **New Lead**: First-time caller inquiring about legal services, asking about representation, mentioning an accident/injury for the first time
+- **Existing Client**: Caller references a case number, mentions they've called before, asks for updates on their case, mentions they're already a client
+- **Insurance**: Caller is from an insurance company, discusses insurance claims, coverage, or adjusters
+- **Medical**: Caller asks about medical treatment, medical records, doctors, or healthcare providers
+- **Other**: Wrong number, spam, unrelated inquiries, or unclear purpose
+
+TRANSCRIPT:
+${transcriptText}
+
+Respond with ONLY ONE WORD - the category name: "New Lead", "Existing Client", "Insurance", "Medical", or "Other"`;
+
+  try {
+    const message = await anthropic.messages.create({
+      model: 'claude-3-5-sonnet-20241022',
+      max_tokens: 20,
+      messages: [{
+        role: 'user',
+        content: prompt
+      }]
+    });
+
+    const category = message.content[0].text.trim();
+
+    // Validate category
+    const validCategories = ['New Lead', 'Existing Client', 'Insurance', 'Medical', 'Other'];
+    if (validCategories.includes(category)) {
+      return category;
+    }
+
+    return 'Other';
+  } catch (error) {
+    console.error('Error categorizing transcript:', error);
+    return 'Other';
+  }
+}
+
+// GET /api/categories - Get all stored categories
+app.get('/api/categories', async (_req, res) => {
+  try {
+    const categories = await readCategories();
+    res.json(categories);
+  } catch (error) {
+    console.error('Error reading categories:', error);
+    res.status(500).json({ error: 'Failed to read categories' });
+  }
+});
+
+// POST /api/categorize-call - Categorize a single call
+app.post('/api/categorize-call', async (req, res) => {
+  try {
+    const { call_id, transcript } = req.body;
+
+    if (!call_id) {
+      return res.status(400).json({ error: 'call_id is required' });
+    }
+
+    const category = await categorizeTranscript(transcript);
+
+    // Save to categories file
+    const categories = await readCategories();
+    categories[call_id] = category;
+    await writeCategories(categories);
+
+    res.json({ call_id, category });
+  } catch (error) {
+    console.error('Error categorizing call:', error);
+    res.status(500).json({ error: 'Failed to categorize call' });
+  }
+});
+
+// POST /api/categorize-batch - Categorize multiple calls in batch
+app.post('/api/categorize-batch', async (req, res) => {
+  try {
+    const { calls } = req.body;
+
+    if (!Array.isArray(calls) || calls.length === 0) {
+      return res.status(400).json({ error: 'calls array is required' });
+    }
+
+    console.log(`Starting batch categorization of ${calls.length} calls...`);
+
+    const categories = await readCategories();
+    let processed = 0;
+    let skipped = 0;
+
+    // Process in batches to avoid rate limits
+    const batchSize = 5;
+    for (let i = 0; i < calls.length; i += batchSize) {
+      const batch = calls.slice(i, Math.min(i + batchSize, calls.length));
+
+      await Promise.all(batch.map(async (call) => {
+        // Skip if already categorized
+        if (categories[call.call_id]) {
+          skipped++;
+          return;
+        }
+
+        const category = await categorizeTranscript(call.transcript);
+        categories[call.call_id] = category;
+        processed++;
+
+        console.log(`✓ Categorized call ${processed + skipped}/${calls.length}: ${call.call_id} → ${category}`);
+      }));
+
+      // Save after each batch
+      await writeCategories(categories);
+
+      // Small delay between batches to avoid rate limiting
+      if (i + batchSize < calls.length) {
+        await sleep(1000);
+      }
+    }
+
+    console.log(`Batch categorization complete: ${processed} processed, ${skipped} skipped`);
+
+    res.json({
+      success: true,
+      processed,
+      skipped,
+      total: calls.length,
+      categories
+    });
+  } catch (error) {
+    console.error('Error in batch categorization:', error);
+    res.status(500).json({ error: 'Failed to categorize batch' });
   }
 });
 

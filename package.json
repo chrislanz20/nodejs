@@ -11,6 +11,7 @@
     "node": ">=18"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.69.0",
     "axios": "^1.7.4",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",

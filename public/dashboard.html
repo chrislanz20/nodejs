@@ -668,6 +668,112 @@
       background: rgba(0, 255, 255, 0.05) !important;
       box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.1);
     }
+
+    /* Category Badges */
+    .category-badge {
+      padding: 6px 14px;
+      font-size: 10px;
+      font-weight: 800;
+      display: inline-block;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 12px;
+    }
+
+    .category-new-lead {
+      background: #10b981;
+      color: #000000;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+    }
+
+    .category-existing-client {
+      background: #3b82f6;
+      color: #ffffff;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+    }
+
+    .category-insurance {
+      background: #f59e0b;
+      color: #000000;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+    }
+
+    .category-medical {
+      background: #8b5cf6;
+      color: #ffffff;
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.6);
+    }
+
+    .category-other {
+      background: #6b7280;
+      color: #ffffff;
+      box-shadow: 0 0 15px rgba(107, 114, 128, 0.6);
+    }
+
+    .category-uncategorized {
+      background: rgba(48, 54, 61, 0.5);
+      color: #7d8590;
+      border: 1px dashed #7d8590;
+      box-shadow: none;
+    }
+
+    .analyze-button {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border: 1px solid #10b981;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .analyze-button:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      box-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .analyze-button:disabled {
+      background: rgba(107, 114, 128, 0.3);
+      border-color: #6b7280;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Progress Modal */
+    .progress-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(13, 17, 23, 0.98);
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      padding: 32px;
+      z-index: 2000;
+      min-width: 400px;
+      box-shadow: 0 0 60px rgba(0, 255, 255, 0.4);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(48, 54, 61, 0.5);
+      margin: 16px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #00FFFF);
+      transition: width 0.3s ease;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    }
   </style>
 </head>
 <body>
@@ -758,6 +864,7 @@
     let currentAgentId = null;
     let dataLoaded = false;  // Track if data has been loaded
     let totalCallsAvailable = null;  // Total calls from API if provided
+    let callCategories = {};  // Stores call categorizations { call_id: category }
 
     // Helper function to format duration as MM:SS
     function formatDuration(minutes) {
@@ -766,6 +873,142 @@
       const mins = Math.floor(totalSeconds / 60);
       const secs = totalSeconds % 60;
       return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Helper: Get category badge HTML
+    function getCategoryBadge(callId) {
+      const category = callCategories[callId];
+      if (!category) {
+        return '<span class="category-badge category-uncategorized">Uncategorized</span>';
+      }
+
+      const className = `category-${category.toLowerCase().replace(' ', '-')}`;
+      return `<span class="category-badge ${className}">${category}</span>`;
+    }
+
+    // Load categories from API
+    async function loadCategories() {
+      try {
+        const res = await fetch('/api/categories');
+        if (res.ok) {
+          callCategories = await res.json();
+          console.log(`Loaded ${Object.keys(callCategories).length} call categories`);
+        }
+      } catch (error) {
+        console.error('Failed to load categories:', error);
+      }
+    }
+
+    // Analyze all uncategorized calls
+    async function analyzeAllCalls() {
+      // Get uncategorized calls with transcripts
+      const uncategorizedCalls = allCalls.filter(call => {
+        const hasTranscript = call.transcript || call.transcript_object;
+        const isUncategorized = !callCategories[call.call_id];
+        return hasTranscript && isUncategorized;
+      });
+
+      if (uncategorizedCalls.length === 0) {
+        alert('All calls with transcripts are already categorized!');
+        return;
+      }
+
+      const confirmed = confirm(
+        `This will analyze ${uncategorizedCalls.length} uncategorized calls.\n\n` +
+        `Estimated cost: $${(uncategorizedCalls.length * 0.002).toFixed(2)}\n` +
+        `Estimated time: ${Math.ceil(uncategorizedCalls.length / 5)} minutes\n\n` +
+        'Continue?'
+      );
+
+      if (!confirmed) return;
+
+      // Show progress modal
+      showProgressModal(uncategorizedCalls.length);
+
+      try {
+        // Prepare calls data
+        const callsToAnalyze = uncategorizedCalls.map(call => ({
+          call_id: call.call_id,
+          transcript: call.transcript || call.transcript_object
+        }));
+
+        // Send batch request
+        const res = await fetch('/api/categorize-batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ calls: callsToAnalyze })
+        });
+
+        if (!res.ok) {
+          throw new Error(`Server error: ${res.status}`);
+        }
+
+        const result = await res.json();
+
+        // Update categories
+        callCategories = result.categories;
+
+        hideProgressModal();
+
+        alert(
+          `Analysis complete!\n\n` +
+          `✓ Processed: ${result.processed}\n` +
+          `⊘ Skipped: ${result.skipped}\n` +
+          `Total: ${result.total}`
+        );
+
+        // Reload current view to show updated categories
+        const activeTab = document.querySelector('.tab.active');
+        if (activeTab) {
+          activeTab.click();
+        }
+      } catch (error) {
+        hideProgressModal();
+        alert(`Error analyzing calls: ${error.message}`);
+        console.error('Error:', error);
+      }
+    }
+
+    // Show progress modal
+    function showProgressModal(total) {
+      const modal = document.createElement('div');
+      modal.id = 'progress-modal';
+      modal.className = 'modal';
+      modal.style.display = 'block';
+
+      modal.innerHTML = `
+        <div class="progress-modal">
+          <h2 style="margin-bottom: 16px; color: #00FFFF; font-size: 20px;">Analyzing Calls with AI...</h2>
+          <p style="color: #7d8590; margin-bottom: 16px;">This may take a few minutes. Please don't close this window.</p>
+          <div class="progress-bar">
+            <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
+          </div>
+          <p id="progress-text" style="color: #e6edf3; text-align: center; font-family: 'JetBrains Mono', monospace;">0 / ${total}</p>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+
+      // Simulate progress (we don't have real-time updates from server)
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 1;
+        if (progress > total) progress = total;
+
+        const fill = document.getElementById('progress-fill');
+        const text = document.getElementById('progress-text');
+
+        if (fill) fill.style.width = `${(progress / total) * 100}%`;
+        if (text) text.textContent = `${progress} / ${total}`;
+
+        if (progress >= total) clearInterval(interval);
+      }, (total * 1200) / total); // Estimate based on batch processing time
+    }
+
+    // Hide progress modal
+    function hideProgressModal() {
+      const modal = document.getElementById('progress-modal');
+      if (modal) modal.remove();
     }
 
     // Switch between tabs
@@ -830,6 +1073,7 @@
         <div class="calls-table" style="max-height: 600px; overflow-y: auto;">
           <div class="table-header">
             <div class="table-title">Recent Calls (Showing ${Math.min(50, allCalls.length)} most recent)</div>
+            <button class="analyze-button" onclick="analyzeAllCalls()">🤖 Analyze All Calls</button>
           </div>
           <table>
             <thead>
@@ -839,6 +1083,7 @@
                 <th>Date</th>
                 <th>Duration</th>
                 <th>Status</th>
+                <th>Category</th>
                 <th>Cost</th>
               </tr>
             </thead>
@@ -862,6 +1107,7 @@
                     <td>${date}</td>
                     <td>${formatDuration(duration)}</td>
                     <td><span class="status-badge status-${status}">${status}</span></td>
+                    <td>${getCategoryBadge(call.call_id)}</td>
                     <td class="cost-highlight">$${cost.toFixed(2)}</td>
                   </tr>
                 `;
@@ -897,6 +1143,9 @@
         allCalls = data.all_calls || [];
         totalCallsAvailable = data.total_calls_available;  // Store total if provided
         dataLoaded = true;  // Mark data as loaded
+
+        // Load categories
+        await loadCategories();
 
         console.log('Overview - loaded', agentSummaries.length, 'agents and', allCalls.length, 'calls');
         console.log('Pages fetched:', data.pages_fetched);
@@ -1070,6 +1319,7 @@
                   <th>Date</th>
                   <th>Duration</th>
                   <th>Status</th>
+                  <th>Category</th>
                   <th>Cost</th>
                 </tr>
               </thead>
@@ -1087,10 +1337,11 @@
                       <td>${date}</td>
                       <td>${formatDuration(call.duration_minutes)}</td>
                       <td><span class="status-badge status-${status}">${status}</span></td>
+                      <td>${getCategoryBadge(call.call_id)}</td>
                       <td class="cost-highlight">$${(call.cost || 0).toFixed(2)}</td>
                     </tr>
                   `;
-                }).join('') : '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #A0AEC0;">No calls found for this agent</td></tr>'}
+                }).join('') : '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #A0AEC0;">No calls found for this agent</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -1186,6 +1437,18 @@
                 </select>
               </div>
               <div>
+                <label style="display: block; font-size: 11px; color: #7d8590; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Category</label>
+                <select id="filter-category" onchange="applyCallFilters()" style="width: 100%; padding: 10px; border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(13, 17, 23, 0.6); color: #e6edf3; font-size: 13px;">
+                  <option value="">All Categories</option>
+                  <option value="New Lead">New Lead</option>
+                  <option value="Existing Client">Existing Client</option>
+                  <option value="Insurance">Insurance</option>
+                  <option value="Medical">Medical</option>
+                  <option value="Other">Other</option>
+                  <option value="Uncategorized">Uncategorized</option>
+                </select>
+              </div>
+              <div>
                 <label style="display: block; font-size: 11px; color: #7d8590; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Phone Number</label>
                 <input type="text" id="filter-phone" onkeyup="applyCallFilters()" placeholder="Search phone..." style="width: 100%; padding: 10px; border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(13, 17, 23, 0.6); color: #e6edf3; font-size: 13px;">
               </div>
@@ -1209,6 +1472,7 @@
           <div class="calls-table">
             <div class="table-header">
               <div class="table-title">All Calls</div>
+              <button class="analyze-button" onclick="analyzeAllCalls()">🤖 Analyze All Calls</button>
             </div>
             <table id="all-calls-table">
               <thead>
@@ -1218,6 +1482,7 @@
                   <th>Date</th>
                   <th>Duration</th>
                   <th>Status</th>
+                  <th>Category</th>
                   <th>Cost</th>
                 </tr>
               </thead>
@@ -1238,6 +1503,7 @@
                       <td>${date}</td>
                       <td>${formatDuration(duration)}</td>
                       <td><span class="status-badge status-${status}">${status}</span></td>
+                      <td>${getCategoryBadge(call.call_id)}</td>
                       <td class="cost-highlight">$${cost.toFixed(2)}</td>
                     </tr>
                   `;
@@ -1257,6 +1523,7 @@
       const dateTo = document.getElementById('filter-date-to')?.value;
       const agentFilter = document.getElementById('filter-agent')?.value.toLowerCase();
       const statusFilter = document.getElementById('filter-status')?.value.toLowerCase();
+      const categoryFilter = document.getElementById('filter-category')?.value;
       const phoneFilter = document.getElementById('filter-phone')?.value.toLowerCase();
 
       const table = document.getElementById('all-calls-table');
@@ -1270,12 +1537,13 @@
         const row = rows[i];
         const cells = row.getElementsByTagName('td');
 
-        if (cells.length < 6) continue;
+        if (cells.length < 7) continue;
 
         const phoneNumber = cells[0].textContent.toLowerCase();
         const agentName = cells[1].textContent.toLowerCase();
         const dateText = cells[2].textContent;
         const status = cells[4].textContent.toLowerCase().trim();
+        const category = cells[5].textContent.trim();
 
         let show = true;
 
@@ -1291,6 +1559,9 @@
 
         // Status filter
         if (statusFilter && status !== statusFilter) show = false;
+
+        // Category filter
+        if (categoryFilter && category !== categoryFilter) show = false;
 
         // Phone filter
         if (phoneFilter && !phoneNumber.includes(phoneFilter)) show = false;
@@ -1421,6 +1692,7 @@
       document.getElementById('filter-date-to').value = '';
       document.getElementById('filter-agent').value = '';
       document.getElementById('filter-status').value = '';
+      document.getElementById('filter-category').value = '';
       document.getElementById('filter-phone').value = '';
       applyCallFilters();
     }
