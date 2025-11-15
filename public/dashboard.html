@@ -301,6 +301,151 @@
       color: #48bb78;
       font-weight: 700;
     }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      overflow-y: auto;
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 40px auto;
+      padding: 0;
+      border-radius: 12px;
+      max-width: 900px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-height: calc(100vh - 80px);
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      padding: 24px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 10;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 20px;
+      color: #1a202c;
+    }
+
+    .close-modal {
+      font-size: 28px;
+      font-weight: bold;
+      color: #718096;
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      line-height: 1;
+    }
+
+    .close-modal:hover {
+      color: #2d3748;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-section {
+      margin-bottom: 24px;
+    }
+
+    .modal-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #4a5568;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .modal-field {
+      background: #f7fafc;
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .modal-field-label {
+      font-size: 12px;
+      color: #718096;
+      margin-bottom: 4px;
+    }
+
+    .modal-field-value {
+      font-size: 14px;
+      color: #2d3748;
+      font-weight: 600;
+    }
+
+    .transcript-box {
+      background: #f7fafc;
+      padding: 16px;
+      border-radius: 8px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      color: #2d3748;
+    }
+
+    .transcript-message {
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+
+    .transcript-user {
+      background: #e6fffa;
+      border-left: 3px solid #38b2ac;
+    }
+
+    .transcript-agent {
+      background: #ebf8ff;
+      border-left: 3px solid #4299e1;
+    }
+
+    .transcript-role {
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      color: #4a5568;
+    }
+
+    tr.clickable-row {
+      cursor: pointer;
+    }
+
+    tr.clickable-row:hover {
+      background: #edf2f7 !important;
+    }
   </style>
 </head>
 <body>
@@ -335,6 +480,19 @@
     <div id="agent-detail" class="view">
       <button class="back-button" onclick="backToAgents()">← Back to Agents</button>
       <div id="agent-detail-content"></div>
+    </div>
+  </div>
+
+  <!-- Call Detail Modal -->
+  <div id="call-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Call Details</h2>
+        <button class="close-modal" onclick="closeCallModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body-content">
+        <!-- Content will be populated by JavaScript -->
+      </div>
     </div>
   </div>
 
@@ -443,7 +601,7 @@
                 const phoneNumber = call.from_number || call.to_number || call.customer_number || 'N/A';
 
                 return `
-                  <tr>
+                  <tr class="clickable-row" onclick="openCallModal('${call.call_id}')" title="Click to view call details">
                     <td>${phoneNumber}</td>
                     <td>${call.agent_name || 'N/A'}</td>
                     <td>${date}</td>
@@ -669,7 +827,7 @@
                   const phoneNumber = call.from_number || call.to_number || call.customer_number || 'N/A';
 
                   return `
-                    <tr>
+                    <tr class="clickable-row" onclick="openCallModal('${call.call_id}')" title="Click to view call details">
                       <td>${phoneNumber}</td>
                       <td>${date}</td>
                       <td>${formatDuration(call.duration_minutes)}</td>
@@ -793,7 +951,7 @@
                   const phoneNumber = call.from_number || call.to_number || call.customer_number || 'N/A';
 
                   return `
-                    <tr>
+                    <tr class="clickable-row" onclick="openCallModal('${call.call_id}')" title="Click to view call details">
                       <td>${phoneNumber}</td>
                       <td>${call.agent_name || 'N/A'}</td>
                       <td>${date}</td>
@@ -878,6 +1036,118 @@
     // Legacy filter function (kept for compatibility)
     function filterAllCalls(event) {
       applyCallFilters();
+    }
+
+    // Open call detail modal
+    function openCallModal(callId) {
+      const call = allCalls.find(c => c.call_id === callId);
+      if (!call) return;
+
+      const modal = document.getElementById('call-modal');
+      const modalBody = document.getElementById('modal-body-content');
+
+      const date = call.start_timestamp ? new Date(call.start_timestamp).toLocaleString() : 'N/A';
+      const endDate = call.end_timestamp ? new Date(call.end_timestamp).toLocaleString() : 'Ongoing';
+      const duration = formatDuration(call.duration_minutes);
+      const phoneNumber = call.from_number || call.to_number || call.customer_number || 'N/A';
+      const status = call.end_timestamp ? 'Completed' : 'Ongoing';
+
+      // Format transcript
+      let transcriptHTML = '<div class="transcript-box">';
+      if (call.transcript && Array.isArray(call.transcript)) {
+        call.transcript.forEach(msg => {
+          const role = msg.role || 'unknown';
+          const content = msg.content || '';
+          const className = role === 'user' ? 'transcript-user' : 'transcript-agent';
+          transcriptHTML += `
+            <div class="transcript-message ${className}">
+              <div class="transcript-role">${role}</div>
+              <div>${content}</div>
+            </div>
+          `;
+        });
+      } else if (call.transcript_object) {
+        transcriptHTML += JSON.stringify(call.transcript_object, null, 2);
+      } else if (call.transcript) {
+        transcriptHTML += call.transcript;
+      } else {
+        transcriptHTML += '<div style="color: #718096; font-style: italic;">No transcript available</div>';
+      }
+      transcriptHTML += '</div>';
+
+      modalBody.innerHTML = `
+        <div class="modal-grid">
+          <div class="modal-field">
+            <div class="modal-field-label">Phone Number</div>
+            <div class="modal-field-value">${phoneNumber}</div>
+          </div>
+          <div class="modal-field">
+            <div class="modal-field-label">Agent Name</div>
+            <div class="modal-field-value">${call.agent_name || 'N/A'}</div>
+          </div>
+          <div class="modal-field">
+            <div class="modal-field-label">Duration</div>
+            <div class="modal-field-value">${duration}</div>
+          </div>
+          <div class="modal-field">
+            <div class="modal-field-label">Cost</div>
+            <div class="modal-field-value cost-highlight">$${(call.cost || 0).toFixed(2)}</div>
+          </div>
+          <div class="modal-field">
+            <div class="modal-field-label">Start Time</div>
+            <div class="modal-field-value">${date}</div>
+          </div>
+          <div class="modal-field">
+            <div class="modal-field-label">End Time</div>
+            <div class="modal-field-value">${endDate}</div>
+          </div>
+          <div class="modal-field">
+            <div class="modal-field-label">Status</div>
+            <div class="modal-field-value"><span class="status-badge status-${status.toLowerCase()}">${status}</span></div>
+          </div>
+          <div class="modal-field">
+            <div class="modal-field-label">Call ID</div>
+            <div class="modal-field-value" style="font-size: 11px; word-break: break-all;">${call.call_id || 'N/A'}</div>
+          </div>
+        </div>
+
+        ${call.call_analysis?.call_summary ? `
+          <div class="modal-section">
+            <div class="modal-section-title">📋 Call Summary</div>
+            <div class="transcript-box">${call.call_analysis.call_summary}</div>
+          </div>
+        ` : ''}
+
+        ${call.recording_url ? `
+          <div class="modal-section">
+            <div class="modal-section-title">🎵 Call Recording</div>
+            <audio controls style="width: 100%; margin-top: 8px;">
+              <source src="${call.recording_url}" type="audio/mpeg">
+              Your browser does not support the audio element.
+            </audio>
+          </div>
+        ` : ''}
+
+        <div class="modal-section">
+          <div class="modal-section-title">💬 Transcript</div>
+          ${transcriptHTML}
+        </div>
+      `;
+
+      modal.style.display = 'block';
+    }
+
+    // Close call detail modal
+    function closeCallModal() {
+      document.getElementById('call-modal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('call-modal');
+      if (event.target === modal) {
+        closeCallModal();
+      }
     }
 
     // Initialize dashboard
