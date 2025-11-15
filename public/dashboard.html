@@ -726,11 +726,50 @@
           allCalls = data.all_calls || [];
         }
 
+        // Get unique agent names for filter dropdown
+        const uniqueAgents = [...new Set(allCalls.map(c => c.agent_name).filter(Boolean))].sort();
+
         content.innerHTML = `
+          <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #1a202c;">🔍 Filters</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+              <div>
+                <label style="display: block; font-size: 13px; color: #4a5568; margin-bottom: 4px;">From Date</label>
+                <input type="date" id="filter-date-from" onchange="applyCallFilters()" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 13px; color: #4a5568; margin-bottom: 4px;">To Date</label>
+                <input type="date" id="filter-date-to" onchange="applyCallFilters()" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 13px; color: #4a5568; margin-bottom: 4px;">Agent Name</label>
+                <select id="filter-agent" onchange="applyCallFilters()" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                  <option value="">All Agents</option>
+                  ${uniqueAgents.map(agent => `<option value="${agent}">${agent}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label style="display: block; font-size: 13px; color: #4a5568; margin-bottom: 4px;">Status</label>
+                <select id="filter-status" onchange="applyCallFilters()" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                  <option value="">All Status</option>
+                  <option value="completed">Completed</option>
+                  <option value="ongoing">Ongoing</option>
+                </select>
+              </div>
+              <div>
+                <label style="display: block; font-size: 13px; color: #4a5568; margin-bottom: 4px;">Phone Number</label>
+                <input type="text" id="filter-phone" onkeyup="applyCallFilters()" placeholder="Search phone..." style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+              </div>
+              <div style="display: flex; align-items: flex-end;">
+                <button onclick="clearCallFilters()" style="width: 100%; padding: 8px; background: #e2e8f0; color: #2d3748; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 500;">Clear Filters</button>
+              </div>
+            </div>
+            <div id="filter-results" style="margin-top: 12px; font-size: 13px; color: #718096;"></div>
+          </div>
+
           <div class="calls-table">
             <div class="table-header">
               <div class="table-title">All Calls</div>
-              <input type="text" class="search-box" placeholder="Search calls..." onkeyup="filterAllCalls(event)">
             </div>
             <table id="all-calls-table">
               <thead>
@@ -773,17 +812,72 @@
       }
     }
 
-    // Filter all calls
-    function filterAllCalls(event) {
-      const searchTerm = event.target.value.toLowerCase();
+    // Apply all call filters
+    function applyCallFilters() {
+      const dateFrom = document.getElementById('filter-date-from')?.value;
+      const dateTo = document.getElementById('filter-date-to')?.value;
+      const agentFilter = document.getElementById('filter-agent')?.value.toLowerCase();
+      const statusFilter = document.getElementById('filter-status')?.value.toLowerCase();
+      const phoneFilter = document.getElementById('filter-phone')?.value.toLowerCase();
+
       const table = document.getElementById('all-calls-table');
       const rows = table.getElementsByTagName('tr');
+      let visibleCount = 0;
 
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(searchTerm) ? '' : 'none';
+        const cells = row.getElementsByTagName('td');
+
+        if (cells.length < 6) continue;
+
+        const phoneNumber = cells[0].textContent.toLowerCase();
+        const agentName = cells[1].textContent.toLowerCase();
+        const dateText = cells[2].textContent;
+        const status = cells[4].textContent.toLowerCase().trim();
+
+        let show = true;
+
+        // Date filter
+        if (dateFrom || dateTo) {
+          const callDate = new Date(dateText);
+          if (dateFrom && callDate < new Date(dateFrom)) show = false;
+          if (dateTo && callDate > new Date(dateTo + ' 23:59:59')) show = false;
+        }
+
+        // Agent filter
+        if (agentFilter && !agentName.includes(agentFilter)) show = false;
+
+        // Status filter
+        if (statusFilter && status !== statusFilter) show = false;
+
+        // Phone filter
+        if (phoneFilter && !phoneNumber.includes(phoneFilter)) show = false;
+
+        row.style.display = show ? '' : 'none';
+        if (show) visibleCount++;
       }
+
+      // Update results count
+      const resultsDiv = document.getElementById('filter-results');
+      if (resultsDiv) {
+        const totalCalls = rows.length - 1;
+        resultsDiv.textContent = `Showing ${visibleCount} of ${totalCalls} calls`;
+      }
+    }
+
+    // Clear all call filters
+    function clearCallFilters() {
+      document.getElementById('filter-date-from').value = '';
+      document.getElementById('filter-date-to').value = '';
+      document.getElementById('filter-agent').value = '';
+      document.getElementById('filter-status').value = '';
+      document.getElementById('filter-phone').value = '';
+      applyCallFilters();
+    }
+
+    // Legacy filter function (kept for compatibility)
+    function filterAllCalls(event) {
+      applyCallFilters();
     }
 
     // Initialize dashboard
