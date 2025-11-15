@@ -1133,41 +1133,41 @@
         const uniqueAgents = [...new Set(allCalls.map(c => c.agent_name).filter(Boolean))].sort();
 
         content.innerHTML = `
-          <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <div style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #1a202c;">🔍 Filters</div>
+          <div style="background: rgba(29, 37, 54, 0.6); backdrop-filter: blur(20px); padding: 24px; margin-bottom: 24px; border: 2px solid #4CA6B5; box-shadow: 0 0 30px rgba(76, 166, 181, 0.2);">
+            <div style="font-size: 14px; font-weight: 700; margin-bottom: 20px; color: #4CA6B5; text-transform: uppercase; letter-spacing: 2px;">🔍 FILTERS</div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
               <div>
-                <label style="display: block; font-size: 13px; color: #4a5568; margin-bottom: 4px;">From Date</label>
-                <input type="date" id="filter-date-from" onchange="applyCallFilters()" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                <label style="display: block; font-size: 11px; color: #A0AEC0; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">From Date</label>
+                <input type="date" id="filter-date-from" onchange="applyCallFilters()" style="width: 100%; padding: 10px; border: 2px solid rgba(76, 166, 181, 0.3); background: rgba(29, 37, 54, 0.6); color: #ffffff; font-size: 13px;">
               </div>
               <div>
-                <label style="display: block; font-size: 13px; color: #4a5568; margin-bottom: 4px;">To Date</label>
-                <input type="date" id="filter-date-to" onchange="applyCallFilters()" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                <label style="display: block; font-size: 11px; color: #A0AEC0; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">To Date</label>
+                <input type="date" id="filter-date-to" onchange="applyCallFilters()" style="width: 100%; padding: 10px; border: 2px solid rgba(76, 166, 181, 0.3); background: rgba(29, 37, 54, 0.6); color: #ffffff; font-size: 13px;">
               </div>
               <div>
-                <label style="display: block; font-size: 13px; color: #4a5568; margin-bottom: 4px;">Agent Name</label>
-                <select id="filter-agent" onchange="applyCallFilters()" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                <label style="display: block; font-size: 11px; color: #A0AEC0; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Agent Name</label>
+                <select id="filter-agent" onchange="applyCallFilters()" style="width: 100%; padding: 10px; border: 2px solid rgba(76, 166, 181, 0.3); background: rgba(29, 37, 54, 0.6); color: #ffffff; font-size: 13px;">
                   <option value="">All Agents</option>
                   ${uniqueAgents.map(agent => `<option value="${agent}">${agent}</option>`).join('')}
                 </select>
               </div>
               <div>
-                <label style="display: block; font-size: 13px; color: #4a5568; margin-bottom: 4px;">Status</label>
-                <select id="filter-status" onchange="applyCallFilters()" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                <label style="display: block; font-size: 11px; color: #A0AEC0; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Status</label>
+                <select id="filter-status" onchange="applyCallFilters()" style="width: 100%; padding: 10px; border: 2px solid rgba(76, 166, 181, 0.3); background: rgba(29, 37, 54, 0.6); color: #ffffff; font-size: 13px;">
                   <option value="">All Status</option>
                   <option value="completed">Completed</option>
                   <option value="ongoing">Ongoing</option>
                 </select>
               </div>
               <div>
-                <label style="display: block; font-size: 13px; color: #4a5568; margin-bottom: 4px;">Phone Number</label>
-                <input type="text" id="filter-phone" onkeyup="applyCallFilters()" placeholder="Search phone..." style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                <label style="display: block; font-size: 11px; color: #A0AEC0; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Phone Number</label>
+                <input type="text" id="filter-phone" onkeyup="applyCallFilters()" placeholder="Search phone..." style="width: 100%; padding: 10px; border: 2px solid rgba(76, 166, 181, 0.3); background: rgba(29, 37, 54, 0.6); color: #ffffff; font-size: 13px;">
               </div>
               <div style="display: flex; align-items: flex-end;">
-                <button onclick="clearCallFilters()" style="width: 100%; padding: 8px; background: #e2e8f0; color: #2d3748; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 500;">Clear Filters</button>
+                <button onclick="clearCallFilters()" style="width: 100%; padding: 10px; background: rgba(76, 166, 181, 0.2); color: #4CA6B5; border: 2px solid #4CA6B5; font-size: 12px; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s;">Clear Filters</button>
               </div>
             </div>
-            <div id="filter-results" style="margin-top: 12px; font-size: 13px; color: #A0AEC0;"></div>
+            <div id="filter-results" style="margin-top: 16px; font-size: 12px; color: #A0AEC0; font-weight: 600; letter-spacing: 0.5px;"></div>
           </div>
 
           <div class="calls-table">
