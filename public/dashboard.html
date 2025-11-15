@@ -414,9 +414,9 @@
           </div>
         </div>
 
-        <div class="calls-table">
+        <div class="calls-table" style="max-height: 600px; overflow-y: auto;">
           <div class="table-header">
-            <div class="table-title">Recent Calls</div>
+            <div class="table-title">Recent Calls (Showing ${Math.min(50, allCalls.length)} most recent)</div>
           </div>
           <table>
             <thead>
@@ -430,7 +430,10 @@
               </tr>
             </thead>
             <tbody>
-              ${allCalls.slice(0, 10).map(call => {
+              ${allCalls
+                .sort((a, b) => (b.start_timestamp || 0) - (a.start_timestamp || 0))
+                .slice(0, 50)
+                .map(call => {
                 const duration = call.duration_minutes || 0;
                 const cost = call.cost || 0;
                 const date = call.start_timestamp
