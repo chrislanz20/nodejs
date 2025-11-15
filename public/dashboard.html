@@ -12,14 +12,14 @@
     }
 
     body {
-      font-family: 'Rajdhani', 'Orbitron', monospace, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0a0e27;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0b0f1a;
       background-image:
         radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(41, 98, 255, 0.2) 0%, transparent 50%),
-        radial-gradient(circle at 40% 20%, rgba(0, 255, 255, 0.15) 0%, transparent 40%);
+        radial-gradient(circle at 80% 80%, rgba(76, 166, 181, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(76, 166, 181, 0.15) 0%, transparent 40%);
       background-attachment: fixed;
-      color: #e0e7ff;
+      color: #ffffff;
       line-height: 1.6;
       min-height: 100vh;
       position: relative;
@@ -52,14 +52,27 @@
     }
 
     header {
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(29, 37, 54, 0.6);
       backdrop-filter: blur(20px);
-      padding: 28px 32px;
-      border: 2px solid #2962ff;
-      box-shadow: 0 0 40px rgba(41, 98, 255, 0.3), inset 0 0 60px rgba(41, 98, 255, 0.1);
+      padding: 32px;
+      border: 2px solid #4CA6B5;
+      box-shadow: 0 0 40px rgba(76, 166, 181, 0.3);
       margin-bottom: 24px;
       position: relative;
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .header-logo {
+      height: 60px;
+      width: auto;
+      filter: drop-shadow(0 0 10px rgba(76, 166, 181, 0.3));
+    }
+
+    .header-content {
+      flex: 1;
     }
 
     header::before {
@@ -69,7 +82,7 @@
       left: -100%;
       width: 100%;
       height: 2px;
-      background: linear-gradient(90deg, transparent, #00ffff, transparent);
+      background: linear-gradient(90deg, transparent, #4CA6B5, transparent);
       animation: scan 3s infinite;
     }
 
@@ -81,15 +94,15 @@
     h1 {
       font-size: 42px;
       font-weight: 900;
-      color: #00ffff;
-      text-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.3);
+      color: #4CA6B5;
+      text-shadow: 0 0 20px rgba(76, 166, 181, 0.5), 0 0 40px rgba(76, 166, 181, 0.3);
       margin-bottom: 8px;
       letter-spacing: 2px;
       text-transform: uppercase;
     }
 
     .subtitle {
-      color: #8b9dc3;
+      color: #A0AEC0;
       font-size: 14px;
       font-weight: 500;
       letter-spacing: 1px;
@@ -99,21 +112,21 @@
       display: flex;
       gap: 8px;
       margin-bottom: 24px;
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(29, 37, 54, 0.6);
       backdrop-filter: blur(20px);
       padding: 8px;
-      border: 1px solid #2962ff;
-      box-shadow: 0 0 20px rgba(41, 98, 255, 0.2);
+      border: 1px solid #4CA6B5;
+      box-shadow: 0 0 20px rgba(76, 166, 181, 0.2);
     }
 
     .tab {
       padding: 12px 24px;
       background: transparent;
-      border: 1px solid rgba(41, 98, 255, 0.3);
+      border: 1px solid rgba(76, 166, 181, 0.3);
       cursor: pointer;
       font-size: 13px;
       font-weight: 700;
-      color: #8b9dc3;
+      color: #A0AEC0;
       transition: all 0.2s ease;
       position: relative;
       text-transform: uppercase;
@@ -121,17 +134,17 @@
     }
 
     .tab:hover {
-      background: rgba(41, 98, 255, 0.1);
-      border-color: #2962ff;
-      color: #00ffff;
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+      background: rgba(76, 166, 181, 0.1);
+      border-color: #4CA6B5;
+      color: #4CA6B5;
+      box-shadow: 0 0 15px rgba(76, 166, 181, 0.3);
     }
 
     .tab.active {
-      background: rgba(41, 98, 255, 0.2);
-      border-color: #00ffff;
-      color: #00ffff;
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.4), inset 0 0 20px rgba(0, 255, 255, 0.1);
+      background: rgba(76, 166, 181, 0.2);
+      border-color: #4CA6B5;
+      color: #4CA6B5;
+      box-shadow: 0 0 20px rgba(76, 166, 181, 0.4), inset 0 0 20px rgba(76, 166, 181, 0.1);
     }
 
     .view {
@@ -150,11 +163,11 @@
     }
 
     .stat-card {
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(29, 37, 54, 0.6);
       backdrop-filter: blur(20px);
       padding: 24px;
-      border: 2px solid #2962ff;
-      box-shadow: 0 0 30px rgba(41, 98, 255, 0.2), inset 0 0 30px rgba(41, 98, 255, 0.05);
+      border: 2px solid #4CA6B5;
+      box-shadow: 0 0 30px rgba(76, 166, 181, 0.2), inset 0 0 30px rgba(76, 166, 181, 0.05);
       transition: all 0.2s ease;
       position: relative;
       overflow: hidden;
@@ -167,7 +180,7 @@
       left: -50%;
       width: 200%;
       height: 200%;
-      background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+      background: linear-gradient(45deg, transparent, rgba(76, 166, 181, 0.1), transparent);
       transform: rotate(45deg);
       transition: all 0.5s;
     }
@@ -177,14 +190,14 @@
     }
 
     .stat-card:hover {
-      border-color: #00ffff;
-      box-shadow: 0 0 40px rgba(0, 255, 255, 0.4), inset 0 0 40px rgba(0, 255, 255, 0.1);
+      border-color: #4CA6B5;
+      box-shadow: 0 0 40px rgba(76, 166, 181, 0.4), inset 0 0 40px rgba(76, 166, 181, 0.1);
       transform: translateY(-4px);
     }
 
     .stat-label {
       font-size: 11px;
-      color: #00ffff;
+      color: #4CA6B5;
       text-transform: uppercase;
       letter-spacing: 2px;
       margin-bottom: 12px;
@@ -205,7 +218,7 @@
 
     .stat-subtext {
       font-size: 12px;
-      color: #8b9dc3;
+      color: #A0AEC0;
       margin-top: 8px;
       font-weight: 500;
       letter-spacing: 0.5px;
@@ -221,11 +234,11 @@
     }
 
     .agent-card {
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(29, 37, 54, 0.6);
       backdrop-filter: blur(20px);
       padding: 24px;
-      border: 2px solid #2962ff;
-      box-shadow: 0 0 30px rgba(41, 98, 255, 0.2), inset 0 0 30px rgba(41, 98, 255, 0.05);
+      border: 2px solid #4CA6B5;
+      box-shadow: 0 0 30px rgba(76, 166, 181, 0.2), inset 0 0 30px rgba(76, 166, 181, 0.05);
       cursor: pointer;
       transition: all 0.2s ease;
       position: relative;
@@ -239,7 +252,7 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+      background: linear-gradient(90deg, transparent, rgba(76, 166, 181, 0.1), transparent);
       transition: left 0.5s;
     }
 
@@ -248,19 +261,19 @@
     }
 
     .agent-card:hover {
-      border-color: #00ffff;
-      box-shadow: 0 0 40px rgba(0, 255, 255, 0.4), inset 0 0 40px rgba(0, 255, 255, 0.1);
+      border-color: #4CA6B5;
+      box-shadow: 0 0 40px rgba(76, 166, 181, 0.4), inset 0 0 40px rgba(76, 166, 181, 0.1);
       transform: translateY(-4px);
     }
 
     .agent-name {
       font-size: 20px;
       font-weight: 800;
-      color: #00ffff;
+      color: #4CA6B5;
       margin-bottom: 16px;
       letter-spacing: 1px;
       text-transform: uppercase;
-      text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      text-shadow: 0 0 10px rgba(76, 166, 181, 0.5);
     }
 
     .agent-stats {
@@ -274,11 +287,11 @@
       justify-content: space-between;
       font-size: 13px;
       padding: 8px 0;
-      border-bottom: 1px solid rgba(41, 98, 255, 0.3);
+      border-bottom: 1px solid rgba(76, 166, 181, 0.3);
     }
 
     .agent-stat-label {
-      color: #8b9dc3;
+      color: #A0AEC0;
       font-weight: 600;
       letter-spacing: 0.5px;
     }
@@ -289,50 +302,50 @@
     }
 
     .calls-table {
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(29, 37, 54, 0.6);
       backdrop-filter: blur(20px);
-      border: 2px solid #2962ff;
-      box-shadow: 0 0 30px rgba(41, 98, 255, 0.2);
+      border: 2px solid #4CA6B5;
+      box-shadow: 0 0 30px rgba(76, 166, 181, 0.2);
       overflow: hidden;
     }
 
     .table-header {
       padding: 20px 24px;
-      border-bottom: 2px solid #2962ff;
+      border-bottom: 2px solid #4CA6B5;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(41, 98, 255, 0.1);
+      background: rgba(76, 166, 181, 0.1);
     }
 
     .table-title {
       font-size: 18px;
       font-weight: 800;
-      color: #00ffff;
+      color: #4CA6B5;
       letter-spacing: 2px;
       text-transform: uppercase;
-      text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      text-shadow: 0 0 10px rgba(76, 166, 181, 0.5);
     }
 
     .search-box {
       padding: 10px 16px;
-      border: 2px solid rgba(41, 98, 255, 0.5);
+      border: 2px solid rgba(76, 166, 181, 0.5);
       font-size: 13px;
       width: 300px;
       transition: all 0.2s ease;
-      background: rgba(15, 23, 42, 0.6);
-      color: #e0e7ff;
+      background: rgba(29, 37, 54, 0.6);
+      color: #ffffff;
     }
 
     .search-box::placeholder {
-      color: #8b9dc3;
+      color: #A0AEC0;
     }
 
     .search-box:focus {
       outline: none;
-      border-color: #00ffff;
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-      background: rgba(15, 23, 42, 0.8);
+      border-color: #4CA6B5;
+      box-shadow: 0 0 15px rgba(76, 166, 181, 0.3);
+      background: rgba(29, 37, 54, 0.8);
     }
 
     table {
@@ -343,25 +356,25 @@
     th {
       text-align: left;
       padding: 16px 24px;
-      background: rgba(41, 98, 255, 0.15);
+      background: rgba(76, 166, 181, 0.15);
       font-size: 10px;
       font-weight: 800;
-      color: #00ffff;
+      color: #4CA6B5;
       text-transform: uppercase;
       letter-spacing: 2px;
-      border-bottom: 1px solid rgba(41, 98, 255, 0.3);
+      border-bottom: 1px solid rgba(76, 166, 181, 0.3);
     }
 
     td {
       padding: 16px 24px;
-      border-top: 1px solid rgba(41, 98, 255, 0.2);
+      border-top: 1px solid rgba(76, 166, 181, 0.2);
       font-size: 13px;
       font-weight: 500;
-      color: #e0e7ff;
+      color: #ffffff;
     }
 
     tr:hover {
-      background: rgba(41, 98, 255, 0.1);
+      background: rgba(76, 166, 181, 0.1);
     }
 
     .status-badge {
@@ -398,18 +411,18 @@
     .loading {
       text-align: center;
       padding: 80px;
-      color: #8b9dc3;
+      color: #A0AEC0;
     }
 
     .spinner {
-      border: 3px solid rgba(41, 98, 255, 0.3);
-      border-top: 3px solid #00ffff;
+      border: 3px solid rgba(76, 166, 181, 0.3);
+      border-top: 3px solid #4CA6B5;
       border-radius: 50%;
       width: 50px;
       height: 50px;
       animation: spin 0.6s linear infinite;
       margin: 0 auto 20px;
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      box-shadow: 0 0 20px rgba(76, 166, 181, 0.3);
     }
 
     @keyframes spin {
@@ -429,13 +442,13 @@
 
     .back-button {
       padding: 10px 20px;
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(29, 37, 54, 0.6);
       backdrop-filter: blur(20px);
-      border: 2px solid #2962ff;
+      border: 2px solid #4CA6B5;
       cursor: pointer;
       font-size: 13px;
       font-weight: 700;
-      color: #00ffff;
+      color: #4CA6B5;
       margin-bottom: 20px;
       transition: all 0.2s ease;
       text-transform: uppercase;
@@ -443,9 +456,9 @@
     }
 
     .back-button:hover {
-      background: rgba(41, 98, 255, 0.3);
-      border-color: #00ffff;
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+      background: rgba(76, 166, 181, 0.3);
+      border-color: #4CA6B5;
+      box-shadow: 0 0 20px rgba(76, 166, 181, 0.4);
     }
 
     .cost-highlight {
@@ -499,7 +512,7 @@
     .close-modal {
       font-size: 28px;
       font-weight: bold;
-      color: #718096;
+      color: #A0AEC0;
       cursor: pointer;
       border: none;
       background: none;
@@ -545,7 +558,7 @@
 
     .modal-field-label {
       font-size: 12px;
-      color: #718096;
+      color: #A0AEC0;
       margin-bottom: 4px;
     }
 
@@ -568,41 +581,41 @@
     }
 
     .modal-content {
-      background: rgba(15, 23, 42, 0.95);
-      border: 2px solid #2962ff;
-      box-shadow: 0 0 60px rgba(41, 98, 255, 0.5);
+      background: rgba(29, 37, 54, 0.95);
+      border: 2px solid #4CA6B5;
+      box-shadow: 0 0 60px rgba(76, 166, 181, 0.5);
     }
 
     .modal-header {
-      border-bottom: 2px solid #2962ff;
-      background: rgba(41, 98, 255, 0.1);
+      border-bottom: 2px solid #4CA6B5;
+      background: rgba(76, 166, 181, 0.1);
     }
 
     .modal-header h2 {
-      color: #00ffff;
-      text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      color: #4CA6B5;
+      text-shadow: 0 0 10px rgba(76, 166, 181, 0.5);
     }
 
     .close-modal {
-      color: #8b9dc3;
+      color: #A0AEC0;
     }
 
     .close-modal:hover {
-      color: #00ffff;
+      color: #4CA6B5;
     }
 
     .modal-section-title {
-      color: #00ffff;
+      color: #4CA6B5;
       letter-spacing: 2px;
     }
 
     .modal-field {
-      background: rgba(41, 98, 255, 0.1);
-      border: 1px solid rgba(41, 98, 255, 0.3);
+      background: rgba(76, 166, 181, 0.1);
+      border: 1px solid rgba(76, 166, 181, 0.3);
     }
 
     .modal-field-label {
-      color: #8b9dc3;
+      color: #A0AEC0;
     }
 
     .modal-field-value {
@@ -610,9 +623,9 @@
     }
 
     .transcript-box {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(41, 98, 255, 0.3);
-      color: #e0e7ff;
+      background: rgba(29, 37, 54, 0.6);
+      border: 1px solid rgba(76, 166, 181, 0.3);
+      color: #ffffff;
     }
 
     .transcript-message {
@@ -639,7 +652,7 @@
       text-transform: uppercase;
       margin-bottom: 6px;
       letter-spacing: 2px;
-      color: #00ffff;
+      color: #4CA6B5;
     }
 
     tr.clickable-row {
@@ -648,16 +661,19 @@
     }
 
     tr.clickable-row:hover {
-      background: rgba(0, 255, 255, 0.1) !important;
-      box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.2);
+      background: rgba(76, 166, 181, 0.1) !important;
+      box-shadow: inset 0 0 20px rgba(76, 166, 181, 0.2);
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>Retell AI Dashboard</h1>
-      <p class="subtitle">Monitor your voice agents, track costs, and analyze call performance</p>
+      <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/68e5a3ac2cc261cd1cbe4769.png" alt="SaveYa Tech" class="header-logo">
+      <div class="header-content">
+        <h1>RETELL AI DASHBOARD</h1>
+        <p class="subtitle">Monitor your voice agents, track costs, and analyze call performance</p>
+      </div>
     </header>
 
     <div class="tabs">
@@ -742,7 +758,7 @@
 
       content.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <div style="color: #718096; font-size: 14px;">
+          <div style="color: #A0AEC0; font-size: 14px;">
             Last updated: ${new Date().toLocaleString()} | ${totalCalls.toLocaleString()} total calls loaded
           </div>
           <button class="back-button" onclick="loadOverview(true)" style="margin: 0;">
@@ -833,7 +849,7 @@
         return;
       }
 
-      content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all call data from Retell...</p><p style="color: #718096; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p></div>';
+      content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all call data from Retell...</p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p></div>';
 
       try {
         // Fetch all data in ONE request to avoid rate limiting
@@ -1040,7 +1056,7 @@
                       <td class="cost-highlight">$${(call.cost || 0).toFixed(2)}</td>
                     </tr>
                   `;
-                }).join('') : '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #718096;">No calls found for this agent</td></tr>'}
+                }).join('') : '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #A0AEC0;">No calls found for this agent</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -1127,7 +1143,7 @@
                 <button onclick="clearCallFilters()" style="width: 100%; padding: 8px; background: #e2e8f0; color: #2d3748; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 500;">Clear Filters</button>
               </div>
             </div>
-            <div id="filter-results" style="margin-top: 12px; font-size: 13px; color: #718096;"></div>
+            <div id="filter-results" style="margin-top: 12px; font-size: 13px; color: #A0AEC0;"></div>
           </div>
 
           <div class="calls-table">
@@ -1291,7 +1307,7 @@
         // Plain text transcript
         transcriptHTML += `<div style="white-space: pre-wrap;">${transcriptData}</div>`;
       } else {
-        transcriptHTML += '<div style="color: #718096; font-style: italic;">No transcript available</div>';
+        transcriptHTML += '<div style="color: #A0AEC0; font-style: italic;">No transcript available</div>';
       }
       transcriptHTML += '</div>';
 
