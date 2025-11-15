@@ -404,8 +404,8 @@
           </div>
           <div class="stat-card">
             <div class="stat-label">Total Duration</div>
-            <div class="stat-value">${Math.round(totalDuration)}</div>
-            <div class="stat-subtext">Minutes</div>
+            <div class="stat-value">${formatDuration(totalDuration)}</div>
+            <div class="stat-subtext">Minutes:Seconds</div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Total Cost</div>
@@ -421,8 +421,8 @@
           <table>
             <thead>
               <tr>
-                <th>Call ID</th>
-                <th>Agent</th>
+                <th>Phone Number</th>
+                <th>Agent Name</th>
                 <th>Date</th>
                 <th>Duration</th>
                 <th>Status</th>
@@ -437,13 +437,14 @@
                   ? new Date(call.start_timestamp).toLocaleString()
                   : 'N/A';
                 const status = call.end_timestamp ? 'completed' : 'ongoing';
+                const phoneNumber = call.from_number || call.to_number || call.customer_number || 'N/A';
 
                 return `
                   <tr>
-                    <td>${call.call_id?.slice(0, 12)}...</td>
-                    <td>${call.agent_id?.slice(0, 12)}...</td>
+                    <td>${phoneNumber}</td>
+                    <td>${call.agent_name || 'N/A'}</td>
                     <td>${date}</td>
-                    <td>${duration.toFixed(2)} min</td>
+                    <td>${formatDuration(duration)}</td>
                     <td><span class="status-badge status-${status}">${status}</span></td>
                     <td class="cost-highlight">$${cost.toFixed(2)}</td>
                   </tr>
