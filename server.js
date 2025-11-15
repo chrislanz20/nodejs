@@ -222,11 +222,18 @@ app.get("/api/agent-summary", async (req, res) => {
 
       const data = await retryWithBackoff(() => retellClient.call.list(params));
 
+      // DEBUG: Log the response structure
+      console.log(`   Response type: ${Array.isArray(data) ? 'Array' : 'Object'}`);
+      console.log(`   Response keys:`, Object.keys(data || {}).slice(0, 10));
+
       // Extract calls and pagination key
       const calls = Array.isArray(data) ? data : (data.calls || []);
       const nextKey = Array.isArray(data) ? null : (data.pagination_key || null);
 
       console.log(`   Got ${calls.length} calls | Next page: ${nextKey ? 'Yes' : 'No'}`);
+      if (nextKey) {
+        console.log(`   Pagination key: ${nextKey.substring(0, 20)}...`);
+      }
 
       if (calls.length > 0) {
         allCalls = allCalls.concat(calls);
