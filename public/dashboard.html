@@ -1144,15 +1144,31 @@
 
         content.innerHTML = `
           <div style="background: rgba(13, 17, 23, 0.8); backdrop-filter: blur(10px); padding: 24px; margin-bottom: 24px; border: 1px solid rgba(48, 54, 61, 0.8); box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);">
-            <div style="font-size: 14px; font-weight: 700; margin-bottom: 20px; color: #00FFFF; text-transform: uppercase; letter-spacing: 2px;">🔍 FILTERS</div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div style="font-size: 14px; font-weight: 700; margin-bottom: 20px; color: #00FFFF; text-transform: uppercase; letter-spacing: 2px;">🔍 FILTERS & ANALYTICS</div>
+
+            <!-- Quick Date Range Buttons -->
+            <div style="margin-bottom: 16px;">
+              <label style="display: block; font-size: 11px; color: #7d8590; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Quick Date Ranges</label>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button onclick="setDateRange('today')" style="padding: 8px 16px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); font-size: 11px; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Today</button>
+                <button onclick="setDateRange('yesterday')" style="padding: 8px 16px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); font-size: 11px; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Yesterday</button>
+                <button onclick="setDateRange('thisWeek')" style="padding: 8px 16px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); font-size: 11px; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">This Week</button>
+                <button onclick="setDateRange('lastWeek')" style="padding: 8px 16px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); font-size: 11px; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Last Week</button>
+                <button onclick="setDateRange('thisMonth')" style="padding: 8px 16px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); font-size: 11px; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">This Month</button>
+                <button onclick="setDateRange('lastMonth')" style="padding: 8px 16px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); font-size: 11px; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Last Month</button>
+                <button onclick="setDateRange('last30Days')" style="padding: 8px 16px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); font-size: 11px; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Last 30 Days</button>
+                <button onclick="setDateRange('last90Days')" style="padding: 8px 16px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); font-size: 11px; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Last 90 Days</button>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
               <div>
                 <label style="display: block; font-size: 11px; color: #7d8590; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">From Date</label>
-                <input type="date" id="filter-date-from" onchange="applyCallFilters()" style="width: 100%; padding: 10px; border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(13, 17, 23, 0.6); color: #e6edf3; font-size: 13px;">
+                <input type="date" id="filter-date-from" onchange="applyCallFilters()" style="width: 100%; padding: 10px; border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(13, 17, 23, 0.6); color: #e6edf3; font-size: 13px; font-family: 'JetBrains Mono', monospace;">
               </div>
               <div>
                 <label style="display: block; font-size: 11px; color: #7d8590; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">To Date</label>
-                <input type="date" id="filter-date-to" onchange="applyCallFilters()" style="width: 100%; padding: 10px; border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(13, 17, 23, 0.6); color: #e6edf3; font-size: 13px;">
+                <input type="date" id="filter-date-to" onchange="applyCallFilters()" style="width: 100%; padding: 10px; border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(13, 17, 23, 0.6); color: #e6edf3; font-size: 13px; font-family: 'JetBrains Mono', monospace;">
               </div>
               <div>
                 <label style="display: block; font-size: 11px; color: #7d8590; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Agent Name</label>
@@ -1177,7 +1193,17 @@
                 <button onclick="clearCallFilters()" style="width: 100%; padding: 10px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); font-size: 12px; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s;">Clear Filters</button>
               </div>
             </div>
-            <div id="filter-results" style="margin-top: 16px; font-size: 12px; color: #7d8590; font-weight: 600; letter-spacing: 0.5px;"></div>
+
+            <!-- Filter Results Summary -->
+            <div id="filter-summary" style="margin-top: 20px; padding: 20px; background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 4px;">
+              <div style="font-size: 12px; font-weight: 700; margin-bottom: 16px; color: #00FFFF; text-transform: uppercase; letter-spacing: 1.5px;">📊 FILTERED RESULTS SUMMARY</div>
+              <div id="filter-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+                <!-- Will be populated by JavaScript -->
+              </div>
+              <div id="filter-breakdown" style="margin-top: 16px;">
+                <!-- Will be populated by JavaScript -->
+              </div>
+            </div>
           </div>
 
           <div class="calls-table">
@@ -1225,7 +1251,7 @@
       }
     }
 
-    // Apply all call filters
+    // Apply all call filters with comprehensive statistics
     function applyCallFilters() {
       const dateFrom = document.getElementById('filter-date-from')?.value;
       const dateTo = document.getElementById('filter-date-to')?.value;
@@ -1235,6 +1261,9 @@
 
       const table = document.getElementById('all-calls-table');
       const rows = table.getElementsByTagName('tr');
+
+      // Track filtered calls data
+      let filteredCalls = [];
       let visibleCount = 0;
 
       for (let i = 1; i < rows.length; i++) {
@@ -1267,14 +1296,122 @@
         if (phoneFilter && !phoneNumber.includes(phoneFilter)) show = false;
 
         row.style.display = show ? '' : 'none';
-        if (show) visibleCount++;
+
+        if (show) {
+          visibleCount++;
+          // Extract call data for statistics
+          const costText = cells[5].textContent.replace('$', '').replace(',', '');
+          const durationText = cells[3].textContent; // In MM:SS format
+
+          filteredCalls.push({
+            agent: cells[1].textContent,
+            cost: parseFloat(costText) || 0,
+            duration: durationText,
+            status: cells[4].textContent.toLowerCase().trim(),
+            date: cells[2].textContent
+          });
+        }
       }
 
-      // Update results count
-      const resultsDiv = document.getElementById('filter-results');
-      if (resultsDiv) {
-        const totalCalls = rows.length - 1;
-        resultsDiv.textContent = `Showing ${visibleCount} of ${totalCalls} calls`;
+      // Calculate comprehensive statistics
+      const totalCost = filteredCalls.reduce((sum, call) => sum + call.cost, 0);
+      const avgCost = filteredCalls.length > 0 ? totalCost / filteredCalls.length : 0;
+
+      // Convert MM:SS to minutes for total duration
+      const totalDurationMinutes = filteredCalls.reduce((sum, call) => {
+        const parts = call.duration.split(':');
+        return sum + (parseInt(parts[0]) || 0) + (parseInt(parts[1]) || 0) / 60;
+      }, 0);
+
+      // Group by agent
+      const byAgent = {};
+      filteredCalls.forEach(call => {
+        if (!byAgent[call.agent]) {
+          byAgent[call.agent] = { count: 0, cost: 0 };
+        }
+        byAgent[call.agent].count++;
+        byAgent[call.agent].cost += call.cost;
+      });
+
+      // Group by status
+      const byStatus = {};
+      filteredCalls.forEach(call => {
+        if (!byStatus[call.status]) {
+          byStatus[call.status] = { count: 0, cost: 0 };
+        }
+        byStatus[call.status].count++;
+        byStatus[call.status].cost += call.cost;
+      });
+
+      // Update summary statistics
+      const statsGrid = document.getElementById('filter-stats-grid');
+      if (statsGrid) {
+        statsGrid.innerHTML = `
+          <div style="background: rgba(13, 17, 23, 0.6); padding: 12px; border: 1px solid rgba(48, 54, 61, 0.5);">
+            <div style="font-size: 10px; color: #7d8590; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Total Calls</div>
+            <div style="font-size: 24px; font-weight: 900; color: #00FFFF; font-family: 'JetBrains Mono', monospace;">${visibleCount.toLocaleString()}</div>
+          </div>
+          <div style="background: rgba(13, 17, 23, 0.6); padding: 12px; border: 1px solid rgba(48, 54, 61, 0.5);">
+            <div style="font-size: 10px; color: #7d8590; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Total Cost</div>
+            <div style="font-size: 24px; font-weight: 900; color: #10b981; font-family: 'JetBrains Mono', monospace;">$${totalCost.toFixed(2)}</div>
+          </div>
+          <div style="background: rgba(13, 17, 23, 0.6); padding: 12px; border: 1px solid rgba(48, 54, 61, 0.5);">
+            <div style="font-size: 10px; color: #7d8590; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Avg Cost/Call</div>
+            <div style="font-size: 24px; font-weight: 900; color: #00FFFF; font-family: 'JetBrains Mono', monospace;">$${avgCost.toFixed(2)}</div>
+          </div>
+          <div style="background: rgba(13, 17, 23, 0.6); padding: 12px; border: 1px solid rgba(48, 54, 61, 0.5);">
+            <div style="font-size: 10px; color: #7d8590; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Total Duration</div>
+            <div style="font-size: 24px; font-weight: 900; color: #00FFFF; font-family: 'JetBrains Mono', monospace;">${formatDuration(totalDurationMinutes)}</div>
+          </div>
+        `;
+      }
+
+      // Update breakdown
+      const breakdown = document.getElementById('filter-breakdown');
+      if (breakdown && filteredCalls.length > 0) {
+        let breakdownHTML = '';
+
+        // Agent breakdown (if not filtering by specific agent)
+        if (!agentFilter && Object.keys(byAgent).length > 1) {
+          breakdownHTML += `
+            <div style="margin-top: 16px;">
+              <div style="font-size: 11px; font-weight: 700; color: #00FFFF; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Breakdown by Agent</div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+                ${Object.entries(byAgent).sort((a, b) => b[1].cost - a[1].cost).map(([agent, data]) => `
+                  <div style="background: rgba(13, 17, 23, 0.4); padding: 10px; border-left: 3px solid #00FFFF;">
+                    <div style="font-size: 12px; color: #e6edf3; font-weight: 700; margin-bottom: 4px;">${agent}</div>
+                    <div style="font-size: 11px; color: #7d8590; font-family: 'JetBrains Mono', monospace;">
+                      ${data.count} calls • <span style="color: #10b981;">$${data.cost.toFixed(2)}</span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        // Status breakdown
+        if (Object.keys(byStatus).length > 0) {
+          breakdownHTML += `
+            <div style="margin-top: 16px;">
+              <div style="font-size: 11px; font-weight: 700; color: #00FFFF; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Breakdown by Status</div>
+              <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                ${Object.entries(byStatus).map(([status, data]) => `
+                  <div style="background: rgba(13, 17, 23, 0.4); padding: 10px; border-left: 3px solid ${status === 'completed' ? '#10b981' : '#3b82f6'}; min-width: 150px;">
+                    <div style="font-size: 12px; color: #e6edf3; font-weight: 700; margin-bottom: 4px; text-transform: uppercase;">${status}</div>
+                    <div style="font-size: 11px; color: #7d8590; font-family: 'JetBrains Mono', monospace;">
+                      ${data.count} calls • <span style="color: #10b981;">$${data.cost.toFixed(2)}</span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        breakdown.innerHTML = breakdownHTML;
+      } else if (breakdown) {
+        breakdown.innerHTML = '';
       }
     }
 
@@ -1285,6 +1422,70 @@
       document.getElementById('filter-agent').value = '';
       document.getElementById('filter-status').value = '';
       document.getElementById('filter-phone').value = '';
+      applyCallFilters();
+    }
+
+    // Set quick date range
+    function setDateRange(range) {
+      const today = new Date();
+      const dateFromInput = document.getElementById('filter-date-from');
+      const dateToInput = document.getElementById('filter-date-to');
+
+      // Format date as YYYY-MM-DD for input
+      const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+      let fromDate, toDate;
+
+      switch(range) {
+        case 'today':
+          fromDate = toDate = new Date();
+          break;
+        case 'yesterday':
+          fromDate = toDate = new Date(today);
+          fromDate.setDate(today.getDate() - 1);
+          toDate.setDate(today.getDate() - 1);
+          break;
+        case 'thisWeek':
+          // Start of this week (Sunday)
+          fromDate = new Date(today);
+          fromDate.setDate(today.getDate() - today.getDay());
+          toDate = new Date();
+          break;
+        case 'lastWeek':
+          // Start of last week (Sunday)
+          fromDate = new Date(today);
+          fromDate.setDate(today.getDate() - today.getDay() - 7);
+          // End of last week (Saturday)
+          toDate = new Date(today);
+          toDate.setDate(today.getDate() - today.getDay() - 1);
+          break;
+        case 'thisMonth':
+          fromDate = new Date(today.getFullYear(), today.getMonth(), 1);
+          toDate = new Date();
+          break;
+        case 'lastMonth':
+          fromDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+          toDate = new Date(today.getFullYear(), today.getMonth(), 0);
+          break;
+        case 'last30Days':
+          fromDate = new Date(today);
+          fromDate.setDate(today.getDate() - 30);
+          toDate = new Date();
+          break;
+        case 'last90Days':
+          fromDate = new Date(today);
+          fromDate.setDate(today.getDate() - 90);
+          toDate = new Date();
+          break;
+      }
+
+      dateFromInput.value = formatDate(fromDate);
+      dateToInput.value = formatDate(toDate);
       applyCallFilters();
     }
 
