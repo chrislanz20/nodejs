@@ -66,9 +66,9 @@
     }
 
     .header-logo {
-      height: 60px;
+      height: 80px;
       width: auto;
-      filter: drop-shadow(0 0 10px rgba(76, 166, 181, 0.3));
+      filter: drop-shadow(0 0 15px rgba(32, 156, 238, 0.4));
     }
 
     .header-content {
@@ -669,7 +669,31 @@
 <body>
   <div class="container">
     <header>
-      <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/68e5a3ac2cc261cd1cbe4769.png" alt="SaveYa Tech" class="header-logo">
+      <svg class="header-logo" width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="barGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#209CEE;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#157BB7;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+
+        <!-- Circular outline -->
+        <circle cx="60" cy="45" r="28" fill="none" stroke="#209CEE" stroke-width="3"/>
+
+        <!-- Three upward trending bars -->
+        <!-- Left bar (shortest) -->
+        <path d="M 48 55 Q 48 50, 48 48 L 48 58 Q 48 56, 48 55 Z" fill="url(#barGradient)" transform="translate(0, 5)"/>
+        <rect x="46" y="53" width="4" height="12" rx="2" fill="url(#barGradient)"/>
+
+        <!-- Middle bar (medium) -->
+        <rect x="58" y="48" width="4" height="17" rx="2" fill="url(#barGradient)"/>
+
+        <!-- Right bar (tallest) -->
+        <rect x="70" y="42" width="4" height="23" rx="2" fill="url(#barGradient)"/>
+
+        <!-- Text SAVEYA -->
+        <text x="60" y="95" font-family="Montserrat, Arial, sans-serif" font-size="18" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">SAVEYA</text>
+      </svg>
       <div class="header-content">
         <h1>RETELL AI DASHBOARD</h1>
         <p class="subtitle">Monitor your voice agents, track costs, and analyze call performance</p>
