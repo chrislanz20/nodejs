@@ -199,13 +199,13 @@ app.get("/api/agent-summary", async (req, res) => {
     // Add a small delay after fetching agents
     await sleep(500);
 
-    // Fetch ALL calls using raw API (Retell supports up to 1000 calls per page)
+    // Fetch ALL calls using SDK with pagination
     let allCalls = [];
     let paginationKey = undefined;
-    const pageSize = 1000;  // Retell API max is 1000 calls per page
+    const pageSize = 1000;  // Request max per page
     let pageCount = 0;
 
-    console.log('🔍 Fetching ALL calls with pagination (1000 calls per page)...\n');
+    console.log('🔍 Fetching ALL calls with SDK pagination...\n');
 
     // Keep fetching until we run out of data
     while (pageCount < 50) { // Safety limit: 50 pages = 50k calls max
@@ -213,46 +213,38 @@ app.get("/api/agent-summary", async (req, res) => {
         await sleep(500); // Small delay to avoid rate limits
       }
 
-      const requestBody = { limit: pageSize };
-      if (paginationKey) {
-        requestBody.pagination_key = paginationKey;
-      }
-
       console.log(`📄 Page ${pageCount + 1}...`);
 
       try {
-        // Use raw API to get pagination metadata
-        const response = await retryWithBackoff(async () => {
-          return await axios.post('https://api.retellai.com/v2/list-calls', requestBody, {
-            headers: {
-              'Authorization': `Bearer ${RETELL_API_KEY}`,
-              'Content-Type': 'application/json'
-            }
-          });
-        });
+        const params = { limit: pageSize };
+        if (paginationKey) {
+          params.pagination_key = paginationKey;
+        }
 
-        const data = response.data;
-        const calls = data.calls || [];
+        const data = await retryWithBackoff(() => retellClient.call.list(params));
+
+        // SDK returns array directly
+        const calls = Array.isArray(data) ? data : (data.calls || []);
 
         console.log(`   Got ${calls.length} calls`);
 
         if (calls.length > 0) {
           allCalls = allCalls.concat(calls);
-          // Set pagination_key to the last call ID for next request
+          // Use last call ID as pagination key for next request
           const lastCall = calls[calls.length - 1];
           paginationKey = lastCall.call_id;
         }
 
         pageCount++;
 
-        // Stop if we got less than the page size (no more data)
+        // Stop if we got less than requested (no more data)
         if (calls.length < pageSize) {
           console.log(`✓ Finished: ${allCalls.length} total calls (last page had ${calls.length} calls)`);
           break;
         }
       } catch (error) {
         console.error(`Error fetching page ${pageCount + 1}:`, error.message);
-        console.error('Error details:', error.response?.data || error);
+        console.error('Error details:', error);
         break;
       }
     }
