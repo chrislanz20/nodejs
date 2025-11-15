@@ -346,6 +346,15 @@
     let dataLoaded = false;  // Track if data has been loaded
     let totalCallsAvailable = null;  // Total calls from API if provided
 
+    // Helper function to format duration as MM:SS
+    function formatDuration(minutes) {
+      if (!minutes || minutes === 0) return '0:00';
+      const totalSeconds = Math.round(minutes * 60);
+      const mins = Math.floor(totalSeconds / 60);
+      const secs = totalSeconds % 60;
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
     // Switch between tabs
     function switchTab(tabName) {
       document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -525,7 +534,7 @@
                     </div>
                     <div class="agent-stat">
                       <span class="agent-stat-label">Total Duration</span>
-                      <span class="agent-stat-value">${agent.total_duration_minutes?.toFixed(2) || 0} min</span>
+                      <span class="agent-stat-value">${formatDuration(agent.total_duration_minutes)}</span>
                     </div>
                     <div class="agent-stat">
                       <span class="agent-stat-label">Total Cost</span>
@@ -619,8 +628,8 @@
             </div>
             <div class="stat-card">
               <div class="stat-label">Total Duration</div>
-              <div class="stat-value">${(agentData.total_duration_minutes || 0).toFixed(2)}</div>
-              <div class="stat-subtext">Minutes</div>
+              <div class="stat-value">${formatDuration(agentData.total_duration_minutes)}</div>
+              <div class="stat-subtext">Minutes:Seconds</div>
             </div>
             <div class="stat-card">
               <div class="stat-label">Total Cost</div>
@@ -640,7 +649,7 @@
             <table id="agent-calls-table">
               <thead>
                 <tr>
-                  <th>Call ID</th>
+                  <th>Phone Number</th>
                   <th>Date</th>
                   <th>Duration</th>
                   <th>Status</th>
@@ -653,12 +662,13 @@
                     ? new Date(call.start_timestamp).toLocaleString()
                     : 'N/A';
                   const status = call.end_timestamp ? 'completed' : 'ongoing';
+                  const phoneNumber = call.from_number || call.to_number || call.customer_number || 'N/A';
 
                   return `
                     <tr>
-                      <td>${call.call_id?.slice(0, 20)}...</td>
+                      <td>${phoneNumber}</td>
                       <td>${date}</td>
-                      <td>${call.duration_minutes || 0} min</td>
+                      <td>${formatDuration(call.duration_minutes)}</td>
                       <td><span class="status-badge status-${status}">${status}</span></td>
                       <td class="cost-highlight">$${(call.cost || 0).toFixed(2)}</td>
                     </tr>
@@ -721,8 +731,8 @@
             <table id="all-calls-table">
               <thead>
                 <tr>
-                  <th>Call ID</th>
-                  <th>Agent ID</th>
+                  <th>Phone Number</th>
+                  <th>Agent Name</th>
                   <th>Date</th>
                   <th>Duration</th>
                   <th>Status</th>
@@ -737,13 +747,14 @@
                     ? new Date(call.start_timestamp).toLocaleString()
                     : 'N/A';
                   const status = call.end_timestamp ? 'completed' : 'ongoing';
+                  const phoneNumber = call.from_number || call.to_number || call.customer_number || 'N/A';
 
                   return `
                     <tr>
-                      <td>${call.call_id?.slice(0, 20)}...</td>
-                      <td>${call.agent_id?.slice(0, 20)}...</td>
+                      <td>${phoneNumber}</td>
+                      <td>${call.agent_name || 'N/A'}</td>
                       <td>${date}</td>
-                      <td>${duration.toFixed(2)} min</td>
+                      <td>${formatDuration(duration)}</td>
                       <td><span class="status-badge status-${status}">${status}</span></td>
                       <td class="cost-highlight">$${cost.toFixed(2)}</td>
                     </tr>

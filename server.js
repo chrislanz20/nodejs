@@ -268,6 +268,12 @@ app.get("/api/agent-summary", async (req, res) => {
 
     console.log(`Grouped into ${agentsByName.size} unique agent names from ${allAgents.length} total versions`);
 
+    // Create a map from agent_id to agent_name for easy lookup
+    const agentIdToName = new Map();
+    allAgents.forEach(agent => {
+      agentIdToName.set(agent.agent_id, agent.agent_name || 'Unnamed Agent');
+    });
+
     // Calculate stats for each unique agent name
     const agentSummaries = Array.from(agentsByName.values()).map(agentGroup => {
       // Find all calls for this agent (across all versions)
@@ -310,6 +316,7 @@ app.get("/api/agent-summary", async (req, res) => {
       agents: agentSummaries,
       all_calls: allCalls.map(call => ({
         ...call,
+        agent_name: agentIdToName.get(call.agent_id) || 'Unknown Agent',
         duration_minutes: call.end_timestamp && call.start_timestamp
           ? Math.round((call.end_timestamp - call.start_timestamp) / 1000 / 60 * 100) / 100
           : 0,
