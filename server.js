@@ -77,7 +77,7 @@ app.get("/api/calls", async (req, res) => {
       // Fetch ALL calls with pagination using SDK
       let allCalls = [];
       let paginationKey = undefined;
-      const pageSize = 1000;
+      const pageSize = 50;  // Retell API limit is 50 calls per page
       let pageCount = 0;
 
       do {
@@ -199,16 +199,16 @@ app.get("/api/agent-summary", async (req, res) => {
     // Add a small delay after fetching agents
     await sleep(500);
 
-    // Fetch ALL calls - use simple pagination without limits
+    // Fetch ALL calls - Retell API returns 50 calls per page
     let allCalls = [];
     let paginationKey = undefined;
-    const pageSize = 1000;
+    const pageSize = 50;  // Retell API limit is 50 calls per page
     let pageCount = 0;
 
-    console.log('🔍 Fetching ALL calls with continuous pagination...\n');
+    console.log('🔍 Fetching ALL calls with continuous pagination (50 calls per page)...\n');
 
     // Keep fetching until we run out of pagination keys
-    while (pageCount < 100) { // Safety limit: 100 pages = 100k calls max
+    while (pageCount < 200) { // Safety limit: 200 pages = 10k calls max
       if (pageCount > 0) {
         await sleep(500); // Small delay to avoid rate limits
       }
@@ -340,7 +340,7 @@ app.get("/api/analytics/:agentId", async (req, res) => {
     // Fetch ALL calls for this agent with pagination using SDK
     let calls = [];
     let paginationKey = undefined;
-    const pageSize = 1000;
+    const pageSize = 50;  // Retell API limit is 50 calls per page
 
     do {
       const params = {
