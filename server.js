@@ -493,7 +493,7 @@ async function writeCategories(categories) {
 // Helper: Categorize a single transcript using Claude
 async function categorizeTranscript(transcript) {
   if (!transcript || transcript.length === 0) {
-    return 'Other';
+    return { category: 'Other', reasoning: 'No transcript available' };
   }
 
   // Format transcript for Claude
@@ -503,7 +503,7 @@ async function categorizeTranscript(transcript) {
   } else if (typeof transcript === 'string') {
     transcriptText = transcript;
   } else {
-    return 'Other';
+    return { category: 'Other', reasoning: 'Invalid transcript format' };
   }
 
   const prompt = `You are analyzing a phone call transcript for a personal injury law firm's AI receptionist.
@@ -519,30 +519,43 @@ Read the following call transcript and categorize it into ONE of these categorie
 TRANSCRIPT:
 ${transcriptText}
 
-Respond with ONLY ONE WORD - the category name: "New Lead", "Existing Client", "Insurance", "Medical", or "Other"`;
+Respond in this exact format:
+CATEGORY: [category name]
+REASONING: [one brief sentence explaining why - mention specific keywords or phrases from the transcript]
+
+Example:
+CATEGORY: New Lead
+REASONING: Caller asked "Can you help me with my car accident?" indicating first-time inquiry about legal services.`;
 
   try {
     const message = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 20,
+      max_tokens: 150,
       messages: [{
         role: 'user',
         content: prompt
       }]
     });
 
-    const category = message.content[0].text.trim();
+    const response = message.content[0].text.trim();
+
+    // Parse response
+    const categoryMatch = response.match(/CATEGORY:\s*(.+?)(?:\n|$)/i);
+    const reasoningMatch = response.match(/REASONING:\s*(.+?)$/is);
+
+    let category = categoryMatch ? categoryMatch[1].trim() : 'Other';
+    const reasoning = reasoningMatch ? reasoningMatch[1].trim() : 'Auto-categorized';
 
     // Validate category
     const validCategories = ['New Lead', 'Existing Client', 'Insurance', 'Medical', 'Other'];
-    if (validCategories.includes(category)) {
-      return category;
+    if (!validCategories.includes(category)) {
+      category = 'Other';
     }
 
-    return 'Other';
+    return { category, reasoning };
   } catch (error) {
     console.error('Error categorizing transcript:', error);
-    return 'Other';
+    return { category: 'Other', reasoning: 'Error during categorization' };
   }
 }
 
@@ -566,14 +579,14 @@ app.post('/api/categorize-call', async (req, res) => {
       return res.status(400).json({ error: 'call_id is required' });
     }
 
-    const category = await categorizeTranscript(transcript);
+    const result = await categorizeTranscript(transcript);
 
     // Save to categories file
     const categories = await readCategories();
-    categories[call_id] = category;
+    categories[call_id] = result;
     await writeCategories(categories);
 
-    res.json({ call_id, category });
+    res.json({ call_id, ...result });
   } catch (error) {
     console.error('Error categorizing call:', error);
     res.status(500).json({ error: 'Failed to categorize call' });
@@ -607,11 +620,11 @@ app.post('/api/categorize-batch', async (req, res) => {
           return;
         }
 
-        const category = await categorizeTranscript(call.transcript);
-        categories[call.call_id] = category;
+        const result = await categorizeTranscript(call.transcript);
+        categories[call.call_id] = result;
         processed++;
 
-        console.log(`✓ Categorized call ${processed + skipped}/${calls.length}: ${call.call_id} → ${category}`);
+        console.log(`✓ Categorized call ${processed + skipped}/${calls.length}: ${call.call_id} → ${result.category} (${result.reasoning})`);
       }));
 
       // Save after each batch
@@ -635,6 +648,43 @@ app.post('/api/categorize-batch', async (req, res) => {
   } catch (error) {
     console.error('Error in batch categorization:', error);
     res.status(500).json({ error: 'Failed to categorize batch' });
+  }
+});
+
+// POST /api/update-category - Manually override a call's category
+app.post('/api/update-category', async (req, res) => {
+  try {
+    const { call_id, category, reasoning } = req.body;
+
+    if (!call_id) {
+      return res.status(400).json({ error: 'call_id is required' });
+    }
+
+    if (!category) {
+      return res.status(400).json({ error: 'category is required' });
+    }
+
+    // Validate category
+    const validCategories = ['New Lead', 'Existing Client', 'Insurance', 'Medical', 'Other'];
+    if (!validCategories.includes(category)) {
+      return res.status(400).json({ error: 'Invalid category' });
+    }
+
+    // Update category
+    const categories = await readCategories();
+    categories[call_id] = {
+      category,
+      reasoning: reasoning || 'Manually categorized',
+      manual: true
+    };
+    await writeCategories(categories);
+
+    console.log(`✓ Manually updated category for ${call_id} → ${category}`);
+
+    res.json({ success: true, call_id, category, reasoning });
+  } catch (error) {
+    console.error('Error updating category:', error);
+    res.status(500).json({ error: 'Failed to update category' });
   }
 });
 

@@ -876,14 +876,33 @@
     }
 
     // Helper: Get category badge HTML
-    function getCategoryBadge(callId) {
-      const category = callCategories[callId];
-      if (!category) {
+    function getCategoryBadge(callId, includeReasoning = false) {
+      const categoryData = callCategories[callId];
+      if (!categoryData) {
         return '<span class="category-badge category-uncategorized">Uncategorized</span>';
       }
 
+      // Handle both old format (string) and new format (object with category and reasoning)
+      const category = typeof categoryData === 'string' ? categoryData : categoryData.category;
+      const reasoning = typeof categoryData === 'object' ? categoryData.reasoning : '';
+      const isManual = typeof categoryData === 'object' ? categoryData.manual : false;
+
       const className = `category-${category.toLowerCase().replace(' ', '-')}`;
-      return `<span class="category-badge ${className}">${category}</span>`;
+      const manualBadge = isManual ? ' <span style="font-size: 8px; opacity: 0.7;">✎</span>' : '';
+      const badge = `<span class="category-badge ${className}" title="${reasoning || category}">${category}${manualBadge}</span>`;
+
+      if (includeReasoning && reasoning) {
+        return `${badge}<br><span style="font-size: 11px; color: #7d8590; font-style: italic;">${reasoning}</span>`;
+      }
+
+      return badge;
+    }
+
+    // Helper: Get category string from category data
+    function getCategory(callId) {
+      const categoryData = callCategories[callId];
+      if (!categoryData) return null;
+      return typeof categoryData === 'string' ? categoryData : categoryData.category;
     }
 
     // Load categories from API
@@ -1912,6 +1931,26 @@
             <div class="modal-field-label">Call ID</div>
             <div class="modal-field-value" style="font-size: 11px; word-break: break-all;">${call.call_id || 'N/A'}</div>
           </div>
+          <div class="modal-field" style="grid-column: 1 / -1;">
+            <div class="modal-field-label">Category</div>
+            <div class="modal-field-value" id="modal-category-${callId}">
+              ${getCategoryBadge(callId, true)}
+              <button onclick="showCategoryEditor('${callId}')" style="margin-left: 12px; padding: 6px 12px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); font-size: 11px; cursor: pointer; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Change</button>
+            </div>
+            <div id="category-editor-${callId}" style="display: none; margin-top: 12px; padding: 16px; background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 4px;">
+              <select id="category-select-${callId}" style="width: 100%; padding: 10px; border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(13, 17, 23, 0.8); color: #e6edf3; font-size: 13px; margin-bottom: 10px;">
+                <option value="New Lead">New Lead</option>
+                <option value="Existing Client">Existing Client</option>
+                <option value="Insurance">Insurance</option>
+                <option value="Medical">Medical</option>
+                <option value="Other">Other</option>
+              </select>
+              <div style="display: flex; gap: 8px;">
+                <button onclick="saveCategoryChange('${callId}')" style="flex: 1; padding: 8px; background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); font-size: 12px; cursor: pointer; font-weight: 600; text-transform: uppercase;">Save</button>
+                <button onclick="hideCategoryEditor('${callId}')" style="flex: 1; padding: 8px; background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.4); font-size: 12px; cursor: pointer; font-weight: 600; text-transform: uppercase;">Cancel</button>
+              </div>
+            </div>
+          </div>
         </div>
 
         ${call.call_analysis?.call_summary ? `
@@ -1950,6 +1989,80 @@
       const modal = document.getElementById('call-modal');
       if (event.target === modal) {
         closeCallModal();
+      }
+    }
+
+    // Show category editor
+    function showCategoryEditor(callId) {
+      const editor = document.getElementById(`category-editor-${callId}`);
+      const select = document.getElementById(`category-select-${callId}`);
+
+      // Set current category as selected
+      const currentCategory = getCategory(callId);
+      if (currentCategory) {
+        select.value = currentCategory;
+      }
+
+      editor.style.display = 'block';
+    }
+
+    // Hide category editor
+    function hideCategoryEditor(callId) {
+      const editor = document.getElementById(`category-editor-${callId}`);
+      editor.style.display = 'none';
+    }
+
+    // Save category change
+    async function saveCategoryChange(callId) {
+      const select = document.getElementById(`category-select-${callId}`);
+      const newCategory = select.value;
+
+      try {
+        const res = await fetch('/api/update-category', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            call_id: callId,
+            category: newCategory,
+            reasoning: 'Manually categorized by user'
+          })
+        });
+
+        if (!res.ok) {
+          throw new Error(`Failed to update category: ${res.status}`);
+        }
+
+        const result = await res.json();
+
+        // Update local categories
+        callCategories[callId] = {
+          category: newCategory,
+          reasoning: 'Manually categorized by user',
+          manual: true
+        };
+
+        // Update the modal display
+        const modalCategory = document.getElementById(`modal-category-${callId}`);
+        if (modalCategory) {
+          modalCategory.innerHTML = `
+            ${getCategoryBadge(callId, true)}
+            <button onclick="showCategoryEditor('${callId}')" style="margin-left: 12px; padding: 6px 12px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); font-size: 11px; cursor: pointer; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Change</button>
+          `;
+        }
+
+        // Hide editor
+        hideCategoryEditor(callId);
+
+        // Refresh current view to show updated category
+        const activeTab = document.querySelector('.tab.active');
+        if (activeTab) {
+          activeTab.click();
+        }
+
+        console.log(`✓ Updated category for ${callId} to ${newCategory}`);
+      } catch (error) {
+        alert(`Error updating category: ${error.message}`);
+        console.error('Error:', error);
       }
     }
 
