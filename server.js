@@ -228,18 +228,16 @@ app.get("/api/agent-summary", async (req, res) => {
 
         console.log(`   Got ${calls.length} calls`);
 
+        pageCount++;
+
         if (calls.length > 0) {
           allCalls = allCalls.concat(calls);
           // Use last call ID as pagination key for next request
           const lastCall = calls[calls.length - 1];
           paginationKey = lastCall.call_id;
-        }
-
-        pageCount++;
-
-        // Stop if we got less than requested (no more data)
-        if (calls.length < pageSize) {
-          console.log(`✓ Finished: ${allCalls.length} total calls (last page had ${calls.length} calls)`);
+        } else {
+          // No calls returned - we're done
+          console.log(`✓ Finished: ${allCalls.length} total calls (got 0 calls on page ${pageCount})`);
           break;
         }
       } catch (error) {
