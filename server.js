@@ -268,14 +268,27 @@ app.get("/api/agent-summary", async (req, res) => {
 
     console.log(`Grouped into ${agentsByName.size} unique agent names from ${allAgents.length} total versions`);
 
-    // Create a map from agent_id to agent_name for easy lookup
-    const agentIdToName = new Map();
-    allAgents.forEach(agent => {
-      agentIdToName.set(agent.agent_id, agent.agent_name || 'Unnamed Agent');
+    // DEBUG: Check for the specific agent ID that's causing issues
+    const targetAgentId = 'agent_8e50b96f7e7bb7ce7479219fcc';
+    const agentsWithTargetId = allAgents.filter(a => a.agent_id === targetAgentId);
+    console.log(`\n🔍 Found ${agentsWithTargetId.length} agent(s) with ID ${targetAgentId}:`);
+    agentsWithTargetId.forEach((agent, idx) => {
+      console.log(`  ${idx + 1}. Name: "${agent.agent_name}" | Last modified: ${agent.last_modification_timestamp}`);
     });
 
+    // Create a map from agent_id to agent_name for easy lookup
+    // Use the MOST RECENTLY MODIFIED agent if there are duplicates
+    const agentIdToName = new Map();
+    allAgents
+      .sort((a, b) => (b.last_modification_timestamp || 0) - (a.last_modification_timestamp || 0))
+      .forEach(agent => {
+        if (!agentIdToName.has(agent.agent_id)) {
+          agentIdToName.set(agent.agent_id, agent.agent_name || 'Unnamed Agent');
+        }
+      });
+
     // DEBUG: Log agent names to help identify which agents are being used
-    console.log('\n🔍 Agent ID to Name mapping:');
+    console.log('\n🔍 Agent ID to Name mapping (using most recent):');
     const recentCalls = allCalls.slice(0, 5).sort((a, b) => (b.start_timestamp || 0) - (a.start_timestamp || 0));
     recentCalls.forEach((call, idx) => {
       const agentName = agentIdToName.get(call.agent_id) || 'Unknown';
