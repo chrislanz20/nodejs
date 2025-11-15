@@ -199,7 +199,7 @@ app.get("/api/agent-summary", async (req, res) => {
     // Add a small delay after fetching agents
     await sleep(500);
 
-    // Fetch ALL calls - Retell API returns 50 calls per page
+    // Fetch ALL calls using raw API (SDK doesn't return pagination metadata)
     let allCalls = [];
     let paginationKey = undefined;
     const pageSize = 50;  // Retell API limit is 50 calls per page
@@ -213,27 +213,28 @@ app.get("/api/agent-summary", async (req, res) => {
         await sleep(500); // Small delay to avoid rate limits
       }
 
-      const params = { limit: pageSize };
+      const requestBody = { limit: pageSize };
       if (paginationKey) {
-        params.pagination_key = paginationKey;
+        requestBody.pagination_key = paginationKey;
       }
 
       console.log(`📄 Page ${pageCount + 1}...`);
 
-      const data = await retryWithBackoff(() => retellClient.call.list(params));
+      // Use raw API instead of SDK to get pagination metadata
+      const response = await retryWithBackoff(async () => {
+        return await axios.post('https://api.retellai.com/v2/list-calls', requestBody, {
+          headers: {
+            'Authorization': `Bearer ${RETELL_API_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        });
+      });
 
-      // DEBUG: Log the response structure
-      console.log(`   Response type: ${Array.isArray(data) ? 'Array' : 'Object'}`);
-      console.log(`   Response keys:`, Object.keys(data || {}).slice(0, 10));
-
-      // Extract calls and pagination key
-      const calls = Array.isArray(data) ? data : (data.calls || []);
-      const nextKey = Array.isArray(data) ? null : (data.pagination_key || null);
+      const data = response.data;
+      const calls = data.calls || [];
+      const nextKey = data.pagination_key || null;
 
       console.log(`   Got ${calls.length} calls | Next page: ${nextKey ? 'Yes' : 'No'}`);
-      if (nextKey) {
-        console.log(`   Pagination key: ${nextKey.substring(0, 20)}...`);
-      }
 
       if (calls.length > 0) {
         allCalls = allCalls.concat(calls);
