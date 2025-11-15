@@ -199,96 +199,79 @@ app.get("/api/agent-summary", async (req, res) => {
     // Add a small delay after fetching agents
     await sleep(500);
 
-    // Fetch ALL calls with pagination - using direct API call instead of SDK
+    // Fetch ALL calls with pagination - trying both pagination_key and sort methods
     let allCalls = [];
     let paginationKey = undefined;
     const pageSize = 1000;
     let pageCount = 0;
-    let totalCallsFromAPI = null;  // Track if API provides a total count
+    let totalCallsFromAPI = null;
+
+    console.log('🔍 Attempting to fetch ALL calls using pagination...\n');
 
     do {
-      // Add delay between pagination requests to avoid rate limiting (1.5 seconds)
+      // Add delay between pagination requests to avoid rate limiting
       if (pageCount > 0) {
-        console.log('Waiting 1.5s before next page to avoid rate limiting...');
+        console.log('Waiting 1.5s before next page...');
         await sleep(1500);
       }
 
-      // Call API directly to see raw response
-      const requestBody = {
-        limit: pageSize
+      const params = {
+        limit: pageSize,
+        sort_order: 'descending'  // Get newest first, helps with pagination
       };
+
       if (paginationKey) {
-        requestBody.pagination_key = paginationKey;
+        params.pagination_key = paginationKey;
       }
 
-      console.log('Calling Retell API with:', JSON.stringify(requestBody));
+      console.log(`\n📄 Fetching page ${pageCount + 1}...`);
 
-      const response = await retryWithBackoff(async () => {
-        const result = await axios.post('https://api.retellai.com/v2/list-calls', requestBody, {
-          headers: {
-            'Authorization': `Bearer ${process.env.RETELL_API_KEY}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        return result.data;
-      });
+      // Use SDK to fetch calls
+      const data = await retryWithBackoff(() => retellClient.call.list(params));
 
-      console.log('\n========== PAGE', pageCount + 1, 'RESPONSE ==========');
-      console.log('Response type:', typeof response);
-      console.log('Response is array?:', Array.isArray(response));
-      console.log('Response has calls property?:', response?.calls ? 'YES' : 'NO');
-      console.log('Response has pagination_key?:', response?.pagination_key ? 'YES' : 'NO');
-      console.log('All response keys:', Object.keys(response || {}));
+      // Handle both array and object responses
+      let calls, nextPaginationKey;
 
-      // Log the full structure of pagination-related fields
-      if (response && typeof response === 'object' && !Array.isArray(response)) {
-        console.log('Pagination key value:', response.pagination_key || 'NONE');
-        console.log('Has_more field:', response.has_more);
-        console.log('Total field:', response.total);
-        console.log('Count field:', response.count);
+      if (Array.isArray(data)) {
+        calls = data;
+        nextPaginationKey = null;
+        console.log('   Response: Array format (no pagination metadata)');
+      } else {
+        calls = data.calls || [];
+        nextPaginationKey = data.pagination_key || null;
 
-        // Capture total if provided by API
-        if (response.total && !totalCallsFromAPI) {
-          totalCallsFromAPI = response.total;
-          console.log(`🎯 API reports total of ${totalCallsFromAPI} calls available!`);
+        if (data.total && !totalCallsFromAPI) {
+          totalCallsFromAPI = data.total;
+          console.log(`   🎯 API reports ${totalCallsFromAPI} total calls available!`);
         }
       }
 
-      // Handle different response structures from Retell API
-      let calls = [];
-      let nextPaginationKey = null;
-
-      if (Array.isArray(response)) {
-        // Response is directly an array of calls (some API endpoints return this)
-        console.log('⚠️  WARNING: Response is array - no pagination metadata available!');
-        calls = response;
-        nextPaginationKey = null;
-      } else if (response && typeof response === 'object') {
-        // Response is an object with calls property
-        calls = response.calls || response.data?.calls || [];
-        nextPaginationKey = response.pagination_key || response.data?.pagination_key || null;
-
-        console.log(`Extracted ${calls.length} calls from response`);
-        console.log('Pagination key extracted:', nextPaginationKey ? 'YES' : 'NO');
-      }
-
       pageCount++;
-      console.log(`\n📊 SUMMARY: Page ${pageCount}: Got ${calls.length} calls (requested ${pageSize})`);
-
-      // Warning if we got exactly the limit - might be more data
-      if (calls.length === pageSize && !nextPaginationKey) {
-        console.log('⚠️  WARNING: Got exactly the limit but no pagination key - there might be more data!');
-      }
+      console.log(`   ✓ Received ${calls.length} calls`);
+      console.log(`   Pagination key: ${nextPaginationKey ? '✓ Has key' : '✗ No key'}`);
 
       if (calls.length > 0) {
         allCalls = allCalls.concat(calls);
-        console.log(`✅ Total accumulated: ${allCalls.length} calls`);
+        console.log(`   📊 Total so far: ${allCalls.length} calls`);
       }
 
       paginationKey = nextPaginationKey;
-      console.log('Will continue?:', !!paginationKey);
-      console.log('========================================\n');
-    } while (paginationKey && allCalls.length < 50000); // Increased safety limit
+
+      // Stop if no pagination key AND we got less than a full page
+      if (!paginationKey && calls.length < pageSize) {
+        console.log(`   ✓ Reached end (got ${calls.length} < ${pageSize})`);
+        break;
+      }
+
+      // Stop if no pagination key but we DID get a full page - this is suspicious
+      if (!paginationKey && calls.length === pageSize) {
+        console.log(`   ⚠️  WARNING: Got full page (${calls.length}) but no pagination key!`);
+        console.log(`   ⚠️  This likely means Retell has a pagination limit.`);
+        console.log(`   ⚠️  Fetched ${allCalls.length} calls total.`);
+        break;
+      }
+
+    } while (paginationKey && allCalls.length < 50000);
 
     console.log(`\n📈 FINAL TOTALS:`);
     console.log(`Total calls fetched: ${allCalls.length}`);
