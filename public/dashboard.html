@@ -1054,11 +1054,27 @@
 
       // Format transcript
       let transcriptHTML = '<div class="transcript-box">';
-      if (call.transcript && Array.isArray(call.transcript)) {
-        call.transcript.forEach(msg => {
-          const role = msg.role || 'unknown';
+      let transcriptData = null;
+
+      // Try to parse transcript if it's a string
+      if (typeof call.transcript === 'string') {
+        try {
+          transcriptData = JSON.parse(call.transcript);
+        } catch (e) {
+          transcriptData = call.transcript;
+        }
+      } else if (call.transcript) {
+        transcriptData = call.transcript;
+      } else if (call.transcript_object) {
+        transcriptData = call.transcript_object;
+      }
+
+      // Display transcript in readable format
+      if (Array.isArray(transcriptData)) {
+        transcriptData.forEach(msg => {
+          const role = (msg.role || 'unknown').toUpperCase();
           const content = msg.content || '';
-          const className = role === 'user' ? 'transcript-user' : 'transcript-agent';
+          const className = msg.role === 'user' ? 'transcript-user' : 'transcript-agent';
           transcriptHTML += `
             <div class="transcript-message ${className}">
               <div class="transcript-role">${role}</div>
@@ -1066,10 +1082,9 @@
             </div>
           `;
         });
-      } else if (call.transcript_object) {
-        transcriptHTML += JSON.stringify(call.transcript_object, null, 2);
-      } else if (call.transcript) {
-        transcriptHTML += call.transcript;
+      } else if (typeof transcriptData === 'string') {
+        // Plain text transcript
+        transcriptHTML += `<div style="white-space: pre-wrap;">${transcriptData}</div>`;
       } else {
         transcriptHTML += '<div style="color: #718096; font-style: italic;">No transcript available</div>';
       }
