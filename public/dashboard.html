@@ -899,6 +899,61 @@
       }
     }
 
+    // Auto-categorize new uncategorized calls in background
+    async function autoCategorizeNewCalls() {
+      if (!allCalls || allCalls.length === 0) {
+        return;
+      }
+
+      // Get uncategorized calls with transcripts
+      const uncategorizedCalls = allCalls.filter(call => {
+        const hasTranscript = call.transcript || call.transcript_object;
+        const isUncategorized = !callCategories[call.call_id];
+        return hasTranscript && isUncategorized;
+      });
+
+      if (uncategorizedCalls.length === 0) {
+        console.log('✓ All calls are already categorized');
+        return;
+      }
+
+      console.log(`🔄 Auto-categorizing ${uncategorizedCalls.length} new calls in background...`);
+
+      try {
+        // Prepare calls data
+        const callsToAnalyze = uncategorizedCalls.map(call => ({
+          call_id: call.call_id,
+          transcript: call.transcript || call.transcript_object
+        }));
+
+        // Send batch request
+        const res = await fetch('/api/categorize-batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ calls: callsToAnalyze })
+        });
+
+        if (!res.ok) {
+          throw new Error(`Server error: ${res.status}`);
+        }
+
+        const result = await res.json();
+
+        // Update categories
+        callCategories = result.categories;
+
+        console.log(`✓ Auto-categorization complete! Processed: ${result.processed}, Skipped: ${result.skipped}`);
+
+        // Reload current view to show updated categories
+        const activeTab = document.querySelector('.tab.active');
+        if (activeTab) {
+          activeTab.click();
+        }
+      } catch (error) {
+        console.error('Auto-categorization error:', error);
+      }
+    }
+
     // Analyze all uncategorized calls
     async function analyzeAllCalls() {
       // Get uncategorized calls with transcripts
@@ -1126,6 +1181,8 @@
       if (dataLoaded && !forceReload && agentSummaries.length > 0) {
         console.log('Using cached data:', agentSummaries.length, 'agents and', allCalls.length, 'calls');
         renderOverview(content);
+        // Still check for new uncategorized calls even with cached data
+        autoCategorizeNewCalls();
         return;
       }
 
@@ -1146,6 +1203,9 @@
 
         // Load categories
         await loadCategories();
+
+        // Auto-categorize any new uncategorized calls in background
+        autoCategorizeNewCalls();
 
         console.log('Overview - loaded', agentSummaries.length, 'agents and', allCalls.length, 'calls');
         console.log('Pages fetched:', data.pages_fetched);
