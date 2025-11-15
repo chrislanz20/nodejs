@@ -274,6 +274,14 @@ app.get("/api/agent-summary", async (req, res) => {
       agentIdToName.set(agent.agent_id, agent.agent_name || 'Unnamed Agent');
     });
 
+    // DEBUG: Log agent names to help identify which agents are being used
+    console.log('\n🔍 Agent ID to Name mapping:');
+    const recentCalls = allCalls.slice(0, 5).sort((a, b) => (b.start_timestamp || 0) - (a.start_timestamp || 0));
+    recentCalls.forEach((call, idx) => {
+      const agentName = agentIdToName.get(call.agent_id) || 'Unknown';
+      console.log(`  Call ${idx + 1}: Agent="${agentName}" (ID: ${call.agent_id?.slice(0, 15)}...)`);
+    });
+
     // Calculate stats for each unique agent name
     const agentSummaries = Array.from(agentsByName.values()).map(agentGroup => {
       // Find all calls for this agent (across all versions)
