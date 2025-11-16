@@ -970,9 +970,9 @@
           transcript: call.transcript || call.transcript_object
         }));
 
-        // Send in smaller chunks to avoid 413 Payload Too Large error
-        // Reduced to 5 due to large transcript sizes on Vercel (4.5MB limit)
-        const chunkSize = 5;
+        // Process ONE call at a time to avoid Vercel's 10-second serverless timeout
+        // (5 calls × 3 sec/call = 15 sec = timeout!)
+        const chunkSize = 1;
         let totalProcessed = 0;
         let totalSkipped = 0;
 
@@ -1045,9 +1045,9 @@
           transcript: call.transcript || call.transcript_object
         }));
 
-        // Send in smaller chunks to avoid 413 Payload Too Large error
-        // Reduced to 5 due to large transcript sizes on Vercel (4.5MB limit)
-        const chunkSize = 5;
+        // Process ONE call at a time to avoid Vercel's 10-second serverless timeout
+        // (5 calls × 3 sec/call = 15 sec = timeout!)
+        const chunkSize = 1;
         let totalProcessed = 0;
         let totalSkipped = 0;
 
@@ -1109,7 +1109,7 @@
       modal.innerHTML = `
         <div class="progress-modal">
           <h2 style="margin-bottom: 16px; color: #00FFFF; font-size: 20px;">Analyzing Calls with AI...</h2>
-          <p style="color: #7d8590; margin-bottom: 16px;">Processing in batches of 50 calls. Please don't close this window.</p>
+          <p style="color: #7d8590; margin-bottom: 16px;">Processing one call at a time for accuracy. Please don't close this window.</p>
           <div class="progress-bar">
             <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
           </div>
