@@ -485,9 +485,14 @@ async function readCategories() {
   }
 }
 
-// Helper: Write categories to file
+// Helper: Write categories to file (fails gracefully on Vercel's read-only filesystem)
 async function writeCategories(categories) {
-  await fs.writeFile(CATEGORIES_FILE, JSON.stringify(categories, null, 2));
+  try {
+    await fs.writeFile(CATEGORIES_FILE, JSON.stringify(categories, null, 2));
+  } catch (error) {
+    // Ignore write errors on Vercel - we use localStorage on frontend instead
+    console.log('Note: Could not write categories.json (expected on Vercel serverless)');
+  }
 }
 
 // Helper: Categorize a single transcript using Claude
