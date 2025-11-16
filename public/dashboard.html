@@ -905,13 +905,38 @@
       return typeof categoryData === 'string' ? categoryData : categoryData.category;
     }
 
-    // Load categories from API
+    // Save categories to localStorage
+    function saveCategoriesToLocalStorage() {
+      try {
+        localStorage.setItem('retell_call_categories', JSON.stringify(callCategories));
+        console.log(`💾 Saved ${Object.keys(callCategories).length} categories to localStorage`);
+      } catch (error) {
+        console.error('Failed to save categories to localStorage:', error);
+      }
+    }
+
+    // Load categories from localStorage first, then sync with API
     async function loadCategories() {
       try {
+        // First, try to load from localStorage (persistent across sessions)
+        const localData = localStorage.getItem('retell_call_categories');
+        if (localData) {
+          callCategories = JSON.parse(localData);
+          console.log(`✅ Loaded ${Object.keys(callCategories).length} call categories from localStorage`);
+        }
+
+        // Then try to load from API (will be empty on Vercel, but works locally)
         const res = await fetch('/api/categories');
         if (res.ok) {
-          callCategories = await res.json();
-          console.log(`Loaded ${Object.keys(callCategories).length} call categories`);
+          const apiCategories = await res.json();
+          const apiCount = Object.keys(apiCategories).length;
+
+          // Merge API categories with localStorage (API takes precedence for conflicts)
+          if (apiCount > 0) {
+            callCategories = { ...callCategories, ...apiCategories };
+            console.log(`📡 Merged ${apiCount} categories from API`);
+            saveCategoriesToLocalStorage();
+          }
         }
       } catch (error) {
         console.error('Failed to load categories:', error);
@@ -967,6 +992,7 @@
 
           // Update categories incrementally
           callCategories = result.categories;
+          saveCategoriesToLocalStorage();  // Persist to browser storage
           totalProcessed += result.processed;
           totalSkipped += result.skipped;
 
@@ -1043,6 +1069,7 @@
 
           // Update categories incrementally
           callCategories = result.categories;
+          saveCategoriesToLocalStorage();  // Persist to browser storage
           totalProcessed += result.processed;
           totalSkipped += result.skipped;
 
@@ -1171,7 +1198,11 @@
         <div class="calls-table" style="max-height: 600px; overflow-y: auto;">
           <div class="table-header">
             <div class="table-title">Recent Calls (Showing ${Math.min(50, allCalls.length)} most recent)</div>
-            <button class="analyze-button" onclick="analyzeAllCalls()">🤖 Analyze All Calls</button>
+            <div style="display: flex; gap: 8px;">
+              <button class="analyze-button" onclick="analyzeAllCalls()">🤖 Analyze All Calls</button>
+              <button class="analyze-button" onclick="exportCategories()" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #10b981;">💾 Export</button>
+              <button class="analyze-button" onclick="importCategories()" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #3b82f6;">📥 Import</button>
+            </div>
           </div>
           <table>
             <thead>
@@ -1575,7 +1606,11 @@
           <div class="calls-table">
             <div class="table-header">
               <div class="table-title">All Calls</div>
-              <button class="analyze-button" onclick="analyzeAllCalls()">🤖 Analyze All Calls</button>
+              <div style="display: flex; gap: 8px;">
+                <button class="analyze-button" onclick="analyzeAllCalls()">🤖 Analyze All Calls</button>
+                <button class="analyze-button" onclick="exportCategories()" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #10b981;">💾 Export</button>
+                <button class="analyze-button" onclick="importCategories()" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #3b82f6;">📥 Import</button>
+              </div>
             </div>
             <table id="all-calls-table">
               <thead>
@@ -2064,6 +2099,7 @@
           reasoning: 'Manually categorized by user',
           manual: true
         };
+        saveCategoriesToLocalStorage();  // Persist to browser storage
 
         // Update the modal display
         const modalCategory = document.getElementById(`modal-category-${callId}`);
@@ -2088,6 +2124,74 @@
         alert(`Error updating category: ${error.message}`);
         console.error('Error:', error);
       }
+    }
+
+    // Export categories to JSON file
+    function exportCategories() {
+      const categoriesCount = Object.keys(callCategories).length;
+      if (categoriesCount === 0) {
+        alert('No categories to export. Please analyze some calls first.');
+        return;
+      }
+
+      const dataStr = JSON.stringify(callCategories, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `retell-categories-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      console.log(`✅ Exported ${categoriesCount} categories to file`);
+      alert(`Successfully exported ${categoriesCount} categorized calls!`);
+    }
+
+    // Import categories from JSON file
+    function importCategories() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'application/json';
+
+      input.onchange = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        try {
+          const text = await file.text();
+          const importedCategories = JSON.parse(text);
+
+          // Validate the data structure
+          if (typeof importedCategories !== 'object' || Array.isArray(importedCategories)) {
+            throw new Error('Invalid file format. Expected a JSON object.');
+          }
+
+          // Merge with existing categories (imported categories take precedence)
+          const beforeCount = Object.keys(callCategories).length;
+          callCategories = { ...callCategories, ...importedCategories };
+          const afterCount = Object.keys(callCategories).length;
+          const newCount = afterCount - beforeCount;
+
+          // Save to localStorage
+          saveCategoriesToLocalStorage();
+
+          // Refresh current view
+          const activeTab = document.querySelector('.tab.active');
+          if (activeTab) {
+            activeTab.click();
+          }
+
+          console.log(`✅ Imported ${Object.keys(importedCategories).length} categories (${newCount} new, ${Object.keys(importedCategories).length - newCount} updated)`);
+          alert(`Successfully imported ${Object.keys(importedCategories).length} categories!\n\nNew: ${newCount}\nUpdated: ${Object.keys(importedCategories).length - newCount}`);
+        } catch (error) {
+          alert(`Error importing categories: ${error.message}`);
+          console.error('Import error:', error);
+        }
+      };
+
+      input.click();
     }
 
     // Initialize dashboard
