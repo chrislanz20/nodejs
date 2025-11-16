@@ -2218,8 +2218,129 @@
       input.click();
     }
 
+    // Auto-categorization polling
+    let autoCategorizing = false;
+    let autoCategorizationInterval = null;
+
+    async function checkForNewCallsAndCategorize() {
+      if (autoCategorizing) {
+        console.log('⏸️ Auto-categorization already running, skipping this interval');
+        return;
+      }
+
+      try {
+        autoCategorizing = true;
+
+        // Fetch latest calls
+        const res = await fetch('/api/agent-summary');
+        if (!res.ok) {
+          console.error('Failed to fetch calls for auto-categorization');
+          return;
+        }
+
+        const data = await res.json();
+        const latestCalls = data.all_calls || [];
+
+        // Find uncategorized calls
+        const uncategorizedCalls = latestCalls.filter(call => !callCategories[call.call_id]);
+
+        if (uncategorizedCalls.length === 0) {
+          console.log('✅ No new calls to categorize');
+          return;
+        }
+
+        console.log(`🔄 Found ${uncategorizedCalls.length} new call(s) to categorize automatically`);
+
+        // Update the UI to show the latest calls
+        allCalls = latestCalls;
+
+        // Categorize new calls one at a time
+        for (const call of uncategorizedCalls) {
+          // Check if call is under 1 minute - auto-categorize as "Other"
+          if (call.duration_minutes < 1) {
+            callCategories[call.call_id] = {
+              category: 'Other',
+              reasoning: 'Call duration under 1 minute',
+              auto: true
+            };
+            saveCategoriesToLocalStorage();
+            console.log(`✓ Auto-categorized ${call.call_id} as "Other" (< 1 min)`);
+            continue;
+          }
+
+          // Send to AI for categorization
+          try {
+            const categorizeRes = await fetch('/api/categorize-batch', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                calls: [{
+                  call_id: call.call_id,
+                  transcript: call.transcript || call.transcript_object
+                }]
+              })
+            });
+
+            if (categorizeRes.ok) {
+              const result = await categorizeRes.json();
+              callCategories = { ...callCategories, ...result.categories };
+
+              // Mark as auto-categorized
+              if (callCategories[call.call_id]) {
+                callCategories[call.call_id].auto = true;
+              }
+
+              saveCategoriesToLocalStorage();
+
+              const category = callCategories[call.call_id]?.category || 'Unknown';
+              console.log(`✓ Auto-categorized ${call.call_id} as "${category}"`);
+            } else {
+              console.error(`Failed to categorize ${call.call_id}: ${categorizeRes.status}`);
+            }
+          } catch (error) {
+            console.error(`Error categorizing ${call.call_id}:`, error);
+          }
+        }
+
+        // Refresh current view if we're on the All Calls tab
+        const activeTab = document.querySelector('.tab.active');
+        if (activeTab && activeTab.textContent.includes('All Calls')) {
+          loadAllCalls();
+        }
+
+        console.log(`✅ Auto-categorization complete. Processed ${uncategorizedCalls.length} call(s)`);
+      } catch (error) {
+        console.error('Auto-categorization error:', error);
+      } finally {
+        autoCategorizing = false;
+      }
+    }
+
+    // Start auto-categorization polling (every 30 seconds)
+    function startAutoCategorization() {
+      console.log('🚀 Starting auto-categorization (checks every 30 seconds)');
+
+      // Run immediately on start
+      setTimeout(() => checkForNewCallsAndCategorize(), 2000);
+
+      // Then run every 30 seconds
+      autoCategorizationInterval = setInterval(checkForNewCallsAndCategorize, 30000);
+    }
+
+    // Stop auto-categorization polling
+    function stopAutoCategorization() {
+      if (autoCategorizationInterval) {
+        clearInterval(autoCategorizationInterval);
+        autoCategorizationInterval = null;
+        console.log('⏹️ Stopped auto-categorization');
+      }
+    }
+
     // Initialize dashboard
     loadOverview();
+
+    // Start auto-categorization after initial load
+    setTimeout(() => startAutoCategorization(), 3000);
   </script>
 </body>
 </html>
