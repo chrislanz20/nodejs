@@ -991,8 +991,8 @@
 
           const result = await res.json();
 
-          // Update categories incrementally
-          callCategories = result.categories;
+          // Update categories incrementally - MERGE instead of replace
+          callCategories = { ...callCategories, ...result.categories };
           saveCategoriesToLocalStorage();  // Persist to browser storage
           totalProcessed += result.processed;
           totalSkipped += result.skipped;
@@ -1069,8 +1069,8 @@
 
           const result = await res.json();
 
-          // Update categories incrementally
-          callCategories = result.categories;
+          // Update categories incrementally - MERGE instead of replace
+          callCategories = { ...callCategories, ...result.categories };
           saveCategoriesToLocalStorage();  // Persist to browser storage
           totalProcessed += result.processed;
           totalSkipped += result.skipped;
