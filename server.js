@@ -42,6 +42,8 @@ if (!RETELL_API_KEY) {
 if (!ANTHROPIC_API_KEY) {
   console.error("ERROR: ANTHROPIC_API_KEY environment variable is not set!");
   console.error("Please set it in your environment or Vercel project settings.");
+} else {
+  console.log(`ANTHROPIC_API_KEY is set (starts with: ${ANTHROPIC_API_KEY.substring(0, 7)}...)`);
 }
 
 // Initialize Retell SDK client
@@ -583,8 +585,10 @@ REASONING: Caller stated "I'm calling about my case, file #12345" indicating est
     console.error('Error details:', {
       message: error.message,
       status: error.status,
-      type: error.constructor.name
+      type: error.constructor.name,
+      response: error.response?.data || error.response
     });
+    console.log('API Key prefix:', ANTHROPIC_API_KEY ? ANTHROPIC_API_KEY.substring(0, 10) : 'NOT SET');
     return { category: 'Other', reasoning: `Error: ${error.message || 'Unknown error'}` };
   }
 }
