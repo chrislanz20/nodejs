@@ -580,7 +580,12 @@ REASONING: Caller stated "I'm calling about my case, file #12345" indicating est
     return { category, reasoning };
   } catch (error) {
     console.error('Error categorizing transcript:', error);
-    return { category: 'Other', reasoning: 'Error during categorization' };
+    console.error('Error details:', {
+      message: error.message,
+      status: error.status,
+      type: error.constructor.name
+    });
+    return { category: 'Other', reasoning: `Error: ${error.message || 'Unknown error'}` };
   }
 }
 
