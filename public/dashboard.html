@@ -945,23 +945,35 @@
           transcript: call.transcript || call.transcript_object
         }));
 
-        // Send batch request
-        const res = await fetch('/api/categorize-batch', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ calls: callsToAnalyze })
-        });
+        // Send in smaller chunks to avoid 413 Payload Too Large error
+        const chunkSize = 50;
+        let totalProcessed = 0;
+        let totalSkipped = 0;
 
-        if (!res.ok) {
-          throw new Error(`Server error: ${res.status}`);
+        for (let i = 0; i < callsToAnalyze.length; i += chunkSize) {
+          const chunk = callsToAnalyze.slice(i, i + chunkSize);
+
+          const res = await fetch('/api/categorize-batch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ calls: chunk })
+          });
+
+          if (!res.ok) {
+            throw new Error(`Server error: ${res.status}`);
+          }
+
+          const result = await res.json();
+
+          // Update categories incrementally
+          callCategories = result.categories;
+          totalProcessed += result.processed;
+          totalSkipped += result.skipped;
+
+          console.log(`📊 Progress: ${i + chunk.length}/${callsToAnalyze.length} calls sent, ${totalProcessed} processed`);
         }
 
-        const result = await res.json();
-
-        // Update categories
-        callCategories = result.categories;
-
-        console.log(`✓ Auto-categorization complete! Processed: ${result.processed}, Skipped: ${result.skipped}`);
+        console.log(`✓ Auto-categorization complete! Total processed: ${totalProcessed}, Skipped: ${totalSkipped}`);
 
         // Reload current view to show updated categories
         const activeTab = document.querySelector('.tab.active');
@@ -990,7 +1002,7 @@
       const confirmed = confirm(
         `This will analyze ${uncategorizedCalls.length} uncategorized calls.\n\n` +
         `Estimated cost: $${(uncategorizedCalls.length * 0.002).toFixed(2)}\n` +
-        `Estimated time: ${Math.ceil(uncategorizedCalls.length / 5)} minutes\n\n` +
+        `Estimated time: ${Math.ceil(uncategorizedCalls.length / 50 * 5)} minutes\n\n` +
         'Continue?'
       );
 
@@ -1006,29 +1018,44 @@
           transcript: call.transcript || call.transcript_object
         }));
 
-        // Send batch request
-        const res = await fetch('/api/categorize-batch', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ calls: callsToAnalyze })
-        });
+        // Send in smaller chunks to avoid 413 Payload Too Large error
+        const chunkSize = 50;
+        let totalProcessed = 0;
+        let totalSkipped = 0;
 
-        if (!res.ok) {
-          throw new Error(`Server error: ${res.status}`);
+        for (let i = 0; i < callsToAnalyze.length; i += chunkSize) {
+          const chunk = callsToAnalyze.slice(i, i + chunkSize);
+
+          // Update progress modal
+          updateProgressModal(i, callsToAnalyze.length, totalProcessed);
+
+          const res = await fetch('/api/categorize-batch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ calls: chunk })
+          });
+
+          if (!res.ok) {
+            throw new Error(`Server error: ${res.status}`);
+          }
+
+          const result = await res.json();
+
+          // Update categories incrementally
+          callCategories = result.categories;
+          totalProcessed += result.processed;
+          totalSkipped += result.skipped;
+
+          console.log(`📊 Progress: ${i + chunk.length}/${callsToAnalyze.length} calls sent, ${totalProcessed} processed`);
         }
-
-        const result = await res.json();
-
-        // Update categories
-        callCategories = result.categories;
 
         hideProgressModal();
 
         alert(
           `Analysis complete!\n\n` +
-          `✓ Processed: ${result.processed}\n` +
-          `⊘ Skipped: ${result.skipped}\n` +
-          `Total: ${result.total}`
+          `✓ Processed: ${totalProcessed}\n` +
+          `⊘ Skipped: ${totalSkipped}\n` +
+          `Total: ${callsToAnalyze.length}`
         );
 
         // Reload current view to show updated categories
@@ -1053,30 +1080,27 @@
       modal.innerHTML = `
         <div class="progress-modal">
           <h2 style="margin-bottom: 16px; color: #00FFFF; font-size: 20px;">Analyzing Calls with AI...</h2>
-          <p style="color: #7d8590; margin-bottom: 16px;">This may take a few minutes. Please don't close this window.</p>
+          <p style="color: #7d8590; margin-bottom: 16px;">Processing in batches of 50 calls. Please don't close this window.</p>
           <div class="progress-bar">
             <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
           </div>
-          <p id="progress-text" style="color: #e6edf3; text-align: center; font-family: 'JetBrains Mono', monospace;">0 / ${total}</p>
+          <p id="progress-text" style="color: #e6edf3; text-align: center; font-family: 'JetBrains Mono', monospace;">0 / ${total} calls sent</p>
+          <p id="progress-processed" style="color: #7d8590; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 8px;">0 processed</p>
         </div>
       `;
 
       document.body.appendChild(modal);
+    }
 
-      // Simulate progress (we don't have real-time updates from server)
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += 1;
-        if (progress > total) progress = total;
+    // Update progress modal with real-time progress
+    function updateProgressModal(currentIndex, total, processed) {
+      const fill = document.getElementById('progress-fill');
+      const text = document.getElementById('progress-text');
+      const processedText = document.getElementById('progress-processed');
 
-        const fill = document.getElementById('progress-fill');
-        const text = document.getElementById('progress-text');
-
-        if (fill) fill.style.width = `${(progress / total) * 100}%`;
-        if (text) text.textContent = `${progress} / ${total}`;
-
-        if (progress >= total) clearInterval(interval);
-      }, (total * 1200) / total); // Estimate based on batch processing time
+      if (fill) fill.style.width = `${(currentIndex / total) * 100}%`;
+      if (text) text.textContent = `${currentIndex} / ${total} calls sent`;
+      if (processedText) processedText.textContent = `${processed} processed`;
     }
 
     // Hide progress modal
