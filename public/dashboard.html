@@ -1065,7 +1065,7 @@
 
           // Check if call is under 1 minute - auto-categorize as "Other"
           const currentCall = uncategorizedCalls[i];
-          if (currentCall.duration_minutes < 60) {
+          if (currentCall.duration_minutes < 1) {
             // Automatically categorize short calls as "Other"
             callCategories[currentCall.call_id] = {
               category: 'Other',

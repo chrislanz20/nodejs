@@ -515,7 +515,13 @@ async function categorizeTranscript(transcript) {
 
   const prompt = `You are analyzing a phone call transcript for a personal injury law firm's AI receptionist.
 
-Read the following call transcript and categorize it into ONE of these categories. Pay CLOSE ATTENTION to distinguish between New Leads and Existing Clients:
+INSTRUCTIONS:
+1. Read the ENTIRE transcript carefully from start to finish
+2. Identify the key purpose and context of the call
+3. Look for specific keywords, phrases, and evidence that indicate the caller's relationship with the firm
+4. Categorize with HIGH ACCURACY - this is critical for business operations
+
+Categorize this call into ONE of these categories. Pay CLOSE ATTENTION to distinguish between New Leads and Existing Clients:
 
 **New Lead** - ONLY if the caller is inquiring about legal services for the FIRST TIME. Look for:
   • Asking IF the firm can help them ("Can you help me with...", "Do you handle...")
@@ -523,6 +529,7 @@ Read the following call transcript and categorize it into ONE of these categorie
   • No mention of existing representation or case
   • Asking about the firm's services, fees, or process
   • Phrases like: "I was in an accident", "I need a lawyer", "I'm looking for representation"
+  • Shopping for attorneys or comparing options
 
 **Existing Client** - ONLY if there is CLEAR EVIDENCE the caller already has a case with this firm. Look for:
   • Explicit mention of case number, file number, or claim number
@@ -530,36 +537,55 @@ Read the following call transcript and categorize it into ONE of these categorie
   • Asking for updates/status on "their" case (not a potential case)
   • Referencing previous calls/conversations with this firm specifically
   • Calling back about an ongoing case they've already opened
+  • Mentions being represented by this firm or having signed with them
   • IMPORTANT: If caller just mentions calling before but no case is established, it's likely still a New Lead
 
 **Attorney** - Caller is another attorney, law firm, legal professional, or opposing counsel (not a potential client or existing client)
+  • Identifies themselves as an attorney or with a law firm
+  • Opposing counsel calling about a case
+  • Referring attorney or legal colleague
 
 **Insurance** - Caller identifies as insurance company, adjuster, or discusses insurance claims/coverage from insurance company perspective
+  • Works for insurance company
+  • Insurance adjuster calling about a claim
+  • Speaking from insurance company's perspective (not client talking about their insurance)
 
 **Medical** - Primary focus is medical treatment, medical records, doctor appointments, or healthcare providers (not injury description for legal case)
+  • Medical provider calling
+  • Primarily about treatment or medical records
+  • Healthcare facility or doctor's office
 
 **Other** - Wrong number, spam, telemarketer, unrelated business, or cannot determine purpose
+  • Clearly wrong number or misdial
+  • Sales calls or spam
+  • Unrelated to personal injury law
+  • Cannot determine purpose from transcript
 
 CRITICAL: When in doubt between New Lead and Existing Client, prefer "New Lead" UNLESS there is explicit evidence of an established case (case number, "my case", "my lawyer", etc.).
 
 TRANSCRIPT:
 ${transcriptText}
 
+First, briefly summarize what you understood from this call, then provide your categorization.
+
 Respond in this exact format:
+SUMMARY: [2-3 sentences summarizing the call's purpose and key points]
 CATEGORY: [category name]
-REASONING: [one brief sentence explaining why - mention specific keywords or phrases from the transcript]
+REASONING: [detailed explanation with specific quotes or keywords from the transcript that support your categorization]
 
 Examples:
+SUMMARY: Caller was in a car accident yesterday and is looking for legal representation. They asked if the firm handles car accidents and what the next steps would be.
 CATEGORY: New Lead
-REASONING: Caller asked "Can you help me with my car accident?" with no mention of existing case or representation.
+REASONING: Caller used phrases "I was in an accident yesterday" and "Can you help me?" with no mention of existing case, file number, or prior representation. This is clearly a new inquiry.
 
+SUMMARY: Caller is checking on the status of their personal injury case and wanted to know if there are any updates from the insurance company.
 CATEGORY: Existing Client
-REASONING: Caller stated "I'm calling about my case, file #12345" indicating established client relationship.`;
+REASONING: Caller said "I'm calling about my case" and referenced "my attorney" indicating an established client relationship with an active case.`;
 
   try {
     const message = await anthropic.messages.create({
       model: 'claude-3-haiku-20240307',
-      max_tokens: 150,
+      max_tokens: 500,  // Increased for thorough analysis with summary and detailed reasoning
       messages: [{
         role: 'user',
         content: prompt
@@ -576,7 +602,7 @@ REASONING: Caller stated "I'm calling about my case, file #12345" indicating est
     const reasoning = reasoningMatch ? reasoningMatch[1].trim() : 'Auto-categorized';
 
     // Validate category
-    const validCategories = ['New Lead', 'Existing Client', 'Insurance', 'Medical', 'Other'];
+    const validCategories = ['New Lead', 'Existing Client', 'Attorney', 'Insurance', 'Medical', 'Other'];
     if (!validCategories.includes(category)) {
       category = 'Other';
     }
