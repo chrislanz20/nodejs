@@ -727,7 +727,7 @@ app.post('/api/update-category', async (req, res) => {
     }
 
     // Validate category
-    const validCategories = ['New Lead', 'Existing Client', 'Insurance', 'Medical', 'Other'];
+    const validCategories = ['New Lead', 'Existing Client', 'Attorney', 'Insurance', 'Medical', 'Other'];
     if (!validCategories.includes(category)) {
       return res.status(400).json({ error: 'Invalid category' });
     }
