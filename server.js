@@ -532,6 +532,8 @@ Read the following call transcript and categorize it into ONE of these categorie
   • Calling back about an ongoing case they've already opened
   • IMPORTANT: If caller just mentions calling before but no case is established, it's likely still a New Lead
 
+**Attorney** - Caller is another attorney, law firm, legal professional, or opposing counsel (not a potential client or existing client)
+
 **Insurance** - Caller identifies as insurance company, adjuster, or discusses insurance claims/coverage from insurance company perspective
 
 **Medical** - Primary focus is medical treatment, medical records, doctor appointments, or healthcare providers (not injury description for legal case)
