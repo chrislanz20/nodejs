@@ -554,7 +554,7 @@ REASONING: Caller stated "I'm calling about my case, file #12345" indicating est
 
   try {
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-5-sonnet-20240620',
       max_tokens: 150,
       messages: [{
         role: 'user',
