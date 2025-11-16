@@ -971,7 +971,8 @@
         }));
 
         // Send in smaller chunks to avoid 413 Payload Too Large error
-        const chunkSize = 50;
+        // Reduced to 5 due to large transcript sizes on Vercel (4.5MB limit)
+        const chunkSize = 5;
         let totalProcessed = 0;
         let totalSkipped = 0;
 
@@ -1045,7 +1046,8 @@
         }));
 
         // Send in smaller chunks to avoid 413 Payload Too Large error
-        const chunkSize = 50;
+        // Reduced to 5 due to large transcript sizes on Vercel (4.5MB limit)
+        const chunkSize = 5;
         let totalProcessed = 0;
         let totalSkipped = 0;
 
@@ -1255,8 +1257,8 @@
       if (dataLoaded && !forceReload && agentSummaries.length > 0) {
         console.log('Using cached data:', agentSummaries.length, 'agents and', allCalls.length, 'calls');
         renderOverview(content);
-        // Still check for new uncategorized calls even with cached data
-        autoCategorizeNewCalls();
+        // Disabled auto-categorization to prevent 413 errors - users can click "Analyze All Calls" manually
+        // autoCategorizeNewCalls();
         return;
       }
 
@@ -1278,8 +1280,8 @@
         // Load categories
         await loadCategories();
 
-        // Auto-categorize any new uncategorized calls in background
-        autoCategorizeNewCalls();
+        // Disabled auto-categorization to prevent 413 errors - users can click "Analyze All Calls" manually
+        // autoCategorizeNewCalls();
 
         console.log('Overview - loaded', agentSummaries.length, 'agents and', allCalls.length, 'calls');
         console.log('Pages fetched:', data.pages_fetched);
