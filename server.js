@@ -531,19 +531,26 @@ Categorize this call into ONE of these categories. Pay CLOSE ATTENTION to distin
   • Phrases like: "I was in an accident", "I need a lawyer", "I'm looking for representation"
   • Shopping for attorneys or comparing options
 
-**Existing Client** - ONLY if there is CLEAR EVIDENCE the caller already has a case with this firm. Look for:
-  • Explicit mention of case number, file number, or claim number
-  • Phrases like: "I'm calling about my case", "I'm already a client", "my lawyer", "my attorney"
-  • Asking for updates/status on "their" case (not a potential case)
-  • Referencing previous calls/conversations with this firm specifically
-  • Calling back about an ongoing case they've already opened
+**Existing Client** - ONLY if there is CLEAR EVIDENCE the caller THEMSELVES already has a case with this firm. Look for:
+  • Explicit mention of case number, file number, or claim number FOR THEIR OWN CASE
+  • Phrases like: "I'm calling about MY case", "I'm already a client", "MY lawyer", "MY attorney"
+  • Asking for updates/status on "THEIR" case (not someone else's case)
+  • Referencing previous calls/conversations with this firm specifically about THEIR OWN injury
+  • Calling back about an ongoing case THEY'VE already opened for THEMSELVES
   • Mentions being represented by this firm or having signed with them
+  • CRITICAL: If caller asks "Is the case still active?" or references "a client" or "this case" for SOMEONE ELSE, they are NOT an existing client - they are likely Attorney/Medical/Insurance
   • IMPORTANT: If caller just mentions calling before but no case is established, it's likely still a New Lead
 
-**Attorney** - Caller is another attorney, law firm, legal professional, or opposing counsel (not a potential client or existing client)
-  • Identifies themselves as an attorney or with a law firm
+**Attorney** - Caller is another attorney, law firm, legal professional, medical provider calling about liens, or opposing counsel (NOT a potential client or existing client)
+  • Explicitly identifies as an attorney, lawyer, or legal professional
+  • Asks if they are an attorney and confirms YES
+  • Calling about "a client" or "their client" (not their own injury)
   • Opposing counsel calling about a case
-  • Referring attorney or legal colleague
+  • Medical provider/biller calling about liens, payment, or billing for someone else's case
+  • Asks about "claim number", "lien case", "is case active" for ANOTHER PERSON
+  • Represents a law firm, medical office, or legal entity
+  • Email domain suggests professional/business entity (not personal gmail/yahoo)
+  • CRITICAL DISTINCTION: They reference cases/clients in third person, not first person
 
 **Insurance** - Caller identifies as insurance company, adjuster, or discusses insurance claims/coverage from insurance company perspective
   • Works for insurance company
