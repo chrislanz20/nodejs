@@ -2064,7 +2064,16 @@
 
     // Close call detail modal
     function closeCallModal() {
-      document.getElementById('call-modal').style.display = 'none';
+      const modal = document.getElementById('call-modal');
+
+      // Stop all audio playback
+      const audioElements = modal.querySelectorAll('audio');
+      audioElements.forEach(audio => {
+        audio.pause();
+        audio.currentTime = 0;
+      });
+
+      modal.style.display = 'none';
     }
 
     // Close modal when clicking outside

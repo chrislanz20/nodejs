@@ -557,10 +557,13 @@ Categorize this call into ONE of these categories. Pay CLOSE ATTENTION to distin
   • Insurance adjuster calling about a claim
   • Speaking from insurance company's perspective (not client talking about their insurance)
 
-**Medical** - Primary focus is medical treatment, medical records, doctor appointments, or healthcare providers (not injury description for legal case)
-  • Medical provider calling
-  • Primarily about treatment or medical records
-  • Healthcare facility or doctor's office
+**Medical** - Anything related to medical providers, medical treatment, billing, or healthcare (not injury description for legal case)
+  • Medical provider, hospital, radiology, or healthcare facility calling
+  • Medical billing companies or medical revenue cycle companies
+  • Calling about medical liens, payment, or billing for treatment
+  • Primarily about treatment, medical records, or medical appointments
+  • Healthcare staff calling about patient care or billing matters
+  • Medical-related business calls (not patient calling about their own injury)
 
 **Other** - Wrong number, spam, telemarketer, unrelated business, or cannot determine purpose
   • Clearly wrong number or misdial
