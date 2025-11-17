@@ -911,15 +911,8 @@
       return typeof categoryData === 'string' ? categoryData : categoryData.category;
     }
 
-    // Save categories to localStorage
-    function saveCategoriesToLocalStorage() {
-      try {
-        localStorage.setItem('retell_call_categories', JSON.stringify(callCategories));
-        console.log(`💾 Saved ${Object.keys(callCategories).length} categories to localStorage`);
-      } catch (error) {
-        console.error('Failed to save categories to localStorage:', error);
-      }
-    }
+    // Note: Categories are now saved to Postgres database via API
+    // No need to save to localStorage - database is the source of truth
 
     // Load categories from Postgres database, with auto-migration from localStorage
     async function loadCategories() {
@@ -940,26 +933,39 @@
             if (localCount > dbCount) {
               console.log(`📦 Migrating ${localCount} categories from localStorage to database...`);
 
-              const migrateRes = await fetch('/api/migrate-categories', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ categories: localCategories })
-              });
+              // Chunk the migration to avoid 413 errors
+              const entries = Object.entries(localCategories);
+              const chunkSize = 100;
+              let migrated = 0;
 
-              if (migrateRes.ok) {
-                const result = await migrateRes.json();
-                console.log(`✅ Successfully migrated ${result.migrated} categories to database`);
+              for (let i = 0; i < entries.length; i += chunkSize) {
+                const chunk = entries.slice(i, i + chunkSize);
+                const chunkObj = Object.fromEntries(chunk);
 
-                // Reload from database to get the migrated data
-                const reloadRes = await fetch('/api/categories');
-                if (reloadRes.ok) {
-                  callCategories = await reloadRes.json();
+                const migrateRes = await fetch('/api/migrate-categories', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ categories: chunkObj })
+                });
+
+                if (migrateRes.ok) {
+                  const result = await migrateRes.json();
+                  migrated += result.migrated;
+                  console.log(`📊 Migrated ${i + chunk.length}/${entries.length} categories...`);
                 }
-
-                // Clear localStorage since database is now the source of truth
-                localStorage.removeItem('retell_call_categories');
-                console.log('🗑️ Cleared localStorage (database is now source of truth)');
               }
+
+              console.log(`✅ Successfully migrated ${migrated} categories to database`);
+
+              // Reload from database to get the migrated data
+              const reloadRes = await fetch('/api/categories');
+              if (reloadRes.ok) {
+                callCategories = await reloadRes.json();
+              }
+
+              // Clear localStorage since database is now the source of truth
+              localStorage.removeItem('retell_call_categories');
+              console.log('🗑️ Cleared localStorage (database is now source of truth)');
             } else {
               // Database has categories, use them
               callCategories = dbCategories;
@@ -1038,7 +1044,6 @@
 
           // Update categories incrementally - MERGE instead of replace
           callCategories = { ...callCategories, ...result.categories };
-          saveCategoriesToLocalStorage();  // Persist to browser storage
           totalProcessed += result.processed;
           totalSkipped += result.skipped;
 
@@ -1110,7 +1115,6 @@
               category: 'Other',
               reasoning: 'Call duration under 1 minute'
             };
-            saveCategoriesToLocalStorage();
             totalProcessed += 1;
             console.log(`📊 Progress: ${i + chunk.length}/${callsToAnalyze.length} calls sent, ${totalProcessed} processed (auto: <1min)`);
             continue;
@@ -1130,7 +1134,6 @@
 
           // Update categories incrementally - MERGE instead of replace
           callCategories = { ...callCategories, ...result.categories };
-          saveCategoriesToLocalStorage();  // Persist to browser storage
           totalProcessed += result.processed;
           totalSkipped += result.skipped;
 
@@ -2171,7 +2174,6 @@
           reasoning: 'Manually categorized by user',
           manual: true
         };
-        saveCategoriesToLocalStorage();  // Persist to browser storage
 
         // Update the modal display
         const modalCategory = document.getElementById(`modal-category-${callId}`);
@@ -2247,7 +2249,6 @@
           const newCount = afterCount - beforeCount;
 
           // Save to localStorage
-          saveCategoriesToLocalStorage();
 
           // Refresh current view
           const activeTab = document.querySelector('.tab.active');
@@ -2311,7 +2312,6 @@
               reasoning: 'Call duration under 1 minute',
               auto: true
             };
-            saveCategoriesToLocalStorage();
             console.log(`✓ Auto-categorized ${call.call_id} as "Other" (< 1 min)`);
             continue;
           }
@@ -2338,7 +2338,6 @@
                 callCategories[call.call_id].auto = true;
               }
 
-              saveCategoriesToLocalStorage();
 
               const category = callCategories[call.call_id]?.category || 'Unknown';
               console.log(`✓ Auto-categorized ${call.call_id} as "${category}"`);
