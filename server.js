@@ -656,15 +656,18 @@ async function categorizeTranscript(transcript) {
     return { category: 'Other', reasoning: 'Invalid transcript format' };
   }
 
-  const prompt = `You are analyzing a phone call transcript for a personal injury law firm's AI receptionist.
+  const prompt = `You are analyzing a phone call transcript for CourtLaw, a personal injury law firm's AI receptionist.
+
+CRITICAL PRIORITY: Identifying NEW LEADS (potential new clients) is the MOST IMPORTANT task. Missing a new client inquiry would be a critical business failure.
 
 INSTRUCTIONS:
-1. Read the ENTIRE transcript carefully from start to finish
-2. Identify the key purpose and context of the call
-3. Look for specific keywords, phrases, and evidence that indicate the caller's relationship with the firm
-4. Categorize with HIGH ACCURACY - this is critical for business operations
+1. Read the ENTIRE transcript carefully from start to finish, paying special attention to the caller's opening statements
+2. Identify WHO the caller is (injured person, medical provider, attorney, insurance adjuster, existing client)
+3. Determine if they're calling about THEIR OWN injury or SOMEONE ELSE'S case
+4. Look for explicit evidence of existing case (case numbers, "my case", "my attorney")
+5. When uncertain between categories, PREFER "New Lead" over other categories to avoid missing potential clients
 
-Categorize this call into ONE of these categories. Pay CLOSE ATTENTION to distinguish between New Leads and Existing Clients:
+Categorize this call into ONE of these categories:
 
 **New Lead** - ONLY if the caller is inquiring about legal services for the FIRST TIME. Look for:
   • Asking IF the firm can help them ("Can you help me with...", "Do you handle...")
@@ -684,29 +687,31 @@ Categorize this call into ONE of these categories. Pay CLOSE ATTENTION to distin
   • CRITICAL: If caller asks "Is the case still active?" or references "a client" or "this case" for SOMEONE ELSE, they are NOT an existing client - they are likely Attorney/Medical/Insurance
   • IMPORTANT: If caller just mentions calling before but no case is established, it's likely still a New Lead
 
-**Attorney** - Caller is another attorney, law firm, legal professional, medical provider calling about liens, or opposing counsel (NOT a potential client or existing client)
+**Attorney** - Caller is another attorney, law firm, or legal professional (NOT a potential client or existing client)
   • Explicitly identifies as an attorney, lawyer, or legal professional
   • Asks if they are an attorney and confirms YES
   • Calling about "a client" or "their client" (not their own injury)
   • Opposing counsel calling about a case
-  • Medical provider/biller calling about liens, payment, or billing for someone else's case
-  • Asks about "claim number", "lien case", "is case active" for ANOTHER PERSON
-  • Represents a law firm, medical office, or legal entity
-  • Email domain suggests professional/business entity (not personal gmail/yahoo)
-  • CRITICAL DISTINCTION: They reference cases/clients in third person, not first person
+  • Represents a law firm or legal entity
+  • Email domain suggests law firm/legal entity (@lawfirm.com, not personal gmail/yahoo)
+  • CRITICAL: They reference cases/clients in THIRD PERSON, not first person
+  • If they say "I represent..." or "my client..." → Attorney
 
 **Insurance** - Caller identifies as insurance company, adjuster, or discusses insurance claims/coverage from insurance company perspective
   • Works for insurance company
   • Insurance adjuster calling about a claim
   • Speaking from insurance company's perspective (not client talking about their insurance)
 
-**Medical** - Anything related to medical providers, medical treatment, billing, or healthcare (not injury description for legal case)
-  • Medical provider, hospital, radiology, or healthcare facility calling
+**Medical** - Medical providers, billing companies, or healthcare facilities calling about OTHER PEOPLE'S cases
+  • Medical provider, hospital, radiology, ASC (Ambulatory Surgical Center), or healthcare facility calling
   • Medical billing companies or medical revenue cycle companies
-  • Calling about medical liens, payment, or billing for treatment
-  • Primarily about treatment, medical records, or medical appointments
+  • Calling about medical liens, settlement payment, or billing for treatment of A PATIENT (not themselves)
+  • Asking about payment/settlement timing for someone else's case
   • Healthcare staff calling about patient care or billing matters
+  • They identify as "medical provider" or "calling from [medical facility name]"
+  • CRITICAL: They're calling about SOMEONE ELSE (a patient), not their own injury
   • Medical-related business calls (not patient calling about their own injury)
+  • Examples: "Integrated Specialty ASC", "XYZ Radiology", "ABC Billing Services"
 
 **Other** - Wrong number, spam, telemarketer, unrelated business, or cannot determine purpose
   • Clearly wrong number or misdial
@@ -719,26 +724,39 @@ CRITICAL: When in doubt between New Lead and Existing Client, prefer "New Lead" 
 TRANSCRIPT:
 ${transcriptText}
 
-First, briefly summarize what you understood from this call, then provide your categorization.
+First, think step-by-step about this call, then provide your categorization with confidence level.
 
 Respond in this exact format:
 SUMMARY: [2-3 sentences summarizing the call's purpose and key points]
 CATEGORY: [category name]
-REASONING: [detailed explanation with specific quotes or keywords from the transcript that support your categorization]
+CONFIDENCE: [HIGH/MEDIUM/LOW - How confident are you in this categorization?]
+REASONING: [detailed explanation with specific quotes or keywords from the transcript that support your categorization. Explain why you chose this category over alternatives.]
+
+CONFIDENCE GUIDELINES:
+- HIGH: Clear, unambiguous indicators (e.g., "I was in an accident yesterday", "I'm calling about my case #12345", "I'm from XYZ Medical calling about patient John Doe")
+- MEDIUM: Likely correct but some ambiguity (e.g., mentioned calling before but unclear if case was opened)
+- LOW: Uncertain, could be multiple categories (recommend manual review)
 
 Examples:
 SUMMARY: Caller was in a car accident yesterday and is looking for legal representation. They asked if the firm handles car accidents and what the next steps would be.
 CATEGORY: New Lead
-REASONING: Caller used phrases "I was in an accident yesterday" and "Can you help me?" with no mention of existing case, file number, or prior representation. This is clearly a new inquiry.
+CONFIDENCE: HIGH
+REASONING: Caller used phrases "I was in an accident yesterday" and "Can you help me?" with no mention of existing case, file number, or prior representation. This is clearly a new inquiry for legal services about their own injury.
 
 SUMMARY: Caller is checking on the status of their personal injury case and wanted to know if there are any updates from the insurance company.
 CATEGORY: Existing Client
-REASONING: Caller said "I'm calling about my case" and referenced "my attorney" indicating an established client relationship with an active case.`;
+CONFIDENCE: HIGH
+REASONING: Caller said "I'm calling about my case" and referenced "my attorney" indicating an established client relationship with an active case for their own injury.
+
+SUMMARY: Caller from Integrated Specialty ASC (medical facility) is asking about settlement payment timing for patient Barol Hamilton. They identified as a medical provider and are calling about billing/payment.
+CATEGORY: Medical
+CONFIDENCE: HIGH
+REASONING: Caller explicitly identified as "medical provider" from a healthcare facility (ASC = Ambulatory Surgical Center) and is calling about SOMEONE ELSE'S case (patient Barol Hamilton), not their own injury. They're asking about settlement payment for billing purposes, which is clearly a medical provider inquiry, not an existing client following up on their own case.`;
 
   try {
     const message = await anthropic.messages.create({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 500,  // Increased for thorough analysis with summary and detailed reasoning
+      model: 'claude-3-5-sonnet-20241022',  // Upgraded to most accurate model for maximum precision
+      max_tokens: 2000,  // Increased for deep reasoning and confidence scoring
       messages: [{
         role: 'user',
         content: prompt
@@ -749,10 +767,15 @@ REASONING: Caller said "I'm calling about my case" and referenced "my attorney" 
 
     // Parse response
     const categoryMatch = response.match(/CATEGORY:\s*(.+?)(?:\n|$)/i);
+    const confidenceMatch = response.match(/CONFIDENCE:\s*(.+?)(?:\n|$)/i);
     const reasoningMatch = response.match(/REASONING:\s*(.+?)$/is);
 
     let category = categoryMatch ? categoryMatch[1].trim() : 'Other';
-    const reasoning = reasoningMatch ? reasoningMatch[1].trim() : 'Auto-categorized';
+    const confidence = confidenceMatch ? confidenceMatch[1].trim().toUpperCase() : 'MEDIUM';
+    let reasoning = reasoningMatch ? reasoningMatch[1].trim() : 'Auto-categorized';
+
+    // Add confidence to reasoning
+    reasoning = `[${confidence} CONFIDENCE] ${reasoning}`;
 
     // Validate category
     const validCategories = ['New Lead', 'Existing Client', 'Attorney', 'Insurance', 'Medical', 'Other'];
@@ -760,7 +783,7 @@ REASONING: Caller said "I'm calling about my case" and referenced "my attorney" 
       category = 'Other';
     }
 
-    return { category, reasoning };
+    return { category, reasoning, confidence };
   } catch (error) {
     console.error('Error categorizing transcript:', error);
     console.error('Error details:', {
