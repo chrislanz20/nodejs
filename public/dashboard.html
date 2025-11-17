@@ -933,31 +933,19 @@
             if (localCount > dbCount) {
               console.log(`📦 Migrating ${localCount} categories from localStorage to database...`);
 
-              // Chunk the migration to avoid 413 errors
-              const entries = Object.entries(localCategories);
-              const chunkSize = 20;  // Smaller chunks to avoid payload limit
-              let migrated = 0;
+              // Migrate all at once (server now accepts large payloads)
+              const migrateRes = await fetch('/api/migrate-categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ categories: localCategories })
+              });
 
-              for (let i = 0; i < entries.length; i += chunkSize) {
-                const chunk = entries.slice(i, i + chunkSize);
-                const chunkObj = Object.fromEntries(chunk);
-
-                const migrateRes = await fetch('/api/migrate-categories', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ categories: chunkObj })
-                });
-
-                if (migrateRes.ok) {
-                  const result = await migrateRes.json();
-                  migrated += result.migrated;
-                  console.log(`📊 Migrated ${i + chunk.length}/${entries.length} categories...`);
-                } else {
-                  console.error(`❌ Migration chunk ${i}-${i+chunk.length} failed: ${migrateRes.status}`);
-                }
+              if (migrateRes.ok) {
+                const result = await migrateRes.json();
+                console.log(`✅ Successfully migrated ${result.migrated} categories to database`);
+              } else {
+                console.error(`❌ Migration failed: ${migrateRes.status}`);
               }
-
-              console.log(`✅ Successfully migrated ${migrated} categories to database`);
 
               // Reload from database to get the migrated data
               const reloadRes = await fetch('/api/categories');

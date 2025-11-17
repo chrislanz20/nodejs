@@ -10,7 +10,7 @@ const Anthropic = require('@anthropic-ai/sdk');
 const { Pool } = require('pg');
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));  // Allow large payloads for category migration
 
 // Allow your site to call this API (we can restrict origins later)
 app.use(cors());
