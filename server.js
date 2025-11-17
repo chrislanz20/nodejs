@@ -666,9 +666,11 @@ INSTRUCTIONS:
 3. Determine if they're calling about THEIR OWN injury or SOMEONE ELSE'S case
 4. Look for explicit evidence of existing case (case numbers, "my case", "my attorney")
 5. IMPORTANT DISTINCTION:
-   - If call discusses an actual injury/legal matter but category is unclear → PREFER "New Lead"
+   - If call discusses an actual injury/legal matter but category is unclear → PREFER "New Lead" with HIGH confidence
    - If call is nonsensical, gibberish, or lacks ANY meaningful legal discussion → categorize as "Other"
+   - If caller NEVER states their purpose (e.g., call ends during greeting) → categorize as "Other"
 6. When uncertain between legitimate categories, PREFER "New Lead" over other categories to avoid missing potential clients
+7. CRITICAL RULE: If you would categorize as "New Lead" but with LOW confidence → categorize as "Other" instead. Only mark as "New Lead" if you have MEDIUM or HIGH confidence.
 
 Categorize this call into ONE of these categories:
 
@@ -716,20 +718,24 @@ Categorize this call into ONE of these categories:
   • Medical-related business calls (not patient calling about their own injury)
   • Examples: "Integrated Specialty ASC", "XYZ Radiology", "ABC Billing Services"
 
-**Other** - Wrong number, spam, telemarketer, unrelated business, nonsensical calls, or cannot determine purpose
+**Other** - Wrong number, spam, telemarketer, unrelated business, nonsensical calls, calls that end during greeting, or cannot determine purpose
   • Clearly wrong number or misdial
   • Sales calls or spam
   • Unrelated to personal injury law
   • Nonsensical or gibberish calls with no meaningful content (e.g., caller only says "Yeah" repeatedly, fragmented speech with no clear purpose)
   • Very short disconnected calls (under 30 seconds with no substance)
+  • Calls that end during initial greeting before caller states their purpose
   • Cannot determine ANY purpose from transcript
   • No discussion of injury, legal matter, medical billing, insurance, or attorney services
+  • Low-confidence "New Lead" categorizations (if unsure, mark as Other)
 
 CRITICAL DISTINCTION:
-- "Other" = NO meaningful legal/injury discussion OR completely nonsensical
-- "New Lead" = ACTUAL injury/legal discussion but unclear if new vs existing client → prefer New Lead
+- "Other" = NO meaningful legal/injury discussion OR completely nonsensical OR caller never states purpose OR low-confidence new lead
+- "New Lead" = ACTUAL injury/legal discussion WITH MEDIUM/HIGH CONFIDENCE but unclear if new vs existing client → prefer New Lead
 
 When in doubt between New Lead and Existing Client (both involving actual injury discussion), prefer "New Lead" UNLESS there is explicit evidence of an established case (case number, "my case", "my lawyer", etc.).
+
+CONFIDENCE THRESHOLD: Only categorize as "New Lead" if you have MEDIUM or HIGH confidence. If confidence would be LOW, use "Other" instead.
 
 TRANSCRIPT:
 ${transcriptText}
