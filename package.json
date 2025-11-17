@@ -13,9 +13,12 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.69.0",
     "axios": "^1.7.4",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.3",
     "retell-sdk": "^4.57.0"
   }

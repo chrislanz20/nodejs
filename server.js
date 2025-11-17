@@ -8,12 +8,19 @@ const fs = require("fs").promises;
 const Retell = require('retell-sdk').default;
 const Anthropic = require('@anthropic-ai/sdk');
 const { Pool } = require('pg');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));  // Allow large payloads for category migration
+app.use(cookieParser());
 
 // Allow your site to call this API (we can restrict origins later)
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 
 // Serve the marketing site
 const publicDir = path.join(__dirname, "public");
@@ -27,6 +34,18 @@ app.get("/dashboard", (_req, res) => {
   res.sendFile(path.join(publicDir, "dashboard.html"));
 });
 
+app.get("/client-portal", (_req, res) => {
+  res.sendFile(path.join(publicDir, "client-portal.html"));
+});
+
+app.get("/client-dashboard", (_req, res) => {
+  res.sendFile(path.join(publicDir, "client-dashboard.html"));
+});
+
+app.get("/admin", (_req, res) => {
+  res.sendFile(path.join(publicDir, "admin.html"));
+});
+
 // Now serve static files (styles.css, etc.)
 app.use(express.static(publicDir));
 
@@ -34,6 +53,7 @@ app.use(express.static(publicDir));
 const RETELL_API_KEY = process.env.RETELL_API_KEY;
 const RETELL_AGENT_ID = process.env.RETELL_AGENT_ID;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
 
 if (!RETELL_API_KEY) {
   console.error("ERROR: RETELL_API_KEY environment variable is not set!");
@@ -85,7 +105,21 @@ async function initializeDatabase() {
       )
     `);
 
-    console.log('✅ Categories table initialized');
+    // Create clients table for multi-tenant auth
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS clients (
+        id SERIAL PRIMARY KEY,
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        business_name TEXT NOT NULL,
+        agent_ids TEXT[] NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        active BOOLEAN DEFAULT TRUE
+      )
+    `);
+
+    console.log('✅ Database tables initialized');
     client.release();
   } catch (error) {
     console.error('❌ Database initialization error:', error);
@@ -892,6 +926,232 @@ app.post('/api/migrate-categories', async (req, res) => {
   } catch (error) {
     console.error('Error migrating categories:', error);
     res.status(500).json({ error: 'Failed to migrate categories' });
+  }
+});
+
+// ============ AUTHENTICATION MIDDLEWARE ============
+
+// Middleware to verify JWT token
+function authenticateToken(req, res, next) {
+  const token = req.cookies.auth_token;
+
+  if (!token) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(403).json({ error: 'Invalid token' });
+  }
+}
+
+// ============ CLIENT PORTAL AUTH ROUTES ============
+
+// POST /api/auth/login - Client login
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password required' });
+    }
+
+    // Find client in database
+    const result = await pool.query(
+      'SELECT * FROM clients WHERE email = $1 AND active = TRUE',
+      [email.toLowerCase()]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const client = result.rows[0];
+
+    // Verify password
+    const validPassword = await bcrypt.compare(password, client.password_hash);
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Create JWT token (no expiration - stays logged in forever)
+    const token = jwt.sign(
+      {
+        id: client.id,
+        email: client.email,
+        business_name: client.business_name,
+        agent_ids: client.agent_ids
+      },
+      JWT_SECRET
+    );
+
+    // Set cookie (expires in 10 years)
+    res.cookie('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 10 * 365 * 24 * 60 * 60 * 1000, // 10 years
+      sameSite: 'lax'
+    });
+
+    res.json({
+      success: true,
+      client: {
+        email: client.email,
+        business_name: client.business_name,
+        agent_ids: client.agent_ids
+      }
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+// POST /api/auth/logout - Client logout
+app.post('/api/auth/logout', (req, res) => {
+  res.clearCookie('auth_token');
+  res.json({ success: true });
+});
+
+// GET /api/auth/me - Get current logged in client
+app.get('/api/auth/me', authenticateToken, (req, res) => {
+  res.json({
+    email: req.user.email,
+    business_name: req.user.business_name,
+    agent_ids: req.user.agent_ids
+  });
+});
+
+// ============ ADMIN ROUTES (for managing clients) ============
+
+// GET /api/admin/clients - List all clients
+app.get('/api/admin/clients', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, email, business_name, agent_ids, created_at, active FROM clients ORDER BY created_at DESC'
+    );
+
+    res.json({ clients: result.rows });
+  } catch (error) {
+    console.error('Error fetching clients:', error);
+    res.status(500).json({ error: 'Failed to fetch clients' });
+  }
+});
+
+// POST /api/admin/clients - Create new client account
+app.post('/api/admin/clients', async (req, res) => {
+  try {
+    const { email, password, business_name, agent_ids } = req.body;
+
+    if (!email || !password || !business_name || !agent_ids) {
+      return res.status(400).json({ error: 'All fields required' });
+    }
+
+    // Hash password
+    const password_hash = await bcrypt.hash(password, 10);
+
+    // Insert client
+    const result = await pool.query(`
+      INSERT INTO clients (email, password_hash, business_name, agent_ids)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id, email, business_name, agent_ids, created_at
+    `, [email.toLowerCase(), password_hash, business_name, agent_ids]);
+
+    res.json({
+      success: true,
+      client: result.rows[0]
+    });
+  } catch (error) {
+    if (error.code === '23505') { // Unique violation
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+    console.error('Error creating client:', error);
+    res.status(500).json({ error: 'Failed to create client' });
+  }
+});
+
+// PUT /api/admin/clients/:id - Update client
+app.put('/api/admin/clients/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { email, password, business_name, agent_ids, active } = req.body;
+
+    const updates = [];
+    const values = [];
+    let paramIndex = 1;
+
+    if (email !== undefined) {
+      updates.push(`email = $${paramIndex++}`);
+      values.push(email.toLowerCase());
+    }
+    if (password) {
+      const password_hash = await bcrypt.hash(password, 10);
+      updates.push(`password_hash = $${paramIndex++}`);
+      values.push(password_hash);
+    }
+    if (business_name !== undefined) {
+      updates.push(`business_name = $${paramIndex++}`);
+      values.push(business_name);
+    }
+    if (agent_ids !== undefined) {
+      updates.push(`agent_ids = $${paramIndex++}`);
+      values.push(agent_ids);
+    }
+    if (active !== undefined) {
+      updates.push(`active = $${paramIndex++}`);
+      values.push(active);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
+    }
+
+    updates.push(`updated_at = NOW()`);
+    values.push(id);
+
+    const result = await pool.query(`
+      UPDATE clients
+      SET ${updates.join(', ')}
+      WHERE id = $${paramIndex}
+      RETURNING id, email, business_name, agent_ids, active, updated_at
+    `, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+
+    res.json({
+      success: true,
+      client: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error updating client:', error);
+    res.status(500).json({ error: 'Failed to update client' });
+  }
+});
+
+// DELETE /api/admin/clients/:id - Delete/deactivate client
+app.delete('/api/admin/clients/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Soft delete by setting active = false
+    const result = await pool.query(
+      'UPDATE clients SET active = FALSE, updated_at = NOW() WHERE id = $1 RETURNING id',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting client:', error);
+    res.status(500).json({ error: 'Failed to delete client' });
   }
 });
 
