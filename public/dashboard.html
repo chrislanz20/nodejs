@@ -935,7 +935,7 @@
 
               // Chunk the migration to avoid 413 errors
               const entries = Object.entries(localCategories);
-              const chunkSize = 100;
+              const chunkSize = 20;  // Smaller chunks to avoid payload limit
               let migrated = 0;
 
               for (let i = 0; i < entries.length; i += chunkSize) {
@@ -952,6 +952,8 @@
                   const result = await migrateRes.json();
                   migrated += result.migrated;
                   console.log(`📊 Migrated ${i + chunk.length}/${entries.length} categories...`);
+                } else {
+                  console.error(`❌ Migration chunk ${i}-${i+chunk.length} failed: ${migrateRes.status}`);
                 }
               }
 
@@ -2363,15 +2365,15 @@
       }
     }
 
-    // Start auto-categorization polling (every 30 seconds)
+    // Start auto-categorization polling (every 5 minutes to reduce load)
     function startAutoCategorization() {
-      console.log('🚀 Starting auto-categorization (checks every 30 seconds)');
+      console.log('🚀 Starting auto-categorization (checks every 5 minutes)');
 
-      // Run immediately on start
-      setTimeout(() => checkForNewCallsAndCategorize(), 2000);
+      // Run after 10 seconds (give time for initial categories to load)
+      setTimeout(() => checkForNewCallsAndCategorize(), 10000);
 
-      // Then run every 30 seconds
-      autoCategorizationInterval = setInterval(checkForNewCallsAndCategorize, 30000);
+      // Then run every 5 minutes (not 30 seconds - too aggressive)
+      autoCategorizationInterval = setInterval(checkForNewCallsAndCategorize, 300000);
     }
 
     // Stop auto-categorization polling
