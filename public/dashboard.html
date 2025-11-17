@@ -921,31 +921,70 @@
       }
     }
 
-    // Load categories from localStorage first, then sync with API
+    // Load categories from Postgres database, with auto-migration from localStorage
     async function loadCategories() {
       try {
-        // First, try to load from localStorage (persistent across sessions)
-        const localData = localStorage.getItem('retell_call_categories');
-        if (localData) {
-          callCategories = JSON.parse(localData);
-          console.log(`✅ Loaded ${Object.keys(callCategories).length} call categories from localStorage`);
-        }
-
-        // Then try to load from API (will be empty on Vercel, but works locally)
+        // First, load from database (primary source of truth)
         const res = await fetch('/api/categories');
         if (res.ok) {
-          const apiCategories = await res.json();
-          const apiCount = Object.keys(apiCategories).length;
+          const dbCategories = await res.json();
+          const dbCount = Object.keys(dbCategories).length;
 
-          // Merge API categories with localStorage (API takes precedence for conflicts)
-          if (apiCount > 0) {
-            callCategories = { ...callCategories, ...apiCategories };
-            console.log(`📡 Merged ${apiCount} categories from API`);
-            saveCategoriesToLocalStorage();
+          // Check if we have localStorage categories to migrate
+          const localData = localStorage.getItem('retell_call_categories');
+          if (localData) {
+            const localCategories = JSON.parse(localData);
+            const localCount = Object.keys(localCategories).length;
+
+            // If localStorage has categories but database is empty or has fewer, migrate
+            if (localCount > dbCount) {
+              console.log(`📦 Migrating ${localCount} categories from localStorage to database...`);
+
+              const migrateRes = await fetch('/api/migrate-categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ categories: localCategories })
+              });
+
+              if (migrateRes.ok) {
+                const result = await migrateRes.json();
+                console.log(`✅ Successfully migrated ${result.migrated} categories to database`);
+
+                // Reload from database to get the migrated data
+                const reloadRes = await fetch('/api/categories');
+                if (reloadRes.ok) {
+                  callCategories = await reloadRes.json();
+                }
+
+                // Clear localStorage since database is now the source of truth
+                localStorage.removeItem('retell_call_categories');
+                console.log('🗑️ Cleared localStorage (database is now source of truth)');
+              }
+            } else {
+              // Database has categories, use them
+              callCategories = dbCategories;
+              console.log(`✅ Loaded ${dbCount} call categories from database`);
+
+              // Clear old localStorage
+              localStorage.removeItem('retell_call_categories');
+            }
+          } else {
+            // No localStorage, just use database
+            callCategories = dbCategories;
+            if (dbCount > 0) {
+              console.log(`✅ Loaded ${dbCount} call categories from database`);
+            }
           }
         }
       } catch (error) {
         console.error('Failed to load categories:', error);
+
+        // Fallback to localStorage if database fails
+        const localData = localStorage.getItem('retell_call_categories');
+        if (localData) {
+          callCategories = JSON.parse(localData);
+          console.log(`⚠️ Using localStorage fallback: ${Object.keys(callCategories).length} categories`);
+        }
       }
     }
 

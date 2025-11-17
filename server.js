@@ -7,6 +7,7 @@ const path = require("path");
 const fs = require("fs").promises;
 const Retell = require('retell-sdk').default;
 const Anthropic = require('@anthropic-ai/sdk');
+const { Pool } = require('pg');
 
 const app = express();
 app.use(express.json());
@@ -56,7 +57,46 @@ const anthropic = new Anthropic({
   apiKey: ANTHROPIC_API_KEY,
 });
 
-// Categories file path
+// Initialize Postgres connection pool
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+// Test database connection and create table if needed
+async function initializeDatabase() {
+  try {
+    // Test connection
+    const client = await pool.connect();
+    console.log('✅ Connected to Postgres database');
+
+    // Create categories table if it doesn't exist
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS call_categories (
+        call_id TEXT PRIMARY KEY,
+        category TEXT NOT NULL,
+        reasoning TEXT,
+        manual BOOLEAN DEFAULT FALSE,
+        auto BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    console.log('✅ Categories table initialized');
+    client.release();
+  } catch (error) {
+    console.error('❌ Database initialization error:', error);
+    console.error('Falling back to localStorage-only mode');
+  }
+}
+
+// Initialize database on startup
+initializeDatabase();
+
+// Categories file path (keeping for backwards compatibility/fallback)
 const CATEGORIES_FILE = path.join(__dirname, 'categories.json');
 
 // Health check (handy for Railway)
@@ -477,23 +517,92 @@ app.post("/greet", async (_req, res) => {
 // ============ CATEGORIZATION API ROUTES ============
 
 // Helper: Read categories from file
+// Helper: Read all categories from Postgres database
 async function readCategories() {
   try {
-    const data = await fs.readFile(CATEGORIES_FILE, 'utf8');
-    return JSON.parse(data);
+    const result = await pool.query('SELECT call_id, category, reasoning, manual, auto FROM call_categories');
+
+    // Convert rows to object format { call_id: { category, reasoning, manual, auto } }
+    const categories = {};
+    result.rows.forEach(row => {
+      categories[row.call_id] = {
+        category: row.category,
+        reasoning: row.reasoning,
+        manual: row.manual,
+        auto: row.auto
+      };
+    });
+
+    return categories;
   } catch (error) {
-    // File doesn't exist or is empty, return empty object
+    console.error('Error reading categories from database:', error);
     return {};
   }
 }
 
-// Helper: Write categories to file (fails gracefully on Vercel's read-only filesystem)
+// Helper: Write a single category to Postgres database
+async function writeCategory(callId, categoryData) {
+  try {
+    const { category, reasoning, manual, auto } = categoryData;
+
+    await pool.query(`
+      INSERT INTO call_categories (call_id, category, reasoning, manual, auto, updated_at)
+      VALUES ($1, $2, $3, $4, $5, NOW())
+      ON CONFLICT (call_id)
+      DO UPDATE SET
+        category = EXCLUDED.category,
+        reasoning = EXCLUDED.reasoning,
+        manual = EXCLUDED.manual,
+        auto = EXCLUDED.auto,
+        updated_at = NOW()
+    `, [callId, category, reasoning || null, manual || false, auto || false]);
+
+    return true;
+  } catch (error) {
+    console.error('Error writing category to database:', error);
+    return false;
+  }
+}
+
+// Helper: Write multiple categories to Postgres database (batch)
 async function writeCategories(categories) {
   try {
-    await fs.writeFile(CATEGORIES_FILE, JSON.stringify(categories, null, 2));
+    const client = await pool.connect();
+
+    try {
+      await client.query('BEGIN');
+
+      for (const [callId, categoryData] of Object.entries(categories)) {
+        // Handle both old format (string) and new format (object)
+        const category = typeof categoryData === 'string' ? categoryData : categoryData.category;
+        const reasoning = typeof categoryData === 'object' ? categoryData.reasoning : null;
+        const manual = typeof categoryData === 'object' ? categoryData.manual : false;
+        const auto = typeof categoryData === 'object' ? categoryData.auto : false;
+
+        await client.query(`
+          INSERT INTO call_categories (call_id, category, reasoning, manual, auto, updated_at)
+          VALUES ($1, $2, $3, $4, $5, NOW())
+          ON CONFLICT (call_id)
+          DO UPDATE SET
+            category = EXCLUDED.category,
+            reasoning = EXCLUDED.reasoning,
+            manual = EXCLUDED.manual,
+            auto = EXCLUDED.auto,
+            updated_at = NOW()
+        `, [callId, category, reasoning, manual, auto]);
+      }
+
+      await client.query('COMMIT');
+      return true;
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
   } catch (error) {
-    // Ignore write errors on Vercel - we use localStorage on frontend instead
-    console.log('Note: Could not write categories.json (expected on Vercel serverless)');
+    console.error('Error writing categories to database:', error);
+    return false;
   }
 }
 
@@ -742,14 +851,13 @@ app.post('/api/update-category', async (req, res) => {
       return res.status(400).json({ error: 'Invalid category' });
     }
 
-    // Update category
-    const categories = await readCategories();
-    categories[call_id] = {
+    // Update category directly in database
+    await writeCategory(call_id, {
       category,
       reasoning: reasoning || 'Manually categorized',
-      manual: true
-    };
-    await writeCategories(categories);
+      manual: true,
+      auto: false
+    });
 
     console.log(`✓ Manually updated category for ${call_id} → ${category}`);
 
@@ -757,6 +865,33 @@ app.post('/api/update-category', async (req, res) => {
   } catch (error) {
     console.error('Error updating category:', error);
     res.status(500).json({ error: 'Failed to update category' });
+  }
+});
+
+// POST /api/migrate-categories - Migrate categories from localStorage to database
+app.post('/api/migrate-categories', async (req, res) => {
+  try {
+    const { categories } = req.body;
+
+    if (!categories || typeof categories !== 'object') {
+      return res.status(400).json({ error: 'categories object is required' });
+    }
+
+    console.log(`📦 Migrating ${Object.keys(categories).length} categories to database...`);
+
+    // Write all categories to database
+    await writeCategories(categories);
+
+    console.log(`✅ Successfully migrated ${Object.keys(categories).length} categories to database`);
+
+    res.json({
+      success: true,
+      migrated: Object.keys(categories).length,
+      message: 'Categories successfully migrated to database'
+    });
+  } catch (error) {
+    console.error('Error migrating categories:', error);
+    res.status(500).json({ error: 'Failed to migrate categories' });
   }
 });
 
