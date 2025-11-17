@@ -231,10 +231,76 @@
       background: #fed7d7;
       color: #742a2a;
     }
+
+    /* Admin Navigation */
+    .admin-nav {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      padding: 12px 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      color: #718096;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+      background: #f7fafc;
+      border-color: #cbd5e0;
+      color: #4a5568;
+    }
+
+    .nav-link.active {
+      background: #667eea;
+      border-color: #667eea;
+      color: white;
+    }
   </style>
 </head>
 <body>
   <div class="container">
+    <!-- Admin Navigation -->
+    <nav class="admin-nav">
+      <div class="nav-links">
+        <a href="/dashboard.html" class="nav-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Dashboard
+        </a>
+        <a href="/admin.html" class="nav-link active">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          Client Management
+        </a>
+      </div>
+    </nav>
+
     <h1>Client Management</h1>
     <p class="subtitle">Manage client accounts for your AI receptionist dashboard</p>
 
