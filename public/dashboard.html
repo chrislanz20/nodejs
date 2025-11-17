@@ -1155,8 +1155,8 @@
 
       const confirmed = confirm(
         (isTestMode ? `🧪 TEST MODE: Analyzing ${actualCount} calls (of ${totalUncategorized} total)\n\n` : `This will analyze ${actualCount} uncategorized calls.\n\n`) +
-        `Model: Claude Sonnet 3.5 (high accuracy)\n` +
-        `Estimated cost: $${(actualCount * 0.015).toFixed(2)}\n` +
+        `Model: Claude 3.5 Haiku (improved accuracy)\n` +
+        `Estimated cost: $${(actualCount * 0.001).toFixed(2)}\n` +
         `Estimated time: ${Math.ceil(actualCount / 50 * 5)} minutes\n\n` +
         'Continue?'
       );
