@@ -665,7 +665,10 @@ INSTRUCTIONS:
 2. Identify WHO the caller is (injured person, medical provider, attorney, insurance adjuster, existing client)
 3. Determine if they're calling about THEIR OWN injury or SOMEONE ELSE'S case
 4. Look for explicit evidence of existing case (case numbers, "my case", "my attorney")
-5. When uncertain between categories, PREFER "New Lead" over other categories to avoid missing potential clients
+5. IMPORTANT DISTINCTION:
+   - If call discusses an actual injury/legal matter but category is unclear → PREFER "New Lead"
+   - If call is nonsensical, gibberish, or lacks ANY meaningful legal discussion → categorize as "Other"
+6. When uncertain between legitimate categories, PREFER "New Lead" over other categories to avoid missing potential clients
 
 Categorize this call into ONE of these categories:
 
@@ -713,13 +716,20 @@ Categorize this call into ONE of these categories:
   • Medical-related business calls (not patient calling about their own injury)
   • Examples: "Integrated Specialty ASC", "XYZ Radiology", "ABC Billing Services"
 
-**Other** - Wrong number, spam, telemarketer, unrelated business, or cannot determine purpose
+**Other** - Wrong number, spam, telemarketer, unrelated business, nonsensical calls, or cannot determine purpose
   • Clearly wrong number or misdial
   • Sales calls or spam
   • Unrelated to personal injury law
-  • Cannot determine purpose from transcript
+  • Nonsensical or gibberish calls with no meaningful content (e.g., caller only says "Yeah" repeatedly, fragmented speech with no clear purpose)
+  • Very short disconnected calls (under 30 seconds with no substance)
+  • Cannot determine ANY purpose from transcript
+  • No discussion of injury, legal matter, medical billing, insurance, or attorney services
 
-CRITICAL: When in doubt between New Lead and Existing Client, prefer "New Lead" UNLESS there is explicit evidence of an established case (case number, "my case", "my lawyer", etc.).
+CRITICAL DISTINCTION:
+- "Other" = NO meaningful legal/injury discussion OR completely nonsensical
+- "New Lead" = ACTUAL injury/legal discussion but unclear if new vs existing client → prefer New Lead
+
+When in doubt between New Lead and Existing Client (both involving actual injury discussion), prefer "New Lead" UNLESS there is explicit evidence of an established case (case number, "my case", "my lawyer", etc.).
 
 TRANSCRIPT:
 ${transcriptText}
