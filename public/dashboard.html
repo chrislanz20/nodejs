@@ -2569,6 +2569,9 @@
         const data = await res.json();
         const latestCalls = data.all_calls || [];
 
+        // Load categories from database to check which calls are already categorized
+        await loadCategories();
+
         // Find uncategorized calls
         const uncategorizedCalls = latestCalls.filter(call => !callCategories[call.call_id]);
 
@@ -2667,9 +2670,9 @@
     }
 
     // Initialize dashboard
-    function initializeDashboard() {
-      loadOverview();
-      // Start auto-categorization after initial load
+    async function initializeDashboard() {
+      await loadOverview();  // Wait for overview and categories to load
+      // Start auto-categorization after initial load is complete
       setTimeout(() => startAutoCategorization(), 3000);
     }
 
