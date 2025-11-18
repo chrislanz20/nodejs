@@ -78,6 +78,12 @@ const anthropic = new Anthropic({
   apiKey: ANTHROPIC_API_KEY,
 });
 
+// Disable TLS certificate validation for PostgreSQL connections
+// This is needed for Supabase/Neon databases that use self-signed certificates
+if (process.env.POSTGRES_URL || process.env.POSTGRES_URL_NON_POOLING) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
 // Initialize Postgres connection pool
 // Use NON_POOLING URL for better compatibility with serverless
 const pool = new Pool({
