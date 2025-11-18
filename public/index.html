@@ -3,258 +3,263 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Omelette Headquarters | Wakefield, Massachusetts</title>
+    <title>Barber Malden MA | JS Cuts Barber Salon</title>
     <meta
       name="description"
-      content="Omelette Headquarters in Wakefield, MA serves artfully crafted breakfast, brunch, and coffee in a sunlit café inspired by the perfect omelette."
+      content="JS Cuts Barber Salon in Malden, MA delivers top-notch grooming in a relaxing environment. Explore premium haircuts, shaves, and beard services, and book your appointment today."
     />
+    <script>
+      tailwind = undefined;
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              charcoal: '#1f1f24',
+              mahogany: '#4a2f27',
+              ivory: '#f9f6f1',
+              accent: '#c18f59'
+            },
+            fontFamily: {
+              display: ['\"Playfair Display\"', 'serif'],
+              body: ['Inter', 'system-ui', 'sans-serif']
+            }
+          }
+        }
+      };
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Barbershop",
+        "name": "JS Cuts Barber Salon",
+        "image": "",
+        "@id": "",
+        "url": "",
+        "telephone": "(781) 267-2029",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "380 Salem Street",
+          "addressLocality": "Malden",
+          "addressRegion": "MA",
+          "postalCode": "02148",
+          "addressCountry": "US"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 42.4288,
+          "longitude": -71.0569
+        },
+        "priceRange": "$$",
+        "sameAs": [
+          "",
+          ""
+        ]
+      }
+    </script>
   </head>
-  <body>
-    <header class="hero" id="top">
-      <div class="hero__overlay"></div>
-      <div class="container hero__inner">
-        <nav class="nav" aria-label="Main">
-          <a class="nav__brand" href="#top">Omelette HQ</a>
-          <button class="nav__toggle" aria-expanded="false" aria-controls="primary-navigation">
-            <span class="nav__toggle-line"></span>
-            <span class="nav__toggle-line"></span>
-            <span class="nav__toggle-line"></span>
+  <body class="font-body bg-ivory text-slate-800">
+    <header class="sticky top-0 z-50 shadow-sm">
+      <div class="bg-mahogany text-ivory">
+        <div class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-2 text-xs sm:flex-row sm:items-center sm:justify-between">
+          <span>380 Salem Street, Malden, MA 02148</span>
+          <a class="font-semibold underline-offset-2 hover:underline" href="tel:17812672029">(781) 267-2029</a>
+        </div>
+      </div>
+      <div class="backdrop-blur bg-ivory/95">
+        <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
+          <a href="/" class="text-lg font-semibold tracking-wide text-charcoal">JS Cuts Barber Salon</a>
+          <button
+            class="inline-flex items-center justify-center rounded-md border border-charcoal/20 px-3 py-2 text-sm font-medium text-charcoal transition lg:hidden"
+            type="button"
+            aria-expanded="false"
+            aria-controls="primary-navigation"
+            data-mobile-toggle
+          >
             <span class="sr-only">Toggle navigation</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
           </button>
-          <ul class="nav__links" id="primary-navigation">
-            <li><a href="#about">Our Story</a></li>
-            <li><a href="#menu">Menu</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#events">Events</a></li>
-            <li><a href="#visit">Visit</a></li>
-          </ul>
-        </nav>
-
-        <div class="hero__content">
-          <p class="eyebrow">Wakefield, Massachusetts</p>
-          <h1>Where Omelettes are an Art Form</h1>
-          <p>
-            Omelette Headquarters is a cheerful café devoted to one perfect dish. From locally sourced
-            eggs to inventive fillings, every plate is a canvas for comfort and creativity.
-          </p>
-          <div class="hero__cta">
-            <a class="btn btn--primary" href="#menu">Explore the Menu</a>
-            <a class="btn btn--ghost" href="#visit">Plan Your Visit</a>
-          </div>
+          <nav
+            id="primary-navigation"
+            class="hidden w-full flex-col items-start gap-4 text-sm lg:flex lg:w-auto lg:flex-row lg:items-center"
+          >
+            <a class="nav-link" href="/">Home</a>
+            <a class="nav-link" href="/services.html">Services</a>
+            <a class="nav-link" href="/about.html">About</a>
+            <a class="nav-link" href="/contact.html">Contact</a>
+            <a
+              class="btn btn-primary w-full lg:w-auto"
+              href=""
+              >Book Now</a
+            >
+          </nav>
         </div>
       </div>
     </header>
 
     <main>
-      <section class="section" id="about">
-        <div class="container section__grid">
-          <div class="section__content">
-            <h2>Born from a Breakfast Obsession</h2>
-            <p>
-              Omelette Headquarters began as a pop-up on Wakefield&rsquo;s lakefront farmer&rsquo;s market and
-              quickly became the town&rsquo;s favorite morning ritual. Founder and chef Dana Avery wanted a
-              place where guests could slow down, savor the moment, and experience eggs elevated beyond
-              expectations.
+      <section class="hero-section overflow-hidden text-ivory">
+        <div class="relative z-10 mx-auto flex max-w-6xl flex-col gap-6 px-4 py-24 lg:flex-row lg:items-center">
+          <div class="hero-copy max-w-2xl space-y-6">
+            <p class="text-sm uppercase tracking-[0.2em] text-accent">Malden, Massachusetts</p>
+            <h1 class="font-display text-4xl font-semibold leading-tight text-white md:text-5xl">
+              JS Cuts Barber Salon: Top-Notch Grooming in a Relaxing Malden Environment
+            </h1>
+            <p class="text-lg text-ivory/80">
+              Experience the expertise honed by years in the industry. Book your precision cut or premium shave today.
             </p>
-            <p>
-              Today, our kitchen celebrates the craft of breakfast with seasonal ingredients, a zero-waste
-              mindset, and barista-crafted coffee drinks. Every omelette is folded to order, served with
-              toasted sourdough, and paired with playful sauces you won&rsquo;t find anywhere else.
-            </p>
+            <div class="flex flex-col gap-3 sm:flex-row">
+              <a class="btn btn-primary" href="">Book Now</a>
+              <a class="btn btn-outline" href="#services-preview">View Services</a>
+            </div>
           </div>
-          <article class="highlight-card" aria-label="House values">
-            <h3>Our Guiding Ingredients</h3>
-            <ul class="checklist">
-              <li>Farm eggs sourced within 50 miles of Wakefield</li>
-              <li>House-fermented hot sauces and pickled vegetables</li>
-              <li>Compost-first kitchen with reusable packaging</li>
-              <li>Warm, neighborhood hospitality every day</li>
-            </ul>
-          </article>
+          <aside class="mt-8 max-w-sm rounded-lg border border-white/10 bg-white/10 p-6 text-white backdrop-blur lg:mt-0">
+            <h2 class="font-display text-xl">Top-Notch Customer Service in a Relaxing Environment</h2>
+            <p class="mt-3 text-sm text-ivory/80">
+              From precision scissor work to soothing hot towel shaves, every visit is personalized, timely, and delivered with
+              genuine care for the Malden community.
+            </p>
+          </aside>
         </div>
       </section>
 
-      <section class="section section--accent" id="menu">
-        <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Signature Omelettes</p>
-            <h2>Crafted Classics & Bold Specials</h2>
+      <section class="mx-auto max-w-6xl px-4 py-16" id="services-preview">
+        <div class="grid gap-12 lg:grid-cols-[1.2fr_1fr]">
+          <div class="space-y-6">
+            <p class="text-sm uppercase tracking-[0.2em] text-mahogany">Signature Offerings</p>
+            <h2 class="font-display text-3xl text-charcoal">Precision Grooming Crafted for Malden</h2>
             <p>
-              From timeless comforts to daring flavor mashups, these omelettes showcase the flair and fun of
-              Omelette HQ. Seasonal specials rotate monthly.
+              Explore high-value services designed to match your lifestyle, whether you are prepping for a milestone moment or
+              keeping your weekly grooming routine sharp.
             </p>
+            <div class="grid gap-6 md:grid-cols-2">
+              <article class="service-card">
+                <h3>The Precision Signature Cut</h3>
+                <p>Consultation-driven haircut with masterful scissor and clipper work.</p>
+                <a class="service-link" href="/services.html">View full details</a>
+              </article>
+              <article class="service-card">
+                <h3>The Royal Treatment Combo</h3>
+                <p>Signature Cut paired with an expert beard trim or straight-razor finish.</p>
+                <a class="service-link" href="/services.html">View full details</a>
+              </article>
+              <article class="service-card">
+                <h3>Classic Hot Towel Shave</h3>
+                <p>Steam, aromatherapy oils, and meticulous straight-razor technique.</p>
+                <a class="service-link" href="/services.html">View full details</a>
+              </article>
+              <article class="service-card">
+                <h3>Youth & Senior Cuts</h3>
+                <p>Purposeful grooming for kids under 12 and guests 65+.</p>
+                <a class="service-link" href="/services.html">View full details</a>
+              </article>
+            </div>
           </div>
-          <div class="card-grid">
-            <article class="card">
-              <h3>Lake Quannapowitt Classic</h3>
-              <p>Applewood bacon, smoked cheddar, slow-roasted tomatoes, scallion crème fraîche.</p>
-              <span class="pill">$14</span>
-            </article>
-            <article class="card">
-              <h3>Garden Sunrise</h3>
-              <p>Charred broccolini, lemon ricotta, basil pesto drizzle, toasted almond crunch.</p>
-              <span class="pill">Vegetarian</span>
-            </article>
-            <article class="card">
-              <h3>North Shore Heat</h3>
-              <p>Chorizo, cotija, caramelized onions, pickled fresnos, house pineapple fire sauce.</p>
-              <span class="pill pill--spicy">Spicy</span>
-            </article>
-            <article class="card">
-              <h3>Wakefield Weekender</h3>
-              <p>Lobster tail medallions, brown butter hollandaise, champagne chive pearls.</p>
-              <span class="pill">Saturday & Sunday Only</span>
-            </article>
+          <div class="space-y-6">
+            <figure class="tools-frame" aria-labelledby="tools-caption">
+              <img
+                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/aaf8985e-3ce0-4b98-86a3-fa46becfb09c.png"
+                alt="Professional barber tools neatly arranged on a work surface"
+                loading="lazy"
+              />
+              <figcaption id="tools-caption" class="sr-only">Barber tools staged for premium grooming services.</figcaption>
+            </figure>
+            <div class="rounded-lg bg-white p-6 shadow-lg">
+              <h3 class="font-display text-xl text-charcoal">Ready When You Are</h3>
+              <p class="mt-2 text-sm text-slate-700">
+                Reserve your chair in moments. Our streamlined booking process keeps your day on schedule and your look on point.
+              </p>
+              <a class="btn btn-primary mt-4 w-full" href="">Book Now</a>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="section section--experience" id="experience">
-        <div class="container section__grid section__grid--reverse">
-          <article class="section__content">
-            <h2>The Omelette HQ Experience</h2>
-            <p>
-              Sunlight pours through our vaulted windows, jazz vinyl hums softly, and latte art swirls through
-              the air. Settle into our communal harvest table or claim a window seat overlooking the Lake
-              Quannapowitt trail.
-            </p>
-            <ul class="icon-list">
-              <li>
-                <span class="icon" aria-hidden="true">🥚</span>
-                <div>
-                  <h3>Egg Bar</h3>
-                  <p>Customize your omelette with chef-guided mix-ins and sauces for a bespoke breakfast.</p>
+      <section class="bg-white py-16">
+        <div class="mx-auto max-w-6xl px-4">
+          <div class="grid gap-10 lg:grid-cols-2">
+            <div class="space-y-5">
+              <p class="text-sm uppercase tracking-[0.2em] text-mahogany">Relax &amp; Recharge</p>
+              <h2 class="font-display text-3xl text-charcoal">Every Detail Designed for Comfort</h2>
+              <p>
+                From the welcoming reception area to the curated music and refined finishes, JS Cuts Barber Salon sets a calm tone
+                so you can unwind while our barbers focus on the craft.
+              </p>
+              <ul class="space-y-3 text-sm text-slate-700">
+                <li><span class="font-semibold text-charcoal">Premium Tools:</span> Professional-grade clippers, scissors, and hot towel systems.</li>
+                <li><span class="font-semibold text-charcoal">Tailored Experience:</span> Consultations that respect your vision and lifestyle.</li>
+                <li><span class="font-semibold text-charcoal">Community Roots:</span> Proudly serving Malden with dedication to lasting relationships.</li>
+              </ul>
+            </div>
+            <div class="space-y-6">
+              <div class="image-placeholder h-56 w-full">Gallery placeholder: Mayor Christenson at grand opening</div>
+              <div class="rounded-lg bg-ivory p-6 shadow-inner">
+                <h3 class="font-display text-xl text-charcoal">Stay Connected</h3>
+                <p class="text-sm text-slate-700">Follow our latest cuts, community events, and grooming tips.</p>
+                <div class="mt-4 grid gap-4 md:grid-cols-2">
+                  <a class="social-link" href="" aria-label="JS Cuts Barber Salon on Instagram">Instagram</a>
+                  <a class="social-link" href="" aria-label="JS Cuts Barber Salon on Facebook">Facebook</a>
                 </div>
-              </li>
-              <li>
-                <span class="icon" aria-hidden="true">☕</span>
-                <div>
-                  <h3>Slow Coffee Bar</h3>
-                  <p>Single-origin pours, nitro cold brew, and seasonal mocktails crafted by our baristas.</p>
-                </div>
-              </li>
-              <li>
-                <span class="icon" aria-hidden="true">🎶</span>
-                <div>
-                  <h3>Weekend Vinyl Sessions</h3>
-                  <p>Local DJs spin mellow brunch sets every Saturday from 10 AM&ndash;1 PM.</p>
-                </div>
-              </li>
-            </ul>
-          </article>
-          <figure class="feature-card" aria-label="Interior photography">
-            <img
-              src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80"
-              alt="Sunlit café interior with breakfast counter"
-            />
-            <figcaption>Bright mornings inside Omelette Headquarters</figcaption>
-          </figure>
-        </div>
-      </section>
-
-      <section class="section" id="events">
-        <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Wakefield Community</p>
-            <h2>Upcoming Happenings</h2>
-            <p>We love sharing breakfast culture with our neighbors. Save the date for these special moments.</p>
-          </div>
-          <div class="timeline">
-            <article class="timeline__item">
-              <h3>Egg Art Lab &middot; September 7</h3>
-              <p>Hands-on class exploring omelette folds, topping stylings, and plating wizardry.</p>
-            </article>
-            <article class="timeline__item">
-              <h3>Harvest Brunch &middot; October 12</h3>
-              <p>Five-course tasting menu featuring autumn ingredients from Middlesex County farms.</p>
-            </article>
-            <article class="timeline__item">
-              <h3>Lakefront Sunrise Run &middot; Every Friday</h3>
-              <p>Meet at 6 AM for a 3-mile jog followed by complimentary espresso shots.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section section--visit" id="visit">
-        <div class="container section__grid">
-          <div class="section__content">
-            <p class="eyebrow">Visit</p>
-            <h2>Come by the Headquarters</h2>
-            <p>
-              Find us steps from Wakefield&rsquo;s commuter rail stop. We welcome walk-ins and limited
-              reservations for parties of six or more. Outdoor patio seating is available spring through fall.
-            </p>
-            <div class="contact-details">
-              <div>
-                <h3>Location</h3>
-                <p>
-                  12 Main Street<br />
-                  Wakefield, MA 01880
-                </p>
-              </div>
-              <div>
-                <h3>Hours</h3>
-                <p>Daily 7:00 AM &ndash; 3:00 PM<br />Brunch until 4:00 PM on weekends</p>
-              </div>
-              <div>
-                <h3>Contact</h3>
-                <p>
-                  <a href="tel:17815551234">(781) 555-1234</a><br />
-                  <a href="mailto:hello@omelettehq.com">hello@omelettehq.com</a>
-                </p>
-              </div>
-              <div>
-                <h3>Follow</h3>
-                <p>
-                  <a href="https://www.instagram.com" target="_blank" rel="noreferrer">Instagram</a>
-                  &middot;
-                  <a href="https://www.tiktok.com" target="_blank" rel="noreferrer">TikTok</a>
-                </p>
               </div>
             </div>
           </div>
-          <div class="map-card">
-            <iframe
-              title="Map of Omelette Headquarters in Wakefield MA"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2939.217417979731!2d-71.07318192355152!3d42.50393917117971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e36f78d1de7d21%3A0xa795882b58c2c299!2sWakefield%2C%20MA!5e0!3m2!1sen!2sus!4v1720384050002!5m2!1sen!2sus"
-              allowfullscreen=""
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-            ></iframe>
+        </div>
+      </section>
+
+      <section class="bg-charcoal py-16 text-white">
+        <div class="mx-auto max-w-6xl px-4">
+          <div class="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+            <div>
+              <p class="text-sm uppercase tracking-[0.2em] text-accent">@jscutsbarbersalon</p>
+              <h2 class="font-display text-3xl">Instagram Studio Feed</h2>
+            </div>
+            <a class="btn btn-outline" href="">Book Now</a>
+          </div>
+          <div class="instagram-feed grid gap-4 md:grid-cols-4">
+            <div class="image-placeholder aspect-square">Instagram placeholder</div>
+            <div class="image-placeholder aspect-square">Instagram placeholder</div>
+            <div class="image-placeholder aspect-square">Instagram placeholder</div>
+            <div class="image-placeholder aspect-square">Instagram placeholder</div>
           </div>
         </div>
       </section>
     </main>
 
-    <footer class="footer">
-      <div class="container footer__inner">
-        <p>© <span id="year"></span> Omelette Headquarters. Crafted with love in Wakefield, MA.</p>
-        <p>
-          Need catering? Email <a href="mailto:catering@omelettehq.com">catering@omelettehq.com</a> for custom
-          brunch spreads.
-        </p>
+    <footer class="bg-mahogany text-ivory">
+      <div class="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 md:flex-row md:justify-between">
+        <div class="space-y-3">
+          <h2 class="font-display text-2xl">JS Cuts Barber Salon</h2>
+          <p>380 Salem Street, Malden, MA 02148</p>
+          <p><a class="underline" href="tel:17812672029">(781) 267-2029</a></p>
+          <a class="btn btn-primary inline-flex" href="">Book Now</a>
+        </div>
+        <div class="max-w-md space-y-3 text-sm">
+          <p>
+            We deliver top-notch customer service in a relaxing environment. Stop by for precision grooming or connect with us on
+            social media to see the latest looks crafted for the Malden community.
+          </p>
+          <div class="flex gap-3">
+            <a class="social-link" href="">Instagram</a>
+            <a class="social-link" href="">Facebook</a>
+          </div>
+        </div>
+      </div>
+      <div class="bg-charcoal py-4 text-center text-xs text-ivory/70">
+        &copy; <span id="current-year"></span> JS Cuts Barber Salon. All rights reserved.
       </div>
     </footer>
 
-    <script>
-      const navToggle = document.querySelector(".nav__toggle");
-      const navLinks = document.querySelector(".nav__links");
-
-      navToggle?.addEventListener("click", () => {
-        const expanded = navToggle.getAttribute("aria-expanded") === "true";
-        navToggle.setAttribute("aria-expanded", String(!expanded));
-        navLinks?.classList.toggle("nav__links--open");
-      });
-
-      document.getElementById("year").textContent = new Date().getFullYear();
-    </script>
+    <script src="/scripts.js"></script>
   </body>
 </html>
