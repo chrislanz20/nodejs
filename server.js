@@ -1469,6 +1469,41 @@ app.get('/api/team/auth/me', authenticateToken, async (req, res) => {
   }
 });
 
+// ============ DATABASE MIGRATION ENDPOINT ============
+// One-time endpoint to run migrations in production
+app.get('/api/run-migration', async (req, res) => {
+  try {
+    // Read and execute the migration
+    const fs = require('fs');
+    const path = require('path');
+
+    const migrationPath = path.join(__dirname, 'migrations', '005_add_last_login.sql');
+    const sql = fs.readFileSync(migrationPath, 'utf8');
+
+    await pool.query(sql);
+
+    res.json({
+      success: true,
+      message: 'Migration 005_add_last_login.sql completed successfully!'
+    });
+  } catch (error) {
+    console.error('Migration error:', error);
+
+    // Check if column already exists
+    if (error.code === '42701' || error.message.includes('already exists')) {
+      return res.json({
+        success: true,
+        message: 'Migration already applied (last_login column exists)'
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // ============ ADMIN ROUTES (for managing clients) ============
 
 // GET /api/admin/clients - List all clients
