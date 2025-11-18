@@ -1509,28 +1509,32 @@ app.get('/api/run-migration', async (req, res) => {
 // GET /api/admin/clients - List all clients
 app.get('/api/admin/clients', async (req, res) => {
   try {
-    // Try with last_login column first
+    // Check if last_login column exists first
+    const columnCheck = await pool.query(`
+      SELECT column_name
+      FROM information_schema.columns
+      WHERE table_name = 'clients' AND column_name = 'last_login'
+    `);
+
+    const hasLastLogin = columnCheck.rows.length > 0;
+
     let result;
-    try {
+    if (hasLastLogin) {
       result = await pool.query(
         'SELECT id, email, business_name, agent_ids, created_at, active, last_login FROM clients ORDER BY created_at DESC'
       );
-    } catch (columnError) {
-      // If last_login doesn't exist (migration not run), fall back to query without it
-      if (columnError.code === '42703') {
-        console.log('Note: last_login column not found, run /api/run-migration');
-        result = await pool.query(
-          'SELECT id, email, business_name, agent_ids, created_at, active FROM clients ORDER BY created_at DESC'
-        );
-      } else {
-        throw columnError;
-      }
+    } else {
+      console.log('Note: last_login column not found, run /api/run-migration');
+      result = await pool.query(
+        'SELECT id, email, business_name, agent_ids, created_at, active FROM clients ORDER BY created_at DESC'
+      );
     }
 
     res.json({ clients: result.rows });
   } catch (error) {
     console.error('Error fetching clients:', error);
-    res.status(500).json({ error: 'Failed to fetch clients' });
+    console.error('Error details:', error.stack);
+    res.status(500).json({ error: 'Failed to fetch clients', details: error.message });
   }
 });
 
