@@ -1221,7 +1221,11 @@
         // Reload current view to show updated categories
         const activeTab = document.querySelector('.tab.active');
         if (activeTab) {
-          activeTab.click();
+          if (activeTab.textContent.includes('OVERVIEW')) {
+            renderOverview();  // Refresh overview tab
+          } else if (activeTab.textContent.includes('All Calls')) {
+            loadAllCalls();  // Refresh all calls tab
+          }
         }
       } catch (error) {
         console.error('Auto-categorization error:', error);
@@ -2624,10 +2628,14 @@
           }
         }
 
-        // Refresh current view if we're on the All Calls tab
+        // Refresh current view to show updated categories
         const activeTab = document.querySelector('.tab.active');
-        if (activeTab && activeTab.textContent.includes('All Calls')) {
-          loadAllCalls();
+        if (activeTab) {
+          if (activeTab.textContent.includes('OVERVIEW')) {
+            renderOverview();  // Refresh overview tab
+          } else if (activeTab.textContent.includes('All Calls')) {
+            loadAllCalls();  // Refresh all calls tab
+          }
         }
 
         console.log(`✅ Auto-categorization complete. Processed ${uncategorizedCalls.length} call(s)`);
