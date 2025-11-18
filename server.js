@@ -91,9 +91,10 @@ if (process.env.POSTGRES_URL || process.env.POSTGRES_URL_NON_POOLING) {
 
 // Initialize Postgres connection pool
 // Use POOLING URL (pgbouncer) to prevent connection exhaustion
+const dbConnectionString = process.env.POSTGRES_URL || process.env.POSTGRES_URL_NON_POOLING;
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL || process.env.POSTGRES_URL_NON_POOLING,
-  ssl: process.env.POSTGRES_URL ? {
+  connectionString: dbConnectionString,
+  ssl: dbConnectionString ? {
     rejectUnauthorized: false,
     // Additional SSL options to bypass certificate validation
     checkServerIdentity: () => undefined,
