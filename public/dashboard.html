@@ -2649,24 +2649,8 @@
         // Update the UI to show the latest calls
         allCalls = latestCalls;
 
-        // Collect short calls to batch-save later
-        const shortCalls = [];
-
-        // Categorize new calls one at a time
+        // Categorize new calls one at a time with Claude AI (no duration-based filtering)
         for (const call of uncategorizedCalls) {
-          // Check if call is under 1 minute - auto-categorize as "Other"
-          // IMPORTANT: Only categorize if call has ended (has end_timestamp)
-          if (call.end_timestamp && call.duration_minutes < 1) {
-            callCategories[call.call_id] = {
-              category: 'Other',
-              reasoning: 'Call duration under 1 minute',
-              auto: true
-            };
-            shortCalls.push(call.call_id);
-            console.log(`✓ Auto-categorized ${call.call_id} as "Other" (< 1 min)`);
-            continue;
-          }
-
           // Skip calls that are still in progress (no end_timestamp)
           if (!call.end_timestamp) {
             console.log(`⏳ Skipping ${call.call_id} - call still in progress`);
@@ -2725,31 +2709,6 @@
             }
           } catch (error) {
             console.error(`Error categorizing ${call.call_id}:`, error);
-          }
-        }
-
-        // Save short calls to database (batch)
-        if (shortCalls.length > 0) {
-          try {
-            console.log(`💾 Saving ${shortCalls.length} short call categories to database...`);
-            const categoriesToSave = {};
-            shortCalls.forEach(callId => {
-              categoriesToSave[callId] = callCategories[callId];
-            });
-
-            const saveRes = await fetch('/api/save-categories', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ categories: categoriesToSave })
-            });
-
-            if (saveRes.ok) {
-              console.log(`✅ Saved ${shortCalls.length} short call categories to database`);
-            } else {
-              console.error(`Failed to save short call categories: ${saveRes.status}`);
-            }
-          } catch (error) {
-            console.error('Error saving short call categories:', error);
           }
         }
 
