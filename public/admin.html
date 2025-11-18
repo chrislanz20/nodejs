@@ -1424,8 +1424,16 @@
       }
     }
 
+    // Initialize admin page
+    function initializeAdminPage() {
+      loadClients();
+    }
+
+    // Register globally for fast-nav
+    window.pageInit = initializeAdminPage;
+
     // Load clients on page load
-    loadClients();
+    initializeAdminPage();
   </script>
 </body>
 </html>

@@ -2478,10 +2478,17 @@
     }
 
     // Initialize dashboard
-    loadOverview();
+    function initializeDashboard() {
+      loadOverview();
+      // Start auto-categorization after initial load
+      setTimeout(() => startAutoCategorization(), 3000);
+    }
 
-    // Start auto-categorization after initial load
-    setTimeout(() => startAutoCategorization(), 3000);
+    // Register globally for fast-nav
+    window.pageInit = initializeDashboard;
+
+    // Run on page load
+    initializeDashboard();
   </script>
 </body>
 </html>
