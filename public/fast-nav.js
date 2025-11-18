@@ -107,10 +107,13 @@ class FastNav {
       oldScript.parentNode.replaceChild(newScript, oldScript);
     });
 
-    // Call page initialization if it exists
-    if (typeof window.pageInit === 'function') {
-      window.pageInit();
-    }
+    // Call page initialization after scripts have executed
+    // Use setTimeout to ensure scripts finish executing first
+    setTimeout(() => {
+      if (typeof window.pageInit === 'function') {
+        window.pageInit();
+      }
+    }, 0);
 
     // Update URL
     if (pushState) {
