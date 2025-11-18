@@ -71,7 +71,9 @@
       border-radius: 16px;
       box-shadow: 0 8px 24px rgba(0, 255, 255, 0.1);
       border: 1px solid rgba(0, 255, 255, 0.2);
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: visible;
+      position: relative;
     }
 
     table {
@@ -108,6 +110,25 @@
 
     tbody tr:hover {
       background: rgba(0, 255, 255, 0.08);
+    }
+
+    /* Sticky Actions Column - Always visible on right */
+    th:last-child,
+    td:last-child {
+      position: sticky;
+      right: 0;
+      background: rgba(13, 17, 23, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 10;
+      box-shadow: -4px 0 8px rgba(0, 0, 0, 0.3);
+    }
+
+    th:last-child {
+      background: rgba(13, 17, 23, 0.98);
+    }
+
+    tbody tr:hover td:last-child {
+      background: rgba(0, 255, 255, 0.12);
     }
 
     .actions-cell {
