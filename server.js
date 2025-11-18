@@ -1509,9 +1509,23 @@ app.get('/api/run-migration', async (req, res) => {
 // GET /api/admin/clients - List all clients
 app.get('/api/admin/clients', async (req, res) => {
   try {
-    const result = await pool.query(
-      'SELECT id, email, business_name, agent_ids, created_at, active, last_login FROM clients ORDER BY created_at DESC'
-    );
+    // Try with last_login column first
+    let result;
+    try {
+      result = await pool.query(
+        'SELECT id, email, business_name, agent_ids, created_at, active, last_login FROM clients ORDER BY created_at DESC'
+      );
+    } catch (columnError) {
+      // If last_login doesn't exist (migration not run), fall back to query without it
+      if (columnError.code === '42703') {
+        console.log('Note: last_login column not found, run /api/run-migration');
+        result = await pool.query(
+          'SELECT id, email, business_name, agent_ids, created_at, active FROM clients ORDER BY created_at DESC'
+        );
+      } else {
+        throw columnError;
+      }
+    }
 
     res.json({ clients: result.rows });
   } catch (error) {
