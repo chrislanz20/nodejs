@@ -2585,6 +2585,9 @@
         // Update the UI to show the latest calls
         allCalls = latestCalls;
 
+        // Collect short calls to batch-save later
+        const shortCalls = [];
+
         // Categorize new calls one at a time
         for (const call of uncategorizedCalls) {
           // Check if call is under 1 minute - auto-categorize as "Other"
@@ -2594,6 +2597,7 @@
               reasoning: 'Call duration under 1 minute',
               auto: true
             };
+            shortCalls.push(call.call_id);
             console.log(`✓ Auto-categorized ${call.call_id} as "Other" (< 1 min)`);
             continue;
           }
@@ -2628,6 +2632,31 @@
             }
           } catch (error) {
             console.error(`Error categorizing ${call.call_id}:`, error);
+          }
+        }
+
+        // Save short calls to database (batch)
+        if (shortCalls.length > 0) {
+          try {
+            console.log(`💾 Saving ${shortCalls.length} short call categories to database...`);
+            const categoriesToSave = {};
+            shortCalls.forEach(callId => {
+              categoriesToSave[callId] = callCategories[callId];
+            });
+
+            const saveRes = await fetch('/api/save-categories', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ categories: categoriesToSave })
+            });
+
+            if (saveRes.ok) {
+              console.log(`✅ Saved ${shortCalls.length} short call categories to database`);
+            } else {
+              console.error(`Failed to save short call categories: ${saveRes.status}`);
+            }
+          } catch (error) {
+            console.error('Error saving short call categories:', error);
           }
         }
 

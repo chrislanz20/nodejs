@@ -961,6 +961,30 @@ app.post('/api/categorize-batch', async (req, res) => {
   }
 });
 
+// POST /api/save-categories - Save multiple categories to database without AI categorization
+app.post('/api/save-categories', async (req, res) => {
+  try {
+    const { categories } = req.body;
+
+    if (!categories || typeof categories !== 'object') {
+      return res.status(400).json({ error: 'categories object is required' });
+    }
+
+    console.log(`Saving ${Object.keys(categories).length} categories to database...`);
+
+    // Save to database
+    await writeCategories(categories);
+
+    res.json({
+      success: true,
+      saved: Object.keys(categories).length
+    });
+  } catch (error) {
+    console.error('Error saving categories:', error);
+    res.status(500).json({ error: 'Failed to save categories' });
+  }
+});
+
 // POST /api/update-category - Manually override a call's category
 app.post('/api/update-category', async (req, res) => {
   try {
