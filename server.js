@@ -82,9 +82,11 @@ const anthropic = new Anthropic({
 // Use NON_POOLING URL for better compatibility with serverless
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  ssl: process.env.POSTGRES_URL ? {
+    rejectUnauthorized: false,
+    // Additional SSL options to bypass certificate validation
+    checkServerIdentity: () => undefined,
+  } : false
 });
 
 // Test database connection and create table if needed
