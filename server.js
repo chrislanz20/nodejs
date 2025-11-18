@@ -296,7 +296,14 @@ app.get("/api/test-calls", async (req, res) => {
 // Get aggregated agent summary - fetches ALL data once and aggregates by agent name
 app.get("/api/agent-summary", async (req, res) => {
   try {
-    console.log('Fetching agent summary...');
+    // Support incremental loading with since_timestamp parameter
+    const sinceTimestamp = req.query.since_timestamp ? parseInt(req.query.since_timestamp) : null;
+
+    if (sinceTimestamp) {
+      console.log(`Fetching agent summary (incremental since ${new Date(sinceTimestamp).toISOString()})...`);
+    } else {
+      console.log('Fetching agent summary (full load)...');
+    }
 
     // Fetch all agents
     const agentsData = await retryWithBackoff(() => retellClient.agent.list());
@@ -306,13 +313,17 @@ app.get("/api/agent-summary", async (req, res) => {
     // Add a small delay after fetching agents
     await sleep(500);
 
-    // Fetch ALL calls using SDK with pagination
+    // Fetch calls using SDK with pagination (optionally filtered by timestamp)
     let allCalls = [];
     let paginationKey = undefined;
     const pageSize = 1000;  // Request max per page
     let pageCount = 0;
 
-    console.log('🔍 Fetching ALL calls with SDK pagination...\n');
+    if (sinceTimestamp) {
+      console.log('🔍 Fetching NEW calls only (incremental)...\n');
+    } else {
+      console.log('🔍 Fetching ALL calls with SDK pagination...\n');
+    }
 
     // Keep fetching until we run out of data
     while (pageCount < 50) { // Safety limit: 50 pages = 50k calls max
@@ -338,7 +349,23 @@ app.get("/api/agent-summary", async (req, res) => {
         pageCount++;
 
         if (calls.length > 0) {
-          allCalls = allCalls.concat(calls);
+          // If we're doing incremental fetch, filter out old calls
+          let filteredCalls = calls;
+          if (sinceTimestamp) {
+            filteredCalls = calls.filter(call => {
+              const callTimestamp = call.start_timestamp || call.end_timestamp;
+              return callTimestamp && callTimestamp > sinceTimestamp;
+            });
+
+            // If we got calls but none are new, we've reached the cutoff
+            if (filteredCalls.length === 0) {
+              console.log(`✓ Finished: Reached timestamp cutoff (${allCalls.length} new calls found)`);
+              break;
+            }
+          }
+
+          allCalls = allCalls.concat(filteredCalls);
+
           // Use last call ID as pagination key for next request
           const lastCall = calls[calls.length - 1];
           paginationKey = lastCall.call_id;

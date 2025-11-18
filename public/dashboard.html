@@ -966,6 +966,7 @@
     let totalCallsAvailable = null;  // Total calls from API if provided
     let callCategories = {};  // Stores call categorizations { call_id: category }
     let adminContentLoaded = false;  // Track if admin content has been loaded
+    let lastFetchTimestamp = null;  // Track when we last fetched data for incremental loading
 
     // Section switching function - INSTANT tab switching
     function showSection(section) {
@@ -1026,6 +1027,14 @@
             newScript.textContent = oldScript.textContent;
             oldScript.parentNode.replaceChild(newScript, oldScript);
           });
+
+          // Initialize the admin page after scripts are loaded
+          // Give the scripts time to execute and define functions
+          setTimeout(() => {
+            if (typeof window.pageInit === 'function') {
+              window.pageInit();
+            }
+          }, 100);
 
           adminContentLoaded = true;
         }
@@ -1483,16 +1492,58 @@
     async function loadOverview(forceReload = false) {
       const content = document.getElementById('overview-content');
 
-      // If data is already loaded and not forcing reload, just render it
+      // If data is already loaded and not forcing reload, check for incremental update
       if (dataLoaded && !forceReload && agentSummaries.length > 0) {
         console.log('Using cached data:', agentSummaries.length, 'agents and', allCalls.length, 'calls');
+        console.log('Checking for new calls since last fetch...');
+
+        // Try to fetch only new calls
+        try {
+          const url = lastFetchTimestamp
+            ? `/api/agent-summary?since_timestamp=${lastFetchTimestamp}`
+            : '/api/agent-summary';
+
+          const res = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            const newCalls = data.all_calls || [];
+
+            if (newCalls.length > 0) {
+              console.log(`Found ${newCalls.length} new calls, merging with cached data...`);
+
+              // Merge new calls with existing calls (avoid duplicates)
+              const existingCallIds = new Set(allCalls.map(c => c.call_id));
+              const uniqueNewCalls = newCalls.filter(c => !existingCallIds.has(c.call_id));
+              allCalls = [...uniqueNewCalls, ...allCalls];
+
+              // Update agent summaries by re-aggregating
+              agentSummaries = data.agents || agentSummaries;
+
+              console.log(`Added ${uniqueNewCalls.length} new calls. Total: ${allCalls.length}`);
+
+              // Reload categories to get any new ones
+              await loadCategories();
+            } else {
+              console.log('No new calls found');
+            }
+
+            // Update last fetch timestamp
+            lastFetchTimestamp = Date.now();
+          }
+        } catch (error) {
+          console.error('Failed to check for new calls:', error);
+        }
+
         renderOverview(content);
-        // Disabled auto-categorization to prevent 413 errors - users can click "Analyze All Calls" manually
-        // autoCategorizeNewCalls();
         return;
       }
 
-      content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all call data from Retell...</p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p></div>';
+      // Full load
+      const loadingMessage = forceReload
+        ? '<div class="loading"><div class="spinner"></div><p>Reloading all call data...</p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p></div>'
+        : '<div class="loading"><div class="spinner"></div><p>Loading all call data from Retell...</p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p><p style="color: #10b981; font-size: 13px; margin-top: 8px;">Future loads will be instant - we only fetch new calls!</p></div>';
+
+      content.innerHTML = loadingMessage;
 
       try {
         // Fetch all data in ONE request to avoid rate limiting
@@ -1506,6 +1557,7 @@
         allCalls = data.all_calls || [];
         totalCallsAvailable = data.total_calls_available;  // Store total if provided
         dataLoaded = true;  // Mark data as loaded
+        lastFetchTimestamp = Date.now();  // Set initial fetch timestamp
 
         // Load categories
         await loadCategories();
@@ -1515,6 +1567,7 @@
 
         console.log('Overview - loaded', agentSummaries.length, 'agents and', allCalls.length, 'calls');
         console.log('Pages fetched:', data.pages_fetched);
+        console.log('Last fetch timestamp set:', new Date(lastFetchTimestamp).toISOString());
         if (totalCallsAvailable) {
           console.log(`API reports ${totalCallsAvailable} total calls available`);
           if (totalCallsAvailable > allCalls.length) {
