@@ -598,8 +598,11 @@ async function writeCategory(callId, categoryData) {
   }
 }
 
-// Helper: Write multiple categories to Postgres database (batch)
-async function writeCategories(categories) {
+// Helper: Write multiple categories to Postgres database (batch) with deadlock retry
+async function writeCategories(categories, retryCount = 0) {
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 100; // ms
+
   try {
     const client = await pool.connect();
 
@@ -630,6 +633,16 @@ async function writeCategories(categories) {
       return true;
     } catch (error) {
       await client.query('ROLLBACK');
+
+      // Retry on deadlock error (40P01)
+      if (error.code === '40P01' && retryCount < MAX_RETRIES) {
+        client.release();
+        const delay = RETRY_DELAY * Math.pow(2, retryCount); // Exponential backoff
+        console.log(`⚠️  Deadlock detected, retrying in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return writeCategories(categories, retryCount + 1);
+      }
+
       throw error;
     } finally {
       client.release();
