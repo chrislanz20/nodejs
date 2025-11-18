@@ -7,6 +7,7 @@ const path = require("path");
 const fs = require("fs").promises;
 const Retell = require('retell-sdk').default;
 const Anthropic = require('@anthropic-ai/sdk');
+const OpenAI = require('openai');
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -89,6 +90,11 @@ const retellClient = new Retell({
 // Initialize Anthropic client
 const anthropic = new Anthropic({
   apiKey: ANTHROPIC_API_KEY,
+});
+
+// Initialize OpenAI client as backup
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 // Disable TLS certificate validation for PostgreSQL connections
@@ -938,15 +944,53 @@ REASONING: Caller explicitly identified as "medical provider" from a healthcare 
 
     return { category, reasoning, confidence, phone_number: phoneNumber };
   } catch (error) {
-    console.error('Error categorizing transcript:', error);
+    console.error('Claude AI categorization failed:', error);
     console.error('Error details:', {
       message: error.message,
       status: error.status,
       type: error.constructor.name,
       response: error.response?.data || error.response
     });
-    console.log('API Key prefix:', ANTHROPIC_API_KEY ? ANTHROPIC_API_KEY.substring(0, 10) : 'NOT SET');
-    return { category: 'Other', reasoning: `Error: ${error.message || 'Unknown error'}`, phone_number: phoneNumber };
+    console.log('Claude API Key prefix:', ANTHROPIC_API_KEY ? ANTHROPIC_API_KEY.substring(0, 10) : 'NOT SET');
+
+    // Try OpenAI as backup
+    console.log('🔄 Attempting fallback to OpenAI...');
+    try {
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',  // Fast and cost-effective
+        max_tokens: 2000,
+        messages: [{
+          role: 'user',
+          content: prompt
+        }]
+      });
+
+      const response = completion.choices[0].message.content.trim();
+
+      // Parse response (same format as Claude)
+      const categoryMatch = response.match(/CATEGORY:\s*(.+?)(?:\n|$)/i);
+      const confidenceMatch = response.match(/CONFIDENCE:\s*(.+?)(?:\n|$)/i);
+      const reasoningMatch = response.match(/REASONING:\s*(.+?)$/is);
+
+      let category = categoryMatch ? categoryMatch[1].trim() : 'Other';
+      const confidence = confidenceMatch ? confidenceMatch[1].trim().toUpperCase() : 'MEDIUM';
+      let reasoning = reasoningMatch ? reasoningMatch[1].trim() : 'Auto-categorized';
+
+      // Add confidence and backup indicator to reasoning
+      reasoning = `[${confidence} CONFIDENCE - OpenAI Backup] ${reasoning}`;
+
+      // Validate category
+      const validCategories = ['New Lead', 'Existing Client', 'Attorney', 'Insurance', 'Medical', 'Other'];
+      if (!validCategories.includes(category)) {
+        category = 'Other';
+      }
+
+      console.log('✅ OpenAI backup categorization successful');
+      return { category, reasoning, confidence, phone_number: phoneNumber };
+    } catch (backupError) {
+      console.error('OpenAI backup also failed:', backupError);
+      return { category: 'Other', reasoning: `Error: Claude and OpenAI both failed. ${error.message || 'Unknown error'}`, phone_number: phoneNumber };
+    }
   }
 }
 

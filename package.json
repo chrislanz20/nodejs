@@ -20,6 +20,7 @@
     "dotenv": "^17.2.3",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
+    "openai": "^6.9.1",
     "pg": "^8.11.3",
     "retell-sdk": "^4.57.0"
   }
