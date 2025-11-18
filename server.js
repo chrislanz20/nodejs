@@ -79,8 +79,9 @@ const anthropic = new Anthropic({
 });
 
 // Initialize Postgres connection pool
+// Use NON_POOLING URL for better compatibility with serverless
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
+  connectionString: process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_URL,
   ssl: {
     rejectUnauthorized: false
   }
