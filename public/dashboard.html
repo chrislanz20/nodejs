@@ -1262,8 +1262,9 @@
           updateProgressModal(i, callsToAnalyze.length, totalProcessed);
 
           // Check if call is under 1 minute - auto-categorize as "Other"
+          // IMPORTANT: Only categorize if call has ended (has end_timestamp)
           const currentCall = uncategorizedCalls[i];
-          if (currentCall.duration_minutes < 1) {
+          if (currentCall.end_timestamp && currentCall.duration_minutes < 1) {
             // Automatically categorize short calls as "Other"
             callCategories[currentCall.call_id] = {
               category: 'Other',
@@ -1271,6 +1272,13 @@
             };
             totalProcessed += 1;
             console.log(`📊 Progress: ${i + chunk.length}/${callsToAnalyze.length} calls sent, ${totalProcessed} processed (auto: <1min)`);
+            continue;
+          }
+
+          // Skip calls that are still in progress
+          if (!currentCall.end_timestamp) {
+            console.log(`⏳ Skipping ${currentCall.call_id} - call still in progress`);
+            totalProcessed += 1;
             continue;
           }
 
@@ -2525,7 +2533,8 @@
         // Categorize new calls one at a time
         for (const call of uncategorizedCalls) {
           // Check if call is under 1 minute - auto-categorize as "Other"
-          if (call.duration_minutes < 1) {
+          // IMPORTANT: Only categorize if call has ended (has end_timestamp)
+          if (call.end_timestamp && call.duration_minutes < 1) {
             callCategories[call.call_id] = {
               category: 'Other',
               reasoning: 'Call duration under 1 minute',
@@ -2533,6 +2542,12 @@
             };
             shortCalls.push(call.call_id);
             console.log(`✓ Auto-categorized ${call.call_id} as "Other" (< 1 min)`);
+            continue;
+          }
+
+          // Skip calls that are still in progress (no end_timestamp)
+          if (!call.end_timestamp) {
+            console.log(`⏳ Skipping ${call.call_id} - call still in progress`);
             continue;
           }
 
