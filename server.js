@@ -90,9 +90,9 @@ if (process.env.POSTGRES_URL || process.env.POSTGRES_URL_NON_POOLING) {
 }
 
 // Initialize Postgres connection pool
-// Use NON_POOLING URL for better compatibility with serverless
+// Use POOLING URL (pgbouncer) to prevent connection exhaustion
 const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_URL,
+  connectionString: process.env.POSTGRES_URL || process.env.POSTGRES_URL_NON_POOLING,
   ssl: process.env.POSTGRES_URL ? {
     rejectUnauthorized: false,
     // Additional SSL options to bypass certificate validation
