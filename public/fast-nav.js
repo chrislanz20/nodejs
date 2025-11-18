@@ -80,6 +80,12 @@ class FastNav {
   }
 
   swapPage(page, pushState = true) {
+    // Temporarily disabled - fallback to regular navigation
+    // The page swap was causing JavaScript initialization issues
+    window.location.href = page;
+    return;
+
+    /* Original swap code - commented out for now
     const html = this.cache.get(page);
     if (!html) {
       window.location.href = page;
@@ -121,6 +127,7 @@ class FastNav {
     this.prefetchPages();
 
     console.log(`⚡ Swapped to ${page} instantly!`);
+    */
   }
 }
 
