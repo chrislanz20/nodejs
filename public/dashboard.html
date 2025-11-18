@@ -1001,100 +1001,21 @@
       }
     }
 
-    // Load admin content -SIMPLE FAST VERSION - fetch clients directly
+    // Load admin content - FULL FEATURED VERSION using iframe
     async function loadAdminContent() {
       const adminContentDiv = document.getElementById('admin-content');
 
-      // Show loading message
-      adminContentDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading Client Management...</p></div>';
+      // Create iframe to load full admin.html with ALL functionality (create, edit, delete clients)
+      adminContentDiv.innerHTML = `
+        <iframe
+          src="/admin.html"
+          style="width: 100%; height: calc(100vh - 150px); border: none; border-radius: 8px; background: #0d1117;"
+          title="Client Management"
+        ></iframe>
+      `;
 
-      try {
-        // Fetch clients from API (fast!)
-        const response = await fetch('/api/admin/clients');
-        const data = await response.json();
-        const clients = data.clients || [];
-
-        // Calculate stats
-        const activeClients = clients.filter(c => c.active).length;
-        const inactiveClients = clients.length - activeClients;
-
-        // Render simple client management UI
-        adminContentDiv.innerHTML = `
-          <h1 style="color: #e6edf3; font-size: 28px; margin-bottom: 8px;">Client Management</h1>
-          <p style="color: #8b949e; margin-bottom: 30px;">Manage client accounts for your AI receptionist dashboard</p>
-
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
-            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 20px;">
-              <div style="color: #10b981; font-size: 14px; font-weight: 600; margin-bottom: 8px;">TOTAL CLIENTS</div>
-              <div style="color: #e6edf3; font-size: 32px; font-weight: 700;">${clients.length}</div>
-              <div style="color: #8b949e; font-size: 12px; margin-top: 4px;">${activeClients} active, ${inactiveClients} inactive</div>
-            </div>
-          </div>
-
-          <div style="margin-bottom: 20px;">
-            <input type="text" id="clientSearch" placeholder="Search clients..." style="width: 100%; max-width: 400px; padding: 10px 16px; background: rgba(30, 41, 59, 0.5); border: 1px solid #3d444d; border-radius: 6px; color: #e6edf3; font-size: 14px;">
-          </div>
-
-          <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; background: rgba(30, 41, 59, 0.3); border-radius: 8px; overflow: hidden;">
-              <thead>
-                <tr style="background: rgba(30, 41, 59, 0.6);">
-                  <th style="padding: 12px; text-align: left; color: #8b949e; font-weight: 600; font-size: 12px; text-transform: uppercase;">Business Name</th>
-                  <th style="padding: 12px; text-align: left; color: #8b949e; font-weight: 600; font-size: 12px; text-transform: uppercase;">Email</th>
-                  <th style="padding: 12px; text-align: left; color: #8b949e; font-weight: 600; font-size: 12px; text-transform: uppercase;">Agent IDs</th>
-                  <th style="padding: 12px; text-align: left; color: #8b949e; font-weight: 600; font-size: 12px; text-transform: uppercase;">Status</th>
-                  <th style="padding: 12px; text-align: left; color: #8b949e; font-weight: 600; font-size: 12px; text-transform: uppercase;">Created</th>
-                </tr>
-              </thead>
-              <tbody id="clientsTableBody">
-                ${clients.length === 0 ? '<tr><td colspan="5" style="padding: 40px; text-align: center; color: #8b949e;">No clients found</td></tr>' : ''}
-              </tbody>
-            </table>
-          </div>
-        `;
-
-        // Render client rows
-        if (clients.length > 0) {
-          const tbody = document.getElementById('clientsTableBody');
-          clients.forEach(client => {
-            const row = document.createElement('tr');
-            row.style.borderBottom = '1px solid rgba(61, 68, 77, 0.5)';
-            row.innerHTML = `
-              <td style="padding: 16px; color: #e6edf3; font-weight: 500;">${client.business_name || '-'}</td>
-              <td style="padding: 16px; color: #8b949e;">${client.email || '-'}</td>
-              <td style="padding: 16px; color: #8b949e; font-size: 12px; font-family: monospace;">${(client.agent_ids || []).join(', ') || '-'}</td>
-              <td style="padding: 16px;">
-                <span style="padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; background: ${client.active ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; color: ${client.active ? '#10b981' : '#ef4444'};">
-                  ${client.active ? 'ACTIVE' : 'INACTIVE'}
-                </span>
-              </td>
-              <td style="padding: 16px; color: #8b949e;">${new Date(client.created_at).toLocaleDateString()}</td>
-            `;
-            tbody.appendChild(row);
-          });
-
-          // Add search functionality
-          const searchInput = document.getElementById('clientSearch');
-          searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const rows = tbody.querySelectorAll('tr');
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
-          });
-        }
-
-        adminContentLoaded = true;
-        console.log(`✅ Client Management loaded instantly (${clients.length} clients)`);
-
-      } catch (error) {
-        console.error('Failed to load clients:', error);
-        adminContentDiv.innerHTML = `<div style="padding: 40px; text-align: center;">
-          <p style="color: #ef4444; margin-bottom: 12px;">Failed to load clients</p>
-          <button onclick="loadAdminContent()" style="padding: 10px 20px; background: #10b981; border: none; border-radius: 6px; color: white; font-weight: 600; cursor: pointer;">Retry</button>
-        </div>`;
-      }
+      adminContentLoaded = true;
+      console.log(`✅ Client Management loaded (full admin page with all features)`);
     }
 
     // Helper function to format duration as MM:SS
