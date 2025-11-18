@@ -1004,12 +1004,59 @@
     // Load admin HTML content into the admin section
     async function loadAdminContent() {
       const adminContentDiv = document.getElementById('admin-content');
-      adminContentDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading Client Management...</p></div>';
+      const startTime = Date.now();
+
+      // Check if we have cached admin content
+      const cachedAdminHTML = sessionStorage.getItem('adminContentCache');
+
+      if (cachedAdminHTML) {
+        // Use cached content for instant loading
+        adminContentDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading Client Management from cache<span id="load-dots">.</span></p></div>';
+
+        setTimeout(() => {
+          adminContentDiv.innerHTML = cachedAdminHTML;
+
+          // Re-execute scripts
+          const scripts = adminContentDiv.querySelectorAll('script');
+          scripts.forEach(oldScript => {
+            const newScript = document.createElement('script');
+            newScript.textContent = oldScript.textContent;
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+          });
+
+          setTimeout(() => {
+            if (typeof window.pageInit === 'function') {
+              window.pageInit();
+            }
+          }, 100);
+
+          adminContentLoaded = true;
+        }, 100);
+        return;
+      }
+
+      // First time loading - show animated loading message
+      adminContentDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading Client Management<span id="load-dots">.</span></p><p style="color: #A0AEC0; font-size: 13px; margin-top: 8px;">First load only - next time will be instant</p></div>';
+
+      // Animated loading dots
+      let dotCount = 1;
+      const dotInterval = setInterval(() => {
+        const dotsEl = document.getElementById('load-dots');
+        if (dotsEl) {
+          dotCount = (dotCount % 3) + 1;
+          dotsEl.textContent = '.'.repeat(dotCount);
+        } else {
+          clearInterval(dotInterval);
+        }
+      }, 500);
 
       try {
         // Fetch the admin.html page
         const response = await fetch('/admin.html');
         const html = await response.text();
+
+        // Clear the dot interval
+        clearInterval(dotInterval);
 
         // Parse the HTML
         const parser = new DOMParser();
@@ -1025,7 +1072,11 @@
             nav.remove();
           }
 
-          adminContentDiv.innerHTML = containerClone.innerHTML;
+          const contentHTML = containerClone.innerHTML;
+          adminContentDiv.innerHTML = contentHTML;
+
+          // Cache the content for future use
+          sessionStorage.setItem('adminContentCache', contentHTML);
 
           // Re-execute any inline scripts from admin page
           const scripts = adminContentDiv.querySelectorAll('script');
@@ -1036,16 +1087,19 @@
           });
 
           // Initialize the admin page after scripts are loaded
-          // Give the scripts time to execute and define functions
           setTimeout(() => {
             if (typeof window.pageInit === 'function') {
               window.pageInit();
             }
+
+            const loadTime = ((Date.now() - startTime) / 1000).toFixed(1);
+            console.log(`Client Management loaded in ${loadTime}s (cached for future use)`);
           }, 100);
 
           adminContentLoaded = true;
         }
       } catch (error) {
+        clearInterval(dotInterval);
         console.error('Failed to load admin content:', error);
         adminContentDiv.innerHTML = '<div class="error">Failed to load Client Management. Please refresh the page.</div>';
       }
@@ -1586,10 +1640,22 @@
       // Show loading message only if no cached data
       if (!cachedData) {
         const loadingMessage = forceReload
-          ? '<div class="loading"><div class="spinner"></div><p>Reloading all call data...</p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p></div>'
-          : '<div class="loading"><div class="spinner"></div><p>Loading all call data from Retell...</p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p></div>';
+          ? '<div class="loading"><div class="spinner"></div><p>Reloading all call data<span id="dashboard-load-dots">.</span></p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p></div>'
+          : '<div class="loading"><div class="spinner"></div><p>Loading all call data from Retell<span id="dashboard-load-dots">.</span></p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p></div>';
 
         content.innerHTML = loadingMessage;
+
+        // Animated loading dots
+        let dotCount = 1;
+        const dotInterval = setInterval(() => {
+          const dotsEl = document.getElementById('dashboard-load-dots');
+          if (dotsEl) {
+            dotCount = (dotCount % 3) + 1;
+            dotsEl.textContent = '.'.repeat(dotCount);
+          } else {
+            clearInterval(dotInterval);
+          }
+        }, 500);
       }
 
       try {
