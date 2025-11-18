@@ -80,55 +80,10 @@ class FastNav {
   }
 
   swapPage(page, pushState = true) {
-    const html = this.cache.get(page);
-    if (!html) {
-      window.location.href = page;
-      return;
-    }
-
-    // Parse the HTML
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-
-    // Update title
-    document.title = doc.title;
-
-    // Replace body content
-    document.body.innerHTML = doc.body.innerHTML;
-
-    // Re-execute scripts in the new content
-    const scripts = document.body.querySelectorAll('script');
-    scripts.forEach(oldScript => {
-      const newScript = document.createElement('script');
-      Array.from(oldScript.attributes).forEach(attr => {
-        newScript.setAttribute(attr.name, attr.value);
-      });
-      newScript.textContent = oldScript.textContent;
-      oldScript.parentNode.replaceChild(newScript, oldScript);
-    });
-
-    // Call page initialization after scripts have executed
-    // Use setTimeout to ensure scripts finish executing first
-    setTimeout(() => {
-      if (typeof window.pageInit === 'function') {
-        window.pageInit();
-      }
-    }, 0);
-
-    // Update URL
-    if (pushState) {
-      history.pushState({ page }, '', page);
-    }
-
-    this.currentPage = page;
-
-    // Re-initialize fast nav on new page
-    this.interceptNavigation();
-
-    // Prefetch the other page
-    this.prefetchPages();
-
-    console.log(`⚡ Swapped to ${page} instantly!`);
+    // Since the page is prefetched and cached, just navigate normally
+    // The browser will use the cached version, making it very fast
+    // This approach is more reliable than DOM manipulation
+    window.location.href = page;
   }
 }
 
