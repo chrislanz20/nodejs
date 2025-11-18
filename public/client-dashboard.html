@@ -215,7 +215,7 @@
     .bar-wrapper {
       flex: 1;
       display: flex;
-      flex-direction: column;
+      flex-direction: column-reverse;
       align-items: center;
       gap: 8px;
       position: relative;
@@ -227,8 +227,12 @@
       border-radius: 4px 4px 0 0;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
-      min-height: 4px;
+      min-height: 8px;
+      max-height: 180px;
       box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
     }
 
     .bar:hover {
@@ -249,8 +253,6 @@
       font-size: 11px;
       font-weight: 700;
       color: #00FFFF;
-      opacity: 0;
-      transition: opacity 0.2s;
     }
 
     .bar:hover .bar-value {
@@ -311,6 +313,8 @@
       font-weight: 700;
       color: #e6edf3;
       text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      white-space: nowrap;
+      min-width: fit-content;
     }
 
     .category-percentage {
@@ -1877,13 +1881,14 @@
 
       // Find max for scaling
       const maxCount = Math.max(...dailyData.map(d => d.count), 1);
+      const maxBarHeight = 180; // Max height in pixels (matches CSS max-height)
 
       // Render bars
       chartContainer.innerHTML = dailyData.map(day => {
-        const heightPercent = (day.count / maxCount) * 100;
+        const heightPx = Math.max(8, (day.count / maxCount) * maxBarHeight); // Min 8px
         return `
           <div class="bar-wrapper">
-            <div class="bar" style="height: ${heightPercent}%">
+            <div class="bar" style="height: ${heightPx}px">
               <div class="bar-value">${day.count}</div>
             </div>
             <div class="bar-label">${day.label}</div>
