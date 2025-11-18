@@ -966,7 +966,11 @@
     let totalCallsAvailable = null;  // Total calls from API if provided
     let callCategories = {};  // Stores call categorizations { call_id: category }
     let adminContentLoaded = false;  // Track if admin content has been loaded
-    let lastFetchTimestamp = null;  // Track when we last fetched data for incremental loading
+
+    // Load last fetch timestamp from localStorage for persistent caching across page loads
+    let lastFetchTimestamp = localStorage.getItem('lastFetchTimestamp')
+      ? parseInt(localStorage.getItem('lastFetchTimestamp'))
+      : null;
 
     // Section switching function - INSTANT tab switching
     function showSection(section) {
@@ -1527,8 +1531,15 @@
               console.log('No new calls found');
             }
 
-            // Update last fetch timestamp
+            // Update last fetch timestamp and save to localStorage
             lastFetchTimestamp = Date.now();
+            localStorage.setItem('lastFetchTimestamp', lastFetchTimestamp.toString());
+
+            // Update sessionStorage with merged data
+            sessionStorage.setItem('dashboardData', JSON.stringify({
+              agents: agentSummaries,
+              calls: allCalls
+            }));
           }
         } catch (error) {
           console.error('Failed to check for new calls:', error);
@@ -1538,12 +1549,33 @@
         return;
       }
 
-      // Full load
-      const loadingMessage = forceReload
-        ? '<div class="loading"><div class="spinner"></div><p>Reloading all call data...</p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p></div>'
-        : '<div class="loading"><div class="spinner"></div><p>Loading all call data from Retell...</p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p><p style="color: #10b981; font-size: 13px; margin-top: 8px;">Future loads will be instant - we only fetch new calls!</p></div>';
+      // Try to load cached data first for instant display
+      const cachedData = !forceReload && sessionStorage.getItem('dashboardData');
+      if (cachedData) {
+        try {
+          const cached = JSON.parse(cachedData);
+          agentSummaries = cached.agents || [];
+          allCalls = cached.calls || [];
+          dataLoaded = true;
 
-      content.innerHTML = loadingMessage;
+          // Show cached data immediately
+          await loadCategories();
+          updateHeaderStats();
+          renderOverview();
+          content.innerHTML += '<div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 16px; color: #10b981; font-size: 13px;">Showing cached data - checking for new calls...</div>';
+        } catch (e) {
+          console.error('Failed to load cached data:', e);
+        }
+      }
+
+      // Show loading message only if no cached data
+      if (!cachedData) {
+        const loadingMessage = forceReload
+          ? '<div class="loading"><div class="spinner"></div><p>Reloading all call data...</p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p></div>'
+          : '<div class="loading"><div class="spinner"></div><p>Loading all call data from Retell...</p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p><p style="color: #10b981; font-size: 13px; margin-top: 8px;">Future loads will be instant - we only fetch new calls!</p></div>';
+
+        content.innerHTML = loadingMessage;
+      }
 
       try {
         // Fetch all data in ONE request to avoid rate limiting
@@ -1558,6 +1590,13 @@
         totalCallsAvailable = data.total_calls_available;  // Store total if provided
         dataLoaded = true;  // Mark data as loaded
         lastFetchTimestamp = Date.now();  // Set initial fetch timestamp
+        localStorage.setItem('lastFetchTimestamp', lastFetchTimestamp.toString());  // Save to localStorage
+
+        // Save to sessionStorage for instant display on next load
+        sessionStorage.setItem('dashboardData', JSON.stringify({
+          agents: agentSummaries,
+          calls: allCalls
+        }));
 
         // Load categories
         await loadCategories();
