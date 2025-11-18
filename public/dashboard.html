@@ -1535,11 +1535,16 @@
             lastFetchTimestamp = Date.now();
             localStorage.setItem('lastFetchTimestamp', lastFetchTimestamp.toString());
 
-            // Update sessionStorage with merged data
-            sessionStorage.setItem('dashboardData', JSON.stringify({
-              agents: agentSummaries,
-              calls: allCalls
-            }));
+            // Update sessionStorage with merged data (only recent calls to avoid quota errors)
+            try {
+              sessionStorage.setItem('dashboardData', JSON.stringify({
+                agents: agentSummaries,
+                calls: allCalls.slice(0, 100),  // Only cache 100 most recent calls
+                totalCalls: allCalls.length
+              }));
+            } catch (e) {
+              console.warn('Failed to cache data in sessionStorage:', e.message);
+            }
           }
         } catch (error) {
           console.error('Failed to check for new calls:', error);
@@ -1556,13 +1561,17 @@
           const cached = JSON.parse(cachedData);
           agentSummaries = cached.agents || [];
           allCalls = cached.calls || [];
+          const cachedTotal = cached.totalCalls || allCalls.length;
           dataLoaded = true;
 
           // Show cached data immediately
           await loadCategories();
           updateHeaderStats();
           renderOverview();
-          content.innerHTML += '<div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 16px; color: #10b981; font-size: 13px;">Showing cached data - checking for new calls...</div>';
+          const cacheMsg = cached.calls.length < cachedTotal
+            ? `Showing ${cached.calls.length} most recent calls (${cachedTotal} total) - checking for new calls...`
+            : 'Showing cached data - checking for new calls...';
+          content.innerHTML += `<div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 16px; color: #10b981; font-size: 13px;">${cacheMsg}</div>`;
         } catch (e) {
           console.error('Failed to load cached data:', e);
         }
@@ -1592,11 +1601,16 @@
         lastFetchTimestamp = Date.now();  // Set initial fetch timestamp
         localStorage.setItem('lastFetchTimestamp', lastFetchTimestamp.toString());  // Save to localStorage
 
-        // Save to sessionStorage for instant display on next load
-        sessionStorage.setItem('dashboardData', JSON.stringify({
-          agents: agentSummaries,
-          calls: allCalls
-        }));
+        // Save to sessionStorage for instant display on next load (only recent calls to avoid quota errors)
+        try {
+          sessionStorage.setItem('dashboardData', JSON.stringify({
+            agents: agentSummaries,
+            calls: allCalls.slice(0, 100),  // Only cache 100 most recent calls
+            totalCalls: allCalls.length
+          }));
+        } catch (e) {
+          console.warn('Failed to cache data in sessionStorage:', e.message);
+        }
 
         // Load categories
         await loadCategories();
