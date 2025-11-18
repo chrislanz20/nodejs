@@ -1472,6 +1472,17 @@ app.get('/api/team/auth/me', authenticateToken, async (req, res) => {
   }
 });
 
+// ============ DEBUG ENDPOINT ============
+// Check which database URL is being used
+app.get('/api/debug-db', async (req, res) => {
+  res.json({
+    hasPostgresUrl: !!process.env.POSTGRES_URL,
+    hasPostgresUrlNonPooling: !!process.env.POSTGRES_URL_NON_POOLING,
+    usingNonPooling: !!(process.env.POSTGRES_URL_NON_POOLING),
+    nodeEnv: process.env.NODE_ENV,
+  });
+});
+
 // ============ DATABASE MIGRATION ENDPOINT ============
 // One-time endpoint to run migrations in production
 app.get('/api/run-migration', async (req, res) => {
