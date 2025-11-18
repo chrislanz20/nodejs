@@ -1424,6 +1424,34 @@
       }
     }
 
+    // Register all functions globally for SPA compatibility
+    window.loadClients = loadClients;
+    window.updateAdminStats = updateAdminStats;
+    window.loadClientStats = loadClientStats;
+    window.renderClients = renderClients;
+    window.openCreateModal = openCreateModal;
+    window.editClient = editClient;
+    window.deleteClient = deleteClient;
+    window.closeModal = closeModal;
+    window.viewDashboard = viewDashboard;
+    window.closeViewDashboardModal = closeViewDashboardModal;
+    window.exportClients = exportClients;
+    window.applyFilters = applyFilters;
+    window.filterByStatus = filterByStatus;
+    window.updateSelection = updateSelection;
+    window.toggleSelectAll = toggleSelectAll;
+    window.updateSelectAllCheckbox = updateSelectAllCheckbox;
+    window.updateBulkActionsBar = updateBulkActionsBar;
+    window.clearSelection = clearSelection;
+    window.bulkActivate = bulkActivate;
+    window.bulkDeactivate = bulkDeactivate;
+    window.resetPassword = resetPassword;
+    window.copyPasswordToClipboard = copyPasswordToClipboard;
+    window.closePasswordModal = closePasswordModal;
+    window.sortTable = sortTable;
+    window.updateSortIcons = updateSortIcons;
+    window.refreshClients = refreshClients;
+
     // Initialize admin page
     function initializeAdminPage() {
       loadClients();
