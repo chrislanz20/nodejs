@@ -1243,27 +1243,19 @@
       showProgressModal(actualCount);
 
       try {
-        // Prepare calls data
-        const callsToAnalyze = uncategorizedCalls.map(call => ({
-          call_id: call.call_id,
-          transcript: call.transcript || call.transcript_object
-        }));
-
         // Process ONE call at a time to avoid Vercel's 10-second serverless timeout
-        // (5 calls × 3 sec/call = 15 sec = timeout!)
         const chunkSize = 1;
         let totalProcessed = 0;
         let totalSkipped = 0;
 
-        for (let i = 0; i < callsToAnalyze.length; i += chunkSize) {
-          const chunk = callsToAnalyze.slice(i, i + chunkSize);
+        for (let i = 0; i < uncategorizedCalls.length; i += chunkSize) {
+          const currentCall = uncategorizedCalls[i];
 
           // Update progress modal
-          updateProgressModal(i, callsToAnalyze.length, totalProcessed);
+          updateProgressModal(i, uncategorizedCalls.length, totalProcessed);
 
           // Check if call is under 1 minute - auto-categorize as "Other"
           // IMPORTANT: Only categorize if call has ended (has end_timestamp)
-          const currentCall = uncategorizedCalls[i];
           if (currentCall.end_timestamp && currentCall.duration_minutes < 1) {
             // Automatically categorize short calls as "Other"
             callCategories[currentCall.call_id] = {
@@ -1271,21 +1263,54 @@
               reasoning: 'Call duration under 1 minute'
             };
             totalProcessed += 1;
-            console.log(`📊 Progress: ${i + chunk.length}/${callsToAnalyze.length} calls sent, ${totalProcessed} processed (auto: <1min)`);
+            console.log(`📊 Progress: ${i + chunkSize}/${uncategorizedCalls.length} calls sent, ${totalProcessed} processed (auto: <1min)`);
             continue;
           }
 
           // Skip calls that are still in progress
           if (!currentCall.end_timestamp) {
             console.log(`⏳ Skipping ${currentCall.call_id} - call still in progress`);
-            totalProcessed += 1;
+            totalSkipped += 1;
+            continue;
+          }
+
+          // Fetch full call details with transcript (transcripts excluded from summary for performance)
+          let transcript = null;
+          try {
+            const callDetailsRes = await fetch(`/api/calls/${currentCall.call_id}`);
+            if (callDetailsRes.ok) {
+              const callDetails = await callDetailsRes.json();
+              transcript = callDetails.transcript || callDetails.transcript_object;
+              if (!transcript || (Array.isArray(transcript) && transcript.length === 0)) {
+                console.log(`⚠️  No transcript available for ${currentCall.call_id} - marking as Other`);
+                callCategories[currentCall.call_id] = {
+                  category: 'Other',
+                  reasoning: 'No transcript available'
+                };
+                totalProcessed += 1;
+                continue;
+              }
+            } else {
+              console.error(`Failed to fetch call details for ${currentCall.call_id}: ${callDetailsRes.status}`);
+              totalSkipped += 1;
+              continue;
+            }
+          } catch (error) {
+            console.error(`Error fetching transcript for ${currentCall.call_id}:`, error);
+            totalSkipped += 1;
             continue;
           }
 
           const res = await fetch('/api/categorize-batch', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ calls: chunk })
+            body: JSON.stringify({
+              calls: [{
+                call_id: currentCall.call_id,
+                transcript: transcript,
+                phone_number: currentCall.from_number || currentCall.to_number || currentCall.customer_number
+              }]
+            })
           });
 
           if (!res.ok) {
@@ -1892,7 +1917,6 @@
             <div class="table-header">
               <div class="table-title">All Calls</div>
               <div style="display: flex; gap: 8px;">
-                <button class="analyze-button" onclick="analyzeAllCalls(100)" style="background: rgba(249, 115, 22, 0.1); border-color: rgba(249, 115, 22, 0.3); color: #f97316;">🧪 Test on 100</button>
                 <button class="analyze-button" onclick="analyzeAllCalls()">🤖 Analyze All Calls</button>
                 <button class="analyze-button" onclick="exportCategories()" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #10b981;">💾 Export</button>
                 <button class="analyze-button" onclick="importCategories()" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #3b82f6;">📥 Import</button>
@@ -2551,6 +2575,27 @@
             continue;
           }
 
+          // Fetch full call details with transcript (transcripts excluded from summary for performance)
+          let transcript = null;
+          try {
+            console.log(`📡 Fetching transcript for ${call.call_id}...`);
+            const callDetailsRes = await fetch(`/api/calls/${call.call_id}`);
+            if (callDetailsRes.ok) {
+              const callDetails = await callDetailsRes.json();
+              transcript = callDetails.transcript || callDetails.transcript_object;
+              if (!transcript || (Array.isArray(transcript) && transcript.length === 0)) {
+                console.log(`⚠️  No transcript available for ${call.call_id} - skipping`);
+                continue;
+              }
+            } else {
+              console.error(`Failed to fetch call details for ${call.call_id}: ${callDetailsRes.status}`);
+              continue;
+            }
+          } catch (error) {
+            console.error(`Error fetching transcript for ${call.call_id}:`, error);
+            continue;
+          }
+
           // Send to AI for categorization
           try {
             const categorizeRes = await fetch('/api/categorize-batch', {
@@ -2559,7 +2604,7 @@
               body: JSON.stringify({
                 calls: [{
                   call_id: call.call_id,
-                  transcript: call.transcript || call.transcript_object,
+                  transcript: transcript,
                   phone_number: call.from_number || call.to_number || call.customer_number
                 }]
               })
