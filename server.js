@@ -387,6 +387,11 @@ app.get("/api/agent-summary", async (req, res) => {
     console.log(`Total pages fetched: ${pageCount}`);
     console.log(`Average calls per page: ${Math.round(allCalls.length / pageCount)}`);
 
+    // Load categories from database
+    console.log('\n📂 Loading categories from database...');
+    const categories = await readCategories();
+    console.log(`✅ Loaded ${Object.keys(categories).length} categories from database`);
+
     // Group agents by name
     const agentsByName = new Map();
     allAgents.forEach(agent => {
@@ -476,7 +481,11 @@ app.get("/api/agent-summary", async (req, res) => {
         duration_minutes: call.end_timestamp && call.start_timestamp
           ? Math.round((call.end_timestamp - call.start_timestamp) / 1000 / 60 * 100) / 100
           : 0,
-        cost: (call.call_cost?.combined_cost || 0) / 100  // Convert cents to dollars
+        cost: (call.call_cost?.combined_cost || 0) / 100,  // Convert cents to dollars
+        category: categories[call.call_id]?.category || null,  // Add category from database
+        reasoning: categories[call.call_id]?.reasoning || null,
+        manual: categories[call.call_id]?.manual || false,
+        auto: categories[call.call_id]?.auto || false
       })),
       total_calls: allCalls.length,
       pages_fetched: pageCount
