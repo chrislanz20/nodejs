@@ -1008,30 +1008,27 @@
 
       // Check if we have cached admin content
       const cachedAdminHTML = sessionStorage.getItem('adminContentCache');
+      const cachedAdminScripts = sessionStorage.getItem('adminScriptsCache');
 
-      if (cachedAdminHTML) {
+      if (cachedAdminHTML && cachedAdminScripts) {
         // Use cached content for instant loading
-        adminContentDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading Client Management from cache<span id="load-dots">.</span></p></div>';
+        adminContentDiv.innerHTML = cachedAdminHTML;
 
+        // Re-execute cached scripts
+        const scriptText = cachedAdminScripts;
+        const newScript = document.createElement('script');
+        newScript.textContent = scriptText;
+        document.body.appendChild(newScript);
+
+        // Initialize immediately
         setTimeout(() => {
-          adminContentDiv.innerHTML = cachedAdminHTML;
+          if (typeof window.pageInit === 'function') {
+            window.pageInit();
+          }
+          console.log('Client Management loaded from cache (instant)');
+        }, 50);
 
-          // Re-execute scripts
-          const scripts = adminContentDiv.querySelectorAll('script');
-          scripts.forEach(oldScript => {
-            const newScript = document.createElement('script');
-            newScript.textContent = oldScript.textContent;
-            oldScript.parentNode.replaceChild(newScript, oldScript);
-          });
-
-          setTimeout(() => {
-            if (typeof window.pageInit === 'function') {
-              window.pageInit();
-            }
-          }, 100);
-
-          adminContentLoaded = true;
-        }, 100);
+        adminContentLoaded = true;
         return;
       }
 
@@ -1064,6 +1061,8 @@
 
         // Extract just the content (everything inside the container EXCEPT navigation)
         const container = doc.querySelector('.container');
+        const bodyScripts = doc.body.querySelectorAll('script');
+
         if (container) {
           // Clone the container and remove the navigation
           const containerClone = container.cloneNode(true);
@@ -1075,15 +1074,21 @@
           const contentHTML = containerClone.innerHTML;
           adminContentDiv.innerHTML = contentHTML;
 
-          // Cache the content for future use
+          // Cache the content and scripts for future use
           sessionStorage.setItem('adminContentCache', contentHTML);
 
-          // Re-execute any inline scripts from admin page
-          const scripts = adminContentDiv.querySelectorAll('script');
-          scripts.forEach(oldScript => {
+          // Combine all script content and cache it
+          let allScriptContent = '';
+          bodyScripts.forEach(script => {
+            allScriptContent += script.textContent + '\n';
+          });
+          sessionStorage.setItem('adminScriptsCache', allScriptContent);
+
+          // Re-execute body scripts (they contain loadClients and other functions)
+          bodyScripts.forEach(oldScript => {
             const newScript = document.createElement('script');
             newScript.textContent = oldScript.textContent;
-            oldScript.parentNode.replaceChild(newScript, oldScript);
+            document.body.appendChild(newScript);
           });
 
           // Initialize the admin page after scripts are loaded
