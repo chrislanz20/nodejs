@@ -706,9 +706,55 @@ async function writeCategories(categories, retryCount = 0) {
 }
 
 // Helper: Categorize a single transcript using Claude
-async function categorizeTranscript(transcript) {
+// Helper function to check if phone number has called before as a lead/client
+async function hasPhoneNumberCalledBefore(phoneNumber, allCallsWithCategories) {
+  if (!phoneNumber || phoneNumber === 'N/A') return null;
+
+  // Normalize phone number (remove spaces, dashes, etc.)
+  const normalizedPhone = phoneNumber.replace(/[\s\-\(\)]/g, '');
+
+  // Check all previously categorized calls
+  for (const [callId, category] of Object.entries(allCallsWithCategories)) {
+    if (category.category === 'New Lead' || category.category === 'Existing Client') {
+      // Find this call in the call history to get its phone number
+      // Note: This would require fetching call details, which is expensive
+      // For now, we'll track phone numbers in the category data itself
+      return category;
+    }
+  }
+
+  return null;
+}
+
+async function categorizeTranscript(transcript, phoneNumber = null) {
   if (!transcript || transcript.length === 0) {
     return { category: 'Other', reasoning: 'No transcript available' };
+  }
+
+  // FIRST: Check if this phone number has called before as a New Lead or Existing Client
+  if (phoneNumber && phoneNumber !== 'N/A') {
+    const categories = await readCategories();
+
+    // Normalize phone number
+    const normalizedPhone = phoneNumber.replace(/[\s\-\(\)]/g, '');
+
+    // Check all previous calls for this phone number
+    for (const [callId, categoryData] of Object.entries(categories)) {
+      if (categoryData.phone_number) {
+        const prevPhone = categoryData.phone_number.replace(/[\s\-\(\)]/g, '');
+        if (prevPhone === normalizedPhone) {
+          // If this phone number was previously a New Lead or Existing Client, mark as Existing Client
+          if (categoryData.category === 'New Lead' || categoryData.category === 'Existing Client') {
+            console.log(`📞 Phone ${phoneNumber} previously called as "${categoryData.category}" → Auto-marking as "Existing Client"`);
+            return {
+              category: 'Existing Client',
+              reasoning: `Returning caller - previously categorized as "${categoryData.category}" (phone: ${phoneNumber})`,
+              phone_number: phoneNumber
+            };
+          }
+        }
+      }
+    }
   }
 
   // Format transcript for Claude
@@ -864,7 +910,7 @@ REASONING: Caller explicitly identified as "medical provider" from a healthcare 
       category = 'Other';
     }
 
-    return { category, reasoning, confidence };
+    return { category, reasoning, confidence, phone_number: phoneNumber };
   } catch (error) {
     console.error('Error categorizing transcript:', error);
     console.error('Error details:', {
@@ -874,7 +920,7 @@ REASONING: Caller explicitly identified as "medical provider" from a healthcare 
       response: error.response?.data || error.response
     });
     console.log('API Key prefix:', ANTHROPIC_API_KEY ? ANTHROPIC_API_KEY.substring(0, 10) : 'NOT SET');
-    return { category: 'Other', reasoning: `Error: ${error.message || 'Unknown error'}` };
+    return { category: 'Other', reasoning: `Error: ${error.message || 'Unknown error'}`, phone_number: phoneNumber };
   }
 }
 
@@ -892,13 +938,13 @@ app.get('/api/categories', async (_req, res) => {
 // POST /api/categorize-call - Categorize a single call
 app.post('/api/categorize-call', async (req, res) => {
   try {
-    const { call_id, transcript } = req.body;
+    const { call_id, transcript, phone_number } = req.body;
 
     if (!call_id) {
       return res.status(400).json({ error: 'call_id is required' });
     }
 
-    const result = await categorizeTranscript(transcript);
+    const result = await categorizeTranscript(transcript, phone_number);
 
     // Save to categories file
     const categories = await readCategories();
@@ -939,7 +985,7 @@ app.post('/api/categorize-batch', async (req, res) => {
           return;
         }
 
-        const result = await categorizeTranscript(call.transcript);
+        const result = await categorizeTranscript(call.transcript, call.phone_number);
         categories[call.call_id] = result;
         processed++;
 

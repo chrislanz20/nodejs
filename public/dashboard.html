@@ -1031,9 +1031,8 @@
             </div>
           </div>
 
-          <div style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
-            <input type="text" id="clientSearch" placeholder="Search clients..." style="flex: 1; min-width: 200px; padding: 10px 16px; background: rgba(30, 41, 59, 0.5); border: 1px solid #3d444d; border-radius: 6px; color: #e6edf3; font-size: 14px;">
-            <button onclick="window.open('/admin.html', '_blank')" style="padding: 10px 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; border-radius: 6px; color: white; font-weight: 600; cursor: pointer;">Open Full Admin</button>
+          <div style="margin-bottom: 20px;">
+            <input type="text" id="clientSearch" placeholder="Search clients..." style="width: 100%; max-width: 400px; padding: 10px 16px; background: rgba(30, 41, 59, 0.5); border: 1px solid #3d444d; border-radius: 6px; color: #e6edf3; font-size: 14px;">
           </div>
 
           <div style="overflow-x: auto;">
@@ -2671,7 +2670,8 @@
               body: JSON.stringify({
                 calls: [{
                   call_id: call.call_id,
-                  transcript: call.transcript || call.transcript_object
+                  transcript: call.transcript || call.transcript_object,
+                  phone_number: call.from_number || call.to_number || call.customer_number
                 }]
               })
             });
