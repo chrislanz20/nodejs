@@ -887,7 +887,7 @@
     <!-- Admin Navigation -->
     <nav class="admin-nav">
       <div class="nav-links">
-        <a href="/dashboard.html" class="nav-link active">
+        <a href="#" class="nav-link active" onclick="showSection('dashboard'); return false;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7"></rect>
             <rect x="14" y="3" width="7" height="7"></rect>
@@ -896,7 +896,7 @@
           </svg>
           Dashboard
         </a>
-        <a href="/admin.html" class="nav-link">
+        <a href="#" class="nav-link" onclick="showSection('admin'); return false;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
@@ -975,10 +975,13 @@
     // Section switching function - INSTANT tab switching
     function showSection(section) {
       // Update navigation active state
-      document.querySelectorAll('.nav-link').forEach(link => {
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach((link, index) => {
         link.classList.remove('active');
+        if ((section === 'dashboard' && index === 0) || (section === 'admin' && index === 1)) {
+          link.classList.add('active');
+        }
       });
-      event.target.closest('.nav-link').classList.add('active');
 
       // Toggle sections
       const dashboardSection = document.getElementById('dashboard-section');
