@@ -10,10 +10,10 @@ const pool = new Pool({
 
 async function runMigration() {
   try {
-    const migrationPath = path.join(__dirname, 'migrations', '004_team_members.sql');
+    const migrationPath = path.join(__dirname, 'migrations', '005_add_last_login.sql');
     const sql = fs.readFileSync(migrationPath, 'utf8');
 
-    console.log('Running migration: 004_team_members.sql');
+    console.log('Running migration: 005_add_last_login.sql');
     await pool.query(sql);
     console.log('✅ Migration completed successfully!');
 

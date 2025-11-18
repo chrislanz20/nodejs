@@ -12,10 +12,11 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #f7fafc;
-      color: #2d3748;
+      font-family: 'JetBrains Mono', 'Courier New', monospace, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
+      background: #0d1117;
+      color: #e6edf3;
       padding: 32px;
+      min-height: 100vh;
     }
 
     .container {
@@ -27,11 +28,16 @@
       font-size: 32px;
       font-weight: 700;
       margin-bottom: 8px;
+      color: #00FFFF;
+      text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+      letter-spacing: 1px;
     }
 
     .subtitle {
-      color: #718096;
+      color: #9ca3af;
       margin-bottom: 32px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
     }
 
     .actions {
@@ -40,24 +46,31 @@
 
     .btn {
       padding: 12px 24px;
-      background: #667eea;
-      color: white;
-      border: none;
+      background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2));
+      color: #00FFFF;
+      border: 1px solid rgba(0, 255, 255, 0.4);
       border-radius: 8px;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     .btn:hover {
-      background: #5a67d8;
+      background: linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(0, 200, 200, 0.3));
+      border-color: #00FFFF;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 255, 255, 0.3);
     }
 
     .clients-table {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      background: rgba(30, 36, 44, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.2);
       overflow: hidden;
     }
 
@@ -67,24 +80,34 @@
     }
 
     thead {
-      background: #f7fafc;
+      background: rgba(13, 17, 23, 0.9);
     }
 
     th {
       text-align: left;
-      padding: 16px 24px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #4a5568;
+      padding: 18px 28px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #9ca3af;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 1px solid #e2e8f0;
+      letter-spacing: 1.5px;
+      border-bottom: 2px solid rgba(0, 255, 255, 0.2);
     }
 
     td {
-      padding: 16px 24px;
-      border-bottom: 1px solid #f7fafc;
+      padding: 20px 28px;
+      border-top: 1px solid rgba(48, 54, 61, 0.4);
       font-size: 14px;
+      font-weight: 500;
+      color: #e6edf3;
+    }
+
+    tbody tr {
+      transition: all 0.2s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(0, 255, 255, 0.08);
     }
 
     .actions-cell {
@@ -93,31 +116,41 @@
     }
 
     .btn-small {
-      padding: 6px 12px;
-      font-size: 12px;
+      padding: 7px 14px;
+      font-size: 11px;
       border-radius: 6px;
-      border: none;
-      font-weight: 600;
+      border: 1px solid;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .btn-edit {
-      background: #3182ce;
-      color: white;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2));
+      color: #3b82f6;
+      border-color: rgba(59, 130, 246, 0.4);
     }
 
     .btn-edit:hover {
-      background: #2c5282;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.3));
+      border-color: #3b82f6;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
 
     .btn-delete {
-      background: #e53e3e;
-      color: white;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.4);
     }
 
     .btn-delete:hover {
-      background: #c53030;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.3));
+      border-color: #ef4444;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
 
     .modal {
@@ -133,69 +166,93 @@
     }
 
     .modal-content {
-      background-color: white;
+      background: rgba(30, 36, 44, 0.98);
+      backdrop-filter: blur(20px);
       margin: 5% auto;
-      padding: 32px;
-      border-radius: 12px;
+      padding: 0;
+      border-radius: 16px;
       width: 90%;
       max-width: 600px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3);
+      border: 1px solid rgba(0, 255, 255, 0.3);
     }
 
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      padding: 24px 32px;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
     }
 
     .modal-header h2 {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 700;
+      color: #00FFFF;
+      text-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+      letter-spacing: 1px;
     }
 
     .close {
       font-size: 32px;
       font-weight: 300;
-      color: #a0aec0;
+      color: #9ca3af;
       cursor: pointer;
       line-height: 1;
+      transition: all 0.2s;
     }
 
     .close:hover {
-      color: #718096;
+      color: #00FFFF;
+      text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
     }
 
     .form-group {
       margin-bottom: 20px;
     }
 
+    form {
+      padding: 32px;
+    }
+
     label {
       display: block;
-      font-size: 14px;
-      font-weight: 600;
-      color: #2d3748;
-      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #9ca3af;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
     }
 
     input, textarea {
       width: 100%;
-      padding: 12px 16px;
+      padding: 14px 18px;
       font-size: 15px;
-      border: 2px solid #e2e8f0;
+      border: 1px solid rgba(0, 255, 255, 0.3);
       border-radius: 8px;
-      font-family: inherit;
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(13, 17, 23, 0.6);
+      color: #e6edf3;
+      transition: all 0.2s;
     }
 
     input:focus, textarea:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: #00FFFF;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      background: rgba(13, 17, 23, 0.8);
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: #6b7280;
     }
 
     .help-text {
-      font-size: 12px;
-      color: #718096;
-      margin-top: 4px;
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 6px;
+      letter-spacing: 0.3px;
     }
 
     .form-actions {
@@ -206,72 +263,223 @@
     }
 
     .btn-secondary {
-      background: #e2e8f0;
-      color: #4a5568;
+      background: linear-gradient(135deg, rgba(107, 114, 128, 0.2), rgba(75, 85, 99, 0.2));
+      color: #9ca3af;
+      border: 1px solid rgba(107, 114, 128, 0.4);
     }
 
     .btn-secondary:hover {
-      background: #cbd5e0;
+      background: linear-gradient(135deg, rgba(107, 114, 128, 0.3), rgba(75, 85, 99, 0.3));
+      border-color: #9ca3af;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(107, 114, 128, 0.3);
     }
 
     .status-badge {
       display: inline-block;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     .status-active {
-      background: #c6f6d5;
-      color: #22543d;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3), 0 0 20px rgba(16, 185, 129, 0.2);
     }
 
     .status-inactive {
-      background: #fed7d7;
-      color: #742a2a;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3), 0 0 20px rgba(239, 68, 68, 0.2);
     }
 
     /* Admin Navigation */
     .admin-nav {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      margin-bottom: 24px;
-      padding: 12px 16px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      background: rgba(30, 36, 44, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 12px;
+      margin-bottom: 32px;
+      padding: 16px 20px;
+      box-shadow: 0 4px 16px rgba(0, 255, 255, 0.1);
     }
 
     .nav-links {
       display: flex;
-      gap: 8px;
+      gap: 12px;
     }
 
     .nav-link {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
+      gap: 10px;
+      padding: 10px 18px;
       background: transparent;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      color: #718096;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 8px;
+      color: #9ca3af;
       text-decoration: none;
       font-size: 13px;
-      font-weight: 600;
-      transition: all 0.2s ease;
+      font-weight: 700;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .nav-link:hover {
-      background: #f7fafc;
-      border-color: #cbd5e0;
-      color: #4a5568;
+      background: rgba(0, 255, 255, 0.1);
+      border-color: rgba(0, 255, 255, 0.4);
+      color: #e6edf3;
     }
 
     .nav-link.active {
-      background: #667eea;
-      border-color: #667eea;
-      color: white;
+      background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2));
+      border-color: rgba(0, 255, 255, 0.5);
+      color: #00FFFF;
+      box-shadow: 0 4px 12px rgba(0, 255, 255, 0.2);
+    }
+
+    .nav-link svg {
+      opacity: 0.8;
+    }
+
+    .nav-link.active svg,
+    .nav-link:hover svg {
+      opacity: 1;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .container {
+        padding: 16px;
+      }
+
+      .admin-nav {
+        flex-direction: column;
+        gap: 8px;
+        padding: 16px;
+      }
+
+      .nav-link {
+        justify-content: center;
+        padding: 12px;
+        font-size: 13px;
+      }
+
+      .header h1 {
+        font-size: 22px;
+      }
+
+      .header p {
+        font-size: 12px;
+      }
+
+      .controls {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .search-box,
+      .btn {
+        width: 100%;
+        min-width: auto;
+      }
+
+      table {
+        font-size: 12px;
+      }
+
+      th, td {
+        padding: 10px 8px;
+      }
+
+      /* Hide less important columns on mobile */
+      th:nth-child(4),
+      td:nth-child(4) {
+        display: none;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 12px;
+      }
+
+      .header {
+        padding: 20px;
+      }
+
+      .header h1 {
+        font-size: 20px;
+      }
+
+      .header p {
+        font-size: 11px;
+      }
+
+      .admin-nav {
+        padding: 12px;
+      }
+
+      .nav-link {
+        padding: 10px;
+        font-size: 12px;
+      }
+
+      table {
+        font-size: 11px;
+      }
+
+      th, td {
+        padding: 8px 6px;
+      }
+
+      /* Hide created date column on very small screens */
+      th:nth-child(5),
+      td:nth-child(5) {
+        display: none;
+      }
+
+      .modal-content {
+        margin: 20px;
+        max-width: calc(100% - 40px);
+        padding: 24px;
+      }
+
+      .modal-content h2 {
+        font-size: 20px;
+      }
+
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .btn {
+        padding: 12px;
+        min-height: 44px;
+      }
+    }
+
+    /* Touch device improvements */
+    @media (hover: none) and (pointer: coarse) {
+      .btn, .nav-link, input, textarea {
+        min-height: 44px;
+      }
+
+      .nav-link:hover,
+      .btn:hover {
+        transform: none;
+      }
+
+      .nav-link:active,
+      .btn:active {
+        transform: scale(0.98);
+        opacity: 0.9;
+      }
     }
   </style>
 </head>
@@ -304,24 +512,141 @@
     <h1>Client Management</h1>
     <p class="subtitle">Manage client accounts for your AI receptionist dashboard</p>
 
-    <div class="actions">
-      <button class="btn" onclick="openCreateModal()">+ Add New Client</button>
+    <!-- Admin Stats Overview -->
+    <div style="margin-bottom: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 style="font-size: 16px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Overview Statistics</h2>
+        <span style="font-size: 11px; color: #6b7280; font-weight: 600; background: rgba(0, 255, 255, 0.1); padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(0, 255, 255, 0.2);">
+          <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; vertical-align: middle; margin-right: 4px;">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          All Time Data
+        </span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        <div style="background: rgba(30, 36, 44, 0.6); backdrop-filter: blur(10px); padding: 24px; border-radius: 12px; border: 1px solid rgba(0, 255, 255, 0.2); box-shadow: 0 4px 16px rgba(0, 255, 255, 0.1);">
+          <div style="font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Total Clients</div>
+          <div style="font-size: 32px; font-weight: 700; color: #00FFFF; text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);" id="stat-total-clients">0</div>
+          <div style="font-size: 11px; color: #6b7280; margin-top: 4px;"><span id="stat-active-clients">0</span> active, <span id="stat-inactive-clients">0</span> inactive</div>
+        </div>
+        <div style="background: rgba(30, 36, 44, 0.6); backdrop-filter: blur(10px); padding: 24px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: 0 4px 16px rgba(16, 185, 129, 0.1);">
+          <div style="font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Total Revenue</div>
+          <div style="font-size: 32px; font-weight: 700; color: #10b981; text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);" id="stat-total-revenue">$0.00</div>
+          <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">Across all clients</div>
+        </div>
+        <div style="background: rgba(30, 36, 44, 0.6); backdrop-filter: blur(10px); padding: 24px; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2); box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1);">
+          <div style="font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Total Calls</div>
+          <div style="font-size: 32px; font-weight: 700; color: #3b82f6; text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);" id="stat-total-calls">0</div>
+          <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">All time</div>
+        </div>
+        <div style="background: rgba(30, 36, 44, 0.6); backdrop-filter: blur(10px); padding: 24px; border-radius: 12px; border: 1px solid rgba(251, 191, 36, 0.2); box-shadow: 0 4px 16px rgba(251, 191, 36, 0.1);">
+          <div style="font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Most Active</div>
+          <div style="font-size: 16px; font-weight: 700; color: #fbbf24; text-shadow: 0 0 20px rgba(251, 191, 36, 0.3); margin-top: 8px;" id="stat-most-active">-</div>
+          <div style="font-size: 11px; color: #6b7280; margin-top: 4px;"><span id="stat-most-active-calls">0</span> calls</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions" style="display: flex; gap: 12px; justify-content: space-between; align-items: center;">
+      <div style="display: flex; gap: 12px; flex: 1; max-width: 600px;">
+        <input type="text" id="client-search" placeholder="Search clients..." style="flex: 1; padding: 12px 18px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; background: rgba(13, 17, 23, 0.6); color: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 14px;">
+        <select id="status-filter" onchange="filterByStatus()" style="padding: 12px 18px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; background: rgba(13, 17, 23, 0.6); color: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 14px; cursor: pointer; min-width: 140px;">
+          <option value="all">All Status</option>
+          <option value="active">Active Only</option>
+          <option value="inactive">Inactive Only</option>
+        </select>
+      </div>
+      <div style="display: flex; gap: 12px;">
+        <button class="btn" onclick="refreshClients()" style="display: flex; align-items: center; gap: 8px;" id="refresh-btn">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          Refresh
+        </button>
+        <button class="btn" onclick="exportClients()" style="display: flex; align-items: center; gap: 8px;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          Export CSV
+        </button>
+        <button class="btn" onclick="openCreateModal()">+ Add New Client</button>
+      </div>
+    </div>
+
+    <!-- Bulk Actions Bar -->
+    <div id="bulk-actions-bar" style="display: none; margin-bottom: 16px; padding: 16px; background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span id="selection-count" style="color: #00FFFF; font-weight: 600;">0 clients selected</span>
+        <div style="display: flex; gap: 12px;">
+          <button onclick="bulkActivate()" class="btn" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2)); color: #10b981; border-color: rgba(16, 185, 129, 0.4);">
+            Activate Selected
+          </button>
+          <button onclick="bulkDeactivate()" class="btn" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2)); color: #ff6b6b; border-color: rgba(239, 68, 68, 0.4);">
+            Deactivate Selected
+          </button>
+          <button onclick="clearSelection()" class="btn" style="background: rgba(107, 114, 128, 0.2); color: #9ca3af; border-color: rgba(107, 114, 128, 0.4);">
+            Clear
+          </button>
+        </div>
+      </div>
     </div>
 
     <div class="clients-table">
       <table>
         <thead>
           <tr>
-            <th>Business Name</th>
-            <th>Email</th>
+            <th style="width: 40px;">
+              <input type="checkbox" id="select-all" onchange="toggleSelectAll()" style="cursor: pointer;">
+            </th>
+            <th onclick="sortTable('business_name')" style="cursor: pointer; user-select: none;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                Business Name
+                <span id="sort-icon-business_name" style="opacity: 0.3;">↕</span>
+              </div>
+            </th>
+            <th onclick="sortTable('email')" style="cursor: pointer; user-select: none;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                Email
+                <span id="sort-icon-email" style="opacity: 0.3;">↕</span>
+              </div>
+            </th>
             <th>Agent IDs</th>
-            <th>Status</th>
-            <th>Created</th>
+            <th onclick="sortTable('calls')" style="cursor: pointer; user-select: none;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                Total Calls
+                <span id="sort-icon-calls" style="opacity: 0.3;">↕</span>
+              </div>
+            </th>
+            <th onclick="sortTable('revenue')" style="cursor: pointer; user-select: none;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                Revenue
+                <span id="sort-icon-revenue" style="opacity: 0.3;">↕</span>
+              </div>
+            </th>
+            <th onclick="sortTable('status')" style="cursor: pointer; user-select: none;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                Status
+                <span id="sort-icon-status" style="opacity: 0.3;">↕</span>
+              </div>
+            </th>
+            <th onclick="sortTable('last_login')" style="cursor: pointer; user-select: none;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                Last Login
+                <span id="sort-icon-last_login" style="opacity: 0.3;">↕</span>
+              </div>
+            </th>
+            <th onclick="sortTable('created_at')" style="cursor: pointer; user-select: none;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                Created
+                <span id="sort-icon-created_at" style="opacity: 0.3;">↕</span>
+              </div>
+            </th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody id="clients-tbody">
-          <tr><td colspan="6" style="text-align: center; padding: 40px; color: #a0aec0;">Loading clients...</td></tr>
+          <tr><td colspan="10" style="text-align: center; padding: 40px; color: #a0aec0;">Loading clients...</td></tr>
         </tbody>
       </table>
     </div>
@@ -371,17 +696,82 @@
 
   <script>
     let clients = [];
+    let allClients = [];
+    let selectedClients = new Set();
+    let clientStats = {};
+    let currentSortColumn = null;
+    let currentSortDirection = 'asc';
 
     async function loadClients() {
       try {
         const response = await fetch('/api/admin/clients');
         const data = await response.json();
-        clients = data.clients || [];
+        allClients = data.clients || [];
+        clients = [...allClients];
+
+        // Load usage statistics
+        await loadClientStats();
+
         renderClients();
+        updateAdminStats();
       } catch (error) {
         console.error('Error loading clients:', error);
         document.getElementById('clients-tbody').innerHTML =
-          '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #e53e3e;">Error loading clients</td></tr>';
+          '<tr><td colspan="10" style="text-align: center; padding: 40px; color: #e53e3e;">Error loading clients</td></tr>';
+      }
+    }
+
+    function updateAdminStats() {
+      // Calculate total clients, active, inactive
+      const totalClients = allClients.length;
+      const activeClients = allClients.filter(c => c.active).length;
+      const inactiveClients = totalClients - activeClients;
+
+      // Calculate total revenue and calls
+      let totalRevenue = 0;
+      let totalCalls = 0;
+      let mostActiveClient = null;
+      let maxCalls = 0;
+
+      allClients.forEach(client => {
+        const stats = clientStats[client.id] || { totalCalls: 0, revenue: 0 };
+        totalRevenue += stats.revenue;
+        totalCalls += stats.totalCalls;
+
+        if (stats.totalCalls > maxCalls) {
+          maxCalls = stats.totalCalls;
+          mostActiveClient = client.business_name;
+        }
+      });
+
+      // Update UI
+      document.getElementById('stat-total-clients').textContent = totalClients;
+      document.getElementById('stat-active-clients').textContent = activeClients;
+      document.getElementById('stat-inactive-clients').textContent = inactiveClients;
+      document.getElementById('stat-total-revenue').textContent = `$${totalRevenue.toFixed(2)}`;
+      document.getElementById('stat-total-calls').textContent = totalCalls;
+      document.getElementById('stat-most-active').textContent = mostActiveClient || '-';
+      document.getElementById('stat-most-active-calls').textContent = maxCalls;
+    }
+
+    async function loadClientStats() {
+      try {
+        const response = await fetch('/api/agent-summary');
+        const data = await response.json();
+        const calls = data.all_calls || [];
+
+        // Calculate stats for each client
+        allClients.forEach(client => {
+          const clientCalls = calls.filter(call => client.agent_ids.includes(call.agent_id));
+          const totalRevenue = clientCalls.reduce((sum, call) => sum + (call.cost || 0), 0);
+
+          clientStats[client.id] = {
+            totalCalls: clientCalls.length,
+            revenue: totalRevenue
+          };
+        });
+      } catch (error) {
+        console.error('Error loading client stats:', error);
       }
     }
 
@@ -389,7 +779,7 @@
       const tbody = document.getElementById('clients-tbody');
 
       if (clients.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: #a0aec0;">No clients yet. Add one to get started!</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 40px; color: #a0aec0;">No clients yet. Add one to get started!</td></tr>';
         return;
       }
 
@@ -397,17 +787,55 @@
         const created = new Date(client.created_at).toLocaleDateString();
         const agentIds = client.agent_ids.join(', ');
         const status = client.active ? 'active' : 'inactive';
+        const stats = clientStats[client.id] || { totalCalls: 0, revenue: 0 };
+        const isSelected = selectedClients.has(client.id);
+
+        // Format last login
+        let lastLogin = 'Never';
+        if (client.last_login) {
+          const loginDate = new Date(client.last_login);
+          const now = new Date();
+          const diffMs = now - loginDate;
+          const diffMins = Math.floor(diffMs / 60000);
+          const diffHours = Math.floor(diffMs / 3600000);
+          const diffDays = Math.floor(diffMs / 86400000);
+
+          if (diffMins < 1) {
+            lastLogin = 'Just now';
+          } else if (diffMins < 60) {
+            lastLogin = `${diffMins}m ago`;
+          } else if (diffHours < 24) {
+            lastLogin = `${diffHours}h ago`;
+          } else if (diffDays < 7) {
+            lastLogin = `${diffDays}d ago`;
+          } else {
+            lastLogin = loginDate.toLocaleDateString();
+          }
+        }
 
         return `
           <tr>
+            <td>
+              <input type="checkbox" class="client-checkbox" value="${client.id}" ${isSelected ? 'checked' : ''} onchange="updateSelection(${client.id})" style="cursor: pointer;">
+            </td>
             <td><strong>${client.business_name}</strong></td>
             <td>${client.email}</td>
             <td style="font-size: 12px; color: #718096;">${agentIds}</td>
+            <td style="color: #00FFFF; font-weight: 600;">${stats.totalCalls}</td>
+            <td style="color: #10b981; font-weight: 600;">$${stats.revenue.toFixed(2)}</td>
             <td><span class="status-badge status-${status}">${status}</span></td>
+            <td style="font-size: 12px; color: ${lastLogin === 'Never' ? '#6b7280' : '#9ca3af'};">${lastLogin}</td>
             <td>${created}</td>
             <td>
               <div class="actions-cell">
+                <button class="btn-small" style="background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border-color: rgba(0, 255, 255, 0.4);" onclick="viewDashboard(${client.id})" title="View Client Dashboard">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; vertical-align: middle;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                  </svg>
+                </button>
                 <button class="btn-small btn-edit" onclick="editClient(${client.id})">Edit</button>
+                <button class="btn-small" style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2)); color: #fbbf24; border-color: rgba(251, 191, 36, 0.4);" onclick="resetPassword(${client.id}, '${client.email}')">Reset PW</button>
                 <button class="btn-small btn-delete" onclick="deleteClient(${client.id})">Delete</button>
               </div>
             </td>
@@ -465,6 +893,73 @@
 
     function closeModal() {
       document.getElementById('client-modal').style.display = 'none';
+    }
+
+    // View client dashboard (preview)
+    function viewDashboard(clientId) {
+      const client = allClients.find(c => c.id === clientId);
+      if (!client) return;
+
+      // Note: Full admin impersonation would require backend support
+      // For now, this shows client details in a modal
+      const modalHtml = `
+        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px;" id="view-dashboard-modal" onclick="if(event.target.id === 'view-dashboard-modal') closeViewDashboardModal()">
+          <div style="background: rgba(30, 36, 44, 0.98); backdrop-filter: blur(20px); border-radius: 16px; padding: 32px; max-width: 600px; width: 100%; border: 1px solid rgba(0, 255, 255, 0.3); box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3); max-height: 80vh; overflow-y: auto;">
+            <h2 style="color: #00FFFF; margin-bottom: 24px; text-shadow: 0 0 15px rgba(0, 255, 255, 0.4); font-size: 20px;">Client Dashboard Preview</h2>
+
+            <div style="margin-bottom: 24px;">
+              <div style="font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Business Name</div>
+              <div style="color: #e6edf3; font-size: 16px; font-weight: 600;">${client.business_name}</div>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+              <div style="font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Email</div>
+              <div style="color: #e6edf3; font-size: 14px;">${client.email}</div>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+              <div style="font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Agent IDs</div>
+              <div style="background: rgba(13, 17, 23, 0.6); padding: 12px; border-radius: 8px; border: 1px solid rgba(0, 255, 255, 0.2);">
+                ${client.agent_ids.map(id => `<div style="color: #00FFFF; font-family: 'JetBrains Mono', monospace; font-size: 13px; margin-bottom: 4px;">${id}</div>`).join('')}
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px;">
+              <div style="background: rgba(13, 17, 23, 0.6); padding: 16px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                <div style="font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Total Calls</div>
+                <div style="color: #3b82f6; font-size: 24px; font-weight: 700;">${(clientStats[client.id] || { totalCalls: 0 }).totalCalls}</div>
+              </div>
+              <div style="background: rgba(13, 17, 23, 0.6); padding: 16px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                <div style="font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Revenue</div>
+                <div style="color: #10b981; font-size: 24px; font-weight: 700;">$${((clientStats[client.id] || { revenue: 0 }).revenue).toFixed(2)}</div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+              <div style="font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Status</div>
+              <span class="status-badge status-${client.active ? 'active' : 'inactive'}">${client.active ? 'Active' : 'Inactive'}</span>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+              <div style="font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Created</div>
+              <div style="color: #9ca3af; font-size: 14px;">${new Date(client.created_at).toLocaleString()}</div>
+            </div>
+
+            <div style="display: flex; gap: 12px; justify-content: flex-end; padding-top: 16px; border-top: 1px solid rgba(0, 255, 255, 0.2);">
+              <button onclick="closeViewDashboardModal()" class="btn" style="background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Close</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    function closeViewDashboardModal() {
+      const modal = document.getElementById('view-dashboard-modal');
+      if (modal) {
+        modal.remove();
+      }
     }
 
     document.getElementById('client-form').addEventListener('submit', async (e) => {
@@ -551,6 +1046,381 @@
         closeModal();
       }
     };
+
+    // Export clients to CSV
+    function exportClients() {
+      if (allClients.length === 0) {
+        alert('No clients to export');
+        return;
+      }
+
+      const headers = ['Business Name', 'Email', 'Agent IDs', 'Status', 'Created Date'];
+      const csvRows = [headers.join(',')];
+
+      allClients.forEach(client => {
+        const row = [
+          `"${client.business_name}"`,
+          `"${client.email}"`,
+          `"${client.agent_ids.join('; ')}"`,
+          client.active ? 'Active' : 'Inactive',
+          `"${new Date(client.created_at).toLocaleString()}"`
+        ];
+        csvRows.push(row.join(','));
+      });
+
+      const csvContent = csvRows.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      const timestamp = new Date().toISOString().split('T')[0];
+
+      link.setAttribute('href', url);
+      link.setAttribute('download', `clients-${timestamp}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Apply all filters (search + status)
+    function applyFilters() {
+      const searchTerm = document.getElementById('client-search').value.toLowerCase();
+      const statusFilter = document.getElementById('status-filter').value;
+
+      clients = allClients.filter(client => {
+        // Search filter
+        const matchesSearch = client.business_name.toLowerCase().includes(searchTerm) ||
+                             client.email.toLowerCase().includes(searchTerm) ||
+                             client.agent_ids.some(id => id.toLowerCase().includes(searchTerm));
+
+        // Status filter
+        let matchesStatus = true;
+        if (statusFilter === 'active') {
+          matchesStatus = client.active === true;
+        } else if (statusFilter === 'inactive') {
+          matchesStatus = client.active === false;
+        }
+
+        return matchesSearch && matchesStatus;
+      });
+
+      renderClients();
+    }
+
+    // Filter by status
+    function filterByStatus() {
+      applyFilters();
+    }
+
+    // Search functionality
+    document.getElementById('client-search').addEventListener('input', () => {
+      applyFilters();
+    });
+
+    // Bulk Operations Functions
+    function updateSelection(clientId) {
+      if (selectedClients.has(clientId)) {
+        selectedClients.delete(clientId);
+      } else {
+        selectedClients.add(clientId);
+      }
+      updateBulkActionsBar();
+      updateSelectAllCheckbox();
+    }
+
+    function toggleSelectAll() {
+      const selectAllCheckbox = document.getElementById('select-all');
+      selectedClients.clear();
+
+      if (selectAllCheckbox.checked) {
+        clients.forEach(client => selectedClients.add(client.id));
+      }
+
+      updateBulkActionsBar();
+      renderClients();
+    }
+
+    function updateSelectAllCheckbox() {
+      const selectAllCheckbox = document.getElementById('select-all');
+      if (clients.length === 0) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+      } else if (selectedClients.size === clients.length) {
+        selectAllCheckbox.checked = true;
+        selectAllCheckbox.indeterminate = false;
+      } else if (selectedClients.size > 0) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = true;
+      } else {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+      }
+    }
+
+    function updateBulkActionsBar() {
+      const bulkActionsBar = document.getElementById('bulk-actions-bar');
+      const selectionCount = document.getElementById('selection-count');
+
+      if (selectedClients.size > 0) {
+        bulkActionsBar.style.display = 'block';
+        selectionCount.textContent = `${selectedClients.size} client${selectedClients.size > 1 ? 's' : ''} selected`;
+      } else {
+        bulkActionsBar.style.display = 'none';
+      }
+    }
+
+    function clearSelection() {
+      selectedClients.clear();
+      updateBulkActionsBar();
+      updateSelectAllCheckbox();
+      renderClients();
+    }
+
+    async function bulkActivate() {
+      if (selectedClients.size === 0) return;
+
+      if (!confirm(`Activate ${selectedClients.size} client(s)?`)) return;
+
+      try {
+        const promises = Array.from(selectedClients).map(clientId =>
+          fetch(`/api/admin/clients/${clientId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ active: true })
+          })
+        );
+
+        await Promise.all(promises);
+        alert(`Successfully activated ${selectedClients.size} client(s)!`);
+        clearSelection();
+        await loadClients();
+      } catch (error) {
+        console.error('Error activating clients:', error);
+        alert('Error activating clients. Please try again.');
+      }
+    }
+
+    async function bulkDeactivate() {
+      if (selectedClients.size === 0) return;
+
+      if (!confirm(`Deactivate ${selectedClients.size} client(s)?`)) return;
+
+      try {
+        const promises = Array.from(selectedClients).map(clientId =>
+          fetch(`/api/admin/clients/${clientId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ active: false })
+          })
+        );
+
+        await Promise.all(promises);
+        alert(`Successfully deactivated ${selectedClients.size} client(s)!`);
+        clearSelection();
+        await loadClients();
+      } catch (error) {
+        console.error('Error deactivating clients:', error);
+        alert('Error deactivating clients. Please try again.');
+      }
+    }
+
+    // Password Reset Function
+    async function resetPassword(clientId, email) {
+      if (!confirm(`Reset password for ${email}?\n\nThis will generate a new temporary password that you can provide to the client.`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/admin/clients/${clientId}/reset-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Show the temporary password to the admin
+          const tempPassword = data.temporary_password;
+
+          // Create a custom modal to display the password
+          const modalHtml = `
+            <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 10000; display: flex; align-items: center; justify-content: center;" id="password-modal">
+              <div style="background: rgba(30, 36, 44, 0.98); backdrop-filter: blur(20px); border-radius: 16px; padding: 32px; max-width: 500px; border: 1px solid rgba(0, 255, 255, 0.3); box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3);">
+                <h2 style="color: #00FFFF; margin-bottom: 20px; text-shadow: 0 0 15px rgba(0, 255, 255, 0.4); font-size: 20px;">Password Reset Successful</h2>
+                <p style="color: #e6edf3; margin-bottom: 16px; font-size: 14px;">Temporary password for <strong>${email}</strong>:</p>
+                <div style="background: rgba(13, 17, 23, 0.8); padding: 16px; border-radius: 8px; border: 1px solid rgba(0, 255, 255, 0.3); margin-bottom: 20px;">
+                  <code style="color: #00FFFF; font-size: 18px; font-weight: 700; letter-spacing: 2px; user-select: all;">${tempPassword}</code>
+                </div>
+                <p style="color: #9ca3af; font-size: 12px; margin-bottom: 20px; line-height: 1.6;">Copy this password and securely send it to the client. They can use it to log in and should change it immediately.</p>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                  <button onclick="copyPasswordToClipboard('${tempPassword}')" class="btn" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2)); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.4); padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Copy Password</button>
+                  <button onclick="closePasswordModal()" class="btn" style="background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Close</button>
+                </div>
+              </div>
+            </div>
+          `;
+
+          document.body.insertAdjacentHTML('beforeend', modalHtml);
+        } else {
+          alert('Error: ' + (data.error || 'Failed to reset password'));
+        }
+      } catch (error) {
+        console.error('Error resetting password:', error);
+        alert('Network error. Please try again.');
+      }
+    }
+
+    function copyPasswordToClipboard(password) {
+      navigator.clipboard.writeText(password).then(() => {
+        alert('Password copied to clipboard!');
+      }).catch(err => {
+        console.error('Failed to copy password:', err);
+        alert('Failed to copy password. Please copy it manually.');
+      });
+    }
+
+    function closePasswordModal() {
+      const modal = document.getElementById('password-modal');
+      if (modal) {
+        modal.remove();
+      }
+    }
+
+    // Sort table by column
+    function sortTable(column) {
+      // Toggle direction if same column, otherwise reset to ascending
+      if (currentSortColumn === column) {
+        currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSortColumn = column;
+        currentSortDirection = 'asc';
+      }
+
+      // Sort clients array
+      clients.sort((a, b) => {
+        let aVal, bVal;
+
+        switch(column) {
+          case 'business_name':
+            aVal = a.business_name.toLowerCase();
+            bVal = b.business_name.toLowerCase();
+            break;
+          case 'email':
+            aVal = a.email.toLowerCase();
+            bVal = b.email.toLowerCase();
+            break;
+          case 'calls':
+            aVal = (clientStats[a.id] || { totalCalls: 0 }).totalCalls;
+            bVal = (clientStats[b.id] || { totalCalls: 0 }).totalCalls;
+            break;
+          case 'revenue':
+            aVal = (clientStats[a.id] || { revenue: 0 }).revenue;
+            bVal = (clientStats[b.id] || { revenue: 0 }).revenue;
+            break;
+          case 'status':
+            aVal = a.active ? 1 : 0;
+            bVal = b.active ? 1 : 0;
+            break;
+          case 'last_login':
+            aVal = a.last_login ? new Date(a.last_login).getTime() : 0;
+            bVal = b.last_login ? new Date(b.last_login).getTime() : 0;
+            break;
+          case 'created_at':
+            aVal = new Date(a.created_at).getTime();
+            bVal = new Date(b.created_at).getTime();
+            break;
+          default:
+            return 0;
+        }
+
+        let comparison = 0;
+        if (aVal > bVal) comparison = 1;
+        if (aVal < bVal) comparison = -1;
+
+        return currentSortDirection === 'asc' ? comparison : -comparison;
+      });
+
+      // Update sort icons
+      updateSortIcons();
+
+      // Re-render table
+      renderClients();
+    }
+
+    function updateSortIcons() {
+      // Reset all icons
+      const columns = ['business_name', 'email', 'calls', 'revenue', 'status', 'last_login', 'created_at'];
+      columns.forEach(col => {
+        const icon = document.getElementById(`sort-icon-${col}`);
+        if (icon) {
+          icon.style.opacity = '0.3';
+          icon.textContent = '↕';
+        }
+      });
+
+      // Highlight active sort
+      if (currentSortColumn) {
+        const activeIcon = document.getElementById(`sort-icon-${currentSortColumn}`);
+        if (activeIcon) {
+          activeIcon.style.opacity = '1';
+          activeIcon.style.color = '#00FFFF';
+          activeIcon.textContent = currentSortDirection === 'asc' ? '↑' : '↓';
+        }
+      }
+    }
+
+    // Refresh clients data
+    async function refreshClients() {
+      const refreshBtn = document.getElementById('refresh-btn');
+      const originalText = refreshBtn.innerHTML;
+
+      // Show loading state
+      refreshBtn.disabled = true;
+      refreshBtn.innerHTML = `
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="animation: spin 1s linear infinite;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+        <style>
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        </style>
+        Refreshing...
+      `;
+
+      try {
+        await loadClients();
+
+        // Success feedback
+        refreshBtn.innerHTML = `
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          Refreshed!
+        `;
+
+        setTimeout(() => {
+          refreshBtn.disabled = false;
+          refreshBtn.innerHTML = originalText;
+        }, 1500);
+      } catch (error) {
+        console.error('Error refreshing clients:', error);
+
+        // Error feedback
+        refreshBtn.innerHTML = `
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+          Error
+        `;
+
+        setTimeout(() => {
+          refreshBtn.disabled = false;
+          refreshBtn.innerHTML = originalText;
+        }, 2000);
+      }
+    }
 
     // Load clients on page load
     loadClients();

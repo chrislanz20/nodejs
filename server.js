@@ -1080,6 +1080,12 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
+    // Update last login timestamp
+    await pool.query(
+      'UPDATE clients SET last_login = NOW() WHERE id = $1',
+      [client.id]
+    );
+
     // Create JWT token (no expiration - stays logged in forever)
     const token = jwt.sign(
       {
@@ -1469,7 +1475,7 @@ app.get('/api/team/auth/me', authenticateToken, async (req, res) => {
 app.get('/api/admin/clients', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, email, business_name, agent_ids, created_at, active FROM clients ORDER BY created_at DESC'
+      'SELECT id, email, business_name, agent_ids, created_at, active, last_login FROM clients ORDER BY created_at DESC'
     );
 
     res.json({ clients: result.rows });
