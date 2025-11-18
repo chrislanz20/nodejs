@@ -12,8 +12,16 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
+const compression = require('compression');
 
 const app = express();
+
+// Enable gzip compression for all responses (reduces 221MB to ~20MB)
+app.use(compression({
+  level: 6, // Balance between speed and compression ratio
+  threshold: 1024 // Only compress responses larger than 1KB
+}));
+
 app.use(express.json({ limit: '50mb' }));  // Allow large payloads for category migration
 app.use(cookieParser());
 
@@ -464,7 +472,13 @@ app.get("/api/agent-summary", async (req, res) => {
         total_cost: Math.round(totalCost * 100) / 100,
         average_cost_per_call: totalCalls > 0 ? Math.round((totalCost / totalCalls) * 100) / 100 : 0,
         calls: agentCalls.map(call => ({
-          ...call,
+          // Only essential fields - exclude transcripts for performance
+          call_id: call.call_id,
+          agent_id: call.agent_id,
+          from_number: call.from_number,
+          to_number: call.to_number,
+          start_timestamp: call.start_timestamp,
+          end_timestamp: call.end_timestamp,
           duration_minutes: call.end_timestamp && call.start_timestamp
             ? Math.round((call.end_timestamp - call.start_timestamp) / 1000 / 60 * 100) / 100
             : 0,
@@ -476,16 +490,28 @@ app.get("/api/agent-summary", async (req, res) => {
     res.json({
       agents: agentSummaries,
       all_calls: allCalls.map(call => ({
-        ...call,
+        // Only include essential fields - exclude transcripts for performance (saves ~200MB)
+        call_id: call.call_id,
+        agent_id: call.agent_id,
         agent_name: agentIdToName.get(call.agent_id) || 'Unknown Agent',
+        from_number: call.from_number,
+        to_number: call.to_number,
+        customer_number: call.customer_number,
+        start_timestamp: call.start_timestamp,
+        end_timestamp: call.end_timestamp,
         duration_minutes: call.end_timestamp && call.start_timestamp
           ? Math.round((call.end_timestamp - call.start_timestamp) / 1000 / 60 * 100) / 100
           : 0,
         cost: (call.call_cost?.combined_cost || 0) / 100,  // Convert cents to dollars
+        call_analysis: call.call_analysis,
+        call_cost: call.call_cost,
+        call_status: call.call_status,
+        disconnection_reason: call.disconnection_reason,
         category: categories[call.call_id]?.category || null,  // Add category from database
         reasoning: categories[call.call_id]?.reasoning || null,
         manual: categories[call.call_id]?.manual || false,
         auto: categories[call.call_id]?.auto || false
+        // transcript and transcript_object excluded - fetch separately when viewing call details
       })),
       total_calls: allCalls.length,
       pages_fetched: pageCount

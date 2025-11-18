@@ -1507,17 +1507,6 @@
             // Update last fetch timestamp and save to localStorage
             lastFetchTimestamp = Date.now();
             localStorage.setItem('lastFetchTimestamp', lastFetchTimestamp.toString());
-
-            // Update sessionStorage with merged data (only recent calls to avoid quota errors)
-            try {
-              sessionStorage.setItem('dashboardData', JSON.stringify({
-                agents: agentSummaries,
-                calls: allCalls.slice(0, 100),  // Only cache 100 most recent calls
-                totalCalls: allCalls.length
-              }));
-            } catch (e) {
-              console.warn('Failed to cache data in sessionStorage:', e.message);
-            }
           }
         } catch (error) {
           console.error('Failed to check for new calls:', error);
@@ -1527,49 +1516,24 @@
         return;
       }
 
-      // Try to load cached data first for instant display
-      const cachedData = !forceReload && sessionStorage.getItem('dashboardData');
-      if (cachedData) {
-        try {
-          const cached = JSON.parse(cachedData);
-          agentSummaries = cached.agents || [];
-          allCalls = cached.calls || [];
-          const cachedTotal = cached.totalCalls || allCalls.length;
-          dataLoaded = true;
+      // Show loading message with animated dots
+      const loadingMessage = forceReload
+        ? '<div class="loading"><div class="spinner"></div><p>Reloading all call data<span id="dashboard-load-dots">.</span></p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">Optimized for speed - no transcripts loaded initially.</p></div>'
+        : '<div class="loading"><div class="spinner"></div><p>Loading call data<span id="dashboard-load-dots">.</span></p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">Optimized for speed - compressed response.</p></div>';
 
-          // Show cached data immediately
-          await loadCategories();
-          updateHeaderStats();
-          renderOverview();
-          const cacheMsg = cached.calls.length < cachedTotal
-            ? `Showing ${cached.calls.length} most recent calls (${cachedTotal} total) - checking for new calls...`
-            : 'Showing cached data - checking for new calls...';
-          content.innerHTML += `<div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 16px; color: #10b981; font-size: 13px;">${cacheMsg}</div>`;
-        } catch (e) {
-          console.error('Failed to load cached data:', e);
+      content.innerHTML = loadingMessage;
+
+      // Animated loading dots
+      let dotCount = 1;
+      const dotInterval = setInterval(() => {
+        const dotsEl = document.getElementById('dashboard-load-dots');
+        if (dotsEl) {
+          dotCount = (dotCount % 3) + 1;
+          dotsEl.textContent = '.'.repeat(dotCount);
+        } else {
+          clearInterval(dotInterval);
         }
-      }
-
-      // Show loading message only if no cached data
-      if (!cachedData) {
-        const loadingMessage = forceReload
-          ? '<div class="loading"><div class="spinner"></div><p>Reloading all call data<span id="dashboard-load-dots">.</span></p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p></div>'
-          : '<div class="loading"><div class="spinner"></div><p>Loading all call data from Retell<span id="dashboard-load-dots">.</span></p><p style="color: #A0AEC0; font-size: 14px; margin-top: 12px;">This may take 30-60 seconds to fetch all historical data accurately.</p></div>';
-
-        content.innerHTML = loadingMessage;
-
-        // Animated loading dots
-        let dotCount = 1;
-        const dotInterval = setInterval(() => {
-          const dotsEl = document.getElementById('dashboard-load-dots');
-          if (dotsEl) {
-            dotCount = (dotCount % 3) + 1;
-            dotsEl.textContent = '.'.repeat(dotCount);
-          } else {
-            clearInterval(dotInterval);
-          }
-        }, 500);
-      }
+      }, 500);
 
       try {
         // Fetch all data in ONE request to avoid rate limiting
@@ -1585,17 +1549,6 @@
         dataLoaded = true;  // Mark data as loaded
         lastFetchTimestamp = Date.now();  // Set initial fetch timestamp
         localStorage.setItem('lastFetchTimestamp', lastFetchTimestamp.toString());  // Save to localStorage
-
-        // Save to sessionStorage for instant display on next load (only recent calls to avoid quota errors)
-        try {
-          sessionStorage.setItem('dashboardData', JSON.stringify({
-            agents: agentSummaries,
-            calls: allCalls.slice(0, 100),  // Only cache 100 most recent calls
-            totalCalls: allCalls.length
-          }));
-        } catch (e) {
-          console.warn('Failed to cache data in sessionStorage:', e.message);
-        }
 
         // Load categories
         await loadCategories();
