@@ -2249,10 +2249,9 @@
       if (!transcriptData) {
         transcriptHTML = `
           <div class="transcript-box" id="transcript-container-${callId}">
-            <div style="text-align: center; padding: 32px;">
-              <div style="color: #A0AEC0; margin-bottom: 16px;">Transcript not loaded yet (for faster page loading)</div>
-              <button onclick="loadTranscript('${callId}')" id="load-transcript-btn-${callId}" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s;">
-                📄 Load Transcript
+            <div style="text-align: center; padding: 48px 32px;">
+              <button onclick="loadTranscriptAndRecording('${callId}')" id="load-transcript-btn-${callId}" style="padding: 16px 32px; background: linear-gradient(135deg, #1e3a8a, #1e40af); color: #60a5fa; border: 1.5px solid #3b82f6; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);">
+                📄 Click here to load the transcript and call recording
               </button>
             </div>
           </div>
@@ -2364,8 +2363,8 @@
       modal.style.display = 'block';
     }
 
-    // Load transcript on-demand (lazy loading for performance)
-    async function loadTranscript(callId) {
+    // Load transcript and call recording on-demand (lazy loading for performance)
+    async function loadTranscriptAndRecording(callId) {
       const button = document.getElementById(`load-transcript-btn-${callId}`);
       const container = document.getElementById(`transcript-container-${callId}`);
 
@@ -2376,29 +2375,47 @@
       button.disabled = true;
 
       try {
-        // Fetch full call details with transcript
+        // Fetch full call details with transcript and recording
         const response = await fetch(`/api/calls/${callId}`);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const callDetails = await response.json();
         let transcriptData = callDetails.transcript || callDetails.transcript_object;
+        let recordingUrl = callDetails.recording_url;
 
         // Update the allCalls array so it's cached for next time
         const callIndex = allCalls.findIndex(c => c.call_id === callId);
         if (callIndex !== -1) {
           allCalls[callIndex].transcript = transcriptData;
           allCalls[callIndex].transcript_object = transcriptData;
+          allCalls[callIndex].recording_url = recordingUrl;
+        }
+
+        // Build the HTML with recording first, then transcript
+        let contentHTML = '';
+
+        // Add call recording if available
+        if (recordingUrl) {
+          contentHTML += `
+            <div class="modal-section" style="margin-bottom: 24px;">
+              <div class="modal-section-title">🎵 Call Recording</div>
+              <audio controls style="width: 100%; margin-top: 8px;">
+                <source src="${recordingUrl}" type="audio/mpeg">
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+          `;
         }
 
         // Format and display transcript
-        let transcriptHTML = '<div class="transcript-box">';
+        contentHTML += '<div class="modal-section"><div class="modal-section-title">💬 Transcript</div><div class="transcript-box">';
 
         if (Array.isArray(transcriptData)) {
           transcriptData.forEach(msg => {
             const role = (msg.role || 'unknown').toUpperCase();
             const content = msg.content || '';
             const className = msg.role === 'user' ? 'transcript-user' : 'transcript-agent';
-            transcriptHTML += `
+            contentHTML += `
               <div class="transcript-message ${className}">
                 <div class="transcript-role">${role}</div>
                 <div>${content}</div>
@@ -2406,22 +2423,22 @@
             `;
           });
         } else if (typeof transcriptData === 'string') {
-          transcriptHTML += `<div style="white-space: pre-wrap;">${transcriptData}</div>`;
+          contentHTML += `<div style="white-space: pre-wrap;">${transcriptData}</div>`;
         } else {
-          transcriptHTML += '<div style="color: #A0AEC0; font-style: italic;">No transcript available</div>';
+          contentHTML += '<div style="color: #A0AEC0; font-style: italic;">No transcript available</div>';
         }
 
-        transcriptHTML += '</div>';
-        container.innerHTML = transcriptHTML;
+        contentHTML += '</div></div>';
+        container.innerHTML = contentHTML;
 
       } catch (error) {
-        console.error('Error loading transcript:', error);
+        console.error('Error loading transcript and recording:', error);
         container.innerHTML = `
           <div class="transcript-box">
             <div style="color: #ef4444; text-align: center; padding: 32px;">
-              ❌ Failed to load transcript: ${error.message}
+              ❌ Failed to load: ${error.message}
               <br><br>
-              <button onclick="loadTranscript('${callId}')" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
+              <button onclick="loadTranscriptAndRecording('${callId}')" style="padding: 16px 32px; background: linear-gradient(135deg, #1e3a8a, #1e40af); color: #60a5fa; border: 1.5px solid #3b82f6; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
                 🔄 Retry
               </button>
             </div>
