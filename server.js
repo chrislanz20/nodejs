@@ -11,6 +11,7 @@ const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const crypto = require('crypto');
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));  // Allow large payloads for category migration
@@ -1000,6 +1001,56 @@ function authenticateToken(req, res, next) {
   }
 }
 
+// Permission middleware - checks if user has required permission
+// Permissions: view, export, manage_team
+function requirePermission(permission) {
+  return (req, res, next) => {
+    // Client owners have all permissions
+    if (!req.user.is_team_member) {
+      return next();
+    }
+
+    // Define role permissions
+    const rolePermissions = {
+      'Admin': ['view', 'export', 'manage_categories'],
+      'Sales': ['view', 'export'],
+      'Support': ['view'],
+      'Viewer': ['view']
+    };
+
+    const userPermissions = rolePermissions[req.user.role] || [];
+
+    if (!userPermissions.includes(permission)) {
+      return res.status(403).json({
+        error: 'Insufficient permissions',
+        required: permission,
+        role: req.user.role
+      });
+    }
+
+    next();
+  };
+}
+
+// Activity logging middleware for team members
+async function logActivity(action, details = {}) {
+  return async (req, res, next) => {
+    // Only log for team members
+    if (req.user && req.user.is_team_member) {
+      try {
+        await pool.query(
+          'INSERT INTO activity_log (team_member_id, client_id, action, details) VALUES ($1, $2, $3, $4)',
+          [req.user.id, req.user.client_id, action, JSON.stringify(details)]
+        );
+      } catch (error) {
+        console.error('Failed to log activity:', error);
+        // Don't fail the request if logging fails
+      }
+    }
+    next();
+  };
+}
+
 // ============ CLIENT PORTAL AUTH ROUTES ============
 
 // POST /api/auth/login - Client login
@@ -1075,6 +1126,341 @@ app.get('/api/auth/me', authenticateToken, (req, res) => {
     business_name: req.user.business_name,
     agent_ids: req.user.agent_ids
   });
+});
+
+// POST /api/auth/change-password - Change password for logged in client
+app.post('/api/auth/change-password', authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Current and new password required' });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ error: 'New password must be at least 8 characters' });
+    }
+
+    // Get client from database
+    const result = await pool.query(
+      'SELECT * FROM clients WHERE id = $1 AND active = TRUE',
+      [req.user.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+
+    const client = result.rows[0];
+
+    // Verify current password
+    const validPassword = await bcrypt.compare(currentPassword, client.password_hash);
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    // Hash new password
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await pool.query(
+      'UPDATE clients SET password_hash = $1, updated_at = NOW() WHERE id = $2',
+      [newPasswordHash, req.user.id]
+    );
+
+    console.log(`Password changed for client ${client.email}`);
+
+    res.json({ success: true, message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({ error: 'Failed to change password' });
+  }
+});
+
+// ============ TEAM MEMBER ROUTES ============
+
+// GET /api/team/members - List all team members for authenticated client
+app.get('/api/team/members', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, email, name, role, active, created_at, last_login FROM team_members WHERE client_id = $1 ORDER BY created_at DESC',
+      [req.user.id]
+    );
+
+    res.json({ members: result.rows });
+  } catch (error) {
+    console.error('Error fetching team members:', error);
+    res.status(500).json({ error: 'Failed to fetch team members' });
+  }
+});
+
+// POST /api/team/members - Create new team member
+app.post('/api/team/members', authenticateToken, async (req, res) => {
+  try {
+    const { email, name, role, password } = req.body;
+
+    if (!email || !name || !role || !password) {
+      return res.status(400).json({ error: 'All fields required' });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    const validRoles = ['Admin', 'Sales', 'Support', 'Viewer'];
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({ error: 'Invalid role' });
+    }
+
+    // Hash password
+    const password_hash = await bcrypt.hash(password, 10);
+
+    // Insert team member
+    const result = await pool.query(`
+      INSERT INTO team_members (client_id, email, name, role, password_hash)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING id, email, name, role, active, created_at
+    `, [req.user.id, email.toLowerCase(), name, role, password_hash]);
+
+    res.json({
+      success: true,
+      member: result.rows[0]
+    });
+  } catch (error) {
+    if (error.code === '23505') { // Unique violation
+      return res.status(400).json({ error: 'Email already exists for this client' });
+    }
+    console.error('Error creating team member:', error);
+    res.status(500).json({ error: 'Failed to create team member' });
+  }
+});
+
+// PUT /api/team/members/:id - Update team member
+app.put('/api/team/members/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { email, name, role, password, active } = req.body;
+
+    const updates = [];
+    const values = [];
+    let paramIndex = 1;
+
+    if (email !== undefined) {
+      updates.push(`email = $${paramIndex++}`);
+      values.push(email.toLowerCase());
+    }
+    if (name !== undefined) {
+      updates.push(`name = $${paramIndex++}`);
+      values.push(name);
+    }
+    if (role !== undefined) {
+      const validRoles = ['Admin', 'Sales', 'Support', 'Viewer'];
+      if (!validRoles.includes(role)) {
+        return res.status(400).json({ error: 'Invalid role' });
+      }
+      updates.push(`role = $${paramIndex++}`);
+      values.push(role);
+    }
+    if (password) {
+      if (password.length < 8) {
+        return res.status(400).json({ error: 'Password must be at least 8 characters' });
+      }
+      const password_hash = await bcrypt.hash(password, 10);
+      updates.push(`password_hash = $${paramIndex++}`);
+      values.push(password_hash);
+    }
+    if (active !== undefined) {
+      updates.push(`active = $${paramIndex++}`);
+      values.push(active);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
+    }
+
+    updates.push(`updated_at = NOW()`);
+    values.push(id);
+    values.push(req.user.id);
+
+    const result = await pool.query(`
+      UPDATE team_members
+      SET ${updates.join(', ')}
+      WHERE id = $${paramIndex} AND client_id = $${paramIndex + 1}
+      RETURNING id, email, name, role, active, updated_at
+    `, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Team member not found' });
+    }
+
+    res.json({
+      success: true,
+      member: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error updating team member:', error);
+    res.status(500).json({ error: 'Failed to update team member' });
+  }
+});
+
+// DELETE /api/team/members/:id - Delete/deactivate team member
+app.delete('/api/team/members/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Soft delete by setting active = false
+    const result = await pool.query(
+      'UPDATE team_members SET active = FALSE, updated_at = NOW() WHERE id = $1 AND client_id = $2 RETURNING id',
+      [id, req.user.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Team member not found' });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting team member:', error);
+    res.status(500).json({ error: 'Failed to delete team member' });
+  }
+});
+
+// ============ ACTIVITY LOG ROUTES ============
+
+// GET /api/activity - Get activity log for client
+app.get('/api/activity', authenticateToken, async (req, res) => {
+  try {
+    const clientId = req.user.is_team_member ? req.user.client_id : req.user.id;
+
+    const result = await pool.query(`
+      SELECT
+        al.id,
+        al.action,
+        al.call_id,
+        al.details,
+        al.created_at,
+        tm.name as team_member_name,
+        tm.email as team_member_email,
+        tm.role as team_member_role
+      FROM activity_log al
+      LEFT JOIN team_members tm ON al.team_member_id = tm.id
+      WHERE al.client_id = $1
+      ORDER BY al.created_at DESC
+      LIMIT 100
+    `, [clientId]);
+
+    res.json({ activities: result.rows });
+  } catch (error) {
+    console.error('Error fetching activity log:', error);
+    res.status(500).json({ error: 'Failed to fetch activity log' });
+  }
+});
+
+// ============ TEAM MEMBER AUTH ROUTES ============
+
+// POST /api/team/auth/login - Team member login
+app.post('/api/team/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password required' });
+    }
+
+    // Find team member by email
+    const result = await pool.query(
+      'SELECT tm.*, c.business_name, c.agent_ids FROM team_members tm JOIN clients c ON tm.client_id = c.id WHERE tm.email = $1',
+      [email.toLowerCase()]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const teamMember = result.rows[0];
+
+    // Check if team member is active
+    if (!teamMember.active) {
+      return res.status(401).json({ error: 'Account is inactive' });
+    }
+
+    // Verify password
+    const validPassword = await bcrypt.compare(password, teamMember.password_hash);
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Update last login
+    await pool.query(
+      'UPDATE team_members SET last_login = NOW(), updated_at = NOW() WHERE id = $1',
+      [teamMember.id]
+    );
+
+    // Create JWT token with team member info
+    const token = jwt.sign(
+      {
+        id: teamMember.id,
+        email: teamMember.email,
+        name: teamMember.name,
+        role: teamMember.role,
+        client_id: teamMember.client_id,
+        business_name: teamMember.business_name,
+        agent_ids: teamMember.agent_ids,
+        is_team_member: true
+      },
+      JWT_SECRET
+    );
+
+    // Set cookie (expires in 10 years)
+    res.cookie('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 10 * 365 * 24 * 60 * 60 * 1000,
+      sameSite: 'lax'
+    });
+
+    // Log activity
+    await pool.query(
+      'INSERT INTO activity_log (team_member_id, client_id, action, details) VALUES ($1, $2, $3, $4)',
+      [teamMember.id, teamMember.client_id, 'login', JSON.stringify({ email: teamMember.email })]
+    );
+
+    res.json({
+      success: true,
+      teamMember: {
+        email: teamMember.email,
+        name: teamMember.name,
+        role: teamMember.role,
+        business_name: teamMember.business_name
+      }
+    });
+  } catch (error) {
+    console.error('Team member login error:', error);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+// GET /api/team/auth/me - Get current team member info
+app.get('/api/team/auth/me', authenticateToken, async (req, res) => {
+  try {
+    if (!req.user.is_team_member) {
+      return res.status(403).json({ error: 'Not a team member' });
+    }
+
+    res.json({
+      id: req.user.id,
+      email: req.user.email,
+      name: req.user.name,
+      role: req.user.role,
+      client_id: req.user.client_id,
+      business_name: req.user.business_name,
+      agent_ids: req.user.agent_ids,
+      is_team_member: true
+    });
+  } catch (error) {
+    console.error('Error getting team member info:', error);
+    res.status(500).json({ error: 'Failed to get team member info' });
+  }
 });
 
 // ============ ADMIN ROUTES (for managing clients) ============
@@ -1204,6 +1590,40 @@ app.delete('/api/admin/clients/:id', async (req, res) => {
   } catch (error) {
     console.error('Error deleting client:', error);
     res.status(500).json({ error: 'Failed to delete client' });
+  }
+});
+
+// POST /api/admin/clients/:id/reset-password - Reset client password
+app.post('/api/admin/clients/:id/reset-password', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Generate a temporary password (12 characters, alphanumeric)
+    const temporaryPassword = crypto.randomBytes(8).toString('base64').slice(0, 12).replace(/[^a-zA-Z0-9]/g, 'x');
+
+    // Hash the temporary password
+    const password_hash = await bcrypt.hash(temporaryPassword, 10);
+
+    // Update client's password
+    const result = await pool.query(
+      'UPDATE clients SET password_hash = $1, updated_at = NOW() WHERE id = $2 RETURNING email',
+      [password_hash, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+
+    console.log(`Password reset for client ${result.rows[0].email}`);
+
+    res.json({
+      success: true,
+      temporary_password: temporaryPassword,
+      message: 'Password reset successfully'
+    });
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    res.status(500).json({ error: 'Failed to reset password' });
   }
 });
 

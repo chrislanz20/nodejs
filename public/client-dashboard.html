@@ -12,48 +12,62 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #f7fafc;
-      color: #2d3748;
+      font-family: 'JetBrains Mono', 'Courier New', monospace, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
+      background: #0d1117;
+      color: #e6edf3;
       min-height: 100vh;
     }
 
     .header {
-      background: white;
-      border-bottom: 1px solid #e2e8f0;
-      padding: 20px 32px;
+      background: rgba(13, 17, 23, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+      padding: 24px 32px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 16px rgba(0, 255, 255, 0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .header h1 {
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 700;
-      color: #1a202c;
+      color: #00FFFF;
+      text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+      letter-spacing: 1px;
     }
 
     .business-name {
-      font-size: 14px;
-      color: #718096;
-      font-weight: 500;
+      font-size: 13px;
+      color: #9ca3af;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-top: 4px;
     }
 
     .logout-btn {
-      padding: 10px 20px;
-      background: #e53e3e;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 600;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+      color: #ff6b6b;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     .logout-btn:hover {
-      background: #c53030;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.3));
+      border-color: #ef4444;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
     }
 
     .container {
@@ -70,63 +84,580 @@
     }
 
     .stat-card {
-      background: white;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
+      background: rgba(30, 36, 44, 0.6);
+      backdrop-filter: blur(10px);
+      padding: 28px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0, 255, 255, 0.2);
+      border-color: rgba(0, 255, 255, 0.4);
     }
 
     .stat-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: #718096;
+      font-size: 12px;
+      font-weight: 700;
+      color: #9ca3af;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
     }
 
     .stat-value {
-      font-size: 32px;
+      font-size: 42px;
       font-weight: 700;
-      color: #1a202c;
+      color: #00FFFF;
+      text-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .loading {
       text-align: center;
       padding: 60px 20px;
-      color: #718096;
+      color: #9ca3af;
       font-size: 16px;
     }
 
-    .calls-section {
-      background: white;
+    /* Skeleton Loading States */
+    .skeleton {
+      background: linear-gradient(90deg, rgba(30, 36, 44, 0.6) 25%, rgba(48, 54, 61, 0.6) 50%, rgba(30, 36, 44, 0.6) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    .skeleton-stat-card {
+      background: rgba(30, 36, 44, 0.6);
+      backdrop-filter: blur(10px);
+      padding: 28px;
+      border-radius: 16px;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+    }
+
+    .skeleton-label {
+      height: 12px;
+      width: 60%;
+      margin-bottom: 16px;
+    }
+
+    .skeleton-value {
+      height: 48px;
+      width: 80%;
+    }
+
+    .skeleton-table-row {
+      display: flex;
+      gap: 20px;
+      padding: 20px 28px;
+      border-top: 1px solid rgba(48, 54, 61, 0.4);
+    }
+
+    .skeleton-cell {
+      height: 20px;
+      flex: 1;
+    }
+
+    .skeleton-cell-small {
+      height: 20px;
+      width: 80px;
+    }
+
+    /* Analytics Charts */
+    .analytics-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .chart-card {
+      background: rgba(30, 36, 44, 0.6);
+      backdrop-filter: blur(10px);
+      padding: 28px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+    }
+
+    .chart-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #00FFFF;
+      margin-bottom: 24px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 200px;
+      gap: 8px;
+      padding: 16px 0;
+      border-bottom: 2px solid rgba(0, 255, 255, 0.2);
+    }
+
+    .bar-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+
+    .bar {
+      width: 100%;
+      background: linear-gradient(180deg, rgba(0, 255, 255, 0.6), rgba(0, 200, 200, 0.3));
+      border-radius: 4px 4px 0 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      min-height: 4px;
+      box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
+    }
+
+    .bar:hover {
+      background: linear-gradient(180deg, rgba(0, 255, 255, 0.8), rgba(0, 200, 200, 0.5));
+      box-shadow: 0 4px 16px rgba(0, 255, 255, 0.4);
+    }
+
+    .bar-label {
+      font-size: 10px;
+      color: #9ca3af;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .bar-value {
+      position: absolute;
+      top: -24px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #00FFFF;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .bar:hover .bar-value {
+      opacity: 1;
+    }
+
+    .category-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 16px 0;
+    }
+
+    .category-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .category-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .category-name {
+      flex: 0 0 140px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #e6edf3;
+      letter-spacing: 0.3px;
+    }
+
+    .category-bar-bg {
+      flex: 1;
+      height: 32px;
+      background: rgba(13, 17, 23, 0.6);
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .category-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, rgba(0, 255, 255, 0.3), rgba(0, 255, 255, 0.6));
+      border-radius: 6px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 12px;
+      box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
+    }
+
+    .category-count {
+      font-size: 12px;
+      font-weight: 700;
+      color: #e6edf3;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .category-percentage {
+      flex: 0 0 50px;
+      text-align: right;
+      font-size: 13px;
+      font-weight: 700;
+      color: #9ca3af;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 400px;
+    }
+
+    .toast {
+      background: rgba(30, 36, 44, 0.98);
+      backdrop-filter: blur(20px);
       border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
+      padding: 16px 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      border: 1px solid;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      min-width: 320px;
+    }
+
+    .toast.toast-success {
+      border-color: rgba(16, 185, 129, 0.5);
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2);
+    }
+
+    .toast.toast-error {
+      border-color: rgba(239, 68, 68, 0.5);
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.2);
+    }
+
+    .toast.toast-info {
+      border-color: rgba(0, 255, 255, 0.5);
+      box-shadow: 0 8px 24px rgba(0, 255, 255, 0.2);
+    }
+
+    .toast-icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toast-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .toast-success .toast-icon {
+      color: #10b981;
+    }
+
+    .toast-error .toast-icon {
+      color: #ef4444;
+    }
+
+    .toast-info .toast-icon {
+      color: #00FFFF;
+    }
+
+    .toast-message {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 600;
+      color: #e6edf3;
+      letter-spacing: 0.3px;
+    }
+
+    .toast-close {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .toast-close:hover {
+      color: #e6edf3;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOutRight {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+    }
+
+    .toast.removing {
+      animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 32px;
+      border-top: 1px solid rgba(0, 255, 255, 0.2);
+    }
+
+    .pagination-info {
+      font-size: 13px;
+      color: #9ca3af;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .pagination-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .pagination-btn {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 200, 200, 0.1));
+      color: #00FFFF;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2));
+      border-color: #00FFFF;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 255, 255, 0.2);
+    }
+
+    .pagination-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .page-numbers {
+      display: flex;
+      gap: 4px;
+    }
+
+    .page-number {
+      padding: 8px 12px;
+      background: transparent;
+      color: #9ca3af;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .page-number:hover {
+      background: rgba(0, 255, 255, 0.1);
+      color: #e6edf3;
+      border-color: rgba(0, 255, 255, 0.4);
+    }
+
+    .page-number.active {
+      background: linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(0, 200, 200, 0.3));
+      color: #00FFFF;
+      border-color: rgba(0, 255, 255, 0.5);
+      box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
+    }
+
+    .calls-section {
+      background: rgba(30, 36, 44, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.2);
       overflow: hidden;
     }
 
     .section-header {
       padding: 24px 32px;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
     }
 
     .section-title {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 700;
-      color: #1a202c;
+      color: #00FFFF;
+      text-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+      letter-spacing: 1px;
     }
 
     .search-box {
-      padding: 10px 16px;
-      border: 1px solid #cbd5e0;
-      border-radius: 6px;
+      padding: 12px 18px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 8px;
       font-size: 14px;
       width: 300px;
+      background: rgba(13, 17, 23, 0.8);
+      color: #e6edf3;
+      font-family: 'JetBrains Mono', monospace;
+      transition: all 0.2s;
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: #00FFFF;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    }
+
+    .search-box::placeholder {
+      color: #6b7280;
+    }
+
+    .filters-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .filter-select {
+      padding: 12px 18px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 8px;
+      font-size: 13px;
+      background: rgba(13, 17, 23, 0.8);
+      color: #e6edf3;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 160px;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: #00FFFF;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    }
+
+    .filter-select option {
+      background: #1e242c;
+      color: #e6edf3;
+    }
+
+    .category-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 8px;
+      background: rgba(30, 36, 44, 0.98);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 255, 255, 0.2);
+      z-index: 1000;
+      min-width: 200px;
+    }
+
+    .category-dropdown label:hover {
+      background: rgba(0, 255, 255, 0.1);
+    }
+
+    .multi-select-wrapper {
+      position: relative;
+      min-width: 180px;
+    }
+
+    .action-btn {
+      padding: 12px 20px;
+      background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(0, 200, 200, 0.15));
+      color: #00FFFF;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-btn:hover {
+      background: linear-gradient(135deg, rgba(0, 255, 255, 0.25), rgba(0, 200, 200, 0.25));
+      border-color: #00FFFF;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 255, 255, 0.3);
+    }
+
+    .action-btn:active {
+      transform: translateY(0);
+    }
+
+    .action-btn svg {
+      width: 16px;
+      height: 16px;
     }
 
     table {
@@ -135,66 +666,114 @@
     }
 
     thead {
-      background: #f7fafc;
+      background: rgba(13, 17, 23, 0.9);
     }
 
     th {
       text-align: left;
-      padding: 16px 32px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #4a5568;
+      padding: 18px 28px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #9ca3af;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 1px solid #e2e8f0;
+      letter-spacing: 1.5px;
+      border-bottom: 2px solid rgba(0, 255, 255, 0.2);
     }
 
     td {
-      padding: 16px 32px;
-      border-bottom: 1px solid #f7fafc;
+      padding: 20px 28px;
+      border-top: 1px solid rgba(48, 54, 61, 0.4);
       font-size: 14px;
+      font-weight: 500;
+      color: #e6edf3;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    tbody tr {
+      transition: all 0.2s ease;
     }
 
     tbody tr:hover {
-      background: #f7fafc;
+      background: rgba(0, 255, 255, 0.08);
       cursor: pointer;
+      transform: scale(1.001);
     }
 
     .status-badge {
       display: inline-block;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: capitalize;
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s;
     }
 
     .status-completed {
-      background: #c6f6d5;
-      color: #22543d;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3), 0 0 20px rgba(16, 185, 129, 0.2);
     }
 
     .status-ongoing {
-      background: #feebc8;
-      color: #7c2d12;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3), 0 0 20px rgba(245, 158, 11, 0.2);
     }
 
     .category-badge {
       display: inline-block;
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
+      transition: all 0.2s;
     }
 
-    .category-new-lead { background: rgba(16, 185, 129, 0.15); color: #047857; }
-    .category-existing-client { background: rgba(59, 130, 246, 0.15); color: #1e40af; }
-    .category-attorney { background: rgba(255, 0, 255, 0.15); color: #a21caf; }
-    .category-insurance { background: rgba(251, 191, 36, 0.15); color: #92400e; }
-    .category-medical { background: rgba(239, 68, 68, 0.15); color: #991b1b; }
-    .category-other { background: rgba(156, 163, 175, 0.15); color: #374151; }
+    .category-new-lead {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3), 0 0 20px rgba(16, 185, 129, 0.2);
+    }
+
+    .category-existing-client {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3), 0 0 20px rgba(59, 130, 246, 0.2);
+    }
+
+    .category-attorney {
+      background: linear-gradient(135deg, #a855f7, #9333ea);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(168, 85, 247, 0.3), 0 0 20px rgba(168, 85, 247, 0.2);
+    }
+
+    .category-insurance {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3), 0 0 20px rgba(245, 158, 11, 0.2);
+    }
+
+    .category-medical {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3), 0 0 20px rgba(239, 68, 68, 0.2);
+    }
+
+    .category-other {
+      background: linear-gradient(135deg, #6b7280, #4b5563);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3), 0 0 20px rgba(107, 114, 128, 0.2);
+    }
+
+    .category-uncategorized {
+      background: linear-gradient(135deg, #374151, #1f2937);
+      color: #9ca3af;
+      box-shadow: 0 2px 8px rgba(55, 65, 81, 0.3);
+    }
 
     .modal {
       display: none;
@@ -209,18 +788,20 @@
     }
 
     .modal-content {
-      background-color: white;
+      background: rgba(30, 36, 44, 0.98);
+      backdrop-filter: blur(20px);
       margin: 5% auto;
       padding: 0;
-      border-radius: 12px;
+      border-radius: 16px;
       width: 90%;
       max-width: 900px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3);
+      border: 1px solid rgba(0, 255, 255, 0.3);
     }
 
     .modal-header {
       padding: 24px 32px;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -229,19 +810,23 @@
     .modal-header h2 {
       font-size: 20px;
       font-weight: 700;
-      color: #1a202c;
+      color: #00FFFF;
+      text-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+      letter-spacing: 1px;
     }
 
     .close {
       font-size: 32px;
       font-weight: 300;
-      color: #a0aec0;
+      color: #9ca3af;
       cursor: pointer;
       line-height: 1;
+      transition: all 0.2s;
     }
 
     .close:hover {
-      color: #718096;
+      color: #00FFFF;
+      text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
     }
 
     .modal-body {
@@ -258,24 +843,26 @@
     }
 
     .field {
-      padding: 16px;
-      background: #f7fafc;
-      border-radius: 8px;
+      padding: 18px;
+      background: rgba(13, 17, 23, 0.6);
+      border-radius: 10px;
+      border: 1px solid rgba(0, 255, 255, 0.1);
     }
 
     .field-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: #718096;
+      font-size: 11px;
+      font-weight: 700;
+      color: #9ca3af;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
     }
 
     .field-value {
       font-size: 15px;
       font-weight: 500;
-      color: #1a202c;
+      color: #e6edf3;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .transcript-section {
@@ -285,14 +872,15 @@
     .transcript-title {
       font-size: 16px;
       font-weight: 700;
-      color: #1a202c;
+      color: #00FFFF;
       margin-bottom: 16px;
+      letter-spacing: 1px;
     }
 
     .transcript-box {
-      background: #f7fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
+      background: rgba(13, 17, 23, 0.6);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 10px;
       padding: 20px;
       max-height: 400px;
       overflow-y: auto;
@@ -300,26 +888,26 @@
 
     .transcript-message {
       margin-bottom: 16px;
-      padding: 12px;
+      padding: 14px;
       border-radius: 8px;
     }
 
     .transcript-user {
-      background: white;
+      background: rgba(102, 126, 234, 0.1);
       border-left: 3px solid #667eea;
     }
 
     .transcript-agent {
-      background: white;
+      background: rgba(72, 187, 120, 0.1);
       border-left: 3px solid #48bb78;
     }
 
     .transcript-role {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
-      color: #718096;
+      color: #9ca3af;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 1.5px;
       margin-bottom: 6px;
     }
 
@@ -337,62 +925,559 @@
         grid-template-columns: 1fr;
       }
 
-      .search-box {
-        width: 100%;
-        margin-top: 12px;
-      }
-
       .section-header {
         flex-direction: column;
         align-items: stretch;
       }
 
+      .filters-row {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .filter-select,
+      .search-box,
+      .action-btn {
+        width: 100%;
+        min-width: auto;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .analytics-section {
+        grid-template-columns: 1fr;
+      }
+
+      .category-name {
+        flex: 0 0 100px;
+        font-size: 11px;
+      }
+
+      .category-count {
+        font-size: 11px;
+      }
+
+      .category-percentage {
+        flex: 0 0 40px;
+        font-size: 11px;
+      }
+
+      .bar-chart {
+        height: 150px;
+      }
+
       table {
-        font-size: 13px;
+        font-size: 12px;
       }
 
       th, td {
-        padding: 12px 16px;
+        padding: 12px 14px;
       }
+
+      .header h1 {
+        font-size: 22px;
+      }
+
+      .business-name {
+        font-size: 11px;
+      }
+
+      .logout-btn {
+        padding: 10px 18px;
+        font-size: 12px;
+      }
+    }
+
+    /* Extra small devices (phones, less than 480px) */
+    @media (max-width: 480px) {
+      .container {
+        padding: 16px;
+      }
+
+      .header {
+        padding: 16px;
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+
+      .header h1 {
+        font-size: 20px;
+      }
+
+      .business-name {
+        font-size: 10px;
+      }
+
+      .logout-btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 12px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .stat-card {
+        padding: 20px;
+      }
+
+      .stat-value {
+        font-size: 32px;
+      }
+
+      .stat-label {
+        font-size: 11px;
+      }
+
+      /* Make tap targets larger for mobile */
+      button, .action-btn, .filter-select {
+        min-height: 44px;
+      }
+
+      /* Table horizontal scroll on small screens */
+      .calls-section {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      table {
+        min-width: 600px;
+        font-size: 11px;
+      }
+
+      th, td {
+        padding: 10px 8px;
+      }
+
+      /* Pagination controls */
+      .pagination {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .page-numbers {
+        order: -1;
+        justify-content: center;
+      }
+
+      .pagination-info {
+        text-align: center;
+        font-size: 11px;
+      }
+
+      /* Modal adjustments */
+      .modal-content {
+        margin: 20px;
+        max-width: calc(100% - 40px);
+        max-height: calc(100vh - 40px);
+      }
+
+      .category-bar {
+        height: 100px;
+      }
+    }
+
+    /* Landscape mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .analytics-section {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Touch device improvements */
+    @media (hover: none) and (pointer: coarse) {
+      /* Larger touch targets */
+      button, a, .action-btn, .filter-select, input, select {
+        min-height: 44px;
+        min-width: 44px;
+      }
+
+      /* Remove hover effects on touch devices */
+      .stat-card:hover,
+      .action-btn:hover,
+      .logout-btn:hover {
+        transform: none;
+      }
+
+      /* Show tap feedback instead */
+      .stat-card:active,
+      .action-btn:active,
+      .logout-btn:active {
+        transform: scale(0.98);
+        opacity: 0.9;
+      }
+    }
+
+    /* Tooltip Styles */
+    .tooltip-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      margin-left: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #9ca3af;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 50%;
+      cursor: help;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .tooltip-icon:hover {
+      color: #00FFFF;
+      background: rgba(0, 255, 255, 0.2);
+      border-color: #00FFFF;
+      transform: scale(1.1);
+    }
+
+    .tooltip-text {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      z-index: 1000;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(13, 17, 23, 0.98);
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      color: #e6edf3;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(0, 255, 255, 0.2);
+      transition: all 0.2s;
+      pointer-events: none;
+      line-height: 1.4;
+    }
+
+    .tooltip-text::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(0, 255, 255, 0.4);
+    }
+
+    .tooltip-icon:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+      bottom: 150%;
+    }
+
+    /* For tooltips that need to wrap text */
+    .tooltip-text.wrap {
+      white-space: normal;
+      max-width: 250px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
   <div class="header">
     <div>
       <h1>Dashboard</h1>
       <div class="business-name" id="business-name">Loading...</div>
     </div>
-    <button class="logout-btn" onclick="logout()">Logout</button>
+    <div style="display: flex; gap: 12px;">
+      <button class="logout-btn" onclick="openSettings()" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2)); color: #3b82f6; border-color: rgba(59, 130, 246, 0.4);">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; display: inline-block; margin-right: 6px; vertical-align: middle;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        Settings
+      </button>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
   </div>
 
   <div class="container">
-    <div id="loading" class="loading">Loading your dashboard...</div>
+    <div id="loading" style="display: block;">
+      <!-- Skeleton Stats Grid -->
+      <div class="stats-grid">
+        <div class="skeleton-stat-card">
+          <div class="skeleton skeleton-label"></div>
+          <div class="skeleton skeleton-value"></div>
+        </div>
+        <div class="skeleton-stat-card">
+          <div class="skeleton skeleton-label"></div>
+          <div class="skeleton skeleton-value"></div>
+        </div>
+        <div class="skeleton-stat-card">
+          <div class="skeleton skeleton-label"></div>
+          <div class="skeleton skeleton-value"></div>
+        </div>
+        <div class="skeleton-stat-card">
+          <div class="skeleton skeleton-label"></div>
+          <div class="skeleton skeleton-value"></div>
+        </div>
+      </div>
+
+      <!-- Skeleton Table -->
+      <div class="calls-section" style="margin-top: 32px;">
+        <div class="section-header">
+          <div class="skeleton" style="height: 24px; width: 150px;"></div>
+        </div>
+        <div>
+          <div class="skeleton-table-row">
+            <div class="skeleton skeleton-cell"></div>
+            <div class="skeleton skeleton-cell"></div>
+            <div class="skeleton skeleton-cell-small"></div>
+            <div class="skeleton skeleton-cell-small"></div>
+            <div class="skeleton skeleton-cell-small"></div>
+          </div>
+          <div class="skeleton-table-row">
+            <div class="skeleton skeleton-cell"></div>
+            <div class="skeleton skeleton-cell"></div>
+            <div class="skeleton skeleton-cell-small"></div>
+            <div class="skeleton skeleton-cell-small"></div>
+            <div class="skeleton skeleton-cell-small"></div>
+          </div>
+          <div class="skeleton-table-row">
+            <div class="skeleton skeleton-cell"></div>
+            <div class="skeleton skeleton-cell"></div>
+            <div class="skeleton skeleton-cell-small"></div>
+            <div class="skeleton skeleton-cell-small"></div>
+            <div class="skeleton skeleton-cell-small"></div>
+          </div>
+          <div class="skeleton-table-row">
+            <div class="skeleton skeleton-cell"></div>
+            <div class="skeleton skeleton-cell"></div>
+            <div class="skeleton skeleton-cell-small"></div>
+            <div class="skeleton skeleton-cell-small"></div>
+            <div class="skeleton skeleton-cell-small"></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div id="dashboard-content" style="display: none;">
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-label">Total Calls</div>
+          <div class="stat-label">
+            Total Calls
+            <span class="tooltip-icon">?
+              <span class="tooltip-text">Total number of calls received by your AI receptionist</span>
+            </span>
+          </div>
           <div class="stat-value" id="total-calls">0</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">New Leads</div>
+          <div class="stat-label">
+            New Leads
+            <span class="tooltip-icon">?
+              <span class="tooltip-text">Calls categorized as potential new business opportunities</span>
+            </span>
+          </div>
           <div class="stat-value" id="new-leads">0</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">Existing Clients</div>
+          <div class="stat-label">
+            Existing Clients
+            <span class="tooltip-icon">?
+              <span class="tooltip-text">Calls from known clients or repeat callers</span>
+            </span>
+          </div>
           <div class="stat-value" id="existing-clients">0</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">Other Calls</div>
+          <div class="stat-label">
+            Other Calls
+            <span class="tooltip-icon">?
+              <span class="tooltip-text wrap">Calls from attorneys, insurance, medical providers, or uncategorized</span>
+            </span>
+          </div>
           <div class="stat-value" id="other-calls">0</div>
+        </div>
+      </div>
+
+      <!-- Analytics Charts -->
+      <div class="analytics-section">
+        <div class="chart-card">
+          <div class="chart-title">Calls Over Time (Last 7 Days)</div>
+          <div id="calls-over-time-chart" class="bar-chart"></div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-title">Category Distribution</div>
+          <div id="category-distribution-chart" class="category-chart"></div>
+        </div>
+      </div>
+
+      <!-- Team Management Section (Only visible to client owners, not team members) -->
+      <div class="team-section" id="team-section" style="display: none; margin-bottom: 32px;">
+        <div style="background: rgba(30, 36, 44, 0.6); backdrop-filter: blur(10px); border-radius: 16px; padding: 28px; border: 1px solid rgba(0, 255, 255, 0.2); box-shadow: 0 8px 24px rgba(0, 255, 255, 0.1);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <div>
+              <h2 style="font-size: 20px; font-weight: 700; color: #00FFFF; margin-bottom: 6px;">Team Members</h2>
+              <p style="font-size: 12px; color: #9ca3af;">Manage your team's access and permissions</p>
+            </div>
+            <button onclick="openAddTeamMember()" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+              + Add Member
+            </button>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="background: rgba(13, 17, 23, 0.6); border-bottom: 2px solid rgba(0, 255, 255, 0.2);">
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Name</th>
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Email</th>
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Role</th>
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Last Login</th>
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Status</th>
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="team-members-tbody">
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 40px; color: #9ca3af;">No team members yet. Add one to get started!</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Log Section -->
+      <div class="activity-log-section" id="activity-log-section" style="display: none; margin-bottom: 32px;">
+        <div style="background: rgba(30, 36, 44, 0.6); backdrop-filter: blur(10px); border-radius: 16px; padding: 28px; border: 1px solid rgba(0, 255, 255, 0.2); box-shadow: 0 8px 24px rgba(0, 255, 255, 0.1);">
+          <div style="margin-bottom: 24px;">
+            <h2 style="font-size: 20px; font-weight: 700; color: #00FFFF; margin-bottom: 6px;">Team Activity Log</h2>
+            <p style="font-size: 12px; color: #9ca3af;">Recent actions performed by team members</p>
+          </div>
+
+          <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <thead style="position: sticky; top: 0; background: rgba(13, 17, 23, 0.95); z-index: 1;">
+                <tr style="border-bottom: 2px solid rgba(0, 255, 255, 0.2);">
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Time</th>
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Team Member</th>
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Role</th>
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Action</th>
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Details</th>
+                </tr>
+              </thead>
+              <tbody id="activity-log-tbody">
+                <tr>
+                  <td colspan="5" style="text-align: center; padding: 40px; color: #9ca3af;">No activity recorded yet</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Metrics Section -->
+      <div class="team-metrics-section" id="team-metrics-section" style="display: none; margin-bottom: 32px;">
+        <div style="background: rgba(30, 36, 44, 0.6); backdrop-filter: blur(10px); border-radius: 16px; padding: 28px; border: 1px solid rgba(0, 255, 255, 0.2); box-shadow: 0 8px 24px rgba(0, 255, 255, 0.1);">
+          <div style="margin-bottom: 24px;">
+            <h2 style="font-size: 20px; font-weight: 700; color: #00FFFF; margin-bottom: 6px;">Team Performance</h2>
+            <p style="font-size: 12px; color: #9ca3af;">Activity metrics for your team members</p>
+          </div>
+
+          <div id="team-metrics-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <!-- Team metrics will be dynamically loaded here -->
+          </div>
         </div>
       </div>
 
       <div class="calls-section">
         <div class="section-header">
           <div class="section-title">Recent Calls</div>
-          <input type="text" class="search-box" id="search-box" placeholder="Search calls...">
+          <div class="filters-row">
+            <!-- Quick Date Presets -->
+            <select class="filter-select" id="date-preset" onchange="applyDatePreset()">
+              <option value="custom">Custom Range</option>
+              <option value="all">All Time</option>
+              <option value="7">Last 7 Days</option>
+              <option value="30" selected>Last 30 Days</option>
+              <option value="90">Last 90 Days</option>
+            </select>
+
+            <!-- Custom Date Range Inputs -->
+            <input type="date" class="filter-select" id="date-from" style="min-width: 140px;" onchange="onDateRangeChange()">
+            <input type="date" class="filter-select" id="date-to" style="min-width: 140px;" onchange="onDateRangeChange()">
+
+            <!-- Multi-Select Category Filter -->
+            <div class="multi-select-wrapper" style="position: relative;">
+              <button class="filter-select" id="category-button" onclick="toggleCategoryDropdown()" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                <span id="category-button-text">All Categories</span>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              <div id="category-dropdown" class="category-dropdown" style="display: none;">
+                <label style="display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s;">
+                  <input type="checkbox" value="New Lead" onchange="updateCategoryFilter()" style="margin-right: 8px;"> New Lead
+                </label>
+                <label style="display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s;">
+                  <input type="checkbox" value="Existing Client" onchange="updateCategoryFilter()" style="margin-right: 8px;"> Existing Client
+                </label>
+                <label style="display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s;">
+                  <input type="checkbox" value="Attorney" onchange="updateCategoryFilter()" style="margin-right: 8px;"> Attorney
+                </label>
+                <label style="display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s;">
+                  <input type="checkbox" value="Insurance" onchange="updateCategoryFilter()" style="margin-right: 8px;"> Insurance
+                </label>
+                <label style="display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s;">
+                  <input type="checkbox" value="Medical" onchange="updateCategoryFilter()" style="margin-right: 8px;"> Medical
+                </label>
+                <label style="display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s;">
+                  <input type="checkbox" value="Other" onchange="updateCategoryFilter()" style="margin-right: 8px;"> Other
+                </label>
+                <label style="display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s;">
+                  <input type="checkbox" value="Uncategorized" onchange="updateCategoryFilter()" style="margin-right: 8px;"> Uncategorized
+                </label>
+                <div style="padding: 8px 12px; border-top: 1px solid rgba(0, 255, 255, 0.2); margin-top: 4px;">
+                  <button onclick="clearCategoryFilter()" style="width: 100%; padding: 6px; background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.3); border-radius: 6px; font-size: 12px; cursor: pointer;">
+                    Clear All
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <input type="text" class="search-box" id="search-box" placeholder="Search calls..." style="min-width: 200px;">
+
+            <button class="action-btn" id="export-btn" onclick="exportToCSV()" style="position: relative;">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              Export CSV
+              <span class="tooltip-icon" style="position: static; margin-left: 4px;">?
+                <span class="tooltip-text">Download your call data as a CSV file (Shortcut: E)</span>
+              </span>
+            </button>
+
+            <button class="action-btn" onclick="refreshDashboard()" style="position: relative;">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              Refresh
+              <span class="tooltip-icon" style="position: static; margin-left: 4px;">?
+                <span class="tooltip-text">Reload dashboard data from server (Shortcut: R)</span>
+              </span>
+            </button>
+          </div>
         </div>
         <table id="calls-table">
           <thead>
@@ -407,6 +1492,26 @@
           <tbody id="calls-tbody">
           </tbody>
         </table>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination" style="display: none;">
+          <div class="pagination-info" id="pagination-info"></div>
+          <div class="pagination-controls">
+            <button class="pagination-btn" id="prev-btn" onclick="changePage(-1)">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; vertical-align: middle; margin-right: 4px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+              Prev
+            </button>
+            <div class="page-numbers" id="page-numbers"></div>
+            <button class="pagination-btn" id="next-btn" onclick="changePage(1)">
+              Next
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; vertical-align: middle; margin-left: 4px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -423,17 +1528,181 @@
     </div>
   </div>
 
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Account Settings</h2>
+        <span class="close" onclick="closeSettingsModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="settings-form" onsubmit="saveSettings(event)">
+          <div style="margin-bottom: 24px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+              Email
+            </label>
+            <input type="text" id="settings-email" readonly style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.4); color: #6b7280; cursor: not-allowed;">
+          </div>
+
+          <div style="margin-bottom: 24px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+              Business Name
+            </label>
+            <input type="text" id="settings-business" readonly style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.4); color: #6b7280; cursor: not-allowed;">
+          </div>
+
+          <hr style="border: none; border-top: 1px solid rgba(0, 255, 255, 0.2); margin: 32px 0;">
+
+          <h3 style="font-size: 16px; font-weight: 700; color: #00FFFF; margin-bottom: 20px; letter-spacing: 1px;">Change Password</h3>
+
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+              Current Password
+            </label>
+            <input type="password" id="current-password" placeholder="Enter current password" style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3;">
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+              New Password
+            </label>
+            <input type="password" id="new-password" placeholder="Enter new password (min 8 characters)" style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3;">
+          </div>
+
+          <div style="margin-bottom: 24px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+              Confirm New Password
+            </label>
+            <input type="password" id="confirm-password" placeholder="Confirm new password" style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3;">
+          </div>
+
+          <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <button type="button" onclick="closeSettingsModal()" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(107, 114, 128, 0.2), rgba(75, 85, 99, 0.2)); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.4); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+              Cancel
+            </button>
+            <button type="submit" id="save-settings-btn" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Member Modal -->
+  <div id="team-member-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="team-modal-title">Add Team Member</h2>
+        <span class="close" onclick="closeTeamMemberModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="team-member-form" onsubmit="saveTeamMember(event)">
+          <input type="hidden" id="team-member-id">
+
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+              Full Name
+            </label>
+            <input type="text" id="team-member-name" required placeholder="John Doe" style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3;">
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+              Email Address
+            </label>
+            <input type="email" id="team-member-email" required placeholder="john@example.com" style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3;">
+            <div style="font-size: 11px; color: #6b7280; margin-top: 6px;">This will be their login email</div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+              Role
+            </label>
+            <select id="team-member-role" required style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3; cursor: pointer;">
+              <option value="Admin">Admin - Full access to all features</option>
+              <option value="Sales">Sales - View calls, export data</option>
+              <option value="Support">Support - View calls only</option>
+              <option value="Viewer">Viewer - Read-only access</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 24px;" id="password-section">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+              Initial Password
+            </label>
+            <input type="password" id="team-member-password" placeholder="Minimum 8 characters" style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3;">
+            <div style="font-size: 11px; color: #6b7280; margin-top: 6px;">Leave blank when editing to keep existing password</div>
+          </div>
+
+          <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <button type="button" onclick="closeTeamMemberModal()" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(107, 114, 128, 0.2), rgba(75, 85, 99, 0.2)); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.4); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+              Cancel
+            </button>
+            <button type="submit" id="save-team-member-btn" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+              Save Member
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <script>
     let currentUser = null;
     let allCalls = [];
     let categories = {};
+    let currentPage = 1;
+    let itemsPerPage = 25;
+    let filteredCalls = [];
+
+    // Toast Notification System
+    function showToast(message, type = 'info', duration = 4000) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+
+      const icons = {
+        success: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>',
+        error: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>',
+        info: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
+      };
+
+      toast.innerHTML = `
+        <div class="toast-icon">${icons[type]}</div>
+        <div class="toast-message">${message}</div>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      `;
+
+      container.appendChild(toast);
+
+      // Auto-remove after duration
+      if (duration > 0) {
+        setTimeout(() => {
+          toast.classList.add('removing');
+          setTimeout(() => toast.remove(), 300);
+        }, duration);
+      }
+    }
 
     // Check authentication and load user data
     async function checkAuth() {
       try {
-        const response = await fetch('/api/auth/me', {
+        // Try client auth first
+        let response = await fetch('/api/auth/me', {
           credentials: 'include'
         });
+
+        // If client auth fails, try team member auth
+        if (!response.ok) {
+          response = await fetch('/api/team/auth/me', {
+            credentials: 'include'
+          });
+        }
 
         if (!response.ok) {
           // Not logged in, redirect to login
@@ -443,6 +1712,16 @@
 
         currentUser = await response.json();
         document.getElementById('business-name').textContent = currentUser.business_name;
+
+        // Show/hide team section based on user type
+        // Only client owners can manage team members
+        if (currentUser.is_team_member) {
+          // Hide team management section for team members
+          const teamSection = document.getElementById('team-section');
+          if (teamSection) {
+            teamSection.style.display = 'none';
+          }
+        }
 
         // Load data
         await loadDashboard();
@@ -468,7 +1747,13 @@
         });
 
         if (!callsResponse.ok) {
-          throw new Error('Failed to load calls');
+          if (callsResponse.status === 401 || callsResponse.status === 403) {
+            throw new Error('AUTH_ERROR');
+          } else if (callsResponse.status >= 500) {
+            throw new Error('SERVER_ERROR');
+          } else {
+            throw new Error('NETWORK_ERROR');
+          }
         }
 
         const data = await callsResponse.json();
@@ -478,11 +1763,68 @@
           currentUser.agent_ids.includes(call.agent_id)
         );
 
+        // Load team members
+        loadTeamMembers();
+
+        // Load activity log and metrics
+        loadActivityLog();
+        loadTeamMetrics();
+
         renderDashboard();
+        checkOnboarding();
       } catch (error) {
         console.error('Error loading dashboard:', error);
-        document.getElementById('loading').textContent = 'Error loading dashboard. Please try again.';
+        // If error message is not one of our custom types, it's likely a network failure
+        if (!['AUTH_ERROR', 'SERVER_ERROR', 'NETWORK_ERROR'].includes(error.message)) {
+          showErrorState('NETWORK_ERROR');
+        } else {
+          showErrorState(error.message);
+        }
       }
+    }
+
+    function showErrorState(errorType) {
+      const loadingDiv = document.getElementById('loading');
+      let errorMessage = '';
+      let errorDetails = '';
+
+      if (errorType === 'AUTH_ERROR') {
+        errorMessage = 'Authentication Error';
+        errorDetails = 'Your session has expired. Please log in again.';
+        setTimeout(() => {
+          window.location.href = '/client-portal';
+        }, 3000);
+      } else if (errorType === 'SERVER_ERROR') {
+        errorMessage = 'Server Error';
+        errorDetails = 'The server is experiencing issues. Please try again in a moment.';
+      } else if (errorType === 'NETWORK_ERROR') {
+        errorMessage = 'Network Error';
+        errorDetails = 'Unable to connect to the server. Please check your internet connection.';
+      } else {
+        errorMessage = 'Error Loading Dashboard';
+        errorDetails = 'Something went wrong. Please try again.';
+      }
+
+      loadingDiv.innerHTML = `
+        <div style="text-align: center; padding: 48px 24px; max-width: 500px; margin: 0 auto;">
+          <div style="font-size: 48px; margin-bottom: 20px;">⚠️</div>
+          <h2 style="color: #ff6b6b; font-size: 24px; margin-bottom: 12px; font-weight: 700;">${errorMessage}</h2>
+          <p style="color: #9ca3af; font-size: 15px; margin-bottom: 32px; line-height: 1.6;">${errorDetails}</p>
+          ${errorType !== 'AUTH_ERROR' ? `
+            <button onclick="retryLoadDashboard()" style="padding: 14px 32px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s;">
+              Retry
+            </button>
+          ` : `
+            <p style="color: #6b7280; font-size: 13px; margin-top: 16px;">Redirecting to login page...</p>
+          `}
+        </div>
+      `;
+    }
+
+    function retryLoadDashboard() {
+      const loadingDiv = document.getElementById('loading');
+      loadingDiv.innerHTML = '<div class="loading-spinner"></div><p style="margin-top: 16px; color: #9ca3af;">Loading your dashboard...</p>';
+      loadDashboard();
     }
 
     function renderDashboard() {
@@ -500,6 +1842,10 @@
       document.getElementById('existing-clients').textContent = existingClients;
       document.getElementById('other-calls').textContent = otherCalls;
 
+      // Render analytics charts
+      renderCallsOverTimeChart();
+      renderCategoryDistributionChart();
+
       // Render calls table
       renderCallsTable(allCalls);
 
@@ -508,11 +1854,135 @@
       document.getElementById('dashboard-content').style.display = 'block';
     }
 
+    function renderCallsOverTimeChart() {
+      const chartContainer = document.getElementById('calls-over-time-chart');
+      const days = 7;
+      const now = Date.now();
+      const oneDayMs = 24 * 60 * 60 * 1000;
+
+      // Prepare data for last 7 days
+      const dailyData = [];
+      for (let i = days - 1; i >= 0; i--) {
+        const dayStart = now - (i * oneDayMs);
+        const dayEnd = dayStart + oneDayMs;
+        const date = new Date(dayStart);
+        const label = date.toLocaleDateString('en-US', { weekday: 'short' });
+
+        const callsCount = allCalls.filter(call =>
+          call.start_timestamp && call.start_timestamp >= dayStart && call.start_timestamp < dayEnd
+        ).length;
+
+        dailyData.push({ label, count: callsCount });
+      }
+
+      // Find max for scaling
+      const maxCount = Math.max(...dailyData.map(d => d.count), 1);
+
+      // Render bars
+      chartContainer.innerHTML = dailyData.map(day => {
+        const heightPercent = (day.count / maxCount) * 100;
+        return `
+          <div class="bar-wrapper">
+            <div class="bar" style="height: ${heightPercent}%">
+              <div class="bar-value">${day.count}</div>
+            </div>
+            <div class="bar-label">${day.label}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderCategoryDistributionChart() {
+      const chartContainer = document.getElementById('category-distribution-chart');
+
+      if (allCalls.length === 0) {
+        chartContainer.innerHTML = `
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center;">
+            <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #6b7280; margin-bottom: 16px;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            <div style="font-size: 14px; color: #9ca3af;">No data available</div>
+          </div>
+        `;
+        return;
+      }
+
+      // Count calls by category
+      const categoryCounts = {
+        'New Lead': 0,
+        'Existing Client': 0,
+        'Attorney': 0,
+        'Insurance': 0,
+        'Medical': 0,
+        'Other': 0,
+        'Uncategorized': 0
+      };
+
+      allCalls.forEach(call => {
+        const cat = categories[call.call_id]?.category || 'Uncategorized';
+        if (categoryCounts.hasOwnProperty(cat)) {
+          categoryCounts[cat]++;
+        } else {
+          categoryCounts['Other']++;
+        }
+      });
+
+      const totalCalls = allCalls.length || 1;
+      const categoryColors = {
+        'New Lead': '#10b981',
+        'Existing Client': '#3b82f6',
+        'Attorney': '#a855f7',
+        'Insurance': '#f59e0b',
+        'Medical': '#ef4444',
+        'Other': '#6b7280',
+        'Uncategorized': '#374151'
+      };
+
+      // Render category bars
+      chartContainer.innerHTML = Object.entries(categoryCounts)
+        .filter(([_, count]) => count > 0)
+        .sort((a, b) => b[1] - a[1])
+        .map(([category, count]) => {
+          const percentage = ((count / totalCalls) * 100).toFixed(1);
+          const widthPercent = percentage;
+          const color = categoryColors[category];
+
+          return `
+            <div class="category-item">
+              <div class="category-color" style="background: ${color};"></div>
+              <div class="category-name">${category}</div>
+              <div class="category-bar-bg">
+                <div class="category-bar-fill" style="width: ${widthPercent}%; background: linear-gradient(90deg, ${color}55, ${color}99);">
+                  <div class="category-count">${count}</div>
+                </div>
+              </div>
+              <div class="category-percentage">${percentage}%</div>
+            </div>
+          `;
+        }).join('');
+    }
+
     function renderCallsTable(calls) {
       const tbody = document.getElementById('calls-tbody');
+      filteredCalls = calls;
 
       if (calls.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #a0aec0;">No calls found</td></tr>';
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 60px 20px;">
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+                <svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #6b7280;">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                </svg>
+                <div>
+                  <div style="font-size: 18px; font-weight: 700; color: #e6edf3; margin-bottom: 8px;">No calls found</div>
+                  <div style="font-size: 14px; color: #9ca3af;">Try adjusting your filters or date range to see more results</div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        `;
+        document.getElementById('pagination').style.display = 'none';
         return;
       }
 
@@ -521,7 +1991,13 @@
         (b.start_timestamp || 0) - (a.start_timestamp || 0)
       );
 
-      tbody.innerHTML = sortedCalls.map(call => {
+      // Pagination logic
+      const totalPages = Math.ceil(sortedCalls.length / itemsPerPage);
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedCalls = sortedCalls.slice(startIndex, endIndex);
+
+      tbody.innerHTML = paginatedCalls.map(call => {
         const date = call.start_timestamp
           ? new Date(call.start_timestamp).toLocaleString()
           : 'N/A';
@@ -540,6 +2016,85 @@
           </tr>
         `;
       }).join('');
+
+      // Update pagination
+      updatePagination(sortedCalls.length, totalPages);
+    }
+
+    function updatePagination(totalItems, totalPages) {
+      const pagination = document.getElementById('pagination');
+      const paginationInfo = document.getElementById('pagination-info');
+      const pageNumbers = document.getElementById('page-numbers');
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+
+      if (totalPages <= 1) {
+        pagination.style.display = 'none';
+        return;
+      }
+
+      pagination.style.display = 'flex';
+
+      // Update info text
+      const startItem = (currentPage - 1) * itemsPerPage + 1;
+      const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+      paginationInfo.textContent = `Showing ${startItem}-${endItem} of ${totalItems} calls`;
+
+      // Update prev/next buttons
+      prevBtn.disabled = currentPage === 1;
+      nextBtn.disabled = currentPage === totalPages;
+
+      // Generate page numbers (show max 7 pages)
+      const maxPages = 7;
+      let startPage = Math.max(1, currentPage - Math.floor(maxPages / 2));
+      let endPage = Math.min(totalPages, startPage + maxPages - 1);
+
+      if (endPage - startPage < maxPages - 1) {
+        startPage = Math.max(1, endPage - maxPages + 1);
+      }
+
+      let pagesHTML = '';
+
+      // First page
+      if (startPage > 1) {
+        pagesHTML += `<button class="page-number" onclick="goToPage(1)">1</button>`;
+        if (startPage > 2) {
+          pagesHTML += `<span style="color: #6b7280; padding: 0 8px;">...</span>`;
+        }
+      }
+
+      // Page numbers
+      for (let i = startPage; i <= endPage; i++) {
+        pagesHTML += `<button class="page-number ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+      }
+
+      // Last page
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          pagesHTML += `<span style="color: #6b7280; padding: 0 8px;">...</span>`;
+        }
+        pagesHTML += `<button class="page-number" onclick="goToPage(${totalPages})">${totalPages}</button>`;
+      }
+
+      pageNumbers.innerHTML = pagesHTML;
+    }
+
+    function changePage(delta) {
+      const totalPages = Math.ceil(filteredCalls.length / itemsPerPage);
+      const newPage = currentPage + delta;
+      if (newPage >= 1 && newPage <= totalPages) {
+        currentPage = newPage;
+        renderCallsTable(filteredCalls);
+        // Scroll to top of table
+        document.getElementById('calls-table').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function goToPage(page) {
+      currentPage = page;
+      renderCallsTable(filteredCalls);
+      // Scroll to top of table
+      document.getElementById('calls-table').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function formatDuration(minutes) {
@@ -666,16 +2221,739 @@
       }
     }
 
-    // Search functionality
-    document.getElementById('search-box').addEventListener('input', (e) => {
-      const searchTerm = e.target.value.toLowerCase();
-      const filteredCalls = allCalls.filter(call => {
-        const phoneNumber = call.from_number || call.to_number || call.customer_number || '';
-        const category = categories[call.call_id]?.category || '';
-        return phoneNumber.toLowerCase().includes(searchTerm) ||
-               category.toLowerCase().includes(searchTerm);
+    // Settings Functions
+    function openSettings() {
+      document.getElementById('settings-email').value = currentUser.email || '';
+      document.getElementById('settings-business').value = currentUser.business_name || '';
+      document.getElementById('current-password').value = '';
+      document.getElementById('new-password').value = '';
+      document.getElementById('confirm-password').value = '';
+      document.getElementById('settings-modal').style.display = 'block';
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settings-modal').style.display = 'none';
+    }
+
+    async function saveSettings(event) {
+      event.preventDefault();
+
+      const currentPassword = document.getElementById('current-password').value;
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+
+      // If no password fields are filled, just close
+      if (!currentPassword && !newPassword && !confirmPassword) {
+        closeSettingsModal();
+        return;
+      }
+
+      // Validate password fields
+      if (!currentPassword) {
+        showToast('Please enter your current password', 'error');
+        return;
+      }
+
+      if (!newPassword) {
+        showToast('Please enter a new password', 'error');
+        return;
+      }
+
+      if (newPassword.length < 8) {
+        showToast('New password must be at least 8 characters', 'error');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        showToast('Passwords do not match', 'error');
+        return;
+      }
+
+      const saveBtn = document.getElementById('save-settings-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      try {
+        const response = await fetch('/api/auth/change-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            currentPassword,
+            newPassword
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          showToast('Password changed successfully!', 'success');
+          closeSettingsModal();
+        } else {
+          showToast(data.error || 'Failed to change password', 'error');
+        }
+      } catch (error) {
+        console.error('Settings save error:', error);
+        showToast('Network error. Please try again.', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Changes';
+      }
+    }
+
+    // ============ TEAM MEMBER MANAGEMENT FUNCTIONS ============
+
+    // Load team members from backend
+    async function loadTeamMembers() {
+      try {
+        const response = await fetch('/api/team/members', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          renderTeamMembers(data.members);
+          // Show team section
+          document.getElementById('team-section').style.display = 'block';
+        } else {
+          console.error('Failed to load team members');
+        }
+      } catch (error) {
+        console.error('Error loading team members:', error);
+      }
+    }
+
+    // Render team members in table
+    function renderTeamMembers(members) {
+      const tbody = document.getElementById('team-members-tbody');
+
+      if (!members || members.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 40px; color: #9ca3af;">No team members yet. Add one to get started!</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = members.map(member => {
+        const lastLogin = member.last_login
+          ? new Date(member.last_login).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          : 'Never';
+
+        const statusColor = member.active ? '#10b981' : '#ef4444';
+        const statusText = member.active ? 'Active' : 'Inactive';
+
+        return `
+          <tr style="border-bottom: 1px solid rgba(55, 65, 81, 0.5);">
+            <td style="padding: 20px; color: #e6edf3; font-weight: 600;">${escapeHtml(member.name)}</td>
+            <td style="padding: 20px; color: #9ca3af; font-family: 'JetBrains Mono', monospace; font-size: 13px;">${escapeHtml(member.email)}</td>
+            <td style="padding: 20px;">
+              <span style="padding: 6px 14px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                ${escapeHtml(member.role)}
+              </span>
+            </td>
+            <td style="padding: 20px; color: #9ca3af; font-size: 13px;">${lastLogin}</td>
+            <td style="padding: 20px;">
+              <span style="display: inline-block; width: 8px; height: 8px; background: ${statusColor}; border-radius: 50%; margin-right: 8px; box-shadow: 0 0 8px ${statusColor};"></span>
+              <span style="color: ${statusColor}; font-weight: 600; font-size: 13px;">${statusText}</span>
+            </td>
+            <td style="padding: 20px;">
+              <button onclick="editTeamMember(${member.id})" style="padding: 8px 16px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 6px; cursor: pointer; font-size: 12px; margin-right: 8px;">
+                Edit
+              </button>
+              <button onclick="deleteTeamMember(${member.id})" style="padding: 8px 16px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; cursor: pointer; font-size: 12px;">
+                Remove
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Open modal to add new team member
+    function openAddTeamMember() {
+      document.getElementById('team-modal-title').textContent = 'Add Team Member';
+      document.getElementById('team-member-id').value = '';
+      document.getElementById('team-member-name').value = '';
+      document.getElementById('team-member-email').value = '';
+      document.getElementById('team-member-role').value = 'Viewer';
+      document.getElementById('team-member-password').value = '';
+      document.getElementById('team-member-password').required = true;
+      document.getElementById('password-section').querySelector('label').textContent = 'Initial Password';
+      document.getElementById('team-member-modal').style.display = 'block';
+    }
+
+    // Edit existing team member
+    async function editTeamMember(id) {
+      try {
+        const response = await fetch('/api/team/members', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const member = data.members.find(m => m.id === id);
+
+          if (member) {
+            document.getElementById('team-modal-title').textContent = 'Edit Team Member';
+            document.getElementById('team-member-id').value = member.id;
+            document.getElementById('team-member-name').value = member.name;
+            document.getElementById('team-member-email').value = member.email;
+            document.getElementById('team-member-role').value = member.role;
+            document.getElementById('team-member-password').value = '';
+            document.getElementById('team-member-password').required = false;
+            document.getElementById('password-section').querySelector('label').textContent = 'New Password (leave blank to keep current)';
+            document.getElementById('team-member-modal').style.display = 'block';
+          }
+        }
+      } catch (error) {
+        console.error('Error loading team member:', error);
+        showToast('Failed to load team member details', 'error');
+      }
+    }
+
+    // Close team member modal
+    function closeTeamMemberModal() {
+      document.getElementById('team-member-modal').style.display = 'none';
+    }
+
+    // Save team member (create or update)
+    async function saveTeamMember(event) {
+      event.preventDefault();
+
+      const id = document.getElementById('team-member-id').value;
+      const name = document.getElementById('team-member-name').value;
+      const email = document.getElementById('team-member-email').value;
+      const role = document.getElementById('team-member-role').value;
+      const password = document.getElementById('team-member-password').value;
+
+      // Validation
+      if (!id && password.length < 8) {
+        showToast('Password must be at least 8 characters', 'error');
+        return;
+      }
+
+      const saveBtn = document.getElementById('save-team-member-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      try {
+        const body = { email, name, role };
+        if (password) {
+          body.password = password;
+        }
+
+        const url = id ? `/api/team/members/${id}` : '/api/team/members';
+        const method = id ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(body)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          showToast(id ? 'Team member updated successfully!' : 'Team member added successfully!', 'success');
+          closeTeamMemberModal();
+          loadTeamMembers(); // Reload the list
+        } else {
+          showToast(data.error || 'Failed to save team member', 'error');
+        }
+      } catch (error) {
+        console.error('Error saving team member:', error);
+        showToast('Network error. Please try again.', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Member';
+      }
+    }
+
+    // Delete team member
+    async function deleteTeamMember(id) {
+      if (!confirm('Are you sure you want to remove this team member? They will no longer have access to the dashboard.')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/team/members/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          showToast('Team member removed successfully', 'success');
+          loadTeamMembers(); // Reload the list
+        } else {
+          showToast(data.error || 'Failed to remove team member', 'error');
+        }
+      } catch (error) {
+        console.error('Error deleting team member:', error);
+        showToast('Network error. Please try again.', 'error');
+      }
+    }
+
+    // ============ ACTIVITY LOG & TEAM METRICS FUNCTIONS ============
+
+    // Load activity log
+    async function loadActivityLog() {
+      try {
+        const response = await fetch('/api/activity', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          renderActivityLog(data.activities);
+          // Show activity log section (visible to everyone)
+          document.getElementById('activity-log-section').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error loading activity log:', error);
+      }
+    }
+
+    // Render activity log
+    function renderActivityLog(activities) {
+      const tbody = document.getElementById('activity-log-tbody');
+
+      if (!activities || activities.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 40px; color: #9ca3af;">No activity recorded yet</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = activities.map(activity => {
+        const actionTime = new Date(activity.created_at);
+        const timeAgo = getTimeAgo(actionTime);
+        const formattedTime = actionTime.toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        const actionColor = activity.action === 'login' ? '#10b981' :
+                           activity.action === 'export' ? '#3b82f6' :
+                           activity.action === 'update_category' ? '#f59e0b' :
+                           '#00FFFF';
+
+        const actionText = activity.action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+        let detailsText = '';
+        if (activity.details) {
+          try {
+            const details = typeof activity.details === 'string' ? JSON.parse(activity.details) : activity.details;
+            if (details.call_id) {
+              detailsText = `Call ID: ${details.call_id}`;
+            } else if (details.category) {
+              detailsText = `Category: ${details.category}`;
+            }
+          } catch (e) {
+            detailsText = '';
+          }
+        }
+
+        return `
+          <tr style="border-bottom: 1px solid rgba(55, 65, 81, 0.5);">
+            <td style="padding: 16px 20px; color: #9ca3af; font-size: 13px;" title="${formattedTime}">
+              ${timeAgo}
+            </td>
+            <td style="padding: 16px 20px; color: #e6edf3; font-weight: 600;">
+              ${escapeHtml(activity.team_member_name || 'System')}
+            </td>
+            <td style="padding: 16px 20px;">
+              <span style="padding: 4px 10px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase;">
+                ${escapeHtml(activity.team_member_role || 'N/A')}
+              </span>
+            </td>
+            <td style="padding: 16px 20px;">
+              <span style="display: inline-flex; align-items: center; gap: 6px;">
+                <span style="width: 6px; height: 6px; background: ${actionColor}; border-radius: 50%; box-shadow: 0 0 6px ${actionColor};"></span>
+                <span style="color: #e6edf3; font-weight: 500; font-size: 13px;">${actionText}</span>
+              </span>
+            </td>
+            <td style="padding: 16px 20px; color: #9ca3af; font-size: 13px; font-family: 'JetBrains Mono', monospace;">
+              ${detailsText}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Load team metrics
+    async function loadTeamMetrics() {
+      try {
+        const [activityResponse, membersResponse] = await Promise.all([
+          fetch('/api/activity', { credentials: 'include' }),
+          fetch('/api/team/members', { credentials: 'include' })
+        ]);
+
+        if (activityResponse.ok && membersResponse.ok) {
+          const activityData = await activityResponse.json();
+          const membersData = await membersResponse.json();
+
+          renderTeamMetrics(activityData.activities, membersData.members);
+          // Show team metrics section (only for client owners)
+          if (!currentUser.is_team_member) {
+            document.getElementById('team-metrics-section').style.display = 'block';
+          }
+        }
+      } catch (error) {
+        console.error('Error loading team metrics:', error);
+      }
+    }
+
+    // Render team metrics
+    function renderTeamMetrics(activities, members) {
+      const metricsDiv = document.getElementById('team-metrics-cards');
+
+      if (!members || members.length === 0) {
+        metricsDiv.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #9ca3af;">
+            No team members yet. Add team members to see metrics.
+          </div>
+        `;
+        return;
+      }
+
+      // Calculate metrics per team member
+      const memberMetrics = members.map(member => {
+        const memberActivities = activities.filter(a => a.team_member_id === member.id);
+        const recentActivity = memberActivities.length > 0 ?
+          new Date(memberActivities[0].created_at) : null;
+
+        return {
+          ...member,
+          totalActions: memberActivities.length,
+          lastActivity: recentActivity,
+          actionBreakdown: memberActivities.reduce((acc, activity) => {
+            acc[activity.action] = (acc[activity.action] || 0) + 1;
+            return acc;
+          }, {})
+        };
       });
+
+      metricsDiv.innerHTML = memberMetrics.map(member => {
+        const lastActivityText = member.lastActivity ?
+          getTimeAgo(member.lastActivity) : 'Never';
+
+        const statusColor = member.active ? '#10b981' : '#ef4444';
+        const statusText = member.active ? 'Active' : 'Inactive';
+
+        return `
+          <div style="background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(0, 255, 255, 0.15); border-radius: 12px; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+              <div>
+                <h3 style="font-size: 16px; font-weight: 700; color: #e6edf3; margin-bottom: 4px;">
+                  ${escapeHtml(member.name)}
+                </h3>
+                <p style="font-size: 12px; color: #9ca3af; font-family: 'JetBrains Mono', monospace;">
+                  ${escapeHtml(member.email)}
+                </p>
+              </div>
+              <span style="padding: 4px 10px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase;">
+                ${escapeHtml(member.role)}
+              </span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px;">
+              <div style="background: rgba(0, 255, 255, 0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(0, 255, 255, 0.1);">
+                <div style="font-size: 11px; color: #9ca3af; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Total Actions</div>
+                <div style="font-size: 24px; font-weight: 700; color: #00FFFF;">${member.totalActions}</div>
+              </div>
+              <div style="background: rgba(0, 255, 255, 0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(0, 255, 255, 0.1);">
+                <div style="font-size: 11px; color: #9ca3af; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Last Active</div>
+                <div style="font-size: 14px; font-weight: 600; color: #e6edf3;">${lastActivityText}</div>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px; padding-top: 12px; border-top: 1px solid rgba(0, 255, 255, 0.1);">
+              <span style="display: inline-block; width: 6px; height: 6px; background: ${statusColor}; border-radius: 50%; box-shadow: 0 0 8px ${statusColor};"></span>
+              <span style="font-size: 12px; font-weight: 600; color: ${statusColor};">${statusText}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Helper function to calculate time ago
+    function getTimeAgo(date) {
+      const now = Date.now();
+      const diffMs = now - date.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      if (diffDays < 7) return `${diffDays}d ago`;
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    // Export to CSV
+    function exportToCSV() {
+      const exportBtn = document.getElementById('export-btn');
+      const originalText = exportBtn.innerHTML;
+      exportBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>Exporting...';
+      exportBtn.disabled = true;
+
+      try {
+        // Get currently filtered calls
+        const searchTerm = document.getElementById('search-box').value.toLowerCase();
+        const datePreset = document.getElementById('date-preset').value;
+        const dateFrom = document.getElementById('date-from').value;
+        const dateTo = document.getElementById('date-to').value;
+
+        let callsToExport = [...allCalls];
+
+        // Apply same filters as the table
+        if (datePreset !== 'all' && datePreset !== 'custom') {
+          const daysAgo = parseInt(datePreset);
+          const cutoffDate = Date.now() - (daysAgo * 24 * 60 * 60 * 1000);
+          callsToExport = callsToExport.filter(call =>
+            call.start_timestamp && call.start_timestamp >= cutoffDate
+          );
+        } else if (dateFrom || dateTo) {
+          const fromTimestamp = dateFrom ? new Date(dateFrom).getTime() : 0;
+          const toTimestamp = dateTo ? new Date(dateTo).setHours(23, 59, 59, 999) : Date.now();
+
+          callsToExport = callsToExport.filter(call => {
+            if (!call.start_timestamp) return false;
+            return call.start_timestamp >= fromTimestamp && call.start_timestamp <= toTimestamp;
+          });
+        }
+
+        if (selectedCategories.length > 0) {
+          callsToExport = callsToExport.filter(call => {
+            const callCategory = categories[call.call_id]?.category || 'Uncategorized';
+            return selectedCategories.includes(callCategory);
+          });
+        }
+
+        if (searchTerm) {
+          callsToExport = callsToExport.filter(call => {
+            const phoneNumber = call.from_number || call.to_number || call.customer_number || '';
+            const category = categories[call.call_id]?.category || '';
+            return phoneNumber.toLowerCase().includes(searchTerm) ||
+                   category.toLowerCase().includes(searchTerm);
+          });
+        }
+
+        // Create CSV content
+        const headers = ['Phone Number', 'Date', 'Duration', 'Status', 'Category', 'Call ID'];
+        const csvRows = [headers.join(',')];
+
+        callsToExport.forEach(call => {
+          const phoneNumber = call.from_number || call.to_number || call.customer_number || 'N/A';
+          const date = call.start_timestamp ? new Date(call.start_timestamp).toLocaleString() : 'N/A';
+          const duration = formatDuration(call.duration_minutes || 0);
+          const status = call.end_timestamp ? 'completed' : 'ongoing';
+          const category = categories[call.call_id]?.category || 'Uncategorized';
+          const callId = call.call_id || 'N/A';
+
+          const row = [
+            `"${phoneNumber}"`,
+            `"${date}"`,
+            `"${duration}"`,
+            `"${status}"`,
+            `"${category}"`,
+            `"${callId}"`
+          ];
+          csvRows.push(row.join(','));
+        });
+
+        // Download CSV
+        const csvContent = csvRows.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        const timestamp = new Date().toISOString().split('T')[0];
+
+        link.setAttribute('href', url);
+        link.setAttribute('download', `calls-export-${timestamp}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('CSV file exported successfully!', 'success');
+      } catch (error) {
+        console.error('Export error:', error);
+        showToast('Failed to export CSV. Please try again.', 'error');
+      } finally {
+        exportBtn.innerHTML = originalText;
+        exportBtn.disabled = false;
+      }
+    }
+
+    // Refresh dashboard
+    async function refreshDashboard() {
+      // Show skeleton loading
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('dashboard-content').style.display = 'none';
+
+      try {
+        // Clear filters for fresh data
+        document.getElementById('search-box').value = '';
+        document.getElementById('date-preset').value = '30';
+        document.getElementById('date-from').value = '';
+        document.getElementById('date-to').value = '';
+        clearCategoryFilter();
+
+        await loadDashboard();
+        showToast('Dashboard refreshed successfully!', 'success');
+      } catch (error) {
+        console.error('Refresh error:', error);
+        showToast('Error refreshing dashboard. Please try again.', 'error');
+        // Hide loading and show content even on error
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('dashboard-content').style.display = 'block';
+      }
+    }
+
+    // Advanced Filtering functionality
+    let selectedCategories = [];
+
+    function applyDatePreset() {
+      const preset = document.getElementById('date-preset').value;
+      const dateFrom = document.getElementById('date-from');
+      const dateTo = document.getElementById('date-to');
+
+      if (preset !== 'custom') {
+        dateFrom.value = '';
+        dateTo.value = '';
+      }
+
+      filterCalls();
+    }
+
+    function onDateRangeChange() {
+      const dateFrom = document.getElementById('date-from').value;
+      const dateTo = document.getElementById('date-to').value;
+
+      if (dateFrom || dateTo) {
+        document.getElementById('date-preset').value = 'custom';
+      }
+
+      filterCalls();
+    }
+
+    function toggleCategoryDropdown() {
+      const dropdown = document.getElementById('category-dropdown');
+      dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function updateCategoryFilter() {
+      const checkboxes = document.querySelectorAll('#category-dropdown input[type="checkbox"]');
+      selectedCategories = Array.from(checkboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+
+      const buttonText = document.getElementById('category-button-text');
+      if (selectedCategories.length === 0) {
+        buttonText.textContent = 'All Categories';
+      } else if (selectedCategories.length === 1) {
+        buttonText.textContent = selectedCategories[0];
+      } else {
+        buttonText.textContent = `${selectedCategories.length} Categories`;
+      }
+
+      filterCalls();
+    }
+
+    function clearCategoryFilter() {
+      const checkboxes = document.querySelectorAll('#category-dropdown input[type="checkbox"]');
+      checkboxes.forEach(cb => cb.checked = false);
+      updateCategoryFilter();
+    }
+
+    function filterCalls() {
+      const searchTerm = document.getElementById('search-box').value.toLowerCase();
+      const datePreset = document.getElementById('date-preset').value;
+      const dateFrom = document.getElementById('date-from').value;
+      const dateTo = document.getElementById('date-to').value;
+
+      // Reset to page 1 when filtering
+      currentPage = 1;
+
+      let filteredCalls = [...allCalls];
+
+      // Apply date filter (preset or custom range)
+      if (datePreset !== 'all' && datePreset !== 'custom') {
+        const daysAgo = parseInt(datePreset);
+        const cutoffDate = Date.now() - (daysAgo * 24 * 60 * 60 * 1000);
+        filteredCalls = filteredCalls.filter(call =>
+          call.start_timestamp && call.start_timestamp >= cutoffDate
+        );
+      } else if (dateFrom || dateTo) {
+        const fromTimestamp = dateFrom ? new Date(dateFrom).getTime() : 0;
+        const toTimestamp = dateTo ? new Date(dateTo).setHours(23, 59, 59, 999) : Date.now();
+
+        filteredCalls = filteredCalls.filter(call => {
+          if (!call.start_timestamp) return false;
+          return call.start_timestamp >= fromTimestamp && call.start_timestamp <= toTimestamp;
+        });
+      }
+
+      // Apply multi-category filter
+      if (selectedCategories.length > 0) {
+        filteredCalls = filteredCalls.filter(call => {
+          const callCategory = categories[call.call_id]?.category || 'Uncategorized';
+          return selectedCategories.includes(callCategory);
+        });
+      }
+
+      // Apply search filter
+      if (searchTerm) {
+        filteredCalls = filteredCalls.filter(call => {
+          const phoneNumber = call.from_number || call.to_number || call.customer_number || '';
+          const category = categories[call.call_id]?.category || '';
+          return phoneNumber.toLowerCase().includes(searchTerm) ||
+                 category.toLowerCase().includes(searchTerm);
+        });
+      }
+
       renderCallsTable(filteredCalls);
+    }
+
+    // Add event listeners
+    document.getElementById('search-box').addEventListener('input', filterCalls);
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('category-dropdown');
+      const button = document.getElementById('category-button');
+      if (dropdown && button && !button.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.style.display = 'none';
+      }
     });
 
     // Close modal on click outside
@@ -685,6 +2963,283 @@
         closeModal();
       }
     };
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Don't trigger shortcuts when typing in inputs
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        // ESC to blur input
+        if (e.key === 'Escape') {
+          e.target.blur();
+        }
+        return;
+      }
+
+      // ESC - Close modal
+      if (e.key === 'Escape') {
+        closeModal();
+        return;
+      }
+
+      // / - Focus search
+      if (e.key === '/') {
+        e.preventDefault();
+        document.getElementById('search-box').focus();
+        return;
+      }
+
+      // R - Refresh dashboard
+      if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        refreshDashboard();
+        return;
+      }
+
+      // E - Export CSV
+      if (e.key === 'e' || e.key === 'E') {
+        e.preventDefault();
+        exportToCSV();
+        return;
+      }
+
+      // Arrow Left - Previous page
+      if (e.key === 'ArrowLeft' && filteredCalls.length > itemsPerPage) {
+        e.preventDefault();
+        changePage(-1);
+        return;
+      }
+
+      // Arrow Right - Next page
+      if (e.key === 'ArrowRight' && filteredCalls.length > itemsPerPage) {
+        e.preventDefault();
+        changePage(1);
+        return;
+      }
+    });
+
+    // Show keyboard shortcuts hint on first load
+    setTimeout(() => {
+      const hasSeenHint = localStorage.getItem('keyboard-shortcuts-seen');
+      if (!hasSeenHint) {
+        showToast('Tip: Press / to search, R to refresh, E to export, ← → for pagination', 'info', 6000);
+        localStorage.setItem('keyboard-shortcuts-seen', 'true');
+      }
+    }, 2000);
+
+    // Onboarding Tour
+    let tourStep = 0;
+    const tourSteps = [
+      {
+        title: 'Welcome to Your Dashboard! 👋',
+        text: 'Let me show you around your AI receptionist dashboard. This quick tour will help you understand all the features available to you.',
+        target: null,
+        position: 'center'
+      },
+      {
+        title: 'Your Call Statistics',
+        text: 'See your total calls, new leads, existing clients, and other call types at a glance. These numbers update in real-time.',
+        target: '.stats-grid',
+        position: 'bottom'
+      },
+      {
+        title: 'Analytics Charts',
+        text: 'Track your call volume over time and see how calls are categorized. Great for understanding trends in your business.',
+        target: '.analytics-section',
+        position: 'top'
+      },
+      {
+        title: 'Recent Calls Table',
+        text: 'View detailed information about each call. Click any row to see the full transcript and call details.',
+        target: '.calls-section',
+        position: 'top'
+      },
+      {
+        title: 'Search & Filter',
+        text: 'Use these controls to search calls, filter by category, and export your data to CSV.',
+        target: '.filters-row',
+        position: 'bottom'
+      },
+      {
+        title: 'Keyboard Shortcuts',
+        text: 'Pro tip: Press / to search, R to refresh, E to export, and use arrow keys for pagination!',
+        target: null,
+        position: 'center'
+      },
+      {
+        title: 'You\'re All Set! 🎉',
+        text: 'That\'s it! If you need help, just look for tooltips or contact support. Enjoy your dashboard!',
+        target: null,
+        position: 'center'
+      }
+    ];
+
+    function showOnboarding() {
+      // Create overlay
+      const overlay = document.createElement('div');
+      overlay.id = 'tour-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 9998;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      `;
+
+      // Create tooltip
+      const tooltip = document.createElement('div');
+      tooltip.id = 'tour-tooltip';
+      tooltip.style.cssText = `
+        position: fixed;
+        background: rgba(30, 36, 44, 0.98);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 255, 255, 0.4);
+        border-radius: 16px;
+        padding: 28px;
+        max-width: 420px;
+        z-index: 9999;
+        box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3);
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        transform: translateY(10px);
+      `;
+
+      document.body.appendChild(overlay);
+      document.body.appendChild(tooltip);
+
+      setTimeout(() => {
+        overlay.style.opacity = '1';
+        tooltip.style.opacity = '1';
+        tooltip.style.transform = 'translateY(0)';
+      }, 10);
+
+      showTourStep(0, tooltip, overlay);
+    }
+
+    function showTourStep(step, tooltip, overlay) {
+      if (step >= tourSteps.length) {
+        closeTour(tooltip, overlay);
+        return;
+      }
+
+      const currentStep = tourSteps[step];
+      const progress = `${step + 1}/${tourSteps.length}`;
+
+      tooltip.innerHTML = `
+        <div style="margin-bottom: 20px;">
+          <h3 style="color: #00FFFF; font-size: 20px; font-weight: 700; margin-bottom: 12px; text-shadow: 0 0 20px rgba(0, 255, 255, 0.4);">
+            ${currentStep.title}
+          </h3>
+          <p style="color: #e6edf3; font-size: 15px; line-height: 1.6; margin-bottom: 16px;">
+            ${currentStep.text}
+          </p>
+          <div style="color: #9ca3af; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+            Step ${progress}
+          </div>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button onclick="skipTour()" style="padding: 10px 20px; background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.4); border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s;">
+            Skip Tour
+          </button>
+          <button onclick="nextTourStep()" style="padding: 10px 20px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s;">
+            ${step === tourSteps.length - 1 ? 'Finish' : 'Next'}
+          </button>
+        </div>
+      `;
+
+      // Position tooltip
+      if (currentStep.target) {
+        const targetEl = document.querySelector(currentStep.target);
+        if (targetEl) {
+          // Highlight target
+          targetEl.style.position = 'relative';
+          targetEl.style.zIndex = '9999';
+          targetEl.style.boxShadow = '0 0 0 4px rgba(0, 255, 255, 0.4), 0 0 40px rgba(0, 255, 255, 0.3)';
+          targetEl.style.borderRadius = '16px';
+          targetEl.style.transition = 'all 0.3s ease';
+
+          const rect = targetEl.getBoundingClientRect();
+          const tooltipRect = tooltip.getBoundingClientRect();
+
+          if (currentStep.position === 'bottom') {
+            tooltip.style.top = `${rect.bottom + 20}px`;
+            tooltip.style.left = `${Math.max(20, Math.min(window.innerWidth - tooltipRect.width - 20, rect.left))}px`;
+          } else if (currentStep.position === 'top') {
+            tooltip.style.top = `${Math.max(20, rect.top - tooltipRect.height - 20)}px`;
+            tooltip.style.left = `${Math.max(20, Math.min(window.innerWidth - tooltipRect.width - 20, rect.left))}px`;
+          }
+
+          // Scroll to target
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } else {
+        // Center position
+        tooltip.style.top = '50%';
+        tooltip.style.left = '50%';
+        tooltip.style.transform = 'translate(-50%, -50%)';
+      }
+
+      tourStep = step;
+    }
+
+    window.nextTourStep = function() {
+      const tooltip = document.getElementById('tour-tooltip');
+      const overlay = document.getElementById('tour-overlay');
+
+      // Remove highlight from previous target
+      const prevStep = tourSteps[tourStep];
+      if (prevStep && prevStep.target) {
+        const prevTarget = document.querySelector(prevStep.target);
+        if (prevTarget) {
+          prevTarget.style.zIndex = '';
+          prevTarget.style.boxShadow = '';
+        }
+      }
+
+      showTourStep(tourStep + 1, tooltip, overlay);
+    };
+
+    window.skipTour = function() {
+      const tooltip = document.getElementById('tour-tooltip');
+      const overlay = document.getElementById('tour-overlay');
+      closeTour(tooltip, overlay);
+    };
+
+    function closeTour(tooltip, overlay) {
+      // Remove highlights
+      tourSteps.forEach(step => {
+        if (step.target) {
+          const el = document.querySelector(step.target);
+          if (el) {
+            el.style.zIndex = '';
+            el.style.boxShadow = '';
+          }
+        }
+      });
+
+      tooltip.style.opacity = '0';
+      overlay.style.opacity = '0';
+
+      setTimeout(() => {
+        tooltip.remove();
+        overlay.remove();
+      }, 300);
+
+      localStorage.setItem('dashboard-tour-completed', 'true');
+    }
+
+    // Check if user has seen the tour
+    function checkOnboarding() {
+      const hasSeenTour = localStorage.getItem('dashboard-tour-completed');
+      if (!hasSeenTour && currentUser) {
+        setTimeout(() => {
+          showOnboarding();
+        }, 1500);
+      }
+    }
 
     // Initialize
     checkAuth();
