@@ -843,8 +843,6 @@
       box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
     }
   </style>
-  <!-- Fast Navigation System for Instant Page Switching -->
-  <script src="/fast-nav.js"></script>
 </head>
 <body>
   <div class="container">
@@ -889,7 +887,7 @@
     <!-- Admin Navigation -->
     <nav class="admin-nav">
       <div class="nav-links">
-        <a href="/dashboard.html" class="nav-link active">
+        <a href="#" class="nav-link active" onclick="showSection('dashboard'); return false;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7"></rect>
             <rect x="14" y="3" width="7" height="7"></rect>
@@ -898,7 +896,7 @@
           </svg>
           Dashboard
         </a>
-        <a href="/admin.html" class="nav-link">
+        <a href="#" class="nav-link" onclick="showSection('admin'); return false;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
@@ -910,31 +908,39 @@
       </div>
     </nav>
 
-    <div class="tabs">
-      <button class="tab active" onclick="switchTab('overview')">Overview</button>
-      <button class="tab" onclick="switchTab('agents')">All Agents</button>
-      <button class="tab" onclick="switchTab('calls')">All Calls</button>
+    <!-- Dashboard Section -->
+    <div id="dashboard-section">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('overview')">Overview</button>
+        <button class="tab" onclick="switchTab('agents')">All Agents</button>
+        <button class="tab" onclick="switchTab('calls')">All Calls</button>
+      </div>
+
+      <!-- Overview View -->
+      <div id="overview" class="view active">
+        <div id="overview-content"></div>
+      </div>
+
+      <!-- Agents View -->
+      <div id="agents" class="view">
+        <div id="agents-content"></div>
+      </div>
+
+      <!-- Calls View -->
+      <div id="calls" class="view">
+        <div id="calls-content"></div>
+      </div>
+
+      <!-- Agent Detail View -->
+      <div id="agent-detail" class="view">
+        <button class="back-button" onclick="backToAgents()">← Back to Agents</button>
+        <div id="agent-detail-content"></div>
+      </div>
     </div>
 
-    <!-- Overview View -->
-    <div id="overview" class="view active">
-      <div id="overview-content"></div>
-    </div>
-
-    <!-- Agents View -->
-    <div id="agents" class="view">
-      <div id="agents-content"></div>
-    </div>
-
-    <!-- Calls View -->
-    <div id="calls" class="view">
-      <div id="calls-content"></div>
-    </div>
-
-    <!-- Agent Detail View -->
-    <div id="agent-detail" class="view">
-      <button class="back-button" onclick="backToAgents()">← Back to Agents</button>
-      <div id="agent-detail-content"></div>
+    <!-- Admin/Client Management Section -->
+    <div id="admin-section" style="display: none;">
+      <div id="admin-content" style="margin-top: 20px;"></div>
     </div>
   </div>
 
@@ -959,6 +965,68 @@
     let dataLoaded = false;  // Track if data has been loaded
     let totalCallsAvailable = null;  // Total calls from API if provided
     let callCategories = {};  // Stores call categorizations { call_id: category }
+    let adminContentLoaded = false;  // Track if admin content has been loaded
+
+    // Section switching function - INSTANT tab switching
+    function showSection(section) {
+      // Update navigation active state
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      event.target.closest('.nav-link').classList.add('active');
+
+      // Toggle sections
+      const dashboardSection = document.getElementById('dashboard-section');
+      const adminSection = document.getElementById('admin-section');
+
+      if (section === 'dashboard') {
+        dashboardSection.style.display = 'block';
+        adminSection.style.display = 'none';
+      } else if (section === 'admin') {
+        dashboardSection.style.display = 'none';
+        adminSection.style.display = 'block';
+
+        // Load admin content if not already loaded
+        if (!adminContentLoaded) {
+          loadAdminContent();
+        }
+      }
+    }
+
+    // Load admin HTML content into the admin section
+    async function loadAdminContent() {
+      const adminContentDiv = document.getElementById('admin-content');
+      adminContentDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading Client Management...</p></div>';
+
+      try {
+        // Fetch the admin.html page
+        const response = await fetch('/admin.html');
+        const html = await response.text();
+
+        // Parse the HTML
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // Extract just the content (everything inside the container)
+        const container = doc.querySelector('.container');
+        if (container) {
+          adminContentDiv.innerHTML = container.innerHTML;
+
+          // Re-execute any inline scripts from admin page
+          const scripts = adminContentDiv.querySelectorAll('script');
+          scripts.forEach(oldScript => {
+            const newScript = document.createElement('script');
+            newScript.textContent = oldScript.textContent;
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+          });
+
+          adminContentLoaded = true;
+        }
+      } catch (error) {
+        console.error('Failed to load admin content:', error);
+        adminContentDiv.innerHTML = '<div class="error">Failed to load Client Management. Please refresh the page.</div>';
+      }
+    }
 
     // Helper function to format duration as MM:SS
     function formatDuration(minutes) {

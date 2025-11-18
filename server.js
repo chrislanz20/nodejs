@@ -47,6 +47,11 @@ app.get("/admin", (_req, res) => {
   res.sendFile(path.join(publicDir, "admin.html"));
 });
 
+// Root route - serve unified dashboard
+app.get('/', (req, res) => {
+  res.redirect('/dashboard.html');
+});
+
 // Now serve static files (styles.css, etc.)
 app.use(express.static(publicDir));
 
