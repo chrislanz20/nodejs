@@ -293,7 +293,7 @@
       background: rgba(13, 17, 23, 0.6);
       border-radius: 6px;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
     }
 
     .category-bar-fill {
@@ -301,20 +301,22 @@
       background: linear-gradient(90deg, rgba(0, 255, 255, 0.3), rgba(0, 255, 255, 0.6));
       border-radius: 6px;
       transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding-right: 12px;
+      position: relative;
       box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
+      overflow: visible;
     }
 
     .category-count {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
       font-size: 12px;
       font-weight: 700;
       color: #e6edf3;
       text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       white-space: nowrap;
-      min-width: fit-content;
+      z-index: 2;
     }
 
     .category-percentage {
@@ -2127,34 +2129,71 @@
       const status = call.end_timestamp ? 'Completed' : 'Ongoing';
       const category = categories[call.call_id]?.category || 'Uncategorized';
 
-      // Format transcript
-      let transcriptHTML = '<div class="transcript-box">';
+      // Check if transcript/recording data is already loaded
       let transcriptData = call.transcript || call.transcript_object;
+      let recordingUrl = call.recording_url;
+      const hasData = transcriptData || recordingUrl;
 
-      if (typeof transcriptData === 'string') {
-        try {
-          transcriptData = JSON.parse(transcriptData);
-        } catch (e) {}
-      }
+      let contentHTML = '';
 
-      if (Array.isArray(transcriptData)) {
-        transcriptData.forEach(msg => {
-          const role = (msg.role || 'unknown').toUpperCase();
-          const content = msg.content || '';
-          const className = msg.role === 'user' ? 'transcript-user' : 'transcript-agent';
-          transcriptHTML += `
-            <div class="transcript-message ${className}">
-              <div class="transcript-role">${role}</div>
-              <div>${content}</div>
+      if (!hasData) {
+        // Show lazy load button
+        contentHTML = `
+          <div id="lazy-load-container-${callId}" style="text-align: center; padding: 48px 32px;">
+            <button onclick="loadTranscriptAndRecordingForModal('${callId}')" id="load-btn-${callId}" style="padding: 16px 32px; background: linear-gradient(135deg, #1e3a8a, #1e40af); color: #60a5fa; border: 1.5px solid #3b82f6; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);">
+              📄 Click here to load the transcript and call recording
+            </button>
+          </div>
+        `;
+      } else {
+        // Build content with recording and transcript
+        if (recordingUrl) {
+          contentHTML += `
+            <div class="audio-section">
+              <div class="transcript-title">🎵 Call Recording</div>
+              <audio controls style="width: 100%; margin-top: 8px;">
+                <source src="${recordingUrl}" type="audio/mpeg">
+                Your browser does not support the audio element.
+              </audio>
             </div>
           `;
-        });
-      } else if (typeof transcriptData === 'string') {
-        transcriptHTML += `<div style="white-space: pre-wrap;">${transcriptData}</div>`;
-      } else {
-        transcriptHTML += '<div style="color: #a0aec0; font-style: italic;">No transcript available</div>';
+        }
+
+        // Format transcript
+        let transcriptHTML = '<div class="transcript-box">';
+
+        if (typeof transcriptData === 'string') {
+          try {
+            transcriptData = JSON.parse(transcriptData);
+          } catch (e) {}
+        }
+
+        if (Array.isArray(transcriptData)) {
+          transcriptData.forEach(msg => {
+            const role = (msg.role || 'unknown').toUpperCase();
+            const content = msg.content || '';
+            const className = msg.role === 'user' ? 'transcript-user' : 'transcript-agent';
+            transcriptHTML += `
+              <div class="transcript-message ${className}">
+                <div class="transcript-role">${role}</div>
+                <div>${content}</div>
+              </div>
+            `;
+          });
+        } else if (typeof transcriptData === 'string') {
+          transcriptHTML += `<div style="white-space: pre-wrap;">${transcriptData}</div>`;
+        } else {
+          transcriptHTML += '<div style="color: #a0aec0; font-style: italic;">No transcript available</div>';
+        }
+        transcriptHTML += '</div>';
+
+        contentHTML += `
+          <div class="transcript-section">
+            <div class="transcript-title">📝 Call Transcript</div>
+            ${transcriptHTML}
+          </div>
+        `;
       }
-      transcriptHTML += '</div>';
 
       modalBody.innerHTML = `
         <div class="field-grid">
@@ -2184,20 +2223,7 @@
           </div>
         </div>
 
-        ${call.recording_url ? `
-          <div class="audio-section">
-            <div class="transcript-title">Call Recording</div>
-            <audio controls>
-              <source src="${call.recording_url}" type="audio/mpeg">
-              Your browser does not support the audio element.
-            </audio>
-          </div>
-        ` : ''}
-
-        <div class="transcript-section">
-          <div class="transcript-title">Call Transcript</div>
-          ${transcriptHTML}
-        </div>
+        ${contentHTML}
       `;
 
       modal.style.display = 'block';
@@ -2211,6 +2237,91 @@
         audio.currentTime = 0;
       });
       modal.style.display = 'none';
+    }
+
+    async function loadTranscriptAndRecordingForModal(callId) {
+      const button = document.getElementById(`load-btn-${callId}`);
+      const container = document.getElementById(`lazy-load-container-${callId}`);
+
+      if (!button || !container) return;
+
+      button.textContent = '⏳ Loading...';
+      button.disabled = true;
+
+      try {
+        const response = await fetch(`/api/calls/${callId}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const callDetails = await response.json();
+        let transcriptData = callDetails.transcript || callDetails.transcript_object;
+        let recordingUrl = callDetails.recording_url;
+
+        // Update cache
+        const callIndex = allCalls.findIndex(c => c.call_id === callId);
+        if (callIndex !== -1) {
+          allCalls[callIndex].transcript = transcriptData;
+          allCalls[callIndex].transcript_object = transcriptData;
+          allCalls[callIndex].recording_url = recordingUrl;
+        }
+
+        // Build HTML with recording first, then transcript
+        let contentHTML = '';
+
+        if (recordingUrl) {
+          contentHTML += `
+            <div class="audio-section">
+              <div class="transcript-title">🎵 Call Recording</div>
+              <audio controls style="width: 100%; margin-top: 8px;">
+                <source src="${recordingUrl}" type="audio/mpeg">
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+          `;
+        }
+
+        // Format transcript
+        let transcriptHTML = '<div class="transcript-box">';
+
+        if (typeof transcriptData === 'string') {
+          try {
+            transcriptData = JSON.parse(transcriptData);
+          } catch (e) {}
+        }
+
+        if (Array.isArray(transcriptData) && transcriptData.length > 0) {
+          transcriptData.forEach(msg => {
+            const role = (msg.role || 'unknown').toUpperCase();
+            const content = msg.content || '';
+            const className = msg.role === 'user' ? 'transcript-user' : 'transcript-agent';
+            transcriptHTML += `
+              <div class="transcript-message ${className}">
+                <div class="transcript-role">${role}</div>
+                <div>${content}</div>
+              </div>
+            `;
+          });
+        } else if (typeof transcriptData === 'string' && transcriptData.trim()) {
+          transcriptHTML += `<div style="white-space: pre-wrap;">${transcriptData}</div>`;
+        } else {
+          transcriptHTML += '<div style="color: #a0aec0; font-style: italic;">No transcript available</div>';
+        }
+        transcriptHTML += '</div>';
+
+        contentHTML += `
+          <div class="transcript-section">
+            <div class="transcript-title">📝 Call Transcript</div>
+            ${transcriptHTML}
+          </div>
+        `;
+
+        // Replace button with content
+        container.outerHTML = contentHTML;
+
+      } catch (error) {
+        console.error('Error loading transcript and recording:', error);
+        button.textContent = '❌ Error loading. Click to retry';
+        button.disabled = false;
+      }
     }
 
     async function logout() {
