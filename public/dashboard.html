@@ -1007,10 +1007,17 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
 
-        // Extract just the content (everything inside the container)
+        // Extract just the content (everything inside the container EXCEPT navigation)
         const container = doc.querySelector('.container');
         if (container) {
-          adminContentDiv.innerHTML = container.innerHTML;
+          // Clone the container and remove the navigation
+          const containerClone = container.cloneNode(true);
+          const nav = containerClone.querySelector('nav');
+          if (nav) {
+            nav.remove();
+          }
+
+          adminContentDiv.innerHTML = containerClone.innerHTML;
 
           // Re-execute any inline scripts from admin page
           const scripts = adminContentDiv.querySelectorAll('script');
