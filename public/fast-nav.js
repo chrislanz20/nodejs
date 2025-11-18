@@ -107,6 +107,11 @@ class FastNav {
       oldScript.parentNode.replaceChild(newScript, oldScript);
     });
 
+    // Call page initialization if it exists
+    if (typeof window.pageInit === 'function') {
+      window.pageInit();
+    }
+
     // Update URL
     if (pushState) {
       history.pushState({ page }, '', page);
