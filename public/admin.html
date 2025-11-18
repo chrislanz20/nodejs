@@ -486,6 +486,19 @@
   <script src="/fast-nav.js"></script>
 </head>
 <body>
+  <!-- Hide navigation when loaded in iframe (embedded in dashboard) -->
+  <script>
+    if (window.self !== window.top) {
+      // Page is in an iframe - hide navigation to avoid duplication
+      document.addEventListener('DOMContentLoaded', function() {
+        const nav = document.querySelector('.admin-nav');
+        if (nav) {
+          nav.style.display = 'none';
+        }
+      });
+    }
+  </script>
+
   <div class="container">
     <!-- Admin Navigation -->
     <nav class="admin-nav">
