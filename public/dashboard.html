@@ -2228,11 +2228,11 @@
       const phoneNumber = call.from_number || call.to_number || call.customer_number || 'N/A';
       const status = call.end_timestamp ? 'Completed' : 'Ongoing';
 
-      // Format transcript
-      let transcriptHTML = '<div class="transcript-box">';
+      // Format transcript with lazy loading
+      let transcriptHTML = '';
       let transcriptData = null;
 
-      // Try to parse transcript if it's a string
+      // Check if transcript is already loaded
       if (typeof call.transcript === 'string') {
         try {
           transcriptData = JSON.parse(call.transcript);
@@ -2245,26 +2245,41 @@
         transcriptData = call.transcript_object;
       }
 
-      // Display transcript in readable format
-      if (Array.isArray(transcriptData)) {
-        transcriptData.forEach(msg => {
-          const role = (msg.role || 'unknown').toUpperCase();
-          const content = msg.content || '';
-          const className = msg.role === 'user' ? 'transcript-user' : 'transcript-agent';
-          transcriptHTML += `
-            <div class="transcript-message ${className}">
-              <div class="transcript-role">${role}</div>
-              <div>${content}</div>
+      // If transcript is not loaded, show load button (lazy loading for performance)
+      if (!transcriptData) {
+        transcriptHTML = `
+          <div class="transcript-box" id="transcript-container-${callId}">
+            <div style="text-align: center; padding: 32px;">
+              <div style="color: #A0AEC0; margin-bottom: 16px;">Transcript not loaded yet (for faster page loading)</div>
+              <button onclick="loadTranscript('${callId}')" id="load-transcript-btn-${callId}" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s;">
+                📄 Load Transcript
+              </button>
             </div>
-          `;
-        });
-      } else if (typeof transcriptData === 'string') {
-        // Plain text transcript
-        transcriptHTML += `<div style="white-space: pre-wrap;">${transcriptData}</div>`;
+          </div>
+        `;
       } else {
-        transcriptHTML += '<div style="color: #A0AEC0; font-style: italic;">No transcript available</div>';
+        // Display transcript in readable format
+        transcriptHTML = `<div class="transcript-box" id="transcript-container-${callId}">`;
+        if (Array.isArray(transcriptData)) {
+          transcriptData.forEach(msg => {
+            const role = (msg.role || 'unknown').toUpperCase();
+            const content = msg.content || '';
+            const className = msg.role === 'user' ? 'transcript-user' : 'transcript-agent';
+            transcriptHTML += `
+              <div class="transcript-message ${className}">
+                <div class="transcript-role">${role}</div>
+                <div>${content}</div>
+              </div>
+            `;
+          });
+        } else if (typeof transcriptData === 'string') {
+          // Plain text transcript
+          transcriptHTML += `<div style="white-space: pre-wrap;">${transcriptData}</div>`;
+        } else {
+          transcriptHTML += '<div style="color: #A0AEC0; font-style: italic;">No transcript available</div>';
+        }
+        transcriptHTML += '</div>';
       }
-      transcriptHTML += '</div>';
 
       modalBody.innerHTML = `
         <div class="modal-grid">
@@ -2347,6 +2362,72 @@
       `;
 
       modal.style.display = 'block';
+    }
+
+    // Load transcript on-demand (lazy loading for performance)
+    async function loadTranscript(callId) {
+      const button = document.getElementById(`load-transcript-btn-${callId}`);
+      const container = document.getElementById(`transcript-container-${callId}`);
+
+      if (!button || !container) return;
+
+      // Show loading state
+      button.textContent = '⏳ Loading...';
+      button.disabled = true;
+
+      try {
+        // Fetch full call details with transcript
+        const response = await fetch(`/api/calls/${callId}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const callDetails = await response.json();
+        let transcriptData = callDetails.transcript || callDetails.transcript_object;
+
+        // Update the allCalls array so it's cached for next time
+        const callIndex = allCalls.findIndex(c => c.call_id === callId);
+        if (callIndex !== -1) {
+          allCalls[callIndex].transcript = transcriptData;
+          allCalls[callIndex].transcript_object = transcriptData;
+        }
+
+        // Format and display transcript
+        let transcriptHTML = '<div class="transcript-box">';
+
+        if (Array.isArray(transcriptData)) {
+          transcriptData.forEach(msg => {
+            const role = (msg.role || 'unknown').toUpperCase();
+            const content = msg.content || '';
+            const className = msg.role === 'user' ? 'transcript-user' : 'transcript-agent';
+            transcriptHTML += `
+              <div class="transcript-message ${className}">
+                <div class="transcript-role">${role}</div>
+                <div>${content}</div>
+              </div>
+            `;
+          });
+        } else if (typeof transcriptData === 'string') {
+          transcriptHTML += `<div style="white-space: pre-wrap;">${transcriptData}</div>`;
+        } else {
+          transcriptHTML += '<div style="color: #A0AEC0; font-style: italic;">No transcript available</div>';
+        }
+
+        transcriptHTML += '</div>';
+        container.innerHTML = transcriptHTML;
+
+      } catch (error) {
+        console.error('Error loading transcript:', error);
+        container.innerHTML = `
+          <div class="transcript-box">
+            <div style="color: #ef4444; text-align: center; padding: 32px;">
+              ❌ Failed to load transcript: ${error.message}
+              <br><br>
+              <button onclick="loadTranscript('${callId}')" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
+                🔄 Retry
+              </button>
+            </div>
+          </div>
+        `;
+      }
     }
 
     // Close call detail modal
