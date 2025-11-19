@@ -14,6 +14,7 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
 const compression = require('compression');
+const { sendNotifications } = require('./lib/ghlNotifications');
 
 const app = express();
 
@@ -880,6 +881,8 @@ When in doubt between New Lead and Existing Client (both involving actual injury
 
 CONFIDENCE THRESHOLD: Only categorize as "New Lead" if you have MEDIUM or HIGH confidence. If confidence would be LOW, use "Other" instead.
 
+IMPORTANT: When writing your SUMMARY and REASONING, NEVER mention if the caller was upset about speaking with an AI, complained about automation, or expressed frustration about not speaking to a human. Focus only on the business purpose of the call and relevant case details. Keep summaries professional and business-focused.
+
 TRANSCRIPT:
 ${transcriptText}
 
@@ -1005,10 +1008,104 @@ app.get('/api/categories', async (_req, res) => {
   }
 });
 
+// POST /webhook/retell-call-ended - Retell webhook for call completion
+app.post('/webhook/retell-call-ended', async (req, res) => {
+  try {
+    const callData = req.body;
+    const callId = callData.call?.call_id || callData.call_id;
+    const agentId = callData.call?.agent_id || callData.agent_id;
+
+    if (!callId) {
+      console.error('❌ Webhook received without call_id');
+      return res.status(400).json({ error: 'call_id is required' });
+    }
+
+    console.log(`\n📞 Retell webhook received for call: ${callId.substring(0, 30)}...`);
+    console.log(`   Agent: ${agentId?.substring(0, 30)}...`);
+
+    // Respond immediately to Retell (don't make them wait)
+    res.json({ success: true, message: 'Webhook received' });
+
+    // Process async (categorize + send notifications)
+    setTimeout(async () => {
+      try {
+        // Fetch full call details
+        const fullCall = await retellClient.call.retrieve(callId);
+        const transcript = fullCall.transcript_object || fullCall.transcript || [];
+        const phoneNumber = fullCall.from_number || fullCall.to_number;
+
+        console.log(`   📝 Categorizing call...`);
+
+        // Categorize with Claude
+        const categoryResult = await categorizeTranscript(transcript, phoneNumber);
+
+        // Save category
+        const categories = await readCategories();
+        categories[callId] = { ...categoryResult, phone_number: phoneNumber };
+        await writeCategories(categories);
+
+        console.log(`   ✅ Categorized as: ${categoryResult.category}`);
+
+        // Send notifications
+        if (agentId) {
+          const notifData = {
+            name: fullCall.extracted_data?.name || fullCall.name,
+            phone: phoneNumber,
+            email: fullCall.extracted_data?.email || fullCall.email,
+            from_number: fullCall.from_number,
+            to_number: fullCall.to_number,
+            purpose: categoryResult.reasoning,
+            incident_description: categoryResult.reasoning,
+            ...fullCall.extracted_data
+          };
+
+          await sendNotifications(agentId, categoryResult.category, notifData);
+        }
+
+      } catch (error) {
+        console.error(`❌ Error processing webhook for ${callId}:`, error.message);
+      }
+    }, 1000); // 1 second delay to ensure Retell has finalized the call
+
+  } catch (error) {
+    console.error('❌ Webhook error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/send-notification-test - Test notification system
+app.post('/api/send-notification-test', async (req, res) => {
+  try {
+    const { agent_id, category, call_data } = req.body;
+
+    if (!agent_id || !category || !call_data) {
+      return res.status(400).json({
+        error: 'agent_id, category, and call_data are required'
+      });
+    }
+
+    console.log(`\n🧪 TEST: Sending notification for ${category}`);
+
+    const result = await sendNotifications(agent_id, category, call_data);
+
+    res.json({
+      success: true,
+      message: 'Notification test sent',
+      result: result
+    });
+  } catch (error) {
+    console.error('Error sending test notification:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // POST /api/categorize-call - Categorize a single call
 app.post('/api/categorize-call', async (req, res) => {
   try {
-    const { call_id, transcript, phone_number } = req.body;
+    const { call_id, transcript, phone_number, agent_id, call_data } = req.body;
 
     if (!call_id) {
       return res.status(400).json({ error: 'call_id is required' });
@@ -1020,6 +1117,20 @@ app.post('/api/categorize-call', async (req, res) => {
     const categories = await readCategories();
     categories[call_id] = result;
     await writeCategories(categories);
+
+    // Send notifications if agent_id and call_data are provided
+    if (agent_id && call_data) {
+      console.log(`\n🔔 Triggering notifications for call ${call_id} (category: ${result.category})`);
+
+      // Don't wait for notifications to complete - send async
+      sendNotifications(agent_id, result.category, call_data)
+        .then((notifResult) => {
+          console.log(`✅ Notifications sent for ${call_id}:`, notifResult);
+        })
+        .catch((error) => {
+          console.error(`❌ Failed to send notifications for ${call_id}:`, error);
+        });
+    }
 
     res.json({ call_id, ...result });
   } catch (error) {
