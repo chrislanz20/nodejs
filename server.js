@@ -723,16 +723,17 @@ app.post("/greet", async (_req, res) => {
 // Helper: Read all categories from Postgres database
 async function readCategories() {
   try {
-    const result = await pool.query('SELECT call_id, category, reasoning, manual, auto FROM call_categories');
+    const result = await pool.query('SELECT call_id, category, reasoning, manual, auto, confidence_score FROM call_categories');
 
-    // Convert rows to object format { call_id: { category, reasoning, manual, auto } }
+    // Convert rows to object format { call_id: { category, reasoning, manual, auto, confidence_score } }
     const categories = {};
     result.rows.forEach(row => {
       categories[row.call_id] = {
         category: row.category,
         reasoning: row.reasoning,
         manual: row.manual,
-        auto: row.auto
+        auto: row.auto,
+        confidence_score: row.confidence_score ? parseFloat(row.confidence_score) : null
       };
     });
 
@@ -748,17 +749,30 @@ async function writeCategory(callId, categoryData) {
   try {
     const { category, reasoning, manual, auto } = categoryData;
 
+    // Convert confidence string to numeric score
+    let confidenceScore = null;
+    if (categoryData.confidence) {
+      const confidence = categoryData.confidence.toUpperCase();
+      if (confidence === 'HIGH') confidenceScore = 0.90;
+      else if (confidence === 'MEDIUM') confidenceScore = 0.70;
+      else if (confidence === 'LOW') confidenceScore = 0.50;
+    }
+    if (categoryData.confidence_score) {
+      confidenceScore = categoryData.confidence_score;
+    }
+
     await pool.query(`
-      INSERT INTO call_categories (call_id, category, reasoning, manual, auto, updated_at)
-      VALUES ($1, $2, $3, $4, $5, NOW())
+      INSERT INTO call_categories (call_id, category, reasoning, manual, auto, confidence_score, updated_at)
+      VALUES ($1, $2, $3, $4, $5, $6, NOW())
       ON CONFLICT (call_id)
       DO UPDATE SET
         category = EXCLUDED.category,
         reasoning = EXCLUDED.reasoning,
         manual = EXCLUDED.manual,
         auto = EXCLUDED.auto,
+        confidence_score = EXCLUDED.confidence_score,
         updated_at = NOW()
-    `, [callId, category, reasoning || null, manual || false, auto || false]);
+    `, [callId, category, reasoning || null, manual || false, auto || false, confidenceScore]);
 
     return true;
   } catch (error) {
@@ -785,17 +799,31 @@ async function writeCategories(categories, retryCount = 0) {
         const manual = typeof categoryData === 'object' ? categoryData.manual : false;
         const auto = typeof categoryData === 'object' ? categoryData.auto : false;
 
+        // Convert confidence string to numeric score
+        let confidenceScore = null;
+        if (typeof categoryData === 'object' && categoryData.confidence) {
+          const confidence = categoryData.confidence.toUpperCase();
+          if (confidence === 'HIGH') confidenceScore = 0.90;
+          else if (confidence === 'MEDIUM') confidenceScore = 0.70;
+          else if (confidence === 'LOW') confidenceScore = 0.50;
+        }
+        // Also check for numeric confidence_score directly
+        if (typeof categoryData === 'object' && categoryData.confidence_score) {
+          confidenceScore = categoryData.confidence_score;
+        }
+
         await client.query(`
-          INSERT INTO call_categories (call_id, category, reasoning, manual, auto, updated_at)
-          VALUES ($1, $2, $3, $4, $5, NOW())
+          INSERT INTO call_categories (call_id, category, reasoning, manual, auto, confidence_score, updated_at)
+          VALUES ($1, $2, $3, $4, $5, $6, NOW())
           ON CONFLICT (call_id)
           DO UPDATE SET
             category = EXCLUDED.category,
             reasoning = EXCLUDED.reasoning,
             manual = EXCLUDED.manual,
             auto = EXCLUDED.auto,
+            confidence_score = EXCLUDED.confidence_score,
             updated_at = NOW()
-        `, [callId, category, reasoning, manual, auto]);
+        `, [callId, category, reasoning, manual, auto, confidenceScore]);
       }
 
       await client.query('COMMIT');
