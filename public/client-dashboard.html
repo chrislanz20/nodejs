@@ -3449,12 +3449,13 @@
       const dateTo = document.getElementById('date-to');
       const datePreset = document.getElementById('date-preset');
 
+      // Get current date in LOCAL timezone
       const now = new Date();
-      let startDate = new Date();
+      let startDate = new Date(now); // Clone the date
 
       switch(period) {
         case 'today':
-          // Today: from start of today to now
+          // Today: from start of today to end of today (local time)
           startDate.setHours(0, 0, 0, 0);
           break;
         case 'week':
@@ -3471,7 +3472,7 @@
           break;
       }
 
-      // Format dates as YYYY-MM-DD for input fields
+      // Format dates as YYYY-MM-DD for input fields using LOCAL timezone
       const formatDate = (date) => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -3479,8 +3480,15 @@
         return `${year}-${month}-${day}`;
       };
 
-      dateFrom.value = formatDate(startDate);
-      dateTo.value = formatDate(now);
+      const fromDateStr = formatDate(startDate);
+      const toDateStr = formatDate(now);
+
+      console.log('Quick Date Filter:', period);
+      console.log('From Date:', fromDateStr, '(timestamp:', startDate.getTime(), ')');
+      console.log('To Date:', toDateStr, '(timestamp:', now.getTime(), ')');
+
+      dateFrom.value = fromDateStr;
+      dateTo.value = toDateStr;
       datePreset.value = 'custom';
 
       filterCalls();
@@ -3569,10 +3577,21 @@
           return new Date(year, month - 1, day, 23, 59, 59, 999).getTime();
         })() : Date.now();
 
+        console.log('Filtering calls with date range:');
+        console.log('  From:', dateFrom, '→ timestamp:', fromTimestamp, '→', new Date(fromTimestamp).toLocaleString());
+        console.log('  To:', dateTo, '→ timestamp:', toTimestamp, '→', new Date(toTimestamp).toLocaleString());
+        console.log('  Total calls before filter:', filteredCalls.length);
+
         filteredCalls = filteredCalls.filter(call => {
           if (!call.start_timestamp) return false;
-          return call.start_timestamp >= fromTimestamp && call.start_timestamp <= toTimestamp;
+          const matches = call.start_timestamp >= fromTimestamp && call.start_timestamp <= toTimestamp;
+          if (matches) {
+            console.log('  ✓ Call matches:', call.call_id, 'timestamp:', call.start_timestamp, '→', new Date(call.start_timestamp).toLocaleString());
+          }
+          return matches;
         });
+
+        console.log('  Total calls after filter:', filteredCalls.length);
       }
 
       // Apply multi-category filter
