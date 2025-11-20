@@ -91,13 +91,25 @@ async function backfillLeads() {
         continue;
       }
 
-      // Extract name using robust extraction logic
+      // Extract name using improved extraction logic
       let extractedName = null;
 
-      // Priority 1: extracted_data.name (if full name)
+      // Generic terms to filter out
+      const genericTerms = /^(the user|unknown|caller|client|agent|representative|user|n\/a|none|test)$/i;
+
+      // Helper to check if a name is valid (not generic)
+      const isValidName = (name) => {
+        if (!name || typeof name !== 'string') return false;
+        const cleaned = name.trim();
+        if (cleaned.length < 2) return false;
+        if (genericTerms.test(cleaned)) return false;
+        return true;
+      };
+
+      // Priority 1: extracted_data.name (accept any non-generic name)
       if (call.extracted_data?.name) {
         const name = call.extracted_data.name.trim();
-        if (name.includes(' ') && !name.toLowerCase().match(/^(the user|unknown|caller|client)$/i)) {
+        if (isValidName(name)) {
           extractedName = name;
         }
       }
@@ -107,8 +119,10 @@ async function backfillLeads() {
         const firstName = call.extracted_data.first_name?.trim() || '';
         const lastName = call.extracted_data.last_name?.trim() || '';
         const fullName = `${firstName} ${lastName}`.trim();
-        if (fullName && fullName !== 'The user' && fullName.length > 2) {
+        if (isValidName(fullName)) {
           extractedName = fullName;
+        } else if (isValidName(firstName) && !lastName) {
+          extractedName = firstName;
         }
       }
 
@@ -117,19 +131,21 @@ async function backfillLeads() {
         const summary = call.call_analysis.call_summary;
 
         const namePatterns = [
-          /(?:The user|caller),\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+),/i,
-          /(?:user'?s? name is|named?|called)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i,
-          /^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\s+(?:called|contacted|reached out)/i,
-          /identified (?:himself|herself|themselves) as ([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i,
-          /(?:I'm|I am|This is|My name is)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i,
+          /(?:The user|caller),\s+([A-Za-z][A-Za-z'\-\s]+?),/i,
+          /(?:user'?s? name is|named?|called)\s+([A-Za-z][A-Za-z'\-\s]+?)(?:\.|,|\s+(?:called|contacted|reached|who|and))/i,
+          /^([A-Za-z][A-Za-z'\-\s]+?)\s+(?:called|contacted|reached out)/i,
+          /identified (?:himself|herself|themselves) as ([A-Za-z][A-Za-z'\-\s]+?)(?:\.|,|\s+(?:who|and|to))/i,
+          /(?:I'm|I am|This is|My name is)\s+([A-Za-z][A-Za-z'\-\s]+?)(?:\.|,|\s+(?:and|calling|who))/i,
+          /from\s+([A-Za-z][A-Za-z'\-\s]+?)\s+(?:regarding|about|calling)/i,
         ];
 
         for (const pattern of namePatterns) {
           const match = summary.match(pattern);
           if (match && match[1]) {
             const name = match[1].trim();
-            if (!name.match(/^(The User|Unknown|Caller|Client|Agent|Representative)$/i)) {
-              extractedName = name;
+            const cleanName = name.replace(/\s+(who|and|to|from|that|with)$/i, '').trim();
+            if (isValidName(cleanName)) {
+              extractedName = cleanName;
               break;
             }
           }

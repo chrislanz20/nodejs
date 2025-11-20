@@ -2057,19 +2057,28 @@
     function renderCallsOverTimeChart() {
       const chartContainer = document.getElementById('calls-over-time-chart');
       const days = 7;
-      const now = Date.now();
+
+      // Get today at midnight (start of day)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
       const oneDayMs = 24 * 60 * 60 * 1000;
 
-      // Prepare data for last 7 days
+      // Prepare data for last 7 days (using calendar days, not 24hr periods)
       const dailyData = [];
       for (let i = days - 1; i >= 0; i--) {
-        const dayStart = now - (i * oneDayMs);
-        const dayEnd = dayStart + oneDayMs;
-        const date = new Date(dayStart);
-        const label = date.toLocaleDateString('en-US', { weekday: 'short' });
+        const dayStart = new Date(today);
+        dayStart.setDate(today.getDate() - i);
+        const dayStartMs = dayStart.getTime();
+
+        const dayEnd = new Date(dayStart);
+        dayEnd.setDate(dayStart.getDate() + 1);
+        const dayEndMs = dayEnd.getTime();
+
+        const label = dayStart.toLocaleDateString('en-US', { weekday: 'short' });
 
         const callsCount = allCalls.filter(call =>
-          call.start_timestamp && call.start_timestamp >= dayStart && call.start_timestamp < dayEnd
+          call.start_timestamp && call.start_timestamp >= dayStartMs && call.start_timestamp < dayEndMs
         ).length;
 
         dailyData.push({ label, count: callsCount });

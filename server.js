@@ -22,7 +22,7 @@ const app = express();
 /**
  * Extract caller name from Retell call data
  * Tries multiple sources in priority order:
- * 1. extracted_data.name (if full name)
+ * 1. extracted_data.name
  * 2. extracted_data.first_name + last_name
  * 3. call_analysis.call_summary (regex extraction)
  * 4. name field
@@ -30,11 +30,22 @@ const app = express();
  * @returns {string|null} - Extracted name or null
  */
 function extractNameFromCall(callData) {
-  // Priority 1: extracted_data.name (if it looks like a full name)
+  // Generic terms to filter out
+  const genericTerms = /^(the user|unknown|caller|client|agent|representative|user|n\/a|none|test)$/i;
+
+  // Helper to check if a name is valid (not generic)
+  const isValidName = (name) => {
+    if (!name || typeof name !== 'string') return false;
+    const cleaned = name.trim();
+    if (cleaned.length < 2) return false;
+    if (genericTerms.test(cleaned)) return false;
+    return true;
+  };
+
+  // Priority 1: extracted_data.name (accept any non-generic name, even if unusual)
   if (callData.extracted_data?.name) {
     const name = callData.extracted_data.name.trim();
-    // Check if it's a full name (has space and at least 2 words, not generic phrases)
-    if (name.includes(' ') && !name.toLowerCase().match(/^(the user|unknown|caller|client)$/i)) {
+    if (isValidName(name)) {
       return name;
     }
   }
@@ -44,8 +55,12 @@ function extractNameFromCall(callData) {
     const firstName = callData.extracted_data.first_name?.trim() || '';
     const lastName = callData.extracted_data.last_name?.trim() || '';
     const fullName = `${firstName} ${lastName}`.trim();
-    if (fullName && fullName !== 'The user' && fullName.length > 2) {
+    if (isValidName(fullName)) {
       return fullName;
+    }
+    // If only first name and it's valid, use it
+    if (isValidName(firstName) && !lastName) {
+      return firstName;
     }
   }
 
@@ -53,31 +68,33 @@ function extractNameFromCall(callData) {
   if (callData.call_analysis?.call_summary) {
     const summary = callData.call_analysis.call_summary;
 
-    // Patterns for name extraction (ordered by specificity)
+    // More permissive patterns - match any words that look like names
     const namePatterns = [
-      /(?:The user|caller),\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+),/i,  // "The user, John Smith,"
-      /(?:user'?s? name is|named?|called)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i,  // "user's name is John Smith"
-      /^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\s+(?:called|contacted|reached out)/i,  // "John Smith called"
-      /identified (?:himself|herself|themselves) as ([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i,  // "identified himself as John Smith"
-      /(?:I'm|I am|This is|My name is)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i,  // "I'm John Smith"
+      /(?:The user|caller),\s+([A-Za-z][A-Za-z'\-\s]+?),/i,  // "The user, Name,"
+      /(?:user'?s? name is|named?|called)\s+([A-Za-z][A-Za-z'\-\s]+?)(?:\.|,|\s+(?:called|contacted|reached|who|and))/i,  // "user's name is Name"
+      /^([A-Za-z][A-Za-z'\-\s]+?)\s+(?:called|contacted|reached out)/i,  // "Name called"
+      /identified (?:himself|herself|themselves) as ([A-Za-z][A-Za-z'\-\s]+?)(?:\.|,|\s+(?:who|and|to))/i,  // "identified as Name"
+      /(?:I'm|I am|This is|My name is)\s+([A-Za-z][A-Za-z'\-\s]+?)(?:\.|,|\s+(?:and|calling|who))/i,  // "I'm Name"
+      /from\s+([A-Za-z][A-Za-z'\-\s]+?)\s+(?:regarding|about|calling)/i,  // "from Name regarding"
     ];
 
     for (const pattern of namePatterns) {
       const match = summary.match(pattern);
       if (match && match[1]) {
         const extractedName = match[1].trim();
-        // Exclude generic terms
-        if (!extractedName.match(/^(The User|Unknown|Caller|Client|Agent|Representative)$/i)) {
-          return extractedName;
+        // Clean up - remove trailing words like "who", "and", etc.
+        const cleanName = extractedName.replace(/\s+(who|and|to|from|that|with)$/i, '').trim();
+        if (isValidName(cleanName)) {
+          return cleanName;
         }
       }
     }
   }
 
-  // Priority 4: Fallback to name field (if it exists and isn't generic)
+  // Priority 4: Fallback to name field
   if (callData.name) {
     const name = callData.name.trim();
-    if (name && !name.match(/^(The User|Unknown|Caller|Client)$/i)) {
+    if (isValidName(name)) {
       return name;
     }
   }
