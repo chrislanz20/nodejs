@@ -206,9 +206,9 @@
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
-      height: 200px;
-      gap: 8px;
-      padding: 16px 0;
+      height: 220px;
+      gap: 10px;
+      padding: 20px 8px 16px 8px;
       border-bottom: 2px solid rgba(0, 255, 255, 0.2);
     }
 
@@ -217,8 +217,9 @@
       display: flex;
       flex-direction: column-reverse;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       position: relative;
+      min-height: 40px;
     }
 
     .bar {
@@ -241,18 +242,22 @@
     }
 
     .bar-label {
-      font-size: 10px;
+      font-size: 11px;
       color: #9ca3af;
       font-weight: 600;
       letter-spacing: 0.5px;
+      text-align: center;
+      padding: 0 4px;
     }
 
     .bar-value {
       position: absolute;
-      top: -24px;
-      font-size: 11px;
+      top: -28px;
+      font-size: 12px;
       font-weight: 700;
       color: #00FFFF;
+      text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+      white-space: nowrap;
     }
 
     .bar:hover .bar-value {
@@ -262,25 +267,25 @@
     .category-chart {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 18px;
       padding: 16px 0;
     }
 
     .category-item {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
     .category-color {
-      width: 12px;
-      height: 12px;
+      width: 14px;
+      height: 14px;
       border-radius: 3px;
       flex-shrink: 0;
     }
 
     .category-name {
-      flex: 0 0 140px;
+      flex: 0 0 150px;
       font-size: 13px;
       font-weight: 600;
       color: #e6edf3;
@@ -289,17 +294,18 @@
 
     .category-bar-bg {
       flex: 1;
-      height: 32px;
+      height: 36px;
       background: rgba(13, 17, 23, 0.6);
-      border-radius: 6px;
+      border-radius: 8px;
       position: relative;
       overflow: visible;
+      border: 1px solid rgba(48, 54, 61, 0.5);
     }
 
     .category-bar-fill {
       height: 100%;
       background: linear-gradient(90deg, rgba(0, 255, 255, 0.3), rgba(0, 255, 255, 0.6));
-      border-radius: 6px;
+      border-radius: 7px;
       transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
@@ -308,13 +314,13 @@
 
     .category-count {
       position: absolute;
-      right: 12px;
+      right: 14px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
-      color: #e6edf3;
-      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      color: #00FFFF;
+      text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
       white-space: nowrap;
       z-index: 2;
     }
