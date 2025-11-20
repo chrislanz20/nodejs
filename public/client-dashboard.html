@@ -3311,8 +3311,16 @@
           call.start_timestamp && call.start_timestamp >= cutoffDate
         );
       } else if (dateFrom || dateTo) {
-        const fromTimestamp = dateFrom ? new Date(dateFrom).getTime() : 0;
-        const toTimestamp = dateTo ? new Date(dateTo).setHours(23, 59, 59, 999) : Date.now();
+        // Parse dates in local timezone (not UTC) to avoid timezone offset bugs
+        const fromTimestamp = dateFrom ? (() => {
+          const [year, month, day] = dateFrom.split('-').map(Number);
+          return new Date(year, month - 1, day, 0, 0, 0, 0).getTime();
+        })() : 0;
+
+        const toTimestamp = dateTo ? (() => {
+          const [year, month, day] = dateTo.split('-').map(Number);
+          return new Date(year, month - 1, day, 23, 59, 59, 999).getTime();
+        })() : Date.now();
 
         filteredCalls = filteredCalls.filter(call => {
           if (!call.start_timestamp) return false;
