@@ -207,11 +207,14 @@
     .bar-chart {
       display: flex;
       align-items: flex-end;
-      justify-content: space-between;
-      height: 200px;
-      gap: 10px;
-      padding: 8px 8px 16px 8px;
-      border-bottom: 2px solid rgba(0, 255, 255, 0.2);
+      justify-content: space-evenly;
+      height: 260px;
+      gap: 14px;
+      padding: 20px 16px 24px 16px;
+      border-bottom: 2px solid rgba(0, 255, 255, 0.15);
+      background: linear-gradient(180deg, rgba(0, 255, 255, 0.03) 0%, transparent 100%);
+      border-radius: 8px;
+      position: relative;
     }
 
     .bar-wrapper {
@@ -2487,17 +2490,31 @@
         dailyData.push({ label, count: callsCount });
       }
 
-      // Find max for scaling
+      // Dynamic scaling based on data range
       const maxCount = Math.max(...dailyData.map(d => d.count), 1);
-      const maxBarHeight = 120; // Max height in pixels for bars within container
+      const minCount = Math.min(...dailyData.map(d => d.count), 0);
+      const range = maxCount - minCount;
 
-      // Render bars
+      // Adaptive bar height - scales to use more space when volume is higher
+      const maxBarHeight = maxCount <= 5 ? 160 : maxCount <= 20 ? 180 : 200;
+      const minBarHeight = 16; // Minimum visible height
+
+      // Render bars with dynamic scaling
       chartContainer.innerHTML = dailyData.map(day => {
-        const heightPx = Math.max(8, (day.count / maxCount) * maxBarHeight); // Min 8px
+        let heightPx;
+        if (range === 0) {
+          // All values are the same
+          heightPx = maxBarHeight * 0.6;
+        } else {
+          // Scale based on the actual data range
+          const normalizedValue = (day.count - minCount) / range;
+          heightPx = minBarHeight + (normalizedValue * (maxBarHeight - minBarHeight));
+        }
+
         return `
           <div class="bar-wrapper">
             <div class="bar-value">${day.count}</div>
-            <div class="bar" style="height: ${heightPx}px"></div>
+            <div class="bar" style="height: ${Math.round(heightPx)}px" title="${day.count} calls on ${day.label}"></div>
             <div class="bar-label">${day.label}</div>
           </div>
         `;

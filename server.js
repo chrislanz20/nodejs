@@ -16,6 +16,7 @@ const crypto = require('crypto');
 const compression = require('compression');
 const { sendNotifications } = require('./lib/ghlNotifications');
 const { trackLead, updateLeadStatus, getLeadsByAgent, getLeadStats, getAllLeadStats } = require('./lib/leadTracking');
+const { extractLeadDataFromTranscript } = require('./lib/extractLeadData');
 
 const app = express();
 
@@ -1171,13 +1172,32 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
         if (agentId) {
           const extractedName = extractNameFromCall(fullCall);
 
+          // Extract incident date/location from transcript
+          let extractedIncidentData = null;
+          if (categoryResult.category === 'New Lead' && transcript) {
+            console.log(`   🔍 Extracting incident details from transcript...`);
+            try {
+              const transcriptText = Array.isArray(transcript)
+                ? transcript.map(msg => `${msg.role}: ${msg.content}`).join('\n')
+                : transcript;
+              extractedIncidentData = await extractLeadDataFromTranscript(transcriptText);
+              if (extractedIncidentData) {
+                console.log(`   ✅ Incident data extracted: date=${extractedIncidentData.incident_date}, location=${extractedIncidentData.incident_location}`);
+              }
+            } catch (error) {
+              console.error(`   ⚠️  Incident extraction error:`, error.message);
+            }
+          }
+
           const callData = {
             name: extractedName,
             phone: phoneNumber,
             phone_number: phoneNumber,
             from_number: fullCall.from_number,
-            email: fullCall.extracted_data?.email || fullCall.email,
+            email: extractedIncidentData?.email || fullCall.extracted_data?.email || fullCall.email,
             incident_description: fullCall.call_analysis?.call_summary || categoryResult.summary || categoryResult.reasoning,
+            incident_date: extractedIncidentData?.incident_date || null,
+            incident_location: extractedIncidentData?.incident_location || null,
             ...fullCall.extracted_data
           };
 
@@ -2205,6 +2225,53 @@ app.get('/api/admin/leads/stats', async (req, res) => {
   }
 });
 
+// GET /api/calls/:callId - Get full details for a specific call
+app.get('/api/calls/:callId', async (req, res) => {
+  try {
+    const { callId } = req.params;
+
+    // Fetch call from Retell API
+    const call = await retellClient.call.retrieve(callId);
+
+    // Get category from database
+    const categoryResult = await pool.query(
+      'SELECT * FROM call_categories WHERE call_id = $1',
+      [callId]
+    );
+
+    const category = categoryResult.rows[0] || null;
+
+    res.json({
+      ...call,
+      category: category?.category || 'Uncategorized',
+      reasoning: category?.reasoning || null,
+      confidence_score: category?.confidence_score || null
+    });
+  } catch (error) {
+    console.error('Error fetching call details:', error);
+    res.status(500).json({ error: 'Failed to fetch call details' });
+  }
+});
+
+// GET /api/agent-summary - Get summary stats for the authenticated agent
+app.get('/api/agent-summary', async (req, res) => {
+  try {
+    // Get all calls from Retell for the authenticated client's agent
+    // For now, return a simple success response - this will be populated with actual agent data
+    const response = await retellClient.call.list({ limit: 1000 });
+    const calls = Array.isArray(response) ? response : (response.calls || []);
+
+    res.json({
+      success: true,
+      total_calls: calls.length,
+      calls: calls
+    });
+  } catch (error) {
+    console.error('Error fetching agent summary:', error);
+    res.status(500).json({ error: 'Failed to fetch agent summary' });
+  }
+});
+
 // GET /api/leads/:agentId - Get all leads for a specific client
 // NOTE: This MUST come after more specific routes like /api/leads/stats/:agentId
 app.get('/api/leads/:agentId', async (req, res) => {
@@ -2302,6 +2369,32 @@ app.put('/api/leads/:leadId/contact', async (req, res) => {
   } catch (error) {
     console.error('Error updating lead contact info:', error);
     res.status(500).json({ error: error.message || 'Failed to update contact information' });
+  }
+});
+
+// DELETE /api/leads/:leadId - Delete a lead (admin only)
+app.delete('/api/leads/:leadId', async (req, res) => {
+  try {
+    const { leadId } = req.params;
+
+    const result = await pool.query(
+      'DELETE FROM leads WHERE id = $1 RETURNING *',
+      [leadId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Lead not found' });
+    }
+
+    console.log(`✅ Lead ${leadId} deleted: ${result.rows[0].name || result.rows[0].phone_number}`);
+    res.json({
+      success: true,
+      message: 'Lead deleted successfully',
+      deleted_lead: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error deleting lead:', error);
+    res.status(500).json({ error: error.message || 'Failed to delete lead' });
   }
 });
 
