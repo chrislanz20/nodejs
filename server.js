@@ -323,7 +323,18 @@ app.get("/api/calls", async (req, res) => {
       } while (paginationKey && allCalls.length < 10000); // Safety limit
 
       console.log(`Total calls fetched: ${allCalls.length} across ${pageCount} pages`);
-      res.json({ calls: allCalls, total: allCalls.length });
+
+      // CRITICAL: Merge in categories from categories.json
+      const categories = await readCategories();
+      const callsWithCategories = allCalls.map(call => ({
+        ...call,
+        category: categories[call.call_id]?.category || 'Uncategorized',
+        reasoning: categories[call.call_id]?.reasoning || null,
+        confidence: categories[call.call_id]?.confidence || null,
+        phone_number: categories[call.call_id]?.phone_number || call.from_number || null
+      }));
+
+      res.json({ calls: callsWithCategories, total: callsWithCategories.length });
     } else {
       // Single page request
       const { limit = 100 } = req.query;
@@ -331,7 +342,19 @@ app.get("/api/calls", async (req, res) => {
       if (agent_id) params.filter_criteria = { agent_id: [agent_id] };  // agent_id must be an array
 
       const data = await retellClient.call.list(params);
-      res.json(data);
+
+      // CRITICAL: Merge in categories from categories.json
+      const categories = await readCategories();
+      const calls = Array.isArray(data) ? data : (data.calls || []);
+      const callsWithCategories = calls.map(call => ({
+        ...call,
+        category: categories[call.call_id]?.category || 'Uncategorized',
+        reasoning: categories[call.call_id]?.reasoning || null,
+        confidence: categories[call.call_id]?.confidence || null,
+        phone_number: categories[call.call_id]?.phone_number || call.from_number || null
+      }));
+
+      res.json(Array.isArray(data) ? callsWithCategories : { ...data, calls: callsWithCategories });
     }
   } catch (error) {
     console.error("Error fetching calls:", error.message);
