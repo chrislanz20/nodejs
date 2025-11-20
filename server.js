@@ -876,7 +876,7 @@ async function hasPhoneNumberCalledBefore(phoneNumber, allCallsWithCategories) {
 
 async function categorizeTranscript(transcript, phoneNumber = null) {
   if (!transcript || transcript.length === 0) {
-    return { category: 'Other', reasoning: 'No transcript available' };
+    return { category: 'Other', reasoning: 'No transcript available', confidence: 'HIGH' };
   }
 
   // FIRST: Check if this phone number has called before as a New Lead or Existing Client
@@ -897,7 +897,8 @@ async function categorizeTranscript(transcript, phoneNumber = null) {
             return {
               category: 'Existing Client',
               reasoning: `Returning caller - previously categorized as "${categoryData.category}" (phone: ${phoneNumber})`,
-              phone_number: phoneNumber
+              phone_number: phoneNumber,
+              confidence: 'HIGH'
             };
           }
         }
@@ -912,7 +913,7 @@ async function categorizeTranscript(transcript, phoneNumber = null) {
   } else if (typeof transcript === 'string') {
     transcriptText = transcript;
   } else {
-    return { category: 'Other', reasoning: 'Invalid transcript format' };
+    return { category: 'Other', reasoning: 'Invalid transcript format', confidence: 'HIGH' };
   }
 
   const prompt = `You are analyzing a phone call transcript for CourtLaw, a personal injury law firm's AI receptionist.
