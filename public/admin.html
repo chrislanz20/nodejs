@@ -585,6 +585,11 @@
           <div style="font-size: 16px; font-weight: 700; color: #fbbf24; text-shadow: 0 0 20px rgba(251, 191, 36, 0.3); margin-top: 8px;" id="stat-most-active">-</div>
           <div style="font-size: 11px; color: #6b7280; margin-top: 4px;"><span id="stat-most-active-calls">0</span> calls</div>
         </div>
+        <div style="background: rgba(30, 36, 44, 0.6); backdrop-filter: blur(10px); padding: 24px; border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.2); box-shadow: 0 4px 16px rgba(139, 92, 246, 0.1);">
+          <div style="font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Total Leads</div>
+          <div style="font-size: 32px; font-weight: 700; color: #8b5cf6; text-shadow: 0 0 20px rgba(139, 92, 246, 0.3);" id="stat-total-leads">0</div>
+          <div style="font-size: 11px; color: #6b7280; margin-top: 4px;"><span id="stat-approved-leads">0</span> approved (<span id="stat-conversion-rate">0</span>%)</div>
+        </div>
       </div>
     </div>
 
@@ -792,6 +797,42 @@
       document.getElementById('stat-total-calls').textContent = totalCalls;
       document.getElementById('stat-most-active').textContent = mostActiveClient || '-';
       document.getElementById('stat-most-active-calls').textContent = maxCalls;
+
+      // Load and display leads statistics
+      loadLeadsStats();
+    }
+
+    async function loadLeadsStats() {
+      try {
+        const response = await fetch('/api/admin/leads/stats');
+        if (!response.ok) {
+          throw new Error('Failed to fetch leads stats');
+        }
+
+        const allStats = await response.json();
+
+        // Aggregate stats across all clients
+        let totalLeads = 0;
+        let totalApproved = 0;
+
+        allStats.forEach(stat => {
+          totalLeads += parseInt(stat.total_leads) || 0;
+          totalApproved += parseInt(stat.approved) || 0;
+        });
+
+        const conversionRate = totalLeads > 0 ? ((totalApproved / totalLeads) * 100).toFixed(1) : 0;
+
+        // Update UI
+        document.getElementById('stat-total-leads').textContent = totalLeads;
+        document.getElementById('stat-approved-leads').textContent = totalApproved;
+        document.getElementById('stat-conversion-rate').textContent = conversionRate;
+      } catch (error) {
+        console.error('Error loading leads stats:', error);
+        // Set fallback values
+        document.getElementById('stat-total-leads').textContent = '0';
+        document.getElementById('stat-approved-leads').textContent = '0';
+        document.getElementById('stat-conversion-rate').textContent = '0';
+      }
     }
 
     async function loadClientStats() {
