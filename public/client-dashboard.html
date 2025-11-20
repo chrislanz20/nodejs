@@ -1407,6 +1407,54 @@
         </div>
       </div>
 
+      <!-- Lead Tracking Section -->
+      <div class="calls-section" style="margin-bottom: 32px;">
+        <div class="section-header">
+          <div class="section-title">Lead Tracker</div>
+          <div style="display: flex; gap: 12px;">
+            <button class="action-btn" onclick="loadClientLeads()" style="position: relative;">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              Refresh
+            </button>
+            <button class="action-btn" id="export-leads-btn" onclick="exportApprovedLeadsClient()" style="display: none; position: relative;">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              Export Approved Leads
+            </button>
+          </div>
+        </div>
+
+        <!-- Leads Stats -->
+        <div class="stats-grid" style="margin-bottom: 24px;">
+          <div class="stat-card">
+            <div class="stat-label">Total Leads</div>
+            <div class="stat-value" id="leads-total">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Approved</div>
+            <div class="stat-value" id="leads-approved" style="color: #00FF00;">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Denied</div>
+            <div class="stat-value" id="leads-denied" style="color: #FF0000;">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Conversion Rate</div>
+            <div class="stat-value" id="leads-conversion-rate">0%</div>
+          </div>
+        </div>
+
+        <!-- Leads Table -->
+        <div id="leads-table-container">
+          <div style="padding: 40px; text-align: center; color: #7d8590;">
+            <p>Loading leads...</p>
+          </div>
+        </div>
+      </div>
+
       <div class="calls-section">
         <div class="section-header">
           <div class="section-title">Recent Calls</div>
@@ -3355,6 +3403,210 @@
           showOnboarding();
         }, 1500);
       }
+    }
+
+    // ============================================================================
+    // LEAD TRACKING FUNCTIONS
+    // ============================================================================
+
+    async function loadClientLeads() {
+      const container = document.getElementById('leads-table-container');
+      container.innerHTML = '<div style="padding: 40px; text-align: center; color: #7d8590;"><p>Loading leads...</p></div>';
+
+      try {
+        // Get client's agent IDs from auth
+        const userData = JSON.parse(localStorage.getItem('client_data'));
+        if (!userData || !userData.agent_ids || userData.agent_ids.length === 0) {
+          container.innerHTML = '<div style="padding: 40px; text-align: center; color: #7d8590;"><p>No agent configured</p></div>';
+          return;
+        }
+
+        const agentId = userData.agent_ids[0]; // Use first agent ID
+
+        // Fetch leads and stats
+        const [leadsRes, statsRes] = await Promise.all([
+          fetch(`/api/leads/${agentId}`),
+          fetch(`/api/leads/stats/${agentId}`)
+        ]);
+
+        if (!leadsRes.ok || !statsRes.ok) {
+          throw new Error('Failed to fetch leads data');
+        }
+
+        const leadsData = await leadsRes.json();
+        const stats = await statsRes.json();
+        const leads = leadsData.leads || [];
+
+        // Update stats
+        document.getElementById('leads-total').textContent = stats.total_leads || 0;
+        document.getElementById('leads-approved').textContent = stats.approved || 0;
+        document.getElementById('leads-denied').textContent = stats.denied || 0;
+        document.getElementById('leads-conversion-rate').textContent = `${stats.conversion_rate || 0}%`;
+
+        // Show/hide export button
+        const exportBtn = document.getElementById('export-leads-btn');
+        if (stats.approved > 0) {
+          exportBtn.style.display = 'flex';
+        } else {
+          exportBtn.style.display = 'none';
+        }
+
+        // Render leads table
+        renderClientLeadsTable(container, leads);
+      } catch (error) {
+        console.error('Error loading leads:', error);
+        container.innerHTML = `
+          <div style="padding: 40px; text-align: center;">
+            <p style="color: #f85149; font-size: 16px;">❌ Failed to load leads</p>
+            <p style="color: #7d8590; font-size: 14px;">${error.message}</p>
+            <button onclick="loadClientLeads()" class="action-btn" style="margin-top: 20px;">Retry</button>
+          </div>
+        `;
+      }
+    }
+
+    function renderClientLeadsTable(container, leads) {
+      if (leads.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 40px; text-align: center; color: #7d8590;">
+            <p style="font-size: 16px;">No leads yet</p>
+            <p style="font-size: 14px; margin-top: 10px;">New leads will appear here automatically when calls are categorized as "New Lead"</p>
+          </div>
+        `;
+        return;
+      }
+
+      const statusColors = {
+        'Pending': '#FFA500',
+        'In Progress': '#00BFFF',
+        'Approved': '#00FF00',
+        'Denied': '#FF0000'
+      };
+
+      const statusBadge = (status) => {
+        const color = statusColors[status] || '#7d8590';
+        return `<span style="background: ${color}33; color: ${color}; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">${status}</span>`;
+      };
+
+      container.innerHTML = `
+        <table id="calls-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Description</th>
+              <th>First Call</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${leads.map(lead => `
+              <tr style="${lead.conversion_detected ? 'background: rgba(0, 255, 0, 0.05);' : ''}">
+                <td>
+                  ${lead.name || 'Unknown'}
+                  ${lead.conversion_detected ? '<span style="margin-left: 8px; font-size: 18px;" title="Lead converted to client!">🎉</span>' : ''}
+                </td>
+                <td style="color: #00FFFF; font-family: 'JetBrains Mono', monospace; font-size: 12px;">${lead.phone_number || 'N/A'}</td>
+                <td style="color: #7d8590; font-size: 12px;">${lead.email || 'N/A'}</td>
+                <td style="color: #7d8590; font-size: 12px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${lead.incident_description || 'N/A'}">${lead.incident_description || 'N/A'}</td>
+                <td style="color: #7d8590; font-size: 12px;">${new Date(lead.first_call_date).toLocaleDateString()}</td>
+                <td>${statusBadge(lead.status)}</td>
+                <td>
+                  <select onchange="updateClientLeadStatus(${lead.id}, this.value)"
+                          style="padding: 6px 10px; background: rgba(13, 17, 23, 0.6); color: #e6edf3; border: 1px solid rgba(48, 54, 61, 0.8); font-size: 12px; cursor: pointer;">
+                    <option value="">Change Status...</option>
+                    <option value="Pending" ${lead.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                    <option value="In Progress" ${lead.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                    <option value="Approved" ${lead.status === 'Approved' ? 'selected' : ''}>✅ Approve</option>
+                    <option value="Denied" ${lead.status === 'Denied' ? 'selected' : ''}>❌ Deny</option>
+                  </select>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    async function updateClientLeadStatus(leadId, newStatus) {
+      if (!newStatus) return;
+
+      try {
+        const res = await fetch(`/api/leads/${leadId}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to update status');
+        }
+
+        showToast(`✅ Lead status updated to: ${newStatus}`, 'success');
+
+        // Reload leads to show updated data
+        loadClientLeads();
+      } catch (error) {
+        console.error('Error updating lead status:', error);
+        showToast('❌ Failed to update lead status: ' + error.message, 'error');
+      }
+    }
+
+    function exportApprovedLeadsClient() {
+      const userData = JSON.parse(localStorage.getItem('client_data'));
+      if (!userData || !userData.agent_ids || userData.agent_ids.length === 0) {
+        showToast('No agent configured', 'error');
+        return;
+      }
+
+      const agentId = userData.agent_ids[0];
+
+      fetch(`/api/leads/${agentId}?status=Approved`)
+        .then(res => res.json())
+        .then(data => {
+          const leads = data.leads || [];
+          if (leads.length === 0) {
+            showToast('No approved leads to export', 'error');
+            return;
+          }
+
+          // Create CSV content
+          const headers = ['Name', 'Phone', 'Email', 'Description', 'First Call Date', 'Status'];
+          const csvRows = [headers.join(',')];
+
+          leads.forEach(lead => {
+            const row = [
+              `"${lead.name || 'Unknown'}"`,
+              `"${lead.phone_number || 'N/A'}"`,
+              `"${lead.email || 'N/A'}"`,
+              `"${(lead.incident_description || 'N/A').replace(/"/g, '""')}"`,
+              `"${new Date(lead.first_call_date).toLocaleDateString()}"`,
+              `"${lead.status}"`
+            ];
+            csvRows.push(row.join(','));
+          });
+
+          const csvContent = csvRows.join('\\n');
+
+          // Download CSV
+          const blob = new Blob([csvContent], { type: 'text/csv' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `approved-leads-${new Date().toISOString().split('T')[0]}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+
+          showToast(`✅ Exported ${leads.length} approved leads`, 'success');
+        })
+        .catch(error => {
+          console.error('Error exporting leads:', error);
+          showToast('Failed to export leads: ' + error.message, 'error');
+        });
     }
 
     // Initialize
