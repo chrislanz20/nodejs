@@ -1170,34 +1170,53 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
 
         // Track leads and conversions
         if (agentId) {
-          const extractedName = extractNameFromCall(fullCall);
-
-          // Extract incident date/location from transcript
-          let extractedIncidentData = null;
-          if (categoryResult.category === 'New Lead' && transcript) {
-            console.log(`   🔍 Extracting incident details from transcript...`);
+          // Extract ALL relevant data from transcript using AI (for all call types)
+          console.log(`   🔍 Extracting data from transcript for ${categoryResult.category}...`);
+          let extractedData = null;
+          if (transcript) {
             try {
-              const transcriptText = Array.isArray(transcript)
-                ? transcript.map(msg => `${msg.role}: ${msg.content}`).join('\n')
-                : transcript;
-              extractedIncidentData = await extractLeadDataFromTranscript(transcriptText);
-              if (extractedIncidentData) {
-                console.log(`   ✅ Incident data extracted: date=${extractedIncidentData.incident_date}, location=${extractedIncidentData.incident_location}`);
+              const { extractAllCallData } = require('./lib/extractAllCallData');
+              extractedData = await extractAllCallData(transcript, categoryResult.category);
+              if (extractedData) {
+                console.log(`   ✅ Data extracted successfully`);
+                // Log what was found
+                if (extractedData.email) console.log(`      Email: ${extractedData.email}`);
+                if (extractedData.who_representing) console.log(`      Representing: ${extractedData.who_representing}`);
+                if (extractedData.case_name) console.log(`      Case: ${extractedData.case_name}`);
+                if (extractedData.claim_number) console.log(`      Claim #: ${extractedData.claim_number}`);
               }
             } catch (error) {
-              console.error(`   ⚠️  Incident extraction error:`, error.message);
+              console.error(`   ⚠️  Data extraction error:`, error.message);
             }
           }
 
+          // Build comprehensive call data with fallbacks
           const callData = {
-            name: extractedName,
-            phone: phoneNumber,
+            // Basic info
+            name: extractedData?.name || extractNameFromCall(fullCall) || 'Unknown',
+            phone: extractedData?.phone || phoneNumber,
             phone_number: phoneNumber,
             from_number: fullCall.from_number,
-            email: extractedIncidentData?.email || fullCall.extracted_data?.email || fullCall.email,
-            incident_description: fullCall.call_analysis?.call_summary || categoryResult.summary || categoryResult.reasoning,
-            incident_date: extractedIncidentData?.incident_date || null,
-            incident_location: extractedIncidentData?.incident_location || null,
+            to_number: fullCall.to_number,
+
+            // Contact info
+            email: extractedData?.email || fullCall.extracted_data?.email || null,
+
+            // Attorney/Medical/Insurance/Other fields
+            purpose: extractedData?.purpose || fullCall.call_analysis?.call_summary || categoryResult.reasoning,
+            who_representing: extractedData?.who_representing || fullCall.extracted_data?.who_representing || null,
+            representing_who: extractedData?.who_representing || fullCall.extracted_data?.representing_who || null,
+            case_name: extractedData?.case_name || fullCall.extracted_data?.case_name || null,
+            client_name: extractedData?.case_name || fullCall.extracted_data?.client_name || null,
+            claim_number: extractedData?.claim_number || fullCall.extracted_data?.claim_number || null,
+            claim_num: extractedData?.claim_number || fullCall.extracted_data?.claim_num || null,
+
+            // New Lead fields
+            incident_description: extractedData?.incident_description || fullCall.call_analysis?.call_summary || categoryResult.summary || categoryResult.reasoning,
+            incident_date: extractedData?.incident_date || null,
+            incident_location: extractedData?.incident_location || null,
+
+            // Include any other extracted data from Retell
             ...fullCall.extracted_data
           };
 
