@@ -4204,13 +4204,26 @@
     function checkOnboarding() {
       const neverShowAgain = localStorage.getItem('dashboard-tour-never-show');
 
+      console.log('[TOUR] Checking if tour should show...');
+      console.log('[TOUR] neverShowAgain:', neverShowAgain);
+      console.log('[TOUR] currentUser:', currentUser ? 'SET' : 'NOT SET');
+
       // Show tour on EVERY login unless they've checked "don't show again"
       if (!neverShowAgain && currentUser) {
+        console.log('[TOUR] Starting tour in 1.5 seconds...');
         setTimeout(() => {
           showOnboarding();
         }, 1500);
+      } else {
+        console.log('[TOUR] Tour blocked. Reason:', !currentUser ? 'No user' : 'User chose not to see again');
       }
     }
+
+    // Add manual tour trigger for testing
+    window.startTourManually = function() {
+      console.log('[TOUR] Manually starting tour...');
+      showOnboarding();
+    };
 
     // Function to manually retake the tour (called from Settings)
     window.retakeTour = function() {
