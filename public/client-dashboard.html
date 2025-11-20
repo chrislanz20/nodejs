@@ -3417,14 +3417,13 @@
       container.innerHTML = '<div style="padding: 40px; text-align: center; color: #7d8590;"><p>Loading leads...</p></div>';
 
       try {
-        // Get client's agent IDs from auth
-        const userData = JSON.parse(localStorage.getItem('client_data'));
-        if (!userData || !userData.agent_ids || userData.agent_ids.length === 0) {
+        // Get client's agent IDs from currentUser (already loaded globally)
+        if (!currentUser || !currentUser.agent_ids || currentUser.agent_ids.length === 0) {
           container.innerHTML = '<div style="padding: 40px; text-align: center; color: #7d8590;"><p>No agent configured</p></div>';
           return;
         }
 
-        const agentId = userData.agent_ids[0]; // Use first agent ID
+        const agentId = currentUser.agent_ids[0]; // Use first agent ID
 
         // Fetch leads and stats
         const [leadsRes, statsRes] = await Promise.all([
@@ -3558,13 +3557,12 @@
     }
 
     function exportApprovedLeadsClient() {
-      const userData = JSON.parse(localStorage.getItem('client_data'));
-      if (!userData || !userData.agent_ids || userData.agent_ids.length === 0) {
+      if (!currentUser || !currentUser.agent_ids || currentUser.agent_ids.length === 0) {
         showToast('No agent configured', 'error');
         return;
       }
 
-      const agentId = userData.agent_ids[0];
+      const agentId = currentUser.agent_ids[0];
 
       fetch(`/api/leads/${agentId}?status=Approved`)
         .then(res => res.json())
