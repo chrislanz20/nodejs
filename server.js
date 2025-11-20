@@ -1516,7 +1516,7 @@ app.post('/api/save-categories', async (req, res) => {
 // POST /api/update-category - Manually override a call's category
 app.post('/api/update-category', async (req, res) => {
   try {
-    const { call_id, category, reasoning } = req.body;
+    const { call_id, category, reasoning, send_notifications } = req.body;
 
     if (!call_id) {
       return res.status(400).json({ error: 'call_id is required' });
@@ -1542,7 +1542,121 @@ app.post('/api/update-category', async (req, res) => {
 
     console.log(`✓ Manually updated category for ${call_id} → ${category}`);
 
-    res.json({ success: true, call_id, category, reasoning });
+    // Trigger notifications if requested (default: true)
+    const shouldSendNotifications = send_notifications !== false; // Default to true unless explicitly false
+
+    if (shouldSendNotifications) {
+      // Process async - fetch call data and send notifications
+      (async () => {
+        try {
+          console.log(`   📧 Triggering notifications for manual category change...`);
+
+          // Fetch full call details from Retell
+          const fullCall = await retellClient.call.retrieve(call_id);
+          const transcript = fullCall.transcript_object || fullCall.transcript || [];
+          const phoneNumber = fullCall.from_number || fullCall.to_number;
+          const agentId = fullCall.agent_id;
+
+          if (!agentId) {
+            console.error(`   ❌ No agent_id found for call ${call_id}`);
+            return;
+          }
+
+          // Extract ALL relevant data from transcript using AI
+          console.log(`   🔍 Extracting data from transcript for ${category}...`);
+          let extractedData = null;
+          if (transcript) {
+            try {
+              const { extractAllCallData } = require('./lib/extractAllCallData');
+              extractedData = await extractAllCallData(transcript, category);
+              if (extractedData) {
+                console.log(`   ✅ Data extracted successfully`);
+              }
+            } catch (error) {
+              console.error(`   ⚠️  Data extraction error:`, error.message);
+            }
+          }
+
+          // Build comprehensive call data (same as webhook does)
+          const callData = {
+            // Basic info
+            name: extractedData?.name || extractNameFromCall(fullCall) || 'Unknown',
+            phone: extractedData?.phone || phoneNumber,
+            phone_number: phoneNumber,
+            from_number: fullCall.from_number,
+            to_number: fullCall.to_number,
+
+            // Contact info
+            email: extractedData?.email || fullCall.extracted_data?.email || null,
+
+            // Attorney/Medical/Insurance/Other fields
+            purpose: extractedData?.purpose || fullCall.call_analysis?.call_summary || reasoning,
+            who_representing: extractedData?.who_representing || fullCall.extracted_data?.who_representing || null,
+            representing_who: extractedData?.who_representing || fullCall.extracted_data?.representing_who || null,
+            case_name: extractedData?.case_name || fullCall.extracted_data?.case_name || null,
+            client_name: extractedData?.case_name || fullCall.extracted_data?.client_name || null,
+            claim_number: extractedData?.claim_number || fullCall.extracted_data?.claim_number || null,
+            claim_num: extractedData?.claim_number || fullCall.extracted_data?.claim_num || null,
+
+            // New Lead base fields
+            incident_description: extractedData?.incident_description || fullCall.call_analysis?.call_summary || reasoning,
+            incident_date: extractedData?.incident_date || null,
+            incident_location: extractedData?.incident_location || null,
+            case_type: extractedData?.case_type || null,
+
+            // Case-Specific Fields (extracted by AI based on conversation)
+            // Rideshare
+            rideshare_role: extractedData?.rideshare_role || null,
+            rideshare_service: extractedData?.rideshare_service || null,
+            rideshare_driver_info: extractedData?.rideshare_driver_info || null,
+
+            // Vehicle accidents
+            vehicle_type: extractedData?.vehicle_type || null,
+            fault_determination: extractedData?.fault_determination || null,
+            police_report_filed: extractedData?.police_report_filed || null,
+            other_party_insured: extractedData?.other_party_insured || null,
+            injuries_sustained: extractedData?.injuries_sustained || null,
+
+            // Construction
+            construction_site_type: extractedData?.construction_site_type || null,
+            injury_cause: extractedData?.injury_cause || null,
+            employer_name: extractedData?.employer_name || null,
+            safety_equipment: extractedData?.safety_equipment || null,
+
+            // Slip & Fall
+            property_type: extractedData?.property_type || null,
+            fall_cause: extractedData?.fall_cause || null,
+            property_owner: extractedData?.property_owner || null,
+            witnesses_present: extractedData?.witnesses_present || null,
+
+            // Workers' Compensation
+            workplace_type: extractedData?.workplace_type || null,
+            work_injury_type: extractedData?.work_injury_type || null,
+            injury_reported: extractedData?.injury_reported || null,
+            doctor_visit: extractedData?.doctor_visit || null,
+
+            // Include any other extracted data from Retell
+            ...fullCall.extracted_data
+          };
+
+          // Send notifications
+          console.log(`   📤 Sending notifications for ${category}...`);
+          await sendNotifications(agentId, category, callData);
+          console.log(`   ✅ Notifications sent for manual category change`);
+
+        } catch (error) {
+          console.error(`   ❌ Error sending notifications for manual category change:`, error.message);
+        }
+      })(); // Execute immediately
+    }
+
+    res.json({
+      success: true,
+      call_id,
+      category,
+      reasoning,
+      notifications_triggered: shouldSendNotifications
+    });
   } catch (error) {
     console.error('Error updating category:', error);
     res.status(500).json({ error: 'Failed to update category' });
