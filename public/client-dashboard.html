@@ -1106,9 +1106,20 @@
       }
 
       /* Charts improvements */
+      .chart-card {
+        padding: 14px;
+      }
+
+      .chart-title {
+        font-size: 13px;
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+      }
+
       .bar-chart {
         height: 180px;
-        padding: 16px 12px;
+        padding: 16px 8px;
       }
 
       .bar-wrapper {
@@ -1120,7 +1131,7 @@
       }
 
       .bar-label {
-        font-size: 10px;
+        font-size: 9px;
       }
 
       /* Category breakdown */
@@ -1465,35 +1476,65 @@
 
     .btn-approve, .btn-deny {
       flex: 1;
-      padding: 10px;
+      padding: 12px 18px;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
     .btn-approve {
-      background: rgba(0, 255, 0, 0.1);
+      background: linear-gradient(135deg, rgba(0, 255, 0, 0.15) 0%, rgba(0, 200, 0, 0.1) 100%);
       color: #00FF00;
-      border: 1px solid rgba(0, 255, 0, 0.3);
+      border: 1.5px solid rgba(0, 255, 0, 0.4);
     }
 
     .btn-approve:hover {
-      background: rgba(0, 255, 0, 0.2);
-      border-color: rgba(0, 255, 0, 0.5);
+      background: linear-gradient(135deg, rgba(0, 255, 0, 0.25) 0%, rgba(0, 200, 0, 0.15) 100%);
+      border-color: rgba(0, 255, 0, 0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 255, 0, 0.3);
+    }
+
+    .btn-approve:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(0, 255, 0, 0.2);
     }
 
     .btn-deny {
-      background: rgba(255, 0, 0, 0.1);
-      color: #FF0000;
-      border: 1px solid rgba(255, 0, 0, 0.3);
+      background: linear-gradient(135deg, rgba(255, 0, 0, 0.15) 0%, rgba(200, 0, 0, 0.1) 100%);
+      color: #FF4444;
+      border: 1.5px solid rgba(255, 0, 0, 0.4);
     }
 
     .btn-deny:hover {
-      background: rgba(255, 0, 0, 0.2);
-      border-color: rgba(255, 0, 0, 0.5);
+      background: linear-gradient(135deg, rgba(255, 0, 0, 0.25) 0%, rgba(200, 0, 0, 0.15) 100%);
+      border-color: rgba(255, 0, 0, 0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+    }
+
+    .btn-deny:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(255, 0, 0, 0.2);
+    }
+
+    /* Mobile optimizations for buttons */
+    @media (max-width: 768px) {
+      .btn-approve, .btn-deny {
+        padding: 14px 16px;
+        font-size: 12px;
+        min-height: 48px;
+      }
     }
   </style>
 </head>
@@ -1761,39 +1802,54 @@
           <div class="section-title">Recent Calls</div>
           <div class="filters-row">
             <!-- Quick Date Buttons -->
-            <div style="display: flex; gap: 8px; align-items: center;">
-              <button class="quick-date-btn" onclick="applyQuickDate('today')" title="Show today's calls">
-                Today
-              </button>
-              <button class="quick-date-btn" onclick="applyQuickDate('week')" title="Show this week's calls">
-                This Week
-              </button>
-              <button class="quick-date-btn" onclick="applyQuickDate('month')" title="Show this month's calls">
-                This Month
-              </button>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 11px; color: #7d8590; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Quick Filters</label>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="quick-date-btn" onclick="applyQuickDate('today')" title="Show today's calls">
+                  Today
+                </button>
+                <button class="quick-date-btn" onclick="applyQuickDate('week')" title="Show this week's calls">
+                  This Week
+                </button>
+                <button class="quick-date-btn" onclick="applyQuickDate('month')" title="Show this month's calls">
+                  This Month
+                </button>
+              </div>
             </div>
 
             <!-- Quick Date Presets -->
-            <select class="filter-select" id="date-preset" onchange="applyDatePreset()">
-              <option value="custom">Custom Range</option>
-              <option value="all">All Time</option>
-              <option value="7">Last 7 Days</option>
-              <option value="30" selected>Last 30 Days</option>
-              <option value="90">Last 90 Days</option>
-            </select>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 11px; color: #7d8590; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Date Range</label>
+              <select class="filter-select" id="date-preset" onchange="applyDatePreset()">
+                <option value="custom">Custom Range</option>
+                <option value="all">All Time</option>
+                <option value="7">Last 7 Days</option>
+                <option value="30" selected>Last 30 Days</option>
+                <option value="90">Last 90 Days</option>
+              </select>
+            </div>
 
             <!-- Custom Date Range Inputs -->
-            <input type="date" class="filter-select" id="date-from" style="min-width: 140px;" onchange="onDateRangeChange()">
-            <input type="date" class="filter-select" id="date-to" style="min-width: 140px;" onchange="onDateRangeChange()">
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 11px; color: #7d8590; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">From Date</label>
+              <input type="date" class="filter-select" id="date-from" style="min-width: 140px;" onchange="onDateRangeChange()">
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 11px; color: #7d8590; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">To Date</label>
+              <input type="date" class="filter-select" id="date-to" style="min-width: 140px;" onchange="onDateRangeChange()">
+            </div>
 
             <!-- Multi-Select Category Filter -->
-            <div class="multi-select-wrapper" style="position: relative;">
-              <button class="filter-select" id="category-button" onclick="toggleCategoryDropdown()" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
-                <span id="category-button-text">All Categories</span>
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </button>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 11px; color: #7d8590; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Category</label>
+              <div class="multi-select-wrapper" style="position: relative;">
+                <button class="filter-select" id="category-button" onclick="toggleCategoryDropdown()" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                  <span id="category-button-text">All Categories</span>
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </button>
               <div id="category-dropdown" class="category-dropdown" style="display: none;">
                 <label style="display: flex; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s;">
                   <input type="checkbox" value="New Lead" onchange="updateCategoryFilter()" style="margin-right: 8px;"> New Lead
@@ -1823,8 +1879,12 @@
                 </div>
               </div>
             </div>
+            </div>
 
-            <input type="text" class="search-box" id="search-box" placeholder="Search calls..." style="min-width: 200px;">
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 11px; color: #7d8590; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Search</label>
+              <input type="text" class="search-box" id="search-box" placeholder="Search calls..." style="min-width: 200px;">
+            </div>
 
             <button class="action-btn" id="export-btn" onclick="exportToCSV()" style="position: relative;">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
