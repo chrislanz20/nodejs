@@ -1043,6 +1043,7 @@ REASONING: Caller explicitly identified as "medical provider" from a healthcare 
     const response = message.content[0].text.trim();
 
     // Parse response
+    const summaryMatch = response.match(/SUMMARY:\s*(.+?)(?=\nCATEGORY:)/is);
     const categoryMatch = response.match(/CATEGORY:\s*(.+?)(?:\n|$)/i);
     const confidenceMatch = response.match(/CONFIDENCE:\s*(.+?)(?:\n|$)/i);
     const reasoningMatch = response.match(/REASONING:\s*(.+?)$/is);
@@ -1050,6 +1051,7 @@ REASONING: Caller explicitly identified as "medical provider" from a healthcare 
     let category = categoryMatch ? categoryMatch[1].trim() : 'Other';
     const confidence = confidenceMatch ? confidenceMatch[1].trim().toUpperCase() : 'MEDIUM';
     let reasoning = reasoningMatch ? reasoningMatch[1].trim() : 'Auto-categorized';
+    let summary = summaryMatch ? summaryMatch[1].trim() : reasoning.substring(0, 200);
 
     // Add confidence to reasoning
     reasoning = `[${confidence} CONFIDENCE] ${reasoning}`;
@@ -1060,7 +1062,7 @@ REASONING: Caller explicitly identified as "medical provider" from a healthcare 
       category = 'Other';
     }
 
-    return { category, reasoning, confidence, phone_number: phoneNumber };
+    return { category, reasoning, summary, confidence, phone_number: phoneNumber };
   } catch (error) {
     console.error('Claude AI categorization failed:', error);
     console.error('Error details:', {
@@ -1086,6 +1088,7 @@ REASONING: Caller explicitly identified as "medical provider" from a healthcare 
       const response = completion.choices[0].message.content.trim();
 
       // Parse response (same format as Claude)
+      const summaryMatch = response.match(/SUMMARY:\s*(.+?)(?=\nCATEGORY:)/is);
       const categoryMatch = response.match(/CATEGORY:\s*(.+?)(?:\n|$)/i);
       const confidenceMatch = response.match(/CONFIDENCE:\s*(.+?)(?:\n|$)/i);
       const reasoningMatch = response.match(/REASONING:\s*(.+?)$/is);
@@ -1093,6 +1096,7 @@ REASONING: Caller explicitly identified as "medical provider" from a healthcare 
       let category = categoryMatch ? categoryMatch[1].trim() : 'Other';
       const confidence = confidenceMatch ? confidenceMatch[1].trim().toUpperCase() : 'MEDIUM';
       let reasoning = reasoningMatch ? reasoningMatch[1].trim() : 'Auto-categorized';
+      let summary = summaryMatch ? summaryMatch[1].trim() : reasoning.substring(0, 200);
 
       // Add confidence and backup indicator to reasoning
       reasoning = `[${confidence} CONFIDENCE - OpenAI Backup] ${reasoning}`;
@@ -1104,10 +1108,11 @@ REASONING: Caller explicitly identified as "medical provider" from a healthcare 
       }
 
       console.log('✅ OpenAI backup categorization successful');
-      return { category, reasoning, confidence, phone_number: phoneNumber };
+      return { category, reasoning, summary, confidence, phone_number: phoneNumber };
     } catch (backupError) {
       console.error('OpenAI backup also failed:', backupError);
-      return { category: 'Other', reasoning: `Error: Claude and OpenAI both failed. ${error.message || 'Unknown error'}`, phone_number: phoneNumber };
+      const errorMsg = `Error: Claude and OpenAI both failed. ${error.message || 'Unknown error'}`;
+      return { category: 'Other', reasoning: errorMsg, summary: 'Call could not be automatically categorized', phone_number: phoneNumber };
     }
   }
 }
@@ -1171,7 +1176,7 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
             phone_number: phoneNumber,
             from_number: fullCall.from_number,
             email: fullCall.extracted_data?.email || fullCall.email,
-            incident_description: fullCall.call_analysis?.call_summary || categoryResult.reasoning,
+            incident_description: fullCall.call_analysis?.call_summary || categoryResult.summary || categoryResult.reasoning,
             ...fullCall.extracted_data
           };
 
@@ -1332,7 +1337,7 @@ app.post('/api/categorize-batch', async (req, res) => {
               phone_number: call.phone_number,
               name: call.caller_name || extractCallerName(call),
               email: null, // Batch calls typically don't have email extracted
-              incident_description: result.reasoning
+              incident_description: result.summary || result.reasoning
             };
 
             const leadTrackingResult = await trackLead(call.call_id, call.agent_id, result.category, callData);
