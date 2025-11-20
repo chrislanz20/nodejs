@@ -3572,8 +3572,19 @@
     // Global storage for leads data
     let allLeadsData = [];
 
+    // Pagination state for leads
+    let currentPendingPage = 1;
+    let currentApprovedPage = 1;
+    let currentDeniedPage = 1;
+    const LEADS_PER_PAGE = 10;
+
     async function loadClientLeads() {
       try {
+        // Reset pagination to page 1 when reloading leads
+        currentPendingPage = 1;
+        currentApprovedPage = 1;
+        currentDeniedPage = 1;
+
         // Get client's agent IDs from currentUser (already loaded globally)
         if (!currentUser || !currentUser.agent_ids || currentUser.agent_ids.length === 0) {
           document.getElementById('leads-pending-container').innerHTML = '<div style="padding: 40px; text-align: center; color: #7d8590;"><p>No agent configured</p></div>';
@@ -3771,6 +3782,12 @@
         return;
       }
 
+      // Pagination logic
+      const totalPages = Math.ceil(leads.length / LEADS_PER_PAGE);
+      const startIdx = (currentPendingPage - 1) * LEADS_PER_PAGE;
+      const endIdx = startIdx + LEADS_PER_PAGE;
+      const paginatedLeads = leads.slice(startIdx, endIdx);
+
       container.innerHTML = `
         <table id="calls-table">
           <thead>
@@ -3783,7 +3800,7 @@
             </tr>
           </thead>
           <tbody>
-            ${leads.map(lead => `
+            ${paginatedLeads.map(lead => `
               <tr style="${lead.conversion_detected ? 'background: rgba(0, 255, 0, 0.05); cursor: pointer;' : 'cursor: pointer;'}" onclick="showLeadDetails(${lead.id})">
                 <td>
                   ${lead.name || 'Unknown Caller'}
@@ -3804,6 +3821,28 @@
             `).join('')}
           </tbody>
         </table>
+
+        ${totalPages > 1 ? `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; background: rgba(13, 17, 23, 0.6); border-radius: 8px;">
+            <button
+              onclick="currentPendingPage--; renderPendingLeads(allLeadsData.filter(l => l.status === 'Pending'))"
+              ${currentPendingPage === 1 ? 'disabled' : ''}
+              style="padding: 8px 16px; background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); color: #00FFFF; border-radius: 6px; cursor: pointer; ${currentPendingPage === 1 ? 'opacity: 0.5; cursor: not-allowed;' : ''}"
+            >
+              ← Previous
+            </button>
+            <span style="color: #7d8590; font-size: 14px;">
+              Page ${currentPendingPage} of ${totalPages} (${leads.length} total leads)
+            </span>
+            <button
+              onclick="currentPendingPage++; renderPendingLeads(allLeadsData.filter(l => l.status === 'Pending'))"
+              ${currentPendingPage === totalPages ? 'disabled' : ''}
+              style="padding: 8px 16px; background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); color: #00FFFF; border-radius: 6px; cursor: pointer; ${currentPendingPage === totalPages ? 'opacity: 0.5; cursor: not-allowed;' : ''}"
+            >
+              Next →
+            </button>
+          </div>
+        ` : ''}
       `;
     }
 
@@ -3820,6 +3859,12 @@
         return;
       }
 
+      // Pagination logic
+      const totalPages = Math.ceil(leads.length / LEADS_PER_PAGE);
+      const startIdx = (currentApprovedPage - 1) * LEADS_PER_PAGE;
+      const endIdx = startIdx + LEADS_PER_PAGE;
+      const paginatedLeads = leads.slice(startIdx, endIdx);
+
       container.innerHTML = `
         <table id="calls-table">
           <thead>
@@ -3832,7 +3877,7 @@
             </tr>
           </thead>
           <tbody>
-            ${leads.map(lead => `
+            ${paginatedLeads.map(lead => `
               <tr style="${lead.conversion_detected ? 'background: rgba(0, 255, 0, 0.05); cursor: pointer; border-left: 3px solid rgba(0, 255, 0, 0.5);' : 'cursor: pointer; border-left: 3px solid rgba(0, 255, 0, 0.5);'}" onclick="showLeadDetails(${lead.id})">
                 <td>
                   ${lead.name || 'Unknown Caller'}
@@ -3846,6 +3891,28 @@
             `).join('')}
           </tbody>
         </table>
+
+        ${totalPages > 1 ? `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; background: rgba(13, 17, 23, 0.6); border-radius: 8px;">
+            <button
+              onclick="currentApprovedPage--; renderApprovedLeads(allLeadsData.filter(l => l.status === 'Approved'))"
+              ${currentApprovedPage === 1 ? 'disabled' : ''}
+              style="padding: 8px 16px; background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); color: #00FFFF; border-radius: 6px; cursor: pointer; ${currentApprovedPage === 1 ? 'opacity: 0.5; cursor: not-allowed;' : ''}"
+            >
+              ← Previous
+            </button>
+            <span style="color: #7d8590; font-size: 14px;">
+              Page ${currentApprovedPage} of ${totalPages} (${leads.length} total approved)
+            </span>
+            <button
+              onclick="currentApprovedPage++; renderApprovedLeads(allLeadsData.filter(l => l.status === 'Approved'))"
+              ${currentApprovedPage === totalPages ? 'disabled' : ''}
+              style="padding: 8px 16px; background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); color: #00FFFF; border-radius: 6px; cursor: pointer; ${currentApprovedPage === totalPages ? 'opacity: 0.5; cursor: not-allowed;' : ''}"
+            >
+              Next →
+            </button>
+          </div>
+        ` : ''}
       `;
     }
 
@@ -3862,6 +3929,12 @@
         return;
       }
 
+      // Pagination logic
+      const totalPages = Math.ceil(leads.length / LEADS_PER_PAGE);
+      const startIdx = (currentDeniedPage - 1) * LEADS_PER_PAGE;
+      const endIdx = startIdx + LEADS_PER_PAGE;
+      const paginatedLeads = leads.slice(startIdx, endIdx);
+
       container.innerHTML = `
         <table id="calls-table">
           <thead>
@@ -3874,7 +3947,7 @@
             </tr>
           </thead>
           <tbody>
-            ${leads.map(lead => `
+            ${paginatedLeads.map(lead => `
               <tr style="cursor: pointer; opacity: 0.8; border-left: 3px solid rgba(255, 0, 0, 0.5);" onclick="showLeadDetails(${lead.id})">
                 <td>${lead.name || 'Unknown Caller'}</td>
                 <td style="color: #00FFFF; font-family: 'JetBrains Mono', monospace; font-size: 12px;">${lead.phone_number || 'N/A'}</td>
@@ -3885,6 +3958,28 @@
             `).join('')}
           </tbody>
         </table>
+
+        ${totalPages > 1 ? `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; background: rgba(13, 17, 23, 0.6); border-radius: 8px;">
+            <button
+              onclick="currentDeniedPage--; renderDeniedLeads(allLeadsData.filter(l => l.status === 'Denied'))"
+              ${currentDeniedPage === 1 ? 'disabled' : ''}
+              style="padding: 8px 16px; background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); color: #00FFFF; border-radius: 6px; cursor: pointer; ${currentDeniedPage === 1 ? 'opacity: 0.5; cursor: not-allowed;' : ''}"
+            >
+              ← Previous
+            </button>
+            <span style="color: #7d8590; font-size: 14px;">
+              Page ${currentDeniedPage} of ${totalPages} (${leads.length} total denied)
+            </span>
+            <button
+              onclick="currentDeniedPage++; renderDeniedLeads(allLeadsData.filter(l => l.status === 'Denied'))"
+              ${currentDeniedPage === totalPages ? 'disabled' : ''}
+              style="padding: 8px 16px; background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); color: #00FFFF; border-radius: 6px; cursor: pointer; ${currentDeniedPage === totalPages ? 'opacity: 0.5; cursor: not-allowed;' : ''}"
+            >
+              Next →
+            </button>
+          </div>
+        ` : ''}
       `;
     }
 
