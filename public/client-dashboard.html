@@ -807,6 +807,30 @@
       box-shadow: 0 2px 8px rgba(55, 65, 81, 0.3);
     }
 
+    .confidence-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border: 1.5px solid;
+      transition: all 0.2s;
+      cursor: help;
+    }
+
+    .confidence-badge:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .confidence-na {
+      color: #6b7280;
+      border-color: #6b7280;
+      background: rgba(107, 114, 128, 0.1);
+    }
+
     .modal {
       display: none;
       position: fixed;
@@ -1946,6 +1970,19 @@
             </div>
             </div>
 
+            <!-- Duration Filter -->
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 11px; color: #7d8590; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Duration</label>
+              <select class="filter-select" id="duration-filter" onchange="filterCalls()" style="min-width: 150px;">
+                <option value="all">All Durations</option>
+                <option value="under30s">Under 30 seconds</option>
+                <option value="under1m">Under 1 minute</option>
+                <option value="over1m">Over 1 minute</option>
+                <option value="over2m">Over 2 minutes</option>
+                <option value="over5m">Over 5 minutes</option>
+              </select>
+            </div>
+
             <div style="display: flex; flex-direction: column; gap: 6px;">
               <label style="font-size: 11px; color: #7d8590; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Search</label>
               <input type="text" class="search-box" id="search-box" placeholder="Search calls..." style="min-width: 200px;">
@@ -1978,7 +2015,7 @@
               <th>Phone Number</th>
               <th>Date</th>
               <th>Duration</th>
-              <th>Status</th>
+              <th>Confidence</th>
               <th>Category</th>
             </tr>
           </thead>
@@ -2578,16 +2615,17 @@
           ? new Date(call.start_timestamp).toLocaleString()
           : 'N/A';
         const duration = formatDuration(call.duration_minutes || 0);
-        const status = call.end_timestamp ? 'completed' : 'ongoing';
         const phoneNumber = call.from_number || call.to_number || call.customer_number || 'N/A';
         const category = categories[call.call_id]?.category || 'Uncategorized';
+        const confidence = categories[call.call_id]?.confidence_score;
+        const confidenceDisplay = formatConfidence(confidence);
 
         return `
           <tr onclick="openCallModal('${call.call_id}')">
             <td>${phoneNumber}</td>
             <td>${date}</td>
             <td>${duration}</td>
-            <td><span class="status-badge status-${status}">${status}</span></td>
+            <td>${confidenceDisplay}</td>
             <td>${getCategoryBadge(category)}</td>
           </tr>
         `;
@@ -2679,6 +2717,49 @@
       return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
+    function formatConfidence(score) {
+      // If no confidence score, show N/A
+      if (score === null || score === undefined) {
+        return '<span class="confidence-badge confidence-na" title="Confidence score not available">N/A</span>';
+      }
+
+      // Convert to percentage if needed (0-1 scale to 0-100)
+      const percentage = score <= 1 ? Math.round(score * 100) : Math.round(score);
+
+      // Determine confidence level and styling
+      let level, color, icon, tooltip;
+      if (percentage >= 90) {
+        level = 'Very High';
+        color = '#10b981'; // Green
+        icon = '✓✓';
+        tooltip = `${percentage}% - AI is very confident in this categorization`;
+      } else if (percentage >= 75) {
+        level = 'High';
+        color = '#22c55e'; // Light green
+        icon = '✓';
+        tooltip = `${percentage}% - AI is highly confident in this categorization`;
+      } else if (percentage >= 60) {
+        level = 'Medium';
+        color = '#f59e0b'; // Orange
+        icon = '~';
+        tooltip = `${percentage}% - AI has moderate confidence in this categorization`;
+      } else if (percentage >= 40) {
+        level = 'Low';
+        color = '#ef4444'; // Red
+        icon = '?';
+        tooltip = `${percentage}% - AI has low confidence, manual review recommended`;
+      } else {
+        level = 'Very Low';
+        color = '#dc2626'; // Dark red
+        icon = '??';
+        tooltip = `${percentage}% - AI has very low confidence, manual review needed`;
+      }
+
+      return `<span class="confidence-badge" style="color: ${color}; border-color: ${color}; background: ${color}15;" title="${tooltip}">
+        <span style="margin-right: 4px;">${icon}</span>${level} (${percentage}%)
+      </span>`;
+    }
+
     function getCategoryBadge(category) {
       const className = category.toLowerCase().replace(/\s+/g, '-');
       return `<span class="category-badge category-${className}">${category}</span>`;
@@ -2764,6 +2845,12 @@
         `;
       }
 
+      // Extract "where heard about" information
+      const heardAbout = call.extracted_data?.referral_source ||
+                        call.extracted_data?.heard_about ||
+                        call.call_analysis?.referral_source ||
+                        null;
+
       modalBody.innerHTML = `
         <div class="field-grid">
           <div class="field">
@@ -2790,6 +2877,12 @@
             <div class="field-label">Category</div>
             <div class="field-value">${getCategoryBadge(category)}</div>
           </div>
+          ${heardAbout ? `
+            <div class="field">
+              <div class="field-label">Where Heard About CourtLaw</div>
+              <div class="field-value" style="color: #00FFFF;">📣 ${heardAbout}</div>
+            </div>
+          ` : ''}
         </div>
 
         ${contentHTML}
@@ -3640,6 +3733,30 @@
         });
       }
 
+      // Apply duration filter
+      const durationFilter = document.getElementById('duration-filter')?.value || 'all';
+      if (durationFilter !== 'all') {
+        filteredCalls = filteredCalls.filter(call => {
+          const durationMinutes = call.duration_minutes || 0;
+          const durationSeconds = durationMinutes * 60;
+
+          switch (durationFilter) {
+            case 'under30s':
+              return durationSeconds < 30;
+            case 'under1m':
+              return durationSeconds < 60;
+            case 'over1m':
+              return durationSeconds >= 60;
+            case 'over2m':
+              return durationSeconds >= 120;
+            case 'over5m':
+              return durationSeconds >= 300;
+            default:
+              return true;
+          }
+        });
+      }
+
       // Apply search filter
       if (searchTerm) {
         filteredCalls = filteredCalls.filter(call => {
@@ -4193,6 +4310,14 @@
             </div>
           ` : ''}
 
+          <div id="lead-call-details-container-${lead.id}" style="margin-top: 20px;">
+            <div style="text-align: center; padding: 24px;">
+              <button onclick="loadLeadCallDetails('${lead.call_id}', ${lead.id})" class="action-btn" style="padding: 12px 24px;">
+                📄 Load Call Recording & Transcript
+              </button>
+            </div>
+          </div>
+
           ${editMode ? `
             <div style="display: flex; gap: 12px; margin-top: 20px;">
               <button class="btn-approve" style="flex: 1; padding: 12px; font-size: 14px;" onclick="saveLeadContactInfo(${lead.id})">
@@ -4216,6 +4341,106 @@
       `;
 
       showModal('Lead Details', modalContent);
+    }
+
+    async function loadLeadCallDetails(callId, leadId) {
+      const container = document.getElementById(`lead-call-details-container-${leadId}`);
+
+      // Show loading state
+      container.innerHTML = `
+        <div style="text-align: center; padding: 24px;">
+          <div style="color: #7d8590; font-size: 14px;">Loading call details...</div>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(`/api/calls/${callId}`);
+        if (!response.ok) throw new Error('Failed to fetch call details');
+
+        const call = await response.json();
+        const transcriptData = call.transcript || call.transcript_object;
+        const recordingUrl = call.recording_url;
+
+        let contentHTML = '';
+
+        // Add recording
+        if (recordingUrl) {
+          contentHTML += `
+            <div style="background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(48, 54, 61, 0.8); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+              <div style="color: #00FFFF; font-weight: 600; font-size: 12px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                🎵 Call Recording
+              </div>
+              <audio controls style="width: 100%;">
+                <source src="${recordingUrl}" type="audio/mpeg">
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+          `;
+        }
+
+        // Add transcript
+        if (transcriptData && transcriptData.length > 0) {
+          contentHTML += `
+            <div style="background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(48, 54, 61, 0.8); border-radius: 8px; padding: 16px; margin-bottom: 16px; max-height: 500px; overflow-y: auto;">
+              <div style="color: #00FFFF; font-weight: 600; font-size: 12px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                💬 Transcript
+              </div>
+              ${transcriptData.map(msg => {
+                const role = msg.role === 'agent' ? 'AI' : 'Caller';
+                const color = msg.role === 'agent' ? '#00FFFF' : '#00FF00';
+                const bgColor = msg.role === 'agent' ? 'rgba(0, 255, 255, 0.05)' : 'rgba(0, 255, 0, 0.05)';
+                return `
+                  <div style="margin-bottom: 16px; padding: 12px; border-left: 3px solid ${color}; background: ${bgColor}; border-radius: 4px;">
+                    <div style="color: ${color}; font-weight: 700; font-size: 11px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">
+                      ${role}
+                    </div>
+                    <div style="color: #e6edf3; line-height: 1.5; font-size: 14px;">
+                      ${msg.content}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+        }
+
+        // Add call analysis if available
+        if (call.call_analysis) {
+          const analysis = call.call_analysis;
+          contentHTML += `
+            <div style="background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(48, 54, 61, 0.8); border-radius: 8px; padding: 16px;">
+              <div style="color: #00FFFF; font-weight: 600; font-size: 12px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                📊 Call Analysis
+              </div>
+              ${analysis.call_summary ? `
+                <div style="margin-bottom: 12px;">
+                  <div style="color: #9ca3af; font-size: 11px; margin-bottom: 4px; text-transform: uppercase;">Summary</div>
+                  <div style="color: #e6edf3; font-size: 14px; line-height: 1.6;">${analysis.call_summary}</div>
+                </div>
+              ` : ''}
+              ${analysis.user_sentiment ? `
+                <div style="margin-bottom: 12px;">
+                  <div style="color: #9ca3af; font-size: 11px; margin-bottom: 4px; text-transform: uppercase;">Caller Sentiment</div>
+                  <div style="color: #e6edf3; font-size: 14px;">${analysis.user_sentiment}</div>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }
+
+        container.innerHTML = contentHTML || '<div style="text-align: center; padding: 24px; color: #7d8590;">No call details available</div>';
+
+      } catch (error) {
+        console.error('Error loading call details:', error);
+        container.innerHTML = `
+          <div style="text-align: center; padding: 24px;">
+            <div style="color: #f85149; margin-bottom: 12px;">❌ Failed to load call details</div>
+            <button onclick="loadLeadCallDetails('${callId}', ${leadId})" class="action-btn" style="padding: 8px 16px; font-size: 13px;">
+              Retry
+            </button>
+          </div>
+        `;
+      }
     }
 
     function renderPendingLeads(leads) {
