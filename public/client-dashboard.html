@@ -3651,7 +3651,7 @@
       document.getElementById('leads-denied-container').style.display = tab === 'denied' ? 'block' : 'none';
     }
 
-    function showLeadDetails(leadId) {
+    function showLeadDetails(leadId, editMode = false) {
       const lead = allLeadsData.find(l => l.id === leadId);
       if (!lead) {
         showToast('Lead not found', 'error');
@@ -3668,19 +3668,39 @@
 
       // Create modal content
       const modalContent = `
-        <div style="padding: 20px;">
+        <div style="padding: 20px;" id="lead-detail-content">
           <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
-            <div>
-              <h3 style="margin: 0 0 8px 0; color: #e6edf3; font-size: 20px;">
-                ${lead.name || 'Unknown Caller'}
-                ${lead.conversion_detected ? '<span style="margin-left: 8px; font-size: 20px;" title="Lead converted to client!">🎉</span>' : ''}
-              </h3>
-              <div style="font-size: 14px; color: #00FFFF; font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;">
-                ${lead.phone_number || 'N/A'}
-              </div>
-              ${lead.email ? `<div style="font-size: 14px; color: #9ca3af;">${lead.email}</div>` : ''}
+            <div style="flex: 1;">
+              ${editMode ? `
+                <div style="margin-bottom: 12px;">
+                  <label style="display: block; color: #7d8590; font-size: 11px; margin-bottom: 4px; text-transform: uppercase;">Name</label>
+                  <input type="text" id="edit-lead-name" value="${lead.name || ''}" style="width: 100%; padding: 8px; background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(48, 54, 61, 0.8); border-radius: 6px; color: #e6edf3; font-size: 16px;" />
+                </div>
+                <div style="margin-bottom: 12px;">
+                  <label style="display: block; color: #7d8590; font-size: 11px; margin-bottom: 4px; text-transform: uppercase;">Phone Number</label>
+                  <input type="tel" id="edit-lead-phone" value="${lead.phone_number || ''}" style="width: 100%; padding: 8px; background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(48, 54, 61, 0.8); border-radius: 6px; color: #00FFFF; font-family: 'JetBrains Mono', monospace; font-size: 14px;" />
+                </div>
+                <div style="margin-bottom: 12px;">
+                  <label style="display: block; color: #7d8590; font-size: 11px; margin-bottom: 4px; text-transform: uppercase;">Email</label>
+                  <input type="email" id="edit-lead-email" value="${lead.email || ''}" style="width: 100%; padding: 8px; background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(48, 54, 61, 0.8); border-radius: 6px; color: #9ca3af; font-size: 14px;" />
+                </div>
+              ` : `
+                <h3 style="margin: 0 0 8px 0; color: #e6edf3; font-size: 20px;">
+                  ${lead.name || 'Unknown Caller'}
+                  ${lead.conversion_detected ? '<span style="margin-left: 8px; font-size: 20px;" title="Lead converted to client!">🎉</span>' : ''}
+                </h3>
+                <div style="font-size: 14px; color: #00FFFF; font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;">
+                  ${lead.phone_number || 'N/A'}
+                </div>
+                ${lead.email ? `<div style="font-size: 14px; color: #9ca3af;">${lead.email}</div>` : '<div style="font-size: 14px; color: #7d8590;">No email</div>'}
+              `}
             </div>
-            <div style="text-align: right;">
+            <div style="text-align: right; margin-left: 20px;">
+              ${!editMode ? `
+                <button onclick="showLeadDetails(${lead.id}, true)" style="background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); color: #00FFFF; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; margin-bottom: 12px;">
+                  ✏️ Edit
+                </button>
+              ` : ''}
               <div style="background: ${statusColor}33; color: ${statusColor}; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-bottom: 8px;">
                 ${lead.status}
               </div>
@@ -3713,7 +3733,16 @@
             </div>
           ` : ''}
 
-          ${lead.status === 'Pending' ? `
+          ${editMode ? `
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+              <button class="btn-approve" style="flex: 1; padding: 12px; font-size: 14px;" onclick="saveLeadContactInfo(${lead.id})">
+                💾 Save Changes
+              </button>
+              <button style="flex: 1; padding: 12px; font-size: 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: #9ca3af; border-radius: 8px; cursor: pointer;" onclick="showLeadDetails(${lead.id}, false)">
+                Cancel
+              </button>
+            </div>
+          ` : lead.status === 'Pending' ? `
             <div style="display: flex; gap: 12px; margin-top: 20px;">
               <button class="btn-approve" style="flex: 1; padding: 12px; font-size: 14px;" onclick="updateClientLeadStatus(${lead.id}, 'Approved'); closeModal();">
                 ✅ Approve Lead
@@ -3857,6 +3886,47 @@
           </tbody>
         </table>
       `;
+    }
+
+    async function saveLeadContactInfo(leadId) {
+      try {
+        // Get values from input fields
+        const name = document.getElementById('edit-lead-name').value.trim();
+        const phone_number = document.getElementById('edit-lead-phone').value.trim();
+        const email = document.getElementById('edit-lead-email').value.trim();
+
+        // Basic validation
+        if (!name && !phone_number && !email) {
+          showToast('⚠️ At least one field must be filled', 'error');
+          return;
+        }
+
+        const res = await fetch(`/api/leads/${leadId}/contact`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name || null,
+            phone_number: phone_number || null,
+            email: email || null
+          })
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error || 'Failed to update contact info');
+        }
+
+        showToast('✅ Contact information updated successfully', 'success');
+
+        // Reload leads to show updated data
+        await loadClientLeads();
+
+        // Close modal or show view mode
+        closeModal();
+      } catch (error) {
+        console.error('Error saving lead contact info:', error);
+        showToast('❌ Failed to save: ' + error.message, 'error');
+      }
     }
 
     async function updateClientLeadStatus(leadId, newStatus) {

@@ -2170,6 +2170,67 @@ app.put('/api/leads/:leadId/status', async (req, res) => {
   }
 });
 
+// PUT /api/leads/:leadId/contact - Update lead contact information
+app.put('/api/leads/:leadId/contact', async (req, res) => {
+  try {
+    const { leadId } = req.params;
+    const { name, email, phone_number } = req.body;
+
+    // Build update query dynamically
+    const updates = [];
+    const values = [];
+    let paramCount = 1;
+
+    if (name !== undefined) {
+      updates.push(`name = $${paramCount++}`);
+      values.push(name);
+    }
+
+    if (email !== undefined) {
+      updates.push(`email = $${paramCount++}`);
+      values.push(email);
+    }
+
+    if (phone_number !== undefined) {
+      updates.push(`phone_number = $${paramCount++}`);
+      values.push(phone_number);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({
+        error: 'At least one field (name, email, phone_number) must be provided'
+      });
+    }
+
+    // Always update the updated_at timestamp
+    updates.push(`updated_at = CURRENT_TIMESTAMP`);
+    values.push(leadId);
+
+    const query = `
+      UPDATE leads
+      SET ${updates.join(', ')}
+      WHERE id = $${paramCount}
+      RETURNING *
+    `;
+
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Lead not found' });
+    }
+
+    console.log(`✅ Lead ${leadId} contact info updated`);
+    res.json({
+      success: true,
+      lead: result.rows[0],
+      message: 'Contact information updated successfully'
+    });
+  } catch (error) {
+    console.error('Error updating lead contact info:', error);
+    res.status(500).json({ error: error.message || 'Failed to update contact information' });
+  }
+});
+
 // Railway will set PORT for us
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Proxy listening on ${PORT}`));
