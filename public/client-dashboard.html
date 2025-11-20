@@ -1061,7 +1061,7 @@
       /* Filters section improvements */
       .filters-row {
         flex-direction: column;
-        gap: 10px;
+        gap: 16px;
       }
 
       .filter-select,
@@ -1069,21 +1069,27 @@
         width: 100%;
         min-width: unset;
         font-size: 14px;
-        padding: 12px;
+        padding: 14px;
       }
 
       /* Quick date buttons - stack on mobile */
       .quick-date-btn {
         flex: 1;
         min-width: 0;
-        padding: 12px 10px;
-        font-size: 12px;
+        padding: 13px 12px;
+        font-size: 13px;
       }
 
       /* Date inputs */
       input[type="date"] {
-        padding: 12px;
+        padding: 14px;
         font-size: 14px;
+      }
+
+      /* Filter labels */
+      .filters-row label {
+        font-size: 10px;
+        margin-bottom: 6px;
       }
 
       /* Section headers */
@@ -1107,31 +1113,38 @@
 
       /* Charts improvements */
       .chart-card {
-        padding: 14px;
+        padding: 16px 12px;
       }
 
       .chart-title {
-        font-size: 13px;
-        margin-bottom: 16px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        font-size: 14px;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+        text-align: center;
+        line-height: 1.4;
       }
 
       .bar-chart {
-        height: 180px;
-        padding: 16px 8px;
+        height: 200px;
+        padding: 20px 4px 16px 4px;
+        display: flex;
+        gap: 4px;
       }
 
       .bar-wrapper {
-        padding-top: 28px;
+        padding-top: 32px;
+        flex: 1;
       }
 
       .bar-value {
-        font-size: 11px;
+        font-size: 12px;
+        font-weight: 700;
       }
 
       .bar-label {
-        font-size: 9px;
+        font-size: 10px;
+        margin-top: 6px;
       }
 
       /* Category breakdown */
@@ -1531,9 +1544,23 @@
     /* Mobile optimizations for buttons */
     @media (max-width: 768px) {
       .btn-approve, .btn-deny {
-        padding: 14px 16px;
-        font-size: 12px;
-        min-height: 48px;
+        padding: 16px 20px;
+        font-size: 13px;
+        min-height: 50px;
+        font-weight: 700;
+        border-width: 2px;
+      }
+
+      /* Make buttons stack vertically on very small screens in tables */
+      td .btn-approve,
+      td .btn-deny {
+        display: block;
+        width: 100%;
+        margin-bottom: 8px;
+      }
+
+      td .btn-deny {
+        margin-bottom: 0;
       }
     }
   </style>
