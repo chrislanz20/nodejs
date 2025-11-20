@@ -15,6 +15,7 @@ const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
 const compression = require('compression');
 const { sendNotifications } = require('./lib/ghlNotifications');
+const { trackLead, updateLeadStatus, getLeadsByAgent, getLeadStats, getAllLeadStats } = require('./lib/leadTracking');
 
 const app = express();
 
@@ -1118,6 +1119,25 @@ app.post('/api/categorize-call', async (req, res) => {
     categories[call_id] = result;
     await writeCategories(categories);
 
+    // Track lead and detect conversions
+    let leadTrackingResult = null;
+    if (agent_id && call_data) {
+      try {
+        leadTrackingResult = await trackLead(call_id, agent_id, result.category, call_data);
+        if (leadTrackingResult) {
+          if (leadTrackingResult.isNewLead) {
+            console.log(`📝 New lead tracked: ${call_data.name || call_data.phone}`);
+          }
+          if (leadTrackingResult.conversionDetected) {
+            console.log(`🎉 CONVERSION! Lead converted to client`);
+          }
+        }
+      } catch (error) {
+        console.error('❌ Lead tracking error:', error.message);
+        // Don't fail the whole request if lead tracking fails
+      }
+    }
+
     // Send notifications if agent_id and call_data are provided
     if (agent_id && call_data) {
       console.log(`\n🔔 Triggering notifications for call ${call_id} (category: ${result.category})`);
@@ -1996,6 +2016,71 @@ app.post('/api/admin/clients/:id/reset-password', async (req, res) => {
   } catch (error) {
     console.error('Error resetting password:', error);
     res.status(500).json({ error: 'Failed to reset password' });
+  }
+});
+
+// ============================================================================
+// LEAD TRACKING ENDPOINTS
+// ============================================================================
+
+// GET /api/leads/:agentId - Get all leads for a specific client
+app.get('/api/leads/:agentId', async (req, res) => {
+  try {
+    const { agentId } = req.params;
+    const { status } = req.query; // Optional filter by status
+
+    const leads = await getLeadsByAgent(agentId, status || null);
+    res.json({ leads });
+  } catch (error) {
+    console.error('Error fetching leads:', error);
+    res.status(500).json({ error: 'Failed to fetch leads' });
+  }
+});
+
+// GET /api/leads/stats/:agentId - Get lead statistics for a specific client
+app.get('/api/leads/stats/:agentId', async (req, res) => {
+  try {
+    const { agentId } = req.params;
+    const stats = await getLeadStats(agentId);
+    res.json(stats);
+  } catch (error) {
+    console.error('Error fetching lead stats:', error);
+    res.status(500).json({ error: 'Failed to fetch lead stats' });
+  }
+});
+
+// GET /api/admin/leads/stats - Get lead statistics across all clients (admin only)
+app.get('/api/admin/leads/stats', async (req, res) => {
+  try {
+    const stats = await getAllLeadStats();
+    res.json(stats);
+  } catch (error) {
+    console.error('Error fetching all lead stats:', error);
+    res.status(500).json({ error: 'Failed to fetch lead stats' });
+  }
+});
+
+// PUT /api/leads/:leadId/status - Update lead status manually
+app.put('/api/leads/:leadId/status', async (req, res) => {
+  try {
+    const { leadId } = req.params;
+    const { status, notes, updated_by } = req.body;
+
+    if (!status || !['Pending', 'In Progress', 'Approved', 'Denied'].includes(status)) {
+      return res.status(400).json({
+        error: 'Invalid status. Must be: Pending, In Progress, Approved, or Denied'
+      });
+    }
+
+    const updatedLead = await updateLeadStatus(leadId, status, updated_by, notes);
+    res.json({
+      success: true,
+      lead: updatedLead,
+      message: `Lead status updated to ${status}`
+    });
+  } catch (error) {
+    console.error('Error updating lead status:', error);
+    res.status(500).json({ error: error.message || 'Failed to update lead status' });
   }
 });
 

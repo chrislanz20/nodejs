@@ -914,6 +914,7 @@
         <button class="tab active" onclick="switchTab('overview')">Overview</button>
         <button class="tab" onclick="switchTab('agents')">All Agents</button>
         <button class="tab" onclick="switchTab('calls')">All Calls</button>
+        <button class="tab" onclick="switchTab('leads')">Leads</button>
       </div>
 
       <!-- Overview View -->
@@ -929,6 +930,11 @@
       <!-- Calls View -->
       <div id="calls" class="view">
         <div id="calls-content"></div>
+      </div>
+
+      <!-- Leads View -->
+      <div id="leads" class="view">
+        <div id="leads-content"></div>
       </div>
 
       <!-- Agent Detail View -->
@@ -1399,6 +1405,7 @@
       if (tabName === 'overview') loadOverview(false);  // false = don't force reload
       if (tabName === 'agents') loadAgents();
       if (tabName === 'calls') loadAllCalls();
+      if (tabName === 'leads') loadLeads();
     }
 
     // Render overview with current data
@@ -2737,6 +2744,226 @@
 
       // Then run every 5 minutes (not 30 seconds - too aggressive)
       autoCategorizationInterval = setInterval(checkForNewCallsAndCategorize, 300000);
+    }
+
+    // ============================================================================
+    // LEAD TRACKING FUNCTIONS
+    // ============================================================================
+
+    // Load and display leads
+    async function loadLeads() {
+      const content = document.getElementById('leads-content');
+      content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading leads...</p></div>';
+
+      try {
+        // Get agent ID from URL or use first agent (for multi-tenant support)
+        const agentId = agentSummaries.length > 0 ? agentSummaries[0].agent_id : 'agent_8e50b96f7e7bb7ce7479219fcc';
+
+        // Fetch leads and stats
+        const [leadsRes, statsRes] = await Promise.all([
+          fetch(`/api/leads/${agentId}`),
+          fetch(`/api/leads/stats/${agentId}`)
+        ]);
+
+        if (!leadsRes.ok || !statsRes.ok) {
+          throw new Error('Failed to fetch leads data');
+        }
+
+        const leadsData = await leadsRes.json();
+        const stats = await statsRes.json();
+        const leads = leadsData.leads || [];
+
+        // Render leads UI
+        renderLeads(content, leads, stats);
+      } catch (error) {
+        console.error('Error loading leads:', error);
+        content.innerHTML = `
+          <div style="padding: 40px; text-align: center;">
+            <p style="color: #f85149; font-size: 16px;">❌ Failed to load leads</p>
+            <p style="color: #7d8590; font-size: 14px;">${error.message}</p>
+            <button onclick="loadLeads()" class="back-button" style="margin-top: 20px;">Retry</button>
+          </div>
+        `;
+      }
+    }
+
+    // Render leads table with stats
+    function renderLeads(content, leads, stats) {
+      const statusColors = {
+        'Pending': '#FFA500',
+        'In Progress': '#00BFFF',
+        'Approved': '#00FF00',
+        'Denied': '#FF0000'
+      };
+
+      const statusBadge = (status) => {
+        const color = statusColors[status] || '#7d8590';
+        return `<span style="background: ${color}33; color: ${color}; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">${status}</span>`;
+      };
+
+      content.innerHTML = `
+        <!-- Stats Summary -->
+        <div class="stats-grid" style="margin-bottom: 30px;">
+          <div class="stat-card">
+            <div class="stat-label">Total Leads</div>
+            <div class="stat-value">${stats.total_leads || 0}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Approved</div>
+            <div class="stat-value" style="color: #00FF00;">${stats.approved || 0}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Denied</div>
+            <div class="stat-value" style="color: #FF0000;">${stats.denied || 0}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Conversion Rate</div>
+            <div class="stat-value">${stats.conversion_rate || 0}%</div>
+          </div>
+        </div>
+
+        <!-- Leads Table -->
+        <div style="background: rgba(13, 17, 23, 0.8); border: 1px solid rgba(48, 54, 61, 0.8); padding: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div class="table-title">Lead Tracker</div>
+            <button onclick="loadLeads()" class="back-button" style="margin: 0;">🔄 Refresh</button>
+          </div>
+
+          ${leads.length === 0 ? `
+            <div style="padding: 40px; text-align: center; color: #7d8590;">
+              <p style="font-size: 16px;">No leads yet</p>
+              <p style="font-size: 14px; margin-top: 10px;">New leads will appear here automatically when calls are categorized as "New Lead"</p>
+            </div>
+          ` : `
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                <thead>
+                  <tr style="background: rgba(22, 27, 34, 0.8); border-bottom: 2px solid rgba(48, 54, 61, 0.8);">
+                    <th style="padding: 12px; text-align: left; color: #7d8590; font-weight: 700;">Name</th>
+                    <th style="padding: 12px; text-align: left; color: #7d8590; font-weight: 700;">Phone</th>
+                    <th style="padding: 12px; text-align: left; color: #7d8590; font-weight: 700;">Email</th>
+                    <th style="padding: 12px; text-align: left; color: #7d8590; font-weight: 700;">Description</th>
+                    <th style="padding: 12px; text-align: left; color: #7d8590; font-weight: 700;">First Call</th>
+                    <th style="padding: 12px; text-align: left; color: #7d8590; font-weight: 700;">Status</th>
+                    <th style="padding: 12px; text-align: left; color: #7d8590; font-weight: 700;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${leads.map(lead => `
+                    <tr style="border-bottom: 1px solid rgba(48, 54, 61, 0.5); ${lead.conversion_detected ? 'background: rgba(0, 255, 0, 0.05);' : ''}">
+                      <td style="padding: 12px; color: #e6edf3;">
+                        ${lead.name || 'Unknown'}
+                        ${lead.conversion_detected ? '<span style="margin-left: 8px; font-size: 18px;" title="Lead converted to client!">🎉</span>' : ''}
+                      </td>
+                      <td style="padding: 12px; color: #00FFFF; font-family: 'JetBrains Mono', monospace; font-size: 12px;">${lead.phone_number || 'N/A'}</td>
+                      <td style="padding: 12px; color: #7d8590; font-size: 12px;">${lead.email || 'N/A'}</td>
+                      <td style="padding: 12px; color: #7d8590; font-size: 12px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${lead.incident_description || 'N/A'}">${lead.incident_description || 'N/A'}</td>
+                      <td style="padding: 12px; color: #7d8590; font-size: 12px;">${new Date(lead.first_call_date).toLocaleDateString()}</td>
+                      <td style="padding: 12px;">${statusBadge(lead.status)}</td>
+                      <td style="padding: 12px;">
+                        <select onchange="updateLeadStatus(${lead.id}, this.value)"
+                                style="padding: 6px 10px; background: rgba(13, 17, 23, 0.6); color: #e6edf3; border: 1px solid rgba(48, 54, 61, 0.8); font-size: 12px; cursor: pointer;">
+                          <option value="">Change Status...</option>
+                          <option value="Pending" ${lead.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                          <option value="In Progress" ${lead.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                          <option value="Approved" ${lead.status === 'Approved' ? 'selected' : ''}>✅ Approve</option>
+                          <option value="Denied" ${lead.status === 'Denied' ? 'selected' : ''}>❌ Deny</option>
+                        </select>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
+
+        <!-- Export Button -->
+        ${stats.approved > 0 ? `
+          <div style="margin-top: 20px; text-align: right;">
+            <button onclick="exportApprovedLeads()" class="back-button">
+              📊 Export Approved Leads (${stats.approved})
+            </button>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    // Update lead status
+    async function updateLeadStatus(leadId, newStatus) {
+      if (!newStatus) return;
+
+      try {
+        const res = await fetch(`/api/leads/${leadId}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to update status');
+        }
+
+        const result = await res.json();
+        console.log('✅ Lead status updated:', result);
+
+        // Show success message
+        alert(`✅ Lead status updated to: ${newStatus}`);
+
+        // Reload leads to show updated data
+        loadLeads();
+      } catch (error) {
+        console.error('Error updating lead status:', error);
+        alert('❌ Failed to update lead status: ' + error.message);
+      }
+    }
+
+    // Export approved leads to CSV
+    function exportApprovedLeads() {
+      const agentId = agentSummaries.length > 0 ? agentSummaries[0].agent_id : 'agent_8e50b96f7e7bb7ce7479219fcc';
+
+      fetch(`/api/leads/${agentId}?status=Approved`)
+        .then(res => res.json())
+        .then(data => {
+          const leads = data.leads || [];
+          if (leads.length === 0) {
+            alert('No approved leads to export');
+            return;
+          }
+
+          // Create CSV content
+          const headers = ['Name', 'Phone', 'Email', 'Description', 'First Call Date', 'Status'];
+          const csvRows = [headers.join(',')];
+
+          leads.forEach(lead => {
+            const row = [
+              `"${lead.name || 'Unknown'}"`,
+              `"${lead.phone_number || 'N/A'}"`,
+              `"${lead.email || 'N/A'}"`,
+              `"${(lead.incident_description || 'N/A').replace(/"/g, '""')}"`,
+              `"${new Date(lead.first_call_date).toLocaleDateString()}"`,
+              `"${lead.status}"`
+            ];
+            csvRows.push(row.join(','));
+          });
+
+          const csvContent = csvRows.join('\\n');
+
+          // Download CSV
+          const blob = new Blob([csvContent], { type: 'text/csv' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `approved-leads-${new Date().toISOString().split('T')[0]}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch(error => {
+          console.error('Error exporting leads:', error);
+          alert('Failed to export leads: ' + error.message);
+        });
     }
 
     // Stop auto-categorization polling
