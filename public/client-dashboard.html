@@ -3756,9 +3756,11 @@
                   ${lead.conversion_detected ? '<span style="margin-left: 8px; font-size: 20px;" title="Lead converted to client!">🎉</span>' : ''}
                 </h3>
                 <div style="font-size: 14px; color: #00FFFF; font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;">
-                  ${lead.phone_number || 'N/A'}
+                  📞 ${lead.phone_number || 'N/A'}
                 </div>
-                ${lead.email ? `<div style="font-size: 14px; color: #9ca3af;">${lead.email}</div>` : '<div style="font-size: 14px; color: #7d8590;">No email</div>'}
+                ${lead.email ? `<div style="font-size: 14px; color: #00FF00; margin-bottom: 4px;">📧 ${lead.email}</div>` : '<div style="font-size: 14px; color: #7d8590;">📧 No email provided</div>'}
+                ${lead.incident_date ? `<div style="font-size: 13px; color: #9ca3af; margin-top: 8px;">📅 Incident Date: ${new Date(lead.incident_date).toLocaleDateString()}</div>` : ''}
+                ${lead.incident_location ? `<div style="font-size: 13px; color: #9ca3af; margin-top: 4px;">📍 Location: ${lead.incident_location}</div>` : ''}
               `}
             </div>
             <div style="text-align: right; margin-left: 20px;">
