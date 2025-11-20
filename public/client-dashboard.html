@@ -215,11 +215,11 @@
     .bar-wrapper {
       flex: 1;
       display: flex;
-      flex-direction: column-reverse;
+      flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 6px;
       position: relative;
-      min-height: 40px;
+      padding-top: 24px;
     }
 
     .bar {
@@ -231,9 +231,7 @@
       min-height: 8px;
       max-height: 180px;
       box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
+      margin-top: auto;
     }
 
     .bar:hover {
@@ -247,21 +245,20 @@
       font-weight: 600;
       letter-spacing: 0.5px;
       text-align: center;
-      padding: 0 4px;
+      padding: 4px;
+      margin-top: 8px;
     }
 
     .bar-value {
       position: absolute;
-      top: -28px;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
       font-size: 12px;
       font-weight: 700;
       color: #00FFFF;
       text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
       white-space: nowrap;
-    }
-
-    .bar:hover .bar-value {
-      opacity: 1;
     }
 
     .category-chart {
@@ -2142,9 +2139,8 @@
         const heightPx = Math.max(8, (day.count / maxCount) * maxBarHeight); // Min 8px
         return `
           <div class="bar-wrapper">
-            <div class="bar" style="height: ${heightPx}px">
-              <div class="bar-value">${day.count}</div>
-            </div>
+            <div class="bar-value">${day.count}</div>
+            <div class="bar" style="height: ${heightPx}px"></div>
             <div class="bar-label">${day.label}</div>
           </div>
         `;
