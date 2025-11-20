@@ -1211,10 +1211,42 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
             claim_number: extractedData?.claim_number || fullCall.extracted_data?.claim_number || null,
             claim_num: extractedData?.claim_number || fullCall.extracted_data?.claim_num || null,
 
-            // New Lead fields
+            // New Lead base fields
             incident_description: extractedData?.incident_description || fullCall.call_analysis?.call_summary || categoryResult.summary || categoryResult.reasoning,
             incident_date: extractedData?.incident_date || null,
             incident_location: extractedData?.incident_location || null,
+            case_type: extractedData?.case_type || null,
+
+            // Case-Specific Fields (extracted by AI based on conversation)
+            // Rideshare
+            rideshare_role: extractedData?.rideshare_role || null,
+            rideshare_service: extractedData?.rideshare_service || null,
+            rideshare_driver_info: extractedData?.rideshare_driver_info || null,
+
+            // Vehicle accidents
+            vehicle_type: extractedData?.vehicle_type || null,
+            fault_determination: extractedData?.fault_determination || null,
+            police_report_filed: extractedData?.police_report_filed || null,
+            other_party_insured: extractedData?.other_party_insured || null,
+            injuries_sustained: extractedData?.injuries_sustained || null,
+
+            // Construction
+            construction_site_type: extractedData?.construction_site_type || null,
+            injury_cause: extractedData?.injury_cause || null,
+            employer_name: extractedData?.employer_name || null,
+            safety_equipment: extractedData?.safety_equipment || null,
+
+            // Slip & Fall
+            property_type: extractedData?.property_type || null,
+            fall_cause: extractedData?.fall_cause || null,
+            property_owner: extractedData?.property_owner || null,
+            witnesses_present: extractedData?.witnesses_present || null,
+
+            // Workers' Compensation
+            workplace_type: extractedData?.workplace_type || null,
+            work_injury_type: extractedData?.work_injury_type || null,
+            injury_reported: extractedData?.injury_reported || null,
+            doctor_visit: extractedData?.doctor_visit || null,
 
             // Include any other extracted data from Retell
             ...fullCall.extracted_data

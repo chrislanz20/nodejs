@@ -1,12 +1,283 @@
-=<!-- New Client Lead Call Notification --> <!DOCTYPE html> <html lang="en" xmlns="http://www.w3.org/199/xhtml">   <head>     <meta charset="utf-8">     <meta name="x-apple-disable-message-reformatting">     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>     <title>Inbound Call – New Client Lead</title>   </head>   <body style="margin:0; padding:0; background-color:#f4f6f8;">     <!-- Preheader (hidden in most clients) -->     <div style="display:none; font-size:1px; color:#f4f6f8; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden;">     </div>      <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f4f6f8;">       <tr>         <td align="center" style="padding:24px;">           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px; background:#ffffff; border-radius:12px; overflow:hidden; border:1px solid #e6e9ec;">             <!-- Header -->             <tr>               <td style="padding:20px 24px; background:#131313; color:#ffffff; font-family:Arial, Helvetica, sans-serif;">                 <div style="font-size:18px; font-weight:bold;">Inbound Call Alert — New Client Lead</div>                 <div style="font-size:12px; opacity:0.9; margin-top:6px;">Personal Injury Intake • Action Required</div>               </td>             </tr>              <!-- Summary Banner -->             <tr>               <td style="padding:16px 24px; background:#fff7e6; border-bottom:1px solid #f0ead9; font-family:Arial, Helvetica, sans-serif;">                 <div style="font-size:14px; color:#6b5b02;">                   <strong>Urgent:</strong> </strong>.                 </div>               </td>             </tr>              <!-- Caller Details -->             <tr>               <td style="padding:20px 24px; font-family:Arial, Helvetica, sans-serif; color:#111;">                 <div style="font-size:16px; font-weight:bold; margin-bottom:12px;">Caller Details</div>                 <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="font-size:14px;">                   <tr>                     <td style="padding:6px 0; width:160px; color:#555;">Name</td>                     <td style="padding:6px 0;"><strong>{{ $json.Name }} </strong></td>                   </tr>                    <tr>
+<!-- New Client Lead Call Notification -->
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8">
+    <meta name="x-apple-disable-message-reformatting">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Inbound Call – New Client Lead</title>
+  </head>
+  <body style="margin:0; padding:0; background-color:#f4f6f8;">
+    <!-- Preheader (hidden in most clients) -->
+    <div style="display:none; font-size:1px; color:#f4f6f8; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden;">
+      New lead inquiry for personal injury case
+    </div>
+
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f4f6f8;">
+      <tr>
+        <td align="center" style="padding:24px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px; background:#ffffff; border-radius:12px; overflow:hidden; border:1px solid #e6e9ec;">
+            <!-- Header -->
+            <tr>
+              <td style="padding:20px 24px; background:#131313; color:#ffffff; font-family:Arial, Helvetica, sans-serif;">
+                <div style="font-size:18px; font-weight:bold;">Inbound Call Alert — New Client Lead</div>
+                <div style="font-size:12px; opacity:0.9; margin-top:6px;">Personal Injury Intake • Action Required</div>
+              </td>
+            </tr>
+
+            <!-- Summary Banner -->
+            <tr>
+              <td style="padding:16px 24px; background:#fff7e6; border-bottom:1px solid #f0ead9; font-family:Arial, Helvetica, sans-serif;">
+                <div style="font-size:14px; color:#6b5b02;">
+                  <strong>Urgent:</strong> {{ $json.incident_description || 'New injury case inquiry' }}
+                </div>
+              </td>
+            </tr>
+
+            <!-- Caller Details -->
+            <tr>
+              <td style="padding:20px 24px; font-family:Arial, Helvetica, sans-serif; color:#111;">
+                <div style="font-size:16px; font-weight:bold; margin-bottom:12px;">Caller Details</div>
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="font-size:14px;">
+                  <tr>
+                    <td style="padding:6px 0; width:160px; color:#555;">Name</td>
+                    <td style="padding:6px 0;"><strong>{{ $json.name || 'Not provided' }}</strong></td>
+                  </tr>
+                  <tr>
                     <td style="padding:6px 0; color:#555;">Verbally Stated Phone</td>
                     <td style="padding:6px 0;">
-                      <a href="tel:{{ $json.Phone }}" style="color:#0b6efd; text-decoration:none;">{{ $json.Phone }}</a>
+                      <a href="tel:{{ $json.phone }}" style="color:#0b6efd; text-decoration:none;">{{ $json.phone || 'Not provided' }}</a>
                     </td>
                   </tr>
                   <tr>
                     <td style="padding:6px 0; color:#555;">Inbound Phone</td>
                     <td style="padding:6px 0;">
-                      <a href="tel:{{ $json.InboundPhoneNum }}" style="color:#0b6efd; text-decoration:none;">{{ $json.InboundPhoneNum }}</a>
+                      <a href="tel:{{ $json.from_number }}" style="color:#0b6efd; text-decoration:none;">{{ $json.from_number || 'Not provided' }}</a>
                     </td>
-                  </tr>                   <tr>                     <td style="padding:6px 0; color:#555;">Email</td>                     <td style="padding:6px 0;">                       <a href="mailto:{{ $json.Email }}subject=Regarding%20John%20Smith%20PI%20case" style="color:#0b6efd; text-decoration:none;">{{ $json.Email }}</a>                     </td>                   </tr>                   <tr>                     <td style="padding:6px 0; color:#555; vertical-align:top;">Purpose</td>                     <td style="padding:6px 0;">                        {{ $json.Incident_Description }}                    </td>                   </tr>                 </table>               </td>             </tr>              <!-- Patient/Case Snapshot -->             <tr>               <td style="padding:0 24px 12px 24px; font-family:Arial, Helvetica, sans-serif;">                 <div style="height:1px; background:#edf0f2; margin:0 0 16px 0;"></div>                 <div style="font-size:16px; font-weight:bold; margin-bottom:12px; color:#111;">Patient / Case Snapshot</div>                               <!-- CTA Buttons -->             <tr>               <td align="center" style="padding:8px 24px 24px 24px; font-family:Arial, Helvetica, sans-serif;">                 <table role="presentation" cellpadding="0" cellspacing="0">                   <tr>                     <td style="padding:0 6px 8px 0;">                       <a href="tel:{{ $json.Phone }}"                          style="display:inline-block; padding:12px 18px; background:#0b6efd; color:#ffffff; text-decoration:none; border-radius:8px; font-size:14px; font-weight:bold;">                         Call {{ $json.Phone }}                       </a>                     </td>                     <td style="padding:0 0 8px 6px;">                       <a href="mailto:{{ $json.Email }}?subject=Call Follow-up%20"                          style="display:inline-block; padding:12px 18px; background:#198754; color:#ffffff; text-decoration:none; border-radius:8px; font-size:14px; font-weight:bold;">                         Email {{ $json.Name }}                       </a>                     </td>                   </tr>                 </table>                 <div style="font-size:12px; color:#666; margin-top:6px;">                   Tip: Reply to confirm receipt and provide ETA.                 </div>               </td>             </tr>                            <!-- Footer -->             <tr>               <td style="padding:14px 24px 20px 24px; font-family:Arial, Helvetica, sans-serif; background:#fafbfc; border-top:1px solid #edf0f2; color:#6b7280; font-size:12px;">                 This alert was generated automatically by the intake system for CourtLaw.                 If you believe you received it in error, please contact the intake admin.               </td>             </tr>           </table>            <!-- Small footer brand line -->           <div style="font-family:Arial, Helvetica, sans-serif; font-size:11px; color:#98a2b3; margin-top:12px;">             © <span style="white-space:nowrap;">Your Law Firm</span>           </div>         </td>       </tr>     </table>   </body> </html>
+                  </tr>
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Email</td>
+                    <td style="padding:6px 0;">
+                      <a href="mailto:{{ $json.email }}" style="color:#0b6efd; text-decoration:none;">{{ $json.email || 'Not provided' }}</a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Case Details -->
+            <tr>
+              <td style="padding:0 24px 20px 24px; font-family:Arial, Helvetica, sans-serif;">
+                <div style="height:1px; background:#edf0f2; margin:0 0 16px 0;"></div>
+                <div style="font-size:16px; font-weight:bold; margin-bottom:12px; color:#111;">Case Details</div>
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="font-size:14px;">
+                  {{#if case_type}}
+                  <tr>
+                    <td style="padding:6px 0; width:160px; color:#555;">Case Type</td>
+                    <td style="padding:6px 0;"><strong>{{ case_type }}</strong></td>
+                  </tr>
+                  {{/if}}
+                  <tr>
+                    <td style="padding:6px 0; width:160px; color:#555; vertical-align:top;">What Happened</td>
+                    <td style="padding:6px 0;">{{ $json.incident_description || 'Not provided' }}</td>
+                  </tr>
+                  {{#if incident_date}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Date of Incident</td>
+                    <td style="padding:6px 0;">{{ incident_date }}</td>
+                  </tr>
+                  {{/if}}
+                  {{#if incident_location}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Location</td>
+                    <td style="padding:6px 0;">{{ incident_location }}</td>
+                  </tr>
+                  {{/if}}
+
+                  {{#if rideshare_service}}
+                  <!-- Rideshare-Specific Details -->
+                  <tr><td colspan="2" style="padding:12px 0 6px 0;"><strong style="color:#0b6efd;">Rideshare Details:</strong></td></tr>
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Service</td>
+                    <td style="padding:6px 0;">{{ rideshare_service }}</td>
+                  </tr>
+                  {{#if rideshare_role}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Role</td>
+                    <td style="padding:6px 0;">{{ rideshare_role }}</td>
+                  </tr>
+                  {{/if}}
+                  {{#if rideshare_driver_info}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Driver Info</td>
+                    <td style="padding:6px 0;">{{ rideshare_driver_info }}</td>
+                  </tr>
+                  {{/if}}
+                  {{/if}}
+
+                  {{#if construction_site_type}}
+                  <!-- Construction-Specific Details -->
+                  <tr><td colspan="2" style="padding:12px 0 6px 0;"><strong style="color:#0b6efd;">Construction Accident Details:</strong></td></tr>
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Site Type</td>
+                    <td style="padding:6px 0;">{{ construction_site_type }}</td>
+                  </tr>
+                  {{#if injury_cause}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Injury Cause</td>
+                    <td style="padding:6px 0;">{{ injury_cause }}</td>
+                  </tr>
+                  {{/if}}
+                  {{#if employer_name}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Employer</td>
+                    <td style="padding:6px 0;">{{ employer_name }}</td>
+                  </tr>
+                  {{/if}}
+                  {{#if safety_equipment}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Safety Equipment</td>
+                    <td style="padding:6px 0;">{{ safety_equipment }}</td>
+                  </tr>
+                  {{/if}}
+                  {{/if}}
+
+                  {{#if property_type}}
+                  <!-- Slip & Fall Details -->
+                  <tr><td colspan="2" style="padding:12px 0 6px 0;"><strong style="color:#0b6efd;">Slip & Fall Details:</strong></td></tr>
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Property Type</td>
+                    <td style="padding:6px 0;">{{ property_type }}</td>
+                  </tr>
+                  {{#if fall_cause}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Cause of Fall</td>
+                    <td style="padding:6px 0;">{{ fall_cause }}</td>
+                  </tr>
+                  {{/if}}
+                  {{#if property_owner}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Property Owner</td>
+                    <td style="padding:6px 0;">{{ property_owner }}</td>
+                  </tr>
+                  {{/if}}
+                  {{#if witnesses_present}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Witnesses</td>
+                    <td style="padding:6px 0;">{{ witnesses_present }}</td>
+                  </tr>
+                  {{/if}}
+                  {{/if}}
+
+                  {{#if workplace_type}}
+                  <!-- Workers' Comp Details -->
+                  <tr><td colspan="2" style="padding:12px 0 6px 0;"><strong style="color:#0b6efd;">Workers' Compensation Details:</strong></td></tr>
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Workplace Type</td>
+                    <td style="padding:6px 0;">{{ workplace_type }}</td>
+                  </tr>
+                  {{#if work_injury_type}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Injury Type</td>
+                    <td style="padding:6px 0;">{{ work_injury_type }}</td>
+                  </tr>
+                  {{/if}}
+                  {{#if employer_name}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Employer</td>
+                    <td style="padding:6px 0;">{{ employer_name }}</td>
+                  </tr>
+                  {{/if}}
+                  {{#if injury_reported}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Reported to Employer</td>
+                    <td style="padding:6px 0;">{{ injury_reported }}</td>
+                  </tr>
+                  {{/if}}
+                  {{#if doctor_visit}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Doctor Visit</td>
+                    <td style="padding:6px 0;">{{ doctor_visit }}</td>
+                  </tr>
+                  {{/if}}
+                  {{/if}}
+
+                  {{#if vehicle_type}}
+                  <!-- Vehicle Accident Details -->
+                  <tr><td colspan="2" style="padding:12px 0 6px 0;"><strong style="color:#0b6efd;">Accident Details:</strong></td></tr>
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Vehicle Type</td>
+                    <td style="padding:6px 0;">{{ vehicle_type }}</td>
+                  </tr>
+                  {{#if fault_determination}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Fault</td>
+                    <td style="padding:6px 0;">{{ fault_determination }}</td>
+                  </tr>
+                  {{/if}}
+                  {{#if police_report_filed}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Police Report</td>
+                    <td style="padding:6px 0;">{{ police_report_filed }}</td>
+                  </tr>
+                  {{/if}}
+                  {{#if other_party_insured}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Other Party Insured</td>
+                    <td style="padding:6px 0;">{{ other_party_insured }}</td>
+                  </tr>
+                  {{/if}}
+                  {{#if injuries_sustained}}
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Injuries</td>
+                    <td style="padding:6px 0;">{{ injuries_sustained }}</td>
+                  </tr>
+                  {{/if}}
+                  {{/if}}
+                </table>
+              </td>
+            </tr>
+
+            <!-- CTA Buttons -->
+            <tr>
+              <td align="center" style="padding:8px 24px 24px 24px; font-family:Arial, Helvetica, sans-serif;">
+                <table role="presentation" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="padding:0 6px 8px 0;">
+                      <a href="tel:{{ $json.phone }}"
+                         style="display:inline-block; padding:12px 18px; background:#0b6efd; color:#ffffff; text-decoration:none; border-radius:8px; font-size:14px; font-weight:bold;">
+                        Call {{ $json.phone || 'Client' }}
+                      </a>
+                    </td>
+                    <td style="padding:0 0 8px 6px;">
+                      <a href="mailto:{{ $json.email }}?subject=Regarding%20Your%20Inquiry"
+                         style="display:inline-block; padding:12px 18px; background:#198754; color:#ffffff; text-decoration:none; border-radius:8px; font-size:14px; font-weight:bold;">
+                        Email {{ $json.name || 'Client' }}
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+                <div style="font-size:12px; color:#666; margin-top:6px;">
+                  Tip: Reply within 5 minutes for best conversion rates.
+                </div>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td style="padding:14px 24px 20px 24px; font-family:Arial, Helvetica, sans-serif; background:#fafbfc; border-top:1px solid #edf0f2; color:#6b7280; font-size:12px;">
+                This alert was generated automatically by the intake system for CourtLaw.
+                If you believe you received it in error, please contact the intake admin.
+              </td>
+            </tr>
+          </table>
+
+          <!-- Small footer brand line -->
+          <div style="font-family:Arial, Helvetica, sans-serif; font-size:11px; color:#98a2b3; margin-top:12px;">
+            © CourtLaw
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
