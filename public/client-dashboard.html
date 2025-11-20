@@ -4374,7 +4374,7 @@
         if (!response.ok) throw new Error('Failed to fetch call details');
 
         const call = await response.json();
-        const transcriptData = call.transcript || call.transcript_object;
+        const transcriptData = call.transcript_object || [];
         const recordingUrl = call.recording_url;
 
         let contentHTML = '';
