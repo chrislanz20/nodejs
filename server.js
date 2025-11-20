@@ -1323,6 +1323,26 @@ app.post('/api/categorize-batch', async (req, res) => {
         processed++;
 
         console.log(`✓ Categorized call ${processed + skipped}/${calls.length}: ${call.call_id} → ${result.category} (${result.reasoning})`);
+
+        // Track lead if this is a "New Lead" category and we have the required data
+        if (result.category === 'New Lead' && call.agent_id && call.phone_number) {
+          try {
+            const callData = {
+              phone: call.phone_number,
+              phone_number: call.phone_number,
+              name: call.caller_name || extractCallerName(call),
+              email: null, // Batch calls typically don't have email extracted
+              incident_description: result.reasoning
+            };
+
+            const leadTrackingResult = await trackLead(call.call_id, call.agent_id, result.category, callData);
+            if (leadTrackingResult && leadTrackingResult.isNewLead) {
+              console.log(`   📝 New lead tracked from batch: ${callData.name || call.phone_number}`);
+            }
+          } catch (error) {
+            console.error(`   ❌ Lead tracking error for ${call.call_id}:`, error.message);
+          }
+        }
       }));
 
       // Save after each batch
