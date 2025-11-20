@@ -49,10 +49,10 @@ const CLIENT_CONFIGS = {
     },
 
     // GoHighLevel Contact IDs (for API calls)
-    // In test mode, we use Chris's contact
+    // In test mode, we use Chris's contact with his Gmail
     // In production, we'll create contacts for each staff member
     ghl_contact_ids: {
-      test: ['msF0VOnxJ584ga7knXF2'],
+      test: ['msF0VOnxJ584ga7knXF2'],  // Chris Lanzilli - 17lanzch@gmail.com / +17814757191
       production: [] // Will be populated when going live
     }
   }
