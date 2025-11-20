@@ -1485,6 +1485,56 @@
           </div>
         </div>
 
+        <!-- Search Bar -->
+        <div style="margin-bottom: 20px;">
+          <div style="position: relative; max-width: 500px;">
+            <svg style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input
+              type="text"
+              id="leads-search-input"
+              placeholder="Search leads by name, phone, or email..."
+              oninput="handleLeadsSearch(this.value)"
+              style="
+                width: 100%;
+                padding: 12px 44px 12px 44px;
+                background: rgba(13, 17, 23, 0.6);
+                border: 1px solid rgba(0, 255, 255, 0.3);
+                border-radius: 8px;
+                color: #e6edf3;
+                font-size: 14px;
+                outline: none;
+                transition: all 0.2s;
+              "
+              onfocus="this.style.borderColor='rgba(0, 255, 255, 0.6)'; this.style.boxShadow='0 0 0 3px rgba(0, 255, 255, 0.1)'"
+              onblur="this.style.borderColor='rgba(0, 255, 255, 0.3)'; this.style.boxShadow='none'"
+            />
+            <button
+              id="clear-search-btn"
+              onclick="clearLeadsSearch()"
+              style="
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: none;
+                border: none;
+                color: #6b7280;
+                cursor: pointer;
+                padding: 6px;
+                display: none;
+              "
+              onmouseover="this.style.color='#00FFFF'"
+              onmouseout="this.style.color='#6b7280'"
+            >
+              <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
         <!-- Leads Tabs -->
         <div style="display: flex; gap: 12px; margin-bottom: 20px; border-bottom: 2px solid rgba(0, 255, 255, 0.2);">
           <button class="leads-tab active" onclick="switchLeadsTab('pending')" id="tab-pending">
@@ -3587,12 +3637,18 @@
     let currentDeniedPage = 1;
     const LEADS_PER_PAGE = 5;
 
+    // Search state for leads
+    let leadsSearchQuery = '';
+
     async function loadClientLeads() {
       try {
-        // Reset pagination to page 1 when reloading leads
+        // Reset pagination and search when reloading leads
         currentPendingPage = 1;
         currentApprovedPage = 1;
         currentDeniedPage = 1;
+        leadsSearchQuery = '';
+        document.getElementById('leads-search-input').value = '';
+        document.getElementById('clear-search-btn').style.display = 'none';
 
         // Get client's agent IDs from currentUser (already loaded globally)
         if (!currentUser || !currentUser.agent_ids || currentUser.agent_ids.length === 0) {
@@ -3619,10 +3675,10 @@
         // Store leads globally for detail modal
         allLeadsData = allLeads;
 
-        // Split leads by status
-        const pendingLeads = allLeads.filter(l => l.status === 'Pending');
-        const approvedLeads = allLeads.filter(l => l.status === 'Approved');
-        const deniedLeads = allLeads.filter(l => l.status === 'Denied');
+        // Split leads by status and apply search filter
+        const pendingLeads = filterLeadsBySearch(allLeads.filter(l => l.status === 'Pending'));
+        const approvedLeads = filterLeadsBySearch(allLeads.filter(l => l.status === 'Approved'));
+        const deniedLeads = filterLeadsBySearch(allLeads.filter(l => l.status === 'Denied'));
 
         // Update stats
         document.getElementById('leads-total').textContent = stats.total_leads || 0;
@@ -3669,6 +3725,62 @@
       document.getElementById('leads-pending-container').style.display = tab === 'pending' ? 'block' : 'none';
       document.getElementById('leads-approved-container').style.display = tab === 'approved' ? 'block' : 'none';
       document.getElementById('leads-denied-container').style.display = tab === 'denied' ? 'block' : 'none';
+    }
+
+    function handleLeadsSearch(query) {
+      leadsSearchQuery = query.toLowerCase().trim();
+
+      // Show/hide clear button
+      const clearBtn = document.getElementById('clear-search-btn');
+      clearBtn.style.display = leadsSearchQuery ? 'block' : 'none';
+
+      // Reset pagination when searching
+      currentPendingPage = 1;
+      currentApprovedPage = 1;
+      currentDeniedPage = 1;
+
+      // Re-render all tabs with filtered data
+      const pendingLeads = filterLeadsBySearch(allLeadsData.filter(l => l.status === 'Pending'));
+      const approvedLeads = filterLeadsBySearch(allLeadsData.filter(l => l.status === 'Approved'));
+      const deniedLeads = filterLeadsBySearch(allLeadsData.filter(l => l.status === 'Denied'));
+
+      renderPendingLeads(pendingLeads);
+      renderApprovedLeads(approvedLeads);
+      renderDeniedLeads(deniedLeads);
+    }
+
+    function clearLeadsSearch() {
+      leadsSearchQuery = '';
+      document.getElementById('leads-search-input').value = '';
+      document.getElementById('clear-search-btn').style.display = 'none';
+
+      // Reset pagination
+      currentPendingPage = 1;
+      currentApprovedPage = 1;
+      currentDeniedPage = 1;
+
+      // Re-render all tabs without filter
+      const pendingLeads = allLeadsData.filter(l => l.status === 'Pending');
+      const approvedLeads = allLeadsData.filter(l => l.status === 'Approved');
+      const deniedLeads = allLeadsData.filter(l => l.status === 'Denied');
+
+      renderPendingLeads(pendingLeads);
+      renderApprovedLeads(approvedLeads);
+      renderDeniedLeads(deniedLeads);
+    }
+
+    function filterLeadsBySearch(leads) {
+      if (!leadsSearchQuery) return leads;
+
+      return leads.filter(lead => {
+        const name = (lead.name || '').toLowerCase();
+        const phone = (lead.phone_number || '').toLowerCase();
+        const email = (lead.email || '').toLowerCase();
+
+        return name.includes(leadsSearchQuery) ||
+               phone.includes(leadsSearchQuery) ||
+               email.includes(leadsSearchQuery);
+      });
     }
 
     function showLeadDetails(leadId, editMode = false) {
