@@ -1570,68 +1570,6 @@
         </div>
       </div>
 
-      <!-- Team Management Section (Only visible to client owners, not team members) -->
-      <div class="team-section" id="team-section" style="display: none; margin-bottom: 32px;">
-        <div style="background: rgba(30, 36, 44, 0.6); backdrop-filter: blur(10px); border-radius: 16px; padding: 28px; border: 1px solid rgba(0, 255, 255, 0.2); box-shadow: 0 8px 24px rgba(0, 255, 255, 0.1);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-            <div>
-              <h2 style="font-size: 20px; font-weight: 700; color: #00FFFF; margin-bottom: 6px;">Team Members</h2>
-              <p style="font-size: 12px; color: #9ca3af;">Manage your team's access and permissions</p>
-            </div>
-            <button onclick="openAddTeamMember()" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
-              + Add Member
-            </button>
-          </div>
-
-          <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
-              <thead>
-                <tr style="background: rgba(13, 17, 23, 0.6); border-bottom: 2px solid rgba(0, 255, 255, 0.2);">
-                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Name</th>
-                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Email</th>
-                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Role</th>
-                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Last Login</th>
-                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Status</th>
-                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="team-members-tbody">
-                <tr>
-                  <td colspan="6" style="text-align: center; padding: 40px; color: #9ca3af;">No team members yet. Add one to get started!</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Activity Log (moved inside Team Management) -->
-          <div style="margin-top: 32px; padding-top: 32px; border-top: 2px solid rgba(0, 255, 255, 0.2);">
-            <div style="margin-bottom: 24px;">
-              <h3 style="font-size: 18px; font-weight: 700; color: #00FFFF; margin-bottom: 6px;">Team Activity Log</h3>
-              <p style="font-size: 12px; color: #9ca3af;">Recent actions performed by team members</p>
-            </div>
-
-            <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
-              <table style="width: 100%; border-collapse: collapse;">
-                <thead style="position: sticky; top: 0; background: rgba(13, 17, 23, 0.95); z-index: 1;">
-                  <tr style="border-bottom: 2px solid rgba(0, 255, 255, 0.2);">
-                    <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Time</th>
-                    <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Team Member</th>
-                    <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Role</th>
-                    <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Action</th>
-                    <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Details</th>
-                  </tr>
-                </thead>
-                <tbody id="activity-log-tbody">
-                  <tr>
-                    <td colspan="5" style="text-align: center; padding: 40px; color: #9ca3af;">No activity recorded yet</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div class="calls-section">
         <div class="section-header">
           <div class="section-title">Recent Calls</div>
@@ -1767,55 +1705,137 @@
         <span class="close" onclick="closeSettingsModal()">&times;</span>
       </div>
       <div class="modal-body">
-        <form id="settings-form" onsubmit="saveSettings(event)">
-          <div style="margin-bottom: 24px;">
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
-              Email
-            </label>
-            <input type="text" id="settings-email" readonly style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.4); color: #6b7280; cursor: not-allowed;">
+        <!-- Tab Navigation -->
+        <div style="display: flex; gap: 8px; border-bottom: 2px solid rgba(0, 255, 255, 0.2); margin-bottom: 32px;">
+          <button class="settings-tab active" onclick="switchSettingsTab('account')" data-tab="account" style="padding: 12px 24px; background: none; border: none; color: #00FFFF; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-bottom: 3px solid #00FFFF; margin-bottom: -2px; transition: all 0.3s;">
+            Account
+          </button>
+          <button class="settings-tab" onclick="switchSettingsTab('security')" data-tab="security" style="padding: 12px 24px; background: none; border: none; color: #6b7280; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.3s;">
+            Security
+          </button>
+          <button class="settings-tab" onclick="switchSettingsTab('team')" data-tab="team" id="team-tab" style="padding: 12px 24px; background: none; border: none; color: #6b7280; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.3s; display: none;">
+            Team
+          </button>
+        </div>
+
+        <!-- Account Tab -->
+        <div id="account-tab-content" class="settings-tab-content">
+          <div style="max-width: 600px;">
+            <div style="margin-bottom: 28px;">
+              <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+                Email Address
+              </label>
+              <input type="text" id="settings-email" readonly style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.4); color: #6b7280; cursor: not-allowed;">
+              <p style="font-size: 12px; color: #6b7280; margin-top: 8px;">Your account email address (cannot be changed)</p>
+            </div>
+
+            <div style="margin-bottom: 28px;">
+              <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+                Business Name
+              </label>
+              <input type="text" id="settings-business" readonly style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.4); color: #6b7280; cursor: not-allowed;">
+              <p style="font-size: 12px; color: #6b7280; margin-top: 8px;">Your business or organization name</p>
+            </div>
           </div>
+        </div>
 
-          <div style="margin-bottom: 24px;">
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
-              Business Name
-            </label>
-            <input type="text" id="settings-business" readonly style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.4); color: #6b7280; cursor: not-allowed;">
+        <!-- Security Tab -->
+        <div id="security-tab-content" class="settings-tab-content" style="display: none;">
+          <div style="max-width: 600px;">
+            <h3 style="font-size: 18px; font-weight: 700; color: #00FFFF; margin-bottom: 8px; letter-spacing: 1px;">Change Password</h3>
+            <p style="font-size: 13px; color: #9ca3af; margin-bottom: 24px;">Update your password to keep your account secure</p>
+
+            <form id="settings-form" onsubmit="saveSettings(event)">
+              <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+                  Current Password
+                </label>
+                <input type="password" id="current-password" placeholder="Enter current password" style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3;">
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+                  New Password
+                </label>
+                <input type="password" id="new-password" placeholder="Enter new password (min 8 characters)" style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3;">
+              </div>
+
+              <div style="margin-bottom: 28px;">
+                <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+                  Confirm New Password
+                </label>
+                <input type="password" id="confirm-password" placeholder="Confirm new password" style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3;">
+              </div>
+
+              <div style="display: flex; gap: 12px;">
+                <button type="button" onclick="clearPasswordFields()" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(107, 114, 128, 0.2), rgba(75, 85, 99, 0.2)); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.4); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                  Clear
+                </button>
+                <button type="submit" id="save-settings-btn" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                  Update Password
+                </button>
+              </div>
+            </form>
           </div>
+        </div>
 
-          <hr style="border: none; border-top: 1px solid rgba(0, 255, 255, 0.2); margin: 32px 0;">
+        <!-- Team Tab -->
+        <div id="team-tab-content" class="settings-tab-content team-section" style="display: none;">
+          <h3 style="font-size: 18px; font-weight: 700; color: #00FFFF; margin-bottom: 20px; letter-spacing: 1px;">Team Members</h3>
 
-          <h3 style="font-size: 16px; font-weight: 700; color: #00FFFF; margin-bottom: 20px; letter-spacing: 1px;">Change Password</h3>
-
-          <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
-              Current Password
-            </label>
-            <input type="password" id="current-password" placeholder="Enter current password" style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3;">
-          </div>
-
-          <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
-              New Password
-            </label>
-            <input type="password" id="new-password" placeholder="Enter new password (min 8 characters)" style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3;">
-          </div>
-
-          <div style="margin-bottom: 24px;">
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
-              Confirm New Password
-            </label>
-            <input type="password" id="confirm-password" placeholder="Confirm new password" style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3;">
-          </div>
-
-          <div style="display: flex; gap: 12px; justify-content: flex-end;">
-            <button type="button" onclick="closeSettingsModal()" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(107, 114, 128, 0.2), rgba(75, 85, 99, 0.2)); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.4); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
-              Cancel
+          <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+            <button onclick="openAddTeamMember()" style="padding: 10px 20px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+              + Add Member
             </button>
-            <button type="submit" id="save-settings-btn" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
-              Save Changes
-            </button>
           </div>
-        </form>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="background: rgba(13, 17, 23, 0.6); border-bottom: 2px solid rgba(0, 255, 255, 0.2);">
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Name</th>
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Email</th>
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Role</th>
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Last Login</th>
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Status</th>
+                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="team-members-tbody-settings">
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 40px; color: #9ca3af;">No team members yet. Add one to get started!</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Activity Log (moved inside Team Management) -->
+          <div style="margin-top: 32px; padding-top: 32px; border-top: 2px solid rgba(0, 255, 255, 0.2);">
+            <div style="margin-bottom: 24px;">
+              <h4 style="font-size: 16px; font-weight: 700; color: #00FFFF; margin-bottom: 6px;">Team Activity Log</h4>
+              <p style="font-size: 12px; color: #9ca3af;">Recent actions performed by team members</p>
+            </div>
+
+            <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <thead style="position: sticky; top: 0; background: rgba(13, 17, 23, 0.95); z-index: 1;">
+                  <tr style="border-bottom: 2px solid rgba(0, 255, 255, 0.2);">
+                    <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Time</th>
+                    <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Team Member</th>
+                    <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Role</th>
+                    <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Action</th>
+                    <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Details</th>
+                  </tr>
+                </thead>
+                <tbody id="activity-log-tbody-settings">
+                  <tr>
+                    <td colspan="5" style="text-align: center; padding: 40px; color: #9ca3af;">No activity recorded yet</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1943,16 +1963,6 @@
 
         currentUser = await response.json();
         document.getElementById('business-name').textContent = currentUser.business_name;
-
-        // Show/hide team section based on user type
-        // Only client owners can manage team members
-        if (currentUser.is_team_member) {
-          // Hide team management section for team members
-          const teamSection = document.getElementById('team-section');
-          if (teamSection) {
-            teamSection.style.display = 'none';
-          }
-        }
 
         // Load data
         await loadDashboard();
@@ -2594,11 +2604,51 @@
       document.getElementById('current-password').value = '';
       document.getElementById('new-password').value = '';
       document.getElementById('confirm-password').value = '';
+
+      // Show team tab if user is client owner (not team member)
+      if (!currentUser.is_team_member) {
+        document.getElementById('team-tab').style.display = 'block';
+      }
+
+      // Switch to account tab by default
+      switchSettingsTab('account');
+
       document.getElementById('settings-modal').style.display = 'block';
     }
 
     function closeSettingsModal() {
       document.getElementById('settings-modal').style.display = 'none';
+    }
+
+    function switchSettingsTab(tabName) {
+      // Hide all tab contents
+      document.querySelectorAll('.settings-tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+
+      // Remove active class from all tabs
+      document.querySelectorAll('.settings-tab').forEach(tab => {
+        tab.style.color = '#6b7280';
+        tab.style.borderBottomColor = 'transparent';
+        tab.classList.remove('active');
+      });
+
+      // Show selected tab content
+      document.getElementById(tabName + '-tab-content').style.display = 'block';
+
+      // Add active class to selected tab
+      const activeTab = document.querySelector(`.settings-tab[data-tab="${tabName}"]`);
+      if (activeTab) {
+        activeTab.style.color = '#00FFFF';
+        activeTab.style.borderBottomColor = '#00FFFF';
+        activeTab.classList.add('active');
+      }
+    }
+
+    function clearPasswordFields() {
+      document.getElementById('current-password').value = '';
+      document.getElementById('new-password').value = '';
+      document.getElementById('confirm-password').value = '';
     }
 
     async function saveSettings(event) {
@@ -2685,8 +2735,6 @@
         if (response.ok) {
           const data = await response.json();
           renderTeamMembers(data.members);
-          // Show team section
-          document.getElementById('team-section').style.display = 'block';
         } else {
           console.error('Failed to load team members');
         }
@@ -2697,7 +2745,7 @@
 
     // Render team members in table
     function renderTeamMembers(members) {
-      const tbody = document.getElementById('team-members-tbody');
+      const tbody = document.getElementById('team-members-tbody-settings');
 
       if (!members || members.length === 0) {
         tbody.innerHTML = `
@@ -2904,7 +2952,7 @@
 
     // Render activity log
     function renderActivityLog(activities) {
-      const tbody = document.getElementById('activity-log-tbody');
+      const tbody = document.getElementById('activity-log-tbody-settings');
 
       if (!activities || activities.length === 0) {
         tbody.innerHTML = `
