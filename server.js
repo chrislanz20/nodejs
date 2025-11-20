@@ -176,9 +176,11 @@ const retellClient = new Retell({
   apiKey: RETELL_API_KEY,
 });
 
-// Initialize Anthropic client
+// Initialize Anthropic client with timeout to prevent hanging
 const anthropic = new Anthropic({
   apiKey: ANTHROPIC_API_KEY,
+  timeout: 30000, // 30 seconds - plenty for AI processing, but prevents indefinite hanging
+  maxRetries: 2   // Retry twice on failure for reliability
 });
 
 // Initialize OpenAI client as backup
@@ -1166,8 +1168,8 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
     // Respond immediately to Retell (don't make them wait)
     res.json({ success: true, message: 'Webhook received' });
 
-    // Process async (categorize + send notifications)
-    setTimeout(async () => {
+    // Process async (categorize + send notifications) - NO delay needed, call is already finalized
+    (async () => {
       try {
         // Fetch full call details
         const fullCall = await retellClient.call.retrieve(callId);
@@ -1293,7 +1295,7 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
       } catch (error) {
         console.error(`❌ Error processing webhook for ${callId}:`, error.message);
       }
-    }, 1000); // 1 second delay to ensure Retell has finalized the call
+    })(); // Execute immediately - no delay needed
 
   } catch (error) {
     console.error('❌ Webhook error:', error);
