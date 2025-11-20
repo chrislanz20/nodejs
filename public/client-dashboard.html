@@ -1602,48 +1602,32 @@
               </tbody>
             </table>
           </div>
-        </div>
-      </div>
 
-      <!-- Activity Log Section -->
-      <div class="activity-log-section" id="activity-log-section" style="display: none; margin-bottom: 32px;">
-        <div style="background: rgba(30, 36, 44, 0.6); backdrop-filter: blur(10px); border-radius: 16px; padding: 28px; border: 1px solid rgba(0, 255, 255, 0.2); box-shadow: 0 8px 24px rgba(0, 255, 255, 0.1);">
-          <div style="margin-bottom: 24px;">
-            <h2 style="font-size: 20px; font-weight: 700; color: #00FFFF; margin-bottom: 6px;">Team Activity Log</h2>
-            <p style="font-size: 12px; color: #9ca3af;">Recent actions performed by team members</p>
-          </div>
+          <!-- Activity Log (moved inside Team Management) -->
+          <div style="margin-top: 32px; padding-top: 32px; border-top: 2px solid rgba(0, 255, 255, 0.2);">
+            <div style="margin-bottom: 24px;">
+              <h3 style="font-size: 18px; font-weight: 700; color: #00FFFF; margin-bottom: 6px;">Team Activity Log</h3>
+              <p style="font-size: 12px; color: #9ca3af;">Recent actions performed by team members</p>
+            </div>
 
-          <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
-              <thead style="position: sticky; top: 0; background: rgba(13, 17, 23, 0.95); z-index: 1;">
-                <tr style="border-bottom: 2px solid rgba(0, 255, 255, 0.2);">
-                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Time</th>
-                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Team Member</th>
-                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Role</th>
-                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Action</th>
-                  <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Details</th>
-                </tr>
-              </thead>
-              <tbody id="activity-log-tbody">
-                <tr>
-                  <td colspan="5" style="text-align: center; padding: 40px; color: #9ca3af;">No activity recorded yet</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Team Metrics Section -->
-      <div class="team-metrics-section" id="team-metrics-section" style="display: none; margin-bottom: 32px;">
-        <div style="background: rgba(30, 36, 44, 0.6); backdrop-filter: blur(10px); border-radius: 16px; padding: 28px; border: 1px solid rgba(0, 255, 255, 0.2); box-shadow: 0 8px 24px rgba(0, 255, 255, 0.1);">
-          <div style="margin-bottom: 24px;">
-            <h2 style="font-size: 20px; font-weight: 700; color: #00FFFF; margin-bottom: 6px;">Team Performance</h2>
-            <p style="font-size: 12px; color: #9ca3af;">Activity metrics for your team members</p>
-          </div>
-
-          <div id="team-metrics-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-            <!-- Team metrics will be dynamically loaded here -->
+            <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <thead style="position: sticky; top: 0; background: rgba(13, 17, 23, 0.95); z-index: 1;">
+                  <tr style="border-bottom: 2px solid rgba(0, 255, 255, 0.2);">
+                    <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Time</th>
+                    <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Team Member</th>
+                    <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Role</th>
+                    <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Action</th>
+                    <th style="text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1.5px;">Details</th>
+                  </tr>
+                </thead>
+                <tbody id="activity-log-tbody">
+                  <tr>
+                    <td colspan="5" style="text-align: center; padding: 40px; color: #9ca3af;">No activity recorded yet</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -2013,9 +1997,8 @@
         // Load team members
         loadTeamMembers();
 
-        // Load activity log and metrics
+        // Load activity log (now part of team section)
         loadActivityLog();
-        loadTeamMetrics();
 
         // Load client leads
         loadClientLeads();
@@ -2912,8 +2895,7 @@
         if (response.ok) {
           const data = await response.json();
           renderActivityLog(data.activities);
-          // Show activity log section (visible to everyone)
-          document.getElementById('activity-log-section').style.display = 'block';
+          // Activity log is now part of team-section, no separate display needed
         }
       } catch (error) {
         console.error('Error loading activity log:', error);
@@ -2987,102 +2969,6 @@
               ${detailsText}
             </td>
           </tr>
-        `;
-      }).join('');
-    }
-
-    // Load team metrics
-    async function loadTeamMetrics() {
-      try {
-        const [activityResponse, membersResponse] = await Promise.all([
-          fetch('/api/activity', { credentials: 'include' }),
-          fetch('/api/team/members', { credentials: 'include' })
-        ]);
-
-        if (activityResponse.ok && membersResponse.ok) {
-          const activityData = await activityResponse.json();
-          const membersData = await membersResponse.json();
-
-          renderTeamMetrics(activityData.activities, membersData.members);
-          // Show team metrics section (only for client owners)
-          if (!currentUser.is_team_member) {
-            document.getElementById('team-metrics-section').style.display = 'block';
-          }
-        }
-      } catch (error) {
-        console.error('Error loading team metrics:', error);
-      }
-    }
-
-    // Render team metrics
-    function renderTeamMetrics(activities, members) {
-      const metricsDiv = document.getElementById('team-metrics-cards');
-
-      if (!members || members.length === 0) {
-        metricsDiv.innerHTML = `
-          <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #9ca3af;">
-            No team members yet. Add team members to see metrics.
-          </div>
-        `;
-        return;
-      }
-
-      // Calculate metrics per team member
-      const memberMetrics = members.map(member => {
-        const memberActivities = activities.filter(a => a.team_member_id === member.id);
-        const recentActivity = memberActivities.length > 0 ?
-          new Date(memberActivities[0].created_at) : null;
-
-        return {
-          ...member,
-          totalActions: memberActivities.length,
-          lastActivity: recentActivity,
-          actionBreakdown: memberActivities.reduce((acc, activity) => {
-            acc[activity.action] = (acc[activity.action] || 0) + 1;
-            return acc;
-          }, {})
-        };
-      });
-
-      metricsDiv.innerHTML = memberMetrics.map(member => {
-        const lastActivityText = member.lastActivity ?
-          getTimeAgo(member.lastActivity) : 'Never';
-
-        const statusColor = member.active ? '#10b981' : '#ef4444';
-        const statusText = member.active ? 'Active' : 'Inactive';
-
-        return `
-          <div style="background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(0, 255, 255, 0.15); border-radius: 12px; padding: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
-              <div>
-                <h3 style="font-size: 16px; font-weight: 700; color: #e6edf3; margin-bottom: 4px;">
-                  ${escapeHtml(member.name)}
-                </h3>
-                <p style="font-size: 12px; color: #9ca3af; font-family: 'JetBrains Mono', monospace;">
-                  ${escapeHtml(member.email)}
-                </p>
-              </div>
-              <span style="padding: 4px 10px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase;">
-                ${escapeHtml(member.role)}
-              </span>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px;">
-              <div style="background: rgba(0, 255, 255, 0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(0, 255, 255, 0.1);">
-                <div style="font-size: 11px; color: #9ca3af; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Total Actions</div>
-                <div style="font-size: 24px; font-weight: 700; color: #00FFFF;">${member.totalActions}</div>
-              </div>
-              <div style="background: rgba(0, 255, 255, 0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(0, 255, 255, 0.1);">
-                <div style="font-size: 11px; color: #9ca3af; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Last Active</div>
-                <div style="font-size: 14px; font-weight: 600; color: #e6edf3;">${lastActivityText}</div>
-              </div>
-            </div>
-
-            <div style="display: flex; align-items: center; gap: 8px; padding-top: 12px; border-top: 1px solid rgba(0, 255, 255, 0.1);">
-              <span style="display: inline-block; width: 6px; height: 6px; background: ${statusColor}; border-radius: 50%; box-shadow: 0 0 8px ${statusColor};"></span>
-              <span style="font-size: 12px; font-weight: 600; color: ${statusColor};">${statusText}</span>
-            </div>
-          </div>
         `;
       }).join('');
     }
