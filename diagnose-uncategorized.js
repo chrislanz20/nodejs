@@ -4,7 +4,10 @@ const axios = require('axios');
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL || process.env.POSTGRES_URL_NON_POOLING,
-  ssl: { rejectUnauthorized: false }
+  ssl: { rejectUnauthorized: false },
+  connectionTimeoutMillis: 10000,
+  idleTimeoutMillis: 30000,
+  max: 10
 });
 
 async function diagnose() {
