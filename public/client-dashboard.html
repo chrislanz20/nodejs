@@ -4137,16 +4137,15 @@
         overlay.remove();
       }, 300);
 
-      localStorage.setItem('dashboard-tour-completed', 'true');
+      // DON'T set any completion flag - we want tour to show on every login unless they check "don't show again"
     }
 
     // Check if user has seen the tour
     function checkOnboarding() {
-      const hasSeenTour = localStorage.getItem('dashboard-tour-completed');
       const neverShowAgain = localStorage.getItem('dashboard-tour-never-show');
 
-      // Only show tour if user hasn't completed it AND hasn't checked "don't show again"
-      if (!hasSeenTour && !neverShowAgain && currentUser) {
+      // Show tour on EVERY login unless they've checked "don't show again"
+      if (!neverShowAgain && currentUser) {
         setTimeout(() => {
           showOnboarding();
         }, 1500);
@@ -4158,8 +4157,7 @@
       // Close settings modal
       closeSettingsModal();
 
-      // Clear tour completion flags
-      localStorage.removeItem('dashboard-tour-completed');
+      // Clear the "never show again" flag so tour can show
       localStorage.removeItem('dashboard-tour-never-show');
 
       // Wait a moment then show tour
