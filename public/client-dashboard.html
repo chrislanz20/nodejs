@@ -601,6 +601,29 @@
       min-width: 160px;
     }
 
+    .quick-date-btn {
+      padding: 10px 16px;
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      background: rgba(0, 255, 255, 0.1);
+      color: #00FFFF;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .quick-date-btn:hover {
+      background: rgba(0, 255, 255, 0.2);
+      border-color: rgba(0, 255, 255, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .quick-date-btn:active {
+      transform: translateY(0);
+    }
+
     .filter-select:focus {
       outline: none;
       border-color: #00FFFF;
@@ -1577,6 +1600,19 @@
         <div class="section-header">
           <div class="section-title">Recent Calls</div>
           <div class="filters-row">
+            <!-- Quick Date Buttons -->
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <button class="quick-date-btn" onclick="applyQuickDate('today')" title="Show today's calls">
+                Today
+              </button>
+              <button class="quick-date-btn" onclick="applyQuickDate('week')" title="Show this week's calls">
+                This Week
+              </button>
+              <button class="quick-date-btn" onclick="applyQuickDate('month')" title="Show this month's calls">
+                This Month
+              </button>
+            </div>
+
             <!-- Quick Date Presets -->
             <select class="filter-select" id="date-preset" onchange="applyDatePreset()">
               <option value="custom">Custom Range</option>
@@ -3160,6 +3196,48 @@
 
     // Advanced Filtering functionality
     let selectedCategories = [];
+
+    function applyQuickDate(period) {
+      const dateFrom = document.getElementById('date-from');
+      const dateTo = document.getElementById('date-to');
+      const datePreset = document.getElementById('date-preset');
+
+      const now = new Date();
+      let startDate = new Date();
+
+      switch(period) {
+        case 'today':
+          // Today: from start of today to now
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case 'week':
+          // This week: from Monday to now
+          const dayOfWeek = now.getDay();
+          const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Sunday is 0
+          startDate.setDate(now.getDate() - daysFromMonday);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case 'month':
+          // This month: from 1st to now
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+      }
+
+      // Format dates as YYYY-MM-DD for input fields
+      const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+      dateFrom.value = formatDate(startDate);
+      dateTo.value = formatDate(now);
+      datePreset.value = 'custom';
+
+      filterCalls();
+    }
 
     function applyDatePreset() {
       const preset = document.getElementById('date-preset').value;
