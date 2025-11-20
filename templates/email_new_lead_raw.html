@@ -29,7 +29,7 @@
             <tr>
               <td style="padding:16px 24px; background:#fff7e6; border-bottom:1px solid #f0ead9; font-family:Arial, Helvetica, sans-serif;">
                 <div style="font-size:14px; color:#6b5b02;">
-                  <strong>Urgent:</strong> {{ $json.incident_description || 'New injury case inquiry' }}
+                  <strong>Urgent:</strong> {{ $json.incident_description }}
                 </div>
               </td>
             </tr>
@@ -41,24 +41,24 @@
                 <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="font-size:14px;">
                   <tr>
                     <td style="padding:6px 0; width:160px; color:#555;">Name</td>
-                    <td style="padding:6px 0;"><strong>{{ $json.name || 'Not provided' }}</strong></td>
+                    <td style="padding:6px 0;"><strong>{{ $json.name }}</strong></td>
                   </tr>
                   <tr>
                     <td style="padding:6px 0; color:#555;">Verbally Stated Phone</td>
                     <td style="padding:6px 0;">
-                      <a href="tel:{{ $json.phone }}" style="color:#0b6efd; text-decoration:none;">{{ $json.phone || 'Not provided' }}</a>
+                      <a href="tel:{{ $json.phone }}" style="color:#0b6efd; text-decoration:none;">{{ $json.phone }}</a>
                     </td>
                   </tr>
                   <tr>
                     <td style="padding:6px 0; color:#555;">Inbound Phone</td>
                     <td style="padding:6px 0;">
-                      <a href="tel:{{ $json.from_number }}" style="color:#0b6efd; text-decoration:none;">{{ $json.from_number || 'Not provided' }}</a>
+                      <a href="tel:{{ $json.from_number }}" style="color:#0b6efd; text-decoration:none;">{{ $json.from_number }}</a>
                     </td>
                   </tr>
                   <tr>
                     <td style="padding:6px 0; color:#555;">Email</td>
                     <td style="padding:6px 0;">
-                      <a href="mailto:{{ $json.email }}" style="color:#0b6efd; text-decoration:none;">{{ $json.email || 'Not provided' }}</a>
+                      <a href="mailto:{{ $json.email }}" style="color:#0b6efd; text-decoration:none;">{{ $json.email }}</a>
                     </td>
                   </tr>
                 </table>
@@ -79,7 +79,7 @@
                   {{/if}}
                   <tr>
                     <td style="padding:6px 0; width:160px; color:#555; vertical-align:top;">What Happened</td>
-                    <td style="padding:6px 0;">{{ $json.incident_description || 'Not provided' }}</td>
+                    <td style="padding:6px 0;">{{ $json.incident_description }}</td>
                   </tr>
                   {{#if incident_date}}
                   <tr>
@@ -246,13 +246,13 @@
                     <td style="padding:0 6px 8px 0;">
                       <a href="tel:{{ $json.phone }}"
                          style="display:inline-block; padding:12px 18px; background:#0b6efd; color:#ffffff; text-decoration:none; border-radius:8px; font-size:14px; font-weight:bold;">
-                        Call {{ $json.phone || 'Client' }}
+                        Call {{ $json.phone }}
                       </a>
                     </td>
                     <td style="padding:0 0 8px 6px;">
                       <a href="mailto:{{ $json.email }}?subject=Regarding%20Your%20Inquiry"
                          style="display:inline-block; padding:12px 18px; background:#198754; color:#ffffff; text-decoration:none; border-radius:8px; font-size:14px; font-weight:bold;">
-                        Email {{ $json.name || 'Client' }}
+                        Email {{ $json.name }}
                       </a>
                     </td>
                   </tr>
