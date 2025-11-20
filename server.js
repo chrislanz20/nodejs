@@ -19,6 +19,72 @@ const { trackLead, updateLeadStatus, getLeadsByAgent, getLeadStats, getAllLeadSt
 
 const app = express();
 
+/**
+ * Extract caller name from Retell call data
+ * Tries multiple sources in priority order:
+ * 1. extracted_data.name (if full name)
+ * 2. extracted_data.first_name + last_name
+ * 3. call_analysis.call_summary (regex extraction)
+ * 4. name field
+ * @param {object} callData - Retell call object
+ * @returns {string|null} - Extracted name or null
+ */
+function extractNameFromCall(callData) {
+  // Priority 1: extracted_data.name (if it looks like a full name)
+  if (callData.extracted_data?.name) {
+    const name = callData.extracted_data.name.trim();
+    // Check if it's a full name (has space and at least 2 words, not generic phrases)
+    if (name.includes(' ') && !name.toLowerCase().match(/^(the user|unknown|caller|client)$/i)) {
+      return name;
+    }
+  }
+
+  // Priority 2: extracted_data.first_name + last_name
+  if (callData.extracted_data?.first_name || callData.extracted_data?.last_name) {
+    const firstName = callData.extracted_data.first_name?.trim() || '';
+    const lastName = callData.extracted_data.last_name?.trim() || '';
+    const fullName = `${firstName} ${lastName}`.trim();
+    if (fullName && fullName !== 'The user' && fullName.length > 2) {
+      return fullName;
+    }
+  }
+
+  // Priority 3: Extract from call_analysis.call_summary using patterns
+  if (callData.call_analysis?.call_summary) {
+    const summary = callData.call_analysis.call_summary;
+
+    // Patterns for name extraction (ordered by specificity)
+    const namePatterns = [
+      /(?:The user|caller),\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+),/i,  // "The user, John Smith,"
+      /(?:user'?s? name is|named?|called)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i,  // "user's name is John Smith"
+      /^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\s+(?:called|contacted|reached out)/i,  // "John Smith called"
+      /identified (?:himself|herself|themselves) as ([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i,  // "identified himself as John Smith"
+      /(?:I'm|I am|This is|My name is)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i,  // "I'm John Smith"
+    ];
+
+    for (const pattern of namePatterns) {
+      const match = summary.match(pattern);
+      if (match && match[1]) {
+        const extractedName = match[1].trim();
+        // Exclude generic terms
+        if (!extractedName.match(/^(The User|Unknown|Caller|Client|Agent|Representative)$/i)) {
+          return extractedName;
+        }
+      }
+    }
+  }
+
+  // Priority 4: Fallback to name field (if it exists and isn't generic)
+  if (callData.name) {
+    const name = callData.name.trim();
+    if (name && !name.match(/^(The User|Unknown|Caller|Client)$/i)) {
+      return name;
+    }
+  }
+
+  return null;
+}
+
 // Enable gzip compression for all responses (reduces 221MB to ~20MB)
 app.use(compression({
   level: 6, // Balance between speed and compression ratio
@@ -1047,20 +1113,38 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
 
         console.log(`   ✅ Categorized as: ${categoryResult.category}`);
 
-        // Send notifications
+        // Track leads and conversions
         if (agentId) {
-          const notifData = {
-            name: fullCall.extracted_data?.name || fullCall.name,
+          const extractedName = extractNameFromCall(fullCall);
+
+          const callData = {
+            name: extractedName,
             phone: phoneNumber,
-            email: fullCall.extracted_data?.email || fullCall.email,
+            phone_number: phoneNumber,
             from_number: fullCall.from_number,
-            to_number: fullCall.to_number,
-            purpose: categoryResult.reasoning,
-            incident_description: categoryResult.reasoning,
+            email: fullCall.extracted_data?.email || fullCall.email,
+            incident_description: fullCall.call_analysis?.call_summary || categoryResult.reasoning,
             ...fullCall.extracted_data
           };
 
-          await sendNotifications(agentId, categoryResult.category, notifData);
+          // Track lead
+          try {
+            const leadTrackingResult = await trackLead(callId, agentId, categoryResult.category, callData);
+            if (leadTrackingResult) {
+              if (leadTrackingResult.isNewLead) {
+                console.log(`   📝 New lead tracked: ${extractedName || phoneNumber}`);
+              }
+              if (leadTrackingResult.conversionDetected) {
+                console.log(`   🎉 CONVERSION DETECTED! Lead became client`);
+              }
+            }
+          } catch (error) {
+            console.error(`   ⚠️  Lead tracking error:`, error.message);
+            // Don't fail the whole request if lead tracking fails
+          }
+
+          // Send notifications
+          await sendNotifications(agentId, categoryResult.category, callData);
         }
 
       } catch (error) {
@@ -2023,21 +2107,8 @@ app.post('/api/admin/clients/:id/reset-password', async (req, res) => {
 // LEAD TRACKING ENDPOINTS
 // ============================================================================
 
-// GET /api/leads/:agentId - Get all leads for a specific client
-app.get('/api/leads/:agentId', async (req, res) => {
-  try {
-    const { agentId } = req.params;
-    const { status } = req.query; // Optional filter by status
-
-    const leads = await getLeadsByAgent(agentId, status || null);
-    res.json({ leads });
-  } catch (error) {
-    console.error('Error fetching leads:', error);
-    res.status(500).json({ error: 'Failed to fetch leads' });
-  }
-});
-
 // GET /api/leads/stats/:agentId - Get lead statistics for a specific client
+// NOTE: This MUST come before /api/leads/:agentId to avoid route matching issues
 app.get('/api/leads/stats/:agentId', async (req, res) => {
   try {
     const { agentId } = req.params;
@@ -2060,15 +2131,30 @@ app.get('/api/admin/leads/stats', async (req, res) => {
   }
 });
 
+// GET /api/leads/:agentId - Get all leads for a specific client
+// NOTE: This MUST come after more specific routes like /api/leads/stats/:agentId
+app.get('/api/leads/:agentId', async (req, res) => {
+  try {
+    const { agentId } = req.params;
+    const { status } = req.query; // Optional filter by status
+
+    const leads = await getLeadsByAgent(agentId, status || null);
+    res.json({ leads });
+  } catch (error) {
+    console.error('Error fetching leads:', error);
+    res.status(500).json({ error: 'Failed to fetch leads' });
+  }
+});
+
 // PUT /api/leads/:leadId/status - Update lead status manually
 app.put('/api/leads/:leadId/status', async (req, res) => {
   try {
     const { leadId } = req.params;
     const { status, notes, updated_by } = req.body;
 
-    if (!status || !['Pending', 'In Progress', 'Approved', 'Denied'].includes(status)) {
+    if (!status || !['Pending', 'Approved', 'Denied'].includes(status)) {
       return res.status(400).json({
-        error: 'Invalid status. Must be: Pending, In Progress, Approved, or Denied'
+        error: 'Invalid status. Must be: Pending, Approved, or Denied'
       });
     }
 

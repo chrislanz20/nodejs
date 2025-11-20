@@ -1193,6 +1193,122 @@
       max-width: 250px;
       text-align: center;
     }
+
+    /* Leads Tabs */
+    .leads-tab {
+      padding: 12px 24px;
+      background: transparent;
+      color: #7d8590;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .leads-tab:hover {
+      color: #00FFFF;
+      background: rgba(0, 255, 255, 0.05);
+    }
+
+    .leads-tab.active {
+      color: #00FFFF;
+      border-bottom-color: #00FFFF;
+    }
+
+    .leads-tab-content {
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Lead Card for better mobile view */
+    .lead-card {
+      background: rgba(30, 36, 44, 0.6);
+      border: 1px solid rgba(48, 54, 61, 0.8);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .lead-card:hover {
+      border-color: rgba(0, 255, 255, 0.4);
+      box-shadow: 0 4px 12px rgba(0, 255, 255, 0.1);
+    }
+
+    .lead-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+
+    .lead-card-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e6edf3;
+    }
+
+    .lead-card-phone {
+      color: #00FFFF;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+    }
+
+    .lead-card-summary {
+      color: #9ca3af;
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 12px 0;
+      padding: 12px;
+      background: rgba(13, 17, 23, 0.4);
+      border-radius: 6px;
+      border-left: 3px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .lead-card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .btn-approve, .btn-deny {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-approve {
+      background: rgba(0, 255, 0, 0.1);
+      color: #00FF00;
+      border: 1px solid rgba(0, 255, 0, 0.3);
+    }
+
+    .btn-approve:hover {
+      background: rgba(0, 255, 0, 0.2);
+      border-color: rgba(0, 255, 0, 0.5);
+    }
+
+    .btn-deny {
+      background: rgba(255, 0, 0, 0.1);
+      color: #FF0000;
+      border: 1px solid rgba(255, 0, 0, 0.3);
+    }
+
+    .btn-deny:hover {
+      background: rgba(255, 0, 0, 0.2);
+      border-color: rgba(255, 0, 0, 0.5);
+    }
   </style>
 </head>
 <body>
@@ -1369,10 +1485,37 @@
           </div>
         </div>
 
-        <!-- Leads Table -->
-        <div id="leads-table-container">
+        <!-- Leads Tabs -->
+        <div style="display: flex; gap: 12px; margin-bottom: 20px; border-bottom: 2px solid rgba(0, 255, 255, 0.2);">
+          <button class="leads-tab active" onclick="switchLeadsTab('pending')" id="tab-pending">
+            📋 Pending (<span id="pending-count">0</span>)
+          </button>
+          <button class="leads-tab" onclick="switchLeadsTab('approved')" id="tab-approved">
+            ✅ Approved (<span id="approved-count">0</span>)
+          </button>
+          <button class="leads-tab" onclick="switchLeadsTab('denied')" id="tab-denied">
+            ❌ Denied (<span id="denied-count">0</span>)
+          </button>
+        </div>
+
+        <!-- Pending Leads -->
+        <div id="leads-pending-container" class="leads-tab-content">
           <div style="padding: 40px; text-align: center; color: #7d8590;">
-            <p>Loading leads...</p>
+            <p>Loading pending leads...</p>
+          </div>
+        </div>
+
+        <!-- Approved Leads -->
+        <div id="leads-approved-container" class="leads-tab-content" style="display: none;">
+          <div style="padding: 40px; text-align: center; color: #7d8590;">
+            <p>Loading approved leads...</p>
+          </div>
+        </div>
+
+        <!-- Denied Leads -->
+        <div id="leads-denied-container" class="leads-tab-content" style="display: none;">
+          <div style="padding: 40px; text-align: center; color: #7d8590;">
+            <p>Loading denied leads...</p>
           </div>
         </div>
       </div>
@@ -2288,6 +2431,20 @@
         audio.currentTime = 0;
       });
       modal.style.display = 'none';
+    }
+
+    // Generic modal helper function
+    function showModal(title, contentHTML) {
+      const modal = document.getElementById('call-modal');
+      const modalHeader = modal.querySelector('.modal-header h2');
+      const modalBody = document.getElementById('modal-body');
+
+      // Update modal title and content
+      modalHeader.textContent = title;
+      modalBody.innerHTML = contentHTML;
+
+      // Show modal
+      modal.style.display = 'block';
     }
 
     async function loadTranscriptAndRecordingForModal(callId) {
@@ -3412,14 +3569,14 @@
     // LEAD TRACKING FUNCTIONS
     // ============================================================================
 
-    async function loadClientLeads() {
-      const container = document.getElementById('leads-table-container');
-      container.innerHTML = '<div style="padding: 40px; text-align: center; color: #7d8590;"><p>Loading leads...</p></div>';
+    // Global storage for leads data
+    let allLeadsData = [];
 
+    async function loadClientLeads() {
       try {
         // Get client's agent IDs from currentUser (already loaded globally)
         if (!currentUser || !currentUser.agent_ids || currentUser.agent_ids.length === 0) {
-          container.innerHTML = '<div style="padding: 40px; text-align: center; color: #7d8590;"><p>No agent configured</p></div>';
+          document.getElementById('leads-pending-container').innerHTML = '<div style="padding: 40px; text-align: center; color: #7d8590;"><p>No agent configured</p></div>';
           return;
         }
 
@@ -3437,13 +3594,26 @@
 
         const leadsData = await leadsRes.json();
         const stats = await statsRes.json();
-        const leads = leadsData.leads || [];
+        const allLeads = leadsData.leads || [];
+
+        // Store leads globally for detail modal
+        allLeadsData = allLeads;
+
+        // Split leads by status
+        const pendingLeads = allLeads.filter(l => l.status === 'Pending');
+        const approvedLeads = allLeads.filter(l => l.status === 'Approved');
+        const deniedLeads = allLeads.filter(l => l.status === 'Denied');
 
         // Update stats
         document.getElementById('leads-total').textContent = stats.total_leads || 0;
         document.getElementById('leads-approved').textContent = stats.approved || 0;
         document.getElementById('leads-denied').textContent = stats.denied || 0;
         document.getElementById('leads-conversion-rate').textContent = `${stats.conversion_rate || 0}%`;
+
+        // Update tab counts
+        document.getElementById('pending-count').textContent = pendingLeads.length;
+        document.getElementById('approved-count').textContent = approvedLeads.length;
+        document.getElementById('denied-count').textContent = deniedLeads.length;
 
         // Show/hide export button
         const exportBtn = document.getElementById('export-leads-btn');
@@ -3453,11 +3623,14 @@
           exportBtn.style.display = 'none';
         }
 
-        // Render leads table
-        renderClientLeadsTable(container, leads);
+        // Render all 3 lists
+        renderPendingLeads(pendingLeads);
+        renderApprovedLeads(approvedLeads);
+        renderDeniedLeads(deniedLeads);
+
       } catch (error) {
         console.error('Error loading leads:', error);
-        container.innerHTML = `
+        document.getElementById('leads-pending-container').innerHTML = `
           <div style="padding: 40px; text-align: center;">
             <p style="color: #f85149; font-size: 16px;">❌ Failed to load leads</p>
             <p style="color: #7d8590; font-size: 14px;">${error.message}</p>
@@ -3467,28 +3640,107 @@
       }
     }
 
-    function renderClientLeadsTable(container, leads) {
-      if (leads.length === 0) {
-        container.innerHTML = `
-          <div style="padding: 40px; text-align: center; color: #7d8590;">
-            <p style="font-size: 16px;">No leads yet</p>
-            <p style="font-size: 14px; margin-top: 10px;">New leads will appear here automatically when calls are categorized as "New Lead"</p>
-          </div>
-        `;
+    function switchLeadsTab(tab) {
+      // Update tab buttons
+      document.querySelectorAll('.leads-tab').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`tab-${tab}`).classList.add('active');
+
+      // Show/hide content
+      document.getElementById('leads-pending-container').style.display = tab === 'pending' ? 'block' : 'none';
+      document.getElementById('leads-approved-container').style.display = tab === 'approved' ? 'block' : 'none';
+      document.getElementById('leads-denied-container').style.display = tab === 'denied' ? 'block' : 'none';
+    }
+
+    function showLeadDetails(leadId) {
+      const lead = allLeadsData.find(l => l.id === leadId);
+      if (!lead) {
+        showToast('Lead not found', 'error');
         return;
       }
 
       const statusColors = {
         'Pending': '#FFA500',
-        'In Progress': '#00BFFF',
         'Approved': '#00FF00',
         'Denied': '#FF0000'
       };
 
-      const statusBadge = (status) => {
-        const color = statusColors[status] || '#7d8590';
-        return `<span style="background: ${color}33; color: ${color}; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">${status}</span>`;
-      };
+      const statusColor = statusColors[lead.status] || '#7d8590';
+
+      // Create modal content
+      const modalContent = `
+        <div style="padding: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+            <div>
+              <h3 style="margin: 0 0 8px 0; color: #e6edf3; font-size: 20px;">
+                ${lead.name || 'Unknown Caller'}
+                ${lead.conversion_detected ? '<span style="margin-left: 8px; font-size: 20px;" title="Lead converted to client!">🎉</span>' : ''}
+              </h3>
+              <div style="font-size: 14px; color: #00FFFF; font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;">
+                ${lead.phone_number || 'N/A'}
+              </div>
+              ${lead.email ? `<div style="font-size: 14px; color: #9ca3af;">${lead.email}</div>` : ''}
+            </div>
+            <div style="text-align: right;">
+              <div style="background: ${statusColor}33; color: ${statusColor}; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-bottom: 8px;">
+                ${lead.status}
+              </div>
+              <div style="font-size: 12px; color: #7d8590;">
+                First Call: ${new Date(lead.first_call_date).toLocaleDateString()}
+              </div>
+              ${lead.status_updated_at ? `
+                <div style="font-size: 11px; color: ${statusColor}; margin-top: 4px;">
+                  ${lead.status === 'Approved' ? '✅' : lead.status === 'Denied' ? '❌' : ''} ${lead.status}: ${new Date(lead.status_updated_at).toLocaleDateString()}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+
+          ${lead.incident_description ? `
+            <div style="background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(48, 54, 61, 0.8); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+              <div style="color: #00FFFF; font-weight: 600; font-size: 12px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                Call Summary
+              </div>
+              <div style="color: #e6edf3; line-height: 1.6; font-size: 14px;">
+                ${lead.incident_description}
+              </div>
+            </div>
+          ` : ''}
+
+          ${lead.notes ? `
+            <div style="background: rgba(${lead.status === 'Approved' ? '0, 255, 0' : lead.status === 'Denied' ? '255, 0, 0' : '255, 165, 0'}, 0.05); border-left: 3px solid rgba(${lead.status === 'Approved' ? '0, 255, 0' : lead.status === 'Denied' ? '255, 0, 0' : '255, 165, 0'}, 0.3); padding: 12px; border-radius: 6px; margin-bottom: 16px;">
+              <div style="color: ${statusColor}; font-weight: 600; font-size: 11px; margin-bottom: 6px;">NOTES</div>
+              <div style="color: #9ca3af; font-size: 13px;">${lead.notes}</div>
+            </div>
+          ` : ''}
+
+          ${lead.status === 'Pending' ? `
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+              <button class="btn-approve" style="flex: 1; padding: 12px; font-size: 14px;" onclick="updateClientLeadStatus(${lead.id}, 'Approved'); closeModal();">
+                ✅ Approve Lead
+              </button>
+              <button class="btn-deny" style="flex: 1; padding: 12px; font-size: 14px;" onclick="updateClientLeadStatus(${lead.id}, 'Denied'); closeModal();">
+                ❌ Deny Lead
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+
+      showModal('Lead Details', modalContent);
+    }
+
+    function renderPendingLeads(leads) {
+      const container = document.getElementById('leads-pending-container');
+
+      if (leads.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 40px; text-align: center; color: #7d8590;">
+            <p style="font-size: 16px;">No pending leads</p>
+            <p style="font-size: 14px; margin-top: 10px;">New leads will appear here when calls are categorized as "New Lead"</p>
+          </div>
+        `;
+        return;
+      }
 
       container.innerHTML = `
         <table id="calls-table">
@@ -3497,34 +3749,109 @@
               <th>Name</th>
               <th>Phone</th>
               <th>Email</th>
-              <th>Description</th>
               <th>First Call</th>
-              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             ${leads.map(lead => `
-              <tr style="${lead.conversion_detected ? 'background: rgba(0, 255, 0, 0.05);' : ''}">
+              <tr style="${lead.conversion_detected ? 'background: rgba(0, 255, 0, 0.05); cursor: pointer;' : 'cursor: pointer;'}" onclick="showLeadDetails(${lead.id})">
                 <td>
-                  ${lead.name || 'Unknown'}
+                  ${lead.name || 'Unknown Caller'}
                   ${lead.conversion_detected ? '<span style="margin-left: 8px; font-size: 18px;" title="Lead converted to client!">🎉</span>' : ''}
                 </td>
                 <td style="color: #00FFFF; font-family: 'JetBrains Mono', monospace; font-size: 12px;">${lead.phone_number || 'N/A'}</td>
                 <td style="color: #7d8590; font-size: 12px;">${lead.email || 'N/A'}</td>
-                <td style="color: #7d8590; font-size: 12px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${lead.incident_description || 'N/A'}">${lead.incident_description || 'N/A'}</td>
                 <td style="color: #7d8590; font-size: 12px;">${new Date(lead.first_call_date).toLocaleDateString()}</td>
-                <td>${statusBadge(lead.status)}</td>
-                <td>
-                  <select onchange="updateClientLeadStatus(${lead.id}, this.value)"
-                          style="padding: 6px 10px; background: rgba(13, 17, 23, 0.6); color: #e6edf3; border: 1px solid rgba(48, 54, 61, 0.8); font-size: 12px; cursor: pointer;">
-                    <option value="">Change Status...</option>
-                    <option value="Pending" ${lead.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                    <option value="In Progress" ${lead.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                    <option value="Approved" ${lead.status === 'Approved' ? 'selected' : ''}>✅ Approve</option>
-                    <option value="Denied" ${lead.status === 'Denied' ? 'selected' : ''}>❌ Deny</option>
-                  </select>
+                <td onclick="event.stopPropagation()">
+                  <button class="btn-approve" style="padding: 8px 16px; font-size: 12px; margin-right: 8px;" onclick="updateClientLeadStatus(${lead.id}, 'Approved')">
+                    ✅ Approve
+                  </button>
+                  <button class="btn-deny" style="padding: 8px 16px; font-size: 12px;" onclick="updateClientLeadStatus(${lead.id}, 'Denied')">
+                    ❌ Deny
+                  </button>
                 </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderApprovedLeads(leads) {
+      const container = document.getElementById('leads-approved-container');
+
+      if (leads.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 40px; text-align: center; color: #7d8590;">
+            <p style="font-size: 16px;">No approved leads yet</p>
+            <p style="font-size: 14px; margin-top: 10px;">Leads you approve will appear here for your records</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <table id="calls-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>First Call</th>
+              <th>Approved Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${leads.map(lead => `
+              <tr style="${lead.conversion_detected ? 'background: rgba(0, 255, 0, 0.05); cursor: pointer; border-left: 3px solid rgba(0, 255, 0, 0.5);' : 'cursor: pointer; border-left: 3px solid rgba(0, 255, 0, 0.5);'}" onclick="showLeadDetails(${lead.id})">
+                <td>
+                  ${lead.name || 'Unknown Caller'}
+                  ${lead.conversion_detected ? '<span style="margin-left: 8px; font-size: 18px;" title="Lead converted to client!">🎉</span>' : ''}
+                </td>
+                <td style="color: #00FFFF; font-family: 'JetBrains Mono', monospace; font-size: 12px;">${lead.phone_number || 'N/A'}</td>
+                <td style="color: #7d8590; font-size: 12px;">${lead.email || 'N/A'}</td>
+                <td style="color: #7d8590; font-size: 12px;">${new Date(lead.first_call_date).toLocaleDateString()}</td>
+                <td style="color: #00FF00; font-size: 12px;">${lead.status_updated_at ? new Date(lead.status_updated_at).toLocaleDateString() : 'N/A'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderDeniedLeads(leads) {
+      const container = document.getElementById('leads-denied-container');
+
+      if (leads.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 40px; text-align: center; color: #7d8590;">
+            <p style="font-size: 16px;">No denied leads</p>
+            <p style="font-size: 14px; margin-top: 10px;">Leads you deny will appear here for your records</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <table id="calls-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>First Call</th>
+              <th>Denied Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${leads.map(lead => `
+              <tr style="cursor: pointer; opacity: 0.8; border-left: 3px solid rgba(255, 0, 0, 0.5);" onclick="showLeadDetails(${lead.id})">
+                <td>${lead.name || 'Unknown Caller'}</td>
+                <td style="color: #00FFFF; font-family: 'JetBrains Mono', monospace; font-size: 12px;">${lead.phone_number || 'N/A'}</td>
+                <td style="color: #7d8590; font-size: 12px;">${lead.email || 'N/A'}</td>
+                <td style="color: #7d8590; font-size: 12px;">${new Date(lead.first_call_date).toLocaleDateString()}</td>
+                <td style="color: #FF0000; font-size: 12px;">${lead.status_updated_at ? new Date(lead.status_updated_at).toLocaleDateString() : 'N/A'}</td>
               </tr>
             `).join('')}
           </tbody>
