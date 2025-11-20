@@ -2076,6 +2076,9 @@
           <button class="settings-tab" onclick="switchSettingsTab('security')" data-tab="security" style="padding: 12px 24px; background: none; border: none; color: #6b7280; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.3s;">
             Security
           </button>
+          <button class="settings-tab" onclick="switchSettingsTab('preferences')" data-tab="preferences" style="padding: 12px 24px; background: none; border: none; color: #6b7280; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.3s;">
+            Preferences
+          </button>
           <button class="settings-tab" onclick="switchSettingsTab('team')" data-tab="team" id="team-tab" style="padding: 12px 24px; background: none; border: none; color: #6b7280; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.3s; display: none;">
             Team
           </button>
@@ -2139,6 +2142,30 @@
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+
+        <!-- Preferences Tab -->
+        <div id="preferences-tab-content" class="settings-tab-content" style="display: none;">
+          <div style="max-width: 600px;">
+            <h3 style="font-size: 18px; font-weight: 700; color: #00FFFF; margin-bottom: 8px; letter-spacing: 1px;">Dashboard Tour</h3>
+            <p style="font-size: 13px; color: #9ca3af; margin-bottom: 24px;">Need a refresher? Retake the guided tour of your dashboard.</p>
+
+            <div style="padding: 24px; background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 12px; margin-bottom: 32px;">
+              <p style="font-size: 14px; color: #e6edf3; line-height: 1.6; margin-bottom: 20px;">
+                The dashboard tour will show you:
+              </p>
+              <ul style="font-size: 14px; color: #9ca3af; line-height: 2; margin-left: 20px; margin-bottom: 20px;">
+                <li>How to track new leads</li>
+                <li>Understanding call categories</li>
+                <li>Using filters and search</li>
+                <li>Exporting call data</li>
+                <li>Keyboard shortcuts</li>
+              </ul>
+              <button onclick="retakeTour()" style="padding: 12px 24px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                🎯 Start Tour
+              </button>
+            </div>
           </div>
         </div>
 
@@ -3888,44 +3915,56 @@
     let tourStep = 0;
     const tourSteps = [
       {
-        title: 'Welcome to Your Dashboard! 👋',
-        text: 'Let me show you around your AI receptionist dashboard. This quick tour will help you understand all the features available to you.',
+        title: 'Welcome to Your AI Receptionist Dashboard! 👋',
+        text: 'Hi there! This is where you\'ll manage all your incoming calls. Your AI receptionist (Maria) answers calls 24/7, categorizes them, and tracks important leads. Let me show you around - this will only take 2 minutes!',
         target: null,
         position: 'center'
       },
       {
-        title: 'Your Call Statistics',
-        text: 'See your total calls, new leads, existing clients, and other call types at a glance. These numbers update in real-time.',
+        title: 'Call Statistics - Your Quick Overview 📊',
+        text: '<strong>What you\'re seeing:</strong><br><br>• <strong>Total Calls:</strong> Every call Maria has answered<br>• <strong>New Leads:</strong> Potential clients who called about an injury<br>• <strong>Existing Clients:</strong> People already working with you<br>• <strong>Other Calls:</strong> Attorneys, medical pros, insurance reps, and general inquiries<br><br>These numbers update automatically every time someone calls!',
         target: '.stats-grid',
         position: 'bottom'
       },
       {
-        title: 'Analytics Charts',
-        text: 'Track your call volume over time and see how calls are categorized. Great for understanding trends in your business.',
+        title: 'Lead Tracker - Your Most Important Section 🎯',
+        text: '<strong>This is where NEW LEADS appear!</strong><br><br>When someone calls about an injury, they show up here as "Pending". You can:<br>• <strong>✅ Approve:</strong> Mark as a case you\'ll take<br>• <strong>❌ Deny:</strong> Not a fit for your firm<br><br>The conversion rate shows what % of leads you approve. Track this to see how many quality leads you\'re getting!',
+        target: '[style*="background: linear-gradient(135deg, #1e2832, #2a3441)"]',
+        position: 'bottom'
+      },
+      {
+        title: 'Call Trends Chart - Spot Patterns 📈',
+        text: '<strong>See when people are calling!</strong><br><br>This chart shows your call volume over the last 7 days. Use it to:<br>• Identify your busiest days<br>• Plan staff schedules<br>• Notice if call volume is increasing or decreasing<br><br>Hover over any bar to see the exact number of calls that day.',
         target: '.analytics-section',
         position: 'top'
       },
       {
-        title: 'Recent Calls Table',
-        text: 'View detailed information about each call. Click any row to see the full transcript and call details.',
+        title: 'Category Breakdown - Who\'s Calling You 🥧',
+        text: '<strong>Understand your callers:</strong><br><br>• <strong>New Lead:</strong> Injured person seeking legal help (most important!)<br>• <strong>Existing Client:</strong> Current client following up<br>• <strong>Attorney/Medical/Insurance:</strong> Professionals calling about cases<br>• <strong>Other:</strong> General inquiries, vendors, etc.<br><br>This helps you understand where your calls are coming from.',
+        target: '.analytics-section',
+        position: 'top'
+      },
+      {
+        title: 'Recent Calls Table - The Details 📞',
+        text: '<strong>Every call in one place!</strong><br><br>Click any row to see:<br>• Full conversation transcript<br>• Caller information (name, phone, email)<br>• AI analysis and call summary<br><br><strong>Confidence Score:</strong><br>✓✓ = Very confident in category<br>~ = Medium confidence<br>? = Low confidence (review manually)<br>N/A = Call too short to categorize',
         target: '.calls-section',
         position: 'top'
       },
       {
-        title: 'Search & Filter',
-        text: 'Use these controls to search calls, filter by category, and export your data to CSV.',
+        title: 'Filtering & Search - Find Specific Calls 🔍',
+        text: '<strong>Narrow down what you\'re looking for:</strong><br><br>• <strong>Date Range:</strong> "Today", "This Week", or custom dates<br>• <strong>Category Filter:</strong> See only New Leads, Attorneys, etc.<br>• <strong>Duration Filter:</strong> Find short calls (hangups) or long calls<br>• <strong>Search Box:</strong> Type a phone number or name<br>• <strong>Export CSV:</strong> Download all call data to Excel<br><br>Pro tip: Use "Under 30 seconds" to find potential missed calls!',
         target: '.filters-row',
         position: 'bottom'
       },
       {
-        title: 'Keyboard Shortcuts',
-        text: 'Pro tip: Press / to search, R to refresh, E to export, and use arrow keys for pagination!',
+        title: 'Keyboard Shortcuts - Work Faster ⚡',
+        text: '<strong>Save time with these shortcuts:</strong><br><br>• Press <strong>/</strong> to jump to search<br>• Press <strong>R</strong> to refresh data<br>• Press <strong>E</strong> to export CSV<br>• Use <strong>← →</strong> arrow keys to navigate pages<br><br>These work from anywhere on the dashboard!',
         target: null,
         position: 'center'
       },
       {
         title: 'You\'re All Set! 🎉',
-        text: 'That\'s it! If you need help, just look for tooltips or contact support. Enjoy your dashboard!',
+        text: '<strong>You now know how to:</strong><br><br>✓ Track new leads and approve/deny them<br>✓ See who\'s calling and when<br>✓ Find specific calls using filters<br>✓ Export your data<br><br>Questions? Hover over any <strong>?</strong> icon on the dashboard for help, or contact support.<br><br><strong>Welcome aboard!</strong>',
         target: null,
         position: 'center'
       }
@@ -3998,7 +4037,13 @@
             Step ${progress}
           </div>
         </div>
-        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+        <div style="margin-bottom: 16px; padding: 12px; background: rgba(0, 0, 0, 0.3); border-radius: 8px; border: 1px solid rgba(107, 114, 128, 0.3);">
+          <label style="display: flex; align-items: center; cursor: pointer; color: #9ca3af; font-size: 14px;">
+            <input type="checkbox" id="dont-show-tour-again" style="width: 18px; height: 18px; margin-right: 10px; cursor: pointer; accent-color: #00FFFF;">
+            <span>Don't show this tour again</span>
+          </label>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: space-between; align-items: center;">
           <button onclick="skipTour()" style="padding: 10px 20px; background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.4); border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s;">
             Skip Tour
           </button>
@@ -4067,6 +4112,12 @@
     };
 
     function closeTour(tooltip, overlay) {
+      // Check if "don't show again" is checked
+      const dontShowAgain = document.getElementById('dont-show-tour-again');
+      if (dontShowAgain && dontShowAgain.checked) {
+        localStorage.setItem('dashboard-tour-never-show', 'true');
+      }
+
       // Remove highlights
       tourSteps.forEach(step => {
         if (step.target) {
@@ -4092,12 +4143,30 @@
     // Check if user has seen the tour
     function checkOnboarding() {
       const hasSeenTour = localStorage.getItem('dashboard-tour-completed');
-      if (!hasSeenTour && currentUser) {
+      const neverShowAgain = localStorage.getItem('dashboard-tour-never-show');
+
+      // Only show tour if user hasn't completed it AND hasn't checked "don't show again"
+      if (!hasSeenTour && !neverShowAgain && currentUser) {
         setTimeout(() => {
           showOnboarding();
         }, 1500);
       }
     }
+
+    // Function to manually retake the tour (called from Settings)
+    window.retakeTour = function() {
+      // Close settings modal
+      closeSettingsModal();
+
+      // Clear tour completion flags
+      localStorage.removeItem('dashboard-tour-completed');
+      localStorage.removeItem('dashboard-tour-never-show');
+
+      // Wait a moment then show tour
+      setTimeout(() => {
+        showOnboarding();
+      }, 300);
+    };
 
     // ============================================================================
     // LEAD TRACKING FUNCTIONS
