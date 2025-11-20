@@ -1130,6 +1130,10 @@ app.get('/api/categories', async (_req, res) => {
   }
 });
 
+// In-memory deduplication cache for webhooks (prevents duplicate processing)
+const processedWebhooks = new Set();
+const WEBHOOK_DEDUP_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+
 // POST /webhook/retell-call-ended - Retell webhook for call completion
 app.post('/webhook/retell-call-ended', async (req, res) => {
   try {
@@ -1144,6 +1148,20 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
 
     console.log(`\n📞 Retell webhook received for call: ${callId.substring(0, 30)}...`);
     console.log(`   Agent: ${agentId?.substring(0, 30)}...`);
+
+    // DEDUPLICATION: Check if we already processed this call_id
+    if (processedWebhooks.has(callId)) {
+      console.log(`⚠️  DUPLICATE webhook ignored - call ${callId.substring(0, 30)}... already processed`);
+      return res.json({ success: true, message: 'Webhook already processed (duplicate)' });
+    }
+
+    // Mark as processed immediately
+    processedWebhooks.add(callId);
+
+    // Auto-cleanup after timeout to prevent memory leak
+    setTimeout(() => {
+      processedWebhooks.delete(callId);
+    }, WEBHOOK_DEDUP_TIMEOUT);
 
     // Respond immediately to Retell (don't make them wait)
     res.json({ success: true, message: 'Webhook received' });
