@@ -1234,6 +1234,18 @@ app.get('/api/categories', async (_req, res) => {
 const processedWebhooks = new Set();
 const WEBHOOK_DEDUP_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 
+// DEBUG: Store last 20 webhook payloads for debugging
+const webhookDebugLog = [];
+const MAX_WEBHOOK_DEBUG = 20;
+
+// GET /api/webhook-debug - View recent webhook payloads for debugging
+app.get('/api/webhook-debug', (req, res) => {
+  res.json({
+    count: webhookDebugLog.length,
+    webhooks: webhookDebugLog
+  });
+});
+
 // POST /webhook/retell-call-ended - Retell webhook for call completion
 // NOTE: Retell sends 3 events: call_started, call_ended, call_analyzed
 // We ONLY process call_analyzed because that's when transcript/summary are ready
@@ -1242,6 +1254,20 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
     const callData = req.body;
     const eventType = callData.event;
     const callId = callData.call?.call_id || callData.call_id;
+
+    // DEBUG: Log every webhook payload we receive
+    webhookDebugLog.unshift({
+      timestamp: new Date().toISOString(),
+      event: eventType || 'NO EVENT FIELD',
+      call_id: callId || 'NO CALL ID',
+      has_transcript: !!(callData.call?.transcript_object?.length || callData.call?.transcript),
+      has_call_analysis: !!callData.call?.call_analysis,
+      all_top_level_keys: Object.keys(callData),
+      call_keys: callData.call ? Object.keys(callData.call) : 'NO CALL OBJECT'
+    });
+    if (webhookDebugLog.length > MAX_WEBHOOK_DEBUG) {
+      webhookDebugLog.pop();
+    }
     const agentId = callData.call?.agent_id || callData.agent_id;
 
     console.log(`\n📞 Retell webhook received - Event: ${eventType}, Call: ${callId?.substring(0, 20)}...`);
