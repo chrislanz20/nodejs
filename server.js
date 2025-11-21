@@ -1278,26 +1278,29 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
     // Process categorization BEFORE responding (Vercel terminates after response)
     try {
         // Fetch full call details with RETRY for transcript
-        // Retell may take a few seconds to process the transcript after call ends
+        // Retell may take several seconds to process the transcript after call ends
+        // We wait up to 30 seconds (6 attempts × 5 seconds) to ensure transcript is available
         let fullCall;
         let transcript = [];
-        const MAX_TRANSCRIPT_RETRIES = 3;
-        const TRANSCRIPT_RETRY_DELAY = 2000; // 2 seconds
+        const MAX_TRANSCRIPT_RETRIES = 6;
+        const TRANSCRIPT_RETRY_DELAY = 5000; // 5 seconds between attempts (30 seconds max total)
+
+        console.log(`   ⏳ Waiting for transcript (up to 30 seconds)...`);
 
         for (let attempt = 1; attempt <= MAX_TRANSCRIPT_RETRIES; attempt++) {
           fullCall = await retellClient.call.retrieve(callId);
           transcript = fullCall.transcript_object || fullCall.transcript || [];
 
           if (transcript && transcript.length > 0) {
-            console.log(`   ✅ Transcript available (attempt ${attempt})`);
+            console.log(`   ✅ Transcript available after ${(attempt - 1) * 5} seconds (attempt ${attempt})`);
             break;
           }
 
           if (attempt < MAX_TRANSCRIPT_RETRIES) {
-            console.log(`   ⏳ No transcript yet, waiting ${TRANSCRIPT_RETRY_DELAY}ms (attempt ${attempt}/${MAX_TRANSCRIPT_RETRIES})...`);
+            console.log(`   ⏳ No transcript yet, waiting 5s... (attempt ${attempt}/${MAX_TRANSCRIPT_RETRIES})`);
             await sleep(TRANSCRIPT_RETRY_DELAY);
           } else {
-            console.log(`   ⚠️  No transcript after ${MAX_TRANSCRIPT_RETRIES} attempts, using call_summary fallback`);
+            console.log(`   ⚠️  No transcript after 30 seconds, using call_summary fallback`);
             // Use call_analysis.call_summary as fallback for categorization
             if (fullCall.call_analysis?.call_summary) {
               console.log(`   📝 Using call_summary for categorization: "${fullCall.call_analysis.call_summary.substring(0, 100)}..."`);
