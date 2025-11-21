@@ -989,9 +989,12 @@ Categorize this call into ONE of these categories:
 
 **Insurance** - Caller works for an insurance company (NOT a law firm, NOT a medical facility)
   • DEFINITIVE RULES (if ANY of these are true, categorize as Insurance):
-    - Caller says "Insurance" when asked what type of caller they are
-    - Caller says they are "from [Company Name]" where company is a known insurer
+    - Caller says they are "from [Company Name]" where company is a known insurer (e.g., "from Progressive")
     - Caller's email domain is an insurance company (e.g., @progressive.com, @geico.com, @statefarm.com)
+    - Caller identifies as adjuster, claims rep, or says they work for an insurance company
+  • IMPORTANT: Ignore what caller initially says when asked "injured, medical, insurance, attorney, or something else" -
+    some callers say "something else" or misunderstand the question. Look at the FULL CONTEXT of the call instead.
+    If they later identify as being from an insurance company, categorize as Insurance (not Other).
   • Identifies as: adjuster, claims representative, claims handler, or works for insurance company
   • WELL-KNOWN INSURANCE COMPANIES (recognize even without "insurance" in name):
     Progressive, State Farm, Geico, Allstate, Liberty Mutual, Farmers, USAA, Nationwide,
