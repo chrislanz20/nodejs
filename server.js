@@ -14,8 +14,9 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
 const compression = require('compression');
-const { sendNotifications } = require('./lib/ghlNotifications');
+const { sendNotifications, findOrCreateGHLContact } = require('./lib/ghlNotifications');
 const { trackLead, updateLeadStatus, getLeadsByAgent, getLeadStats, getAllLeadStats } = require('./lib/leadTracking');
+const { getClientConfig } = require('./config/clients');
 
 const app = express();
 
@@ -245,6 +246,45 @@ async function initializeDatabase() {
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW(),
         active BOOLEAN DEFAULT TRUE
+      )
+    `);
+
+    // Create notification_recipients table for notification team members
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS notification_recipients (
+        id SERIAL PRIMARY KEY,
+        agent_id TEXT NOT NULL,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        phone TEXT,
+        ghl_contact_id TEXT,
+        active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE(agent_id, email)
+      )
+    `);
+
+    // Create notification_preferences table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS notification_preferences (
+        id SERIAL PRIMARY KEY,
+        recipient_id INTEGER REFERENCES notification_recipients(id) ON DELETE CASCADE,
+        new_lead_email BOOLEAN DEFAULT TRUE,
+        new_lead_sms BOOLEAN DEFAULT TRUE,
+        existing_client_email BOOLEAN DEFAULT TRUE,
+        existing_client_sms BOOLEAN DEFAULT FALSE,
+        attorney_email BOOLEAN DEFAULT TRUE,
+        attorney_sms BOOLEAN DEFAULT FALSE,
+        insurance_email BOOLEAN DEFAULT TRUE,
+        insurance_sms BOOLEAN DEFAULT FALSE,
+        medical_email BOOLEAN DEFAULT TRUE,
+        medical_sms BOOLEAN DEFAULT FALSE,
+        other_email BOOLEAN DEFAULT TRUE,
+        other_sms BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE(recipient_id)
       )
     `);
 
@@ -2622,6 +2662,246 @@ app.post('/api/admin/clients/:id/reset-password', async (req, res) => {
   } catch (error) {
     console.error('Error resetting password:', error);
     res.status(500).json({ error: 'Failed to reset password' });
+  }
+});
+
+// ============================================================================
+// NOTIFICATION RECIPIENTS ENDPOINTS
+// ============================================================================
+
+// GET /api/notification-recipients/:agentId - List all notification recipients for an agent
+app.get('/api/notification-recipients/:agentId', async (req, res) => {
+  try {
+    const { agentId } = req.params;
+
+    const result = await pool.query(`
+      SELECT
+        nr.id, nr.agent_id, nr.name, nr.email, nr.phone, nr.ghl_contact_id, nr.active,
+        nr.created_at, nr.updated_at,
+        np.new_lead_email, np.new_lead_sms,
+        np.existing_client_email, np.existing_client_sms,
+        np.attorney_email, np.attorney_sms,
+        np.insurance_email, np.insurance_sms,
+        np.medical_email, np.medical_sms,
+        np.other_email, np.other_sms
+      FROM notification_recipients nr
+      LEFT JOIN notification_preferences np ON nr.id = np.recipient_id
+      WHERE nr.agent_id = $1
+      ORDER BY nr.created_at ASC
+    `, [agentId]);
+
+    res.json({ recipients: result.rows });
+  } catch (error) {
+    console.error('Error fetching notification recipients:', error);
+    res.status(500).json({ error: 'Failed to fetch notification recipients' });
+  }
+});
+
+// POST /api/notification-recipients - Add a new notification recipient
+app.post('/api/notification-recipients', async (req, res) => {
+  try {
+    const { agent_id, name, email, phone } = req.body;
+
+    if (!agent_id || !name || !email) {
+      return res.status(400).json({ error: 'agent_id, name, and email are required' });
+    }
+
+    // Get client config to get GHL credentials
+    const config = getClientConfig(agent_id);
+    if (!config) {
+      return res.status(400).json({ error: 'No configuration found for this agent' });
+    }
+
+    // Find or create GHL contact
+    console.log(`\n📝 Adding notification recipient: ${name} (${email})`);
+    const ghlContactId = await findOrCreateGHLContact(
+      config.ghl_location_id,
+      config.ghl_api_key,
+      { name, email, phone }
+    );
+
+    if (!ghlContactId) {
+      return res.status(500).json({ error: 'Failed to create/find GHL contact. Please try again.' });
+    }
+
+    // Insert recipient into database
+    const recipientResult = await pool.query(`
+      INSERT INTO notification_recipients (agent_id, name, email, phone, ghl_contact_id)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *
+    `, [agent_id, name, email.toLowerCase(), phone || null, ghlContactId]);
+
+    const recipient = recipientResult.rows[0];
+
+    // Create default notification preferences
+    await pool.query(`
+      INSERT INTO notification_preferences (recipient_id)
+      VALUES ($1)
+    `, [recipient.id]);
+
+    // Fetch the complete recipient with preferences
+    const fullResult = await pool.query(`
+      SELECT
+        nr.*,
+        np.new_lead_email, np.new_lead_sms,
+        np.existing_client_email, np.existing_client_sms,
+        np.attorney_email, np.attorney_sms,
+        np.insurance_email, np.insurance_sms,
+        np.medical_email, np.medical_sms,
+        np.other_email, np.other_sms
+      FROM notification_recipients nr
+      LEFT JOIN notification_preferences np ON nr.id = np.recipient_id
+      WHERE nr.id = $1
+    `, [recipient.id]);
+
+    console.log(`✅ Notification recipient added: ${name} (GHL Contact: ${ghlContactId})`);
+
+    res.json({
+      success: true,
+      recipient: fullResult.rows[0]
+    });
+  } catch (error) {
+    if (error.code === '23505') { // Unique violation
+      return res.status(400).json({ error: 'This email is already a notification recipient for this agent' });
+    }
+    console.error('Error adding notification recipient:', error);
+    res.status(500).json({ error: 'Failed to add notification recipient' });
+  }
+});
+
+// PUT /api/notification-recipients/:id - Update a notification recipient
+app.put('/api/notification-recipients/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, phone, active } = req.body;
+
+    const updates = [];
+    const values = [];
+    let paramIndex = 1;
+
+    if (name !== undefined) {
+      updates.push(`name = $${paramIndex++}`);
+      values.push(name);
+    }
+    if (email !== undefined) {
+      updates.push(`email = $${paramIndex++}`);
+      values.push(email.toLowerCase());
+    }
+    if (phone !== undefined) {
+      updates.push(`phone = $${paramIndex++}`);
+      values.push(phone || null);
+    }
+    if (active !== undefined) {
+      updates.push(`active = $${paramIndex++}`);
+      values.push(active);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
+    }
+
+    updates.push(`updated_at = NOW()`);
+    values.push(id);
+
+    const result = await pool.query(`
+      UPDATE notification_recipients
+      SET ${updates.join(', ')}
+      WHERE id = $${paramIndex}
+      RETURNING *
+    `, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Recipient not found' });
+    }
+
+    res.json({
+      success: true,
+      recipient: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error updating notification recipient:', error);
+    res.status(500).json({ error: 'Failed to update notification recipient' });
+  }
+});
+
+// DELETE /api/notification-recipients/:id - Remove a notification recipient
+app.delete('/api/notification-recipients/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query(
+      'DELETE FROM notification_recipients WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Recipient not found' });
+    }
+
+    console.log(`🗑️ Notification recipient removed: ${result.rows[0].name}`);
+
+    res.json({
+      success: true,
+      deleted: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error deleting notification recipient:', error);
+    res.status(500).json({ error: 'Failed to delete notification recipient' });
+  }
+});
+
+// PUT /api/notification-preferences/:recipientId - Update notification preferences
+app.put('/api/notification-preferences/:recipientId', async (req, res) => {
+  try {
+    const { recipientId } = req.params;
+    const {
+      new_lead_email, new_lead_sms,
+      existing_client_email, existing_client_sms,
+      attorney_email, attorney_sms,
+      insurance_email, insurance_sms,
+      medical_email, medical_sms,
+      other_email, other_sms
+    } = req.body;
+
+    const result = await pool.query(`
+      UPDATE notification_preferences
+      SET
+        new_lead_email = COALESCE($1, new_lead_email),
+        new_lead_sms = COALESCE($2, new_lead_sms),
+        existing_client_email = COALESCE($3, existing_client_email),
+        existing_client_sms = COALESCE($4, existing_client_sms),
+        attorney_email = COALESCE($5, attorney_email),
+        attorney_sms = COALESCE($6, attorney_sms),
+        insurance_email = COALESCE($7, insurance_email),
+        insurance_sms = COALESCE($8, insurance_sms),
+        medical_email = COALESCE($9, medical_email),
+        medical_sms = COALESCE($10, medical_sms),
+        other_email = COALESCE($11, other_email),
+        other_sms = COALESCE($12, other_sms),
+        updated_at = NOW()
+      WHERE recipient_id = $13
+      RETURNING *
+    `, [
+      new_lead_email, new_lead_sms,
+      existing_client_email, existing_client_sms,
+      attorney_email, attorney_sms,
+      insurance_email, insurance_sms,
+      medical_email, medical_sms,
+      other_email, other_sms,
+      recipientId
+    ]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Preferences not found for this recipient' });
+    }
+
+    res.json({
+      success: true,
+      preferences: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error updating notification preferences:', error);
+    res.status(500).json({ error: 'Failed to update notification preferences' });
   }
 });
 

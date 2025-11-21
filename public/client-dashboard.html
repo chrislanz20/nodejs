@@ -2098,6 +2098,9 @@
           <button class="settings-tab" onclick="switchSettingsTab('team')" data-tab="team" id="team-tab" style="padding: 12px 24px; background: none; border: none; color: #6b7280; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.3s; display: none;">
             Team
           </button>
+          <button class="settings-tab" onclick="switchSettingsTab('notifications')" data-tab="notifications" style="padding: 12px 24px; background: none; border: none; color: #6b7280; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.3s;">
+            Notifications
+          </button>
         </div>
 
         <!-- Account Tab -->
@@ -2242,6 +2245,68 @@
             </div>
           </div>
         </div>
+
+        <!-- Notifications Tab -->
+        <div id="notifications-tab-content" class="settings-tab-content" style="display: none;">
+          <h3 style="font-size: 18px; font-weight: 700; color: #00FFFF; margin-bottom: 8px; letter-spacing: 1px;">Notification Recipients</h3>
+          <p style="font-size: 13px; color: #9ca3af; margin-bottom: 24px;">Manage who receives email and SMS notifications for each call category.</p>
+
+          <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+            <button onclick="openAddNotificationRecipient()" style="padding: 10px 20px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+              + Add Recipient
+            </button>
+          </div>
+
+          <div id="notification-recipients-container">
+            <div style="text-align: center; padding: 40px; color: #9ca3af;">
+              <p>Loading notification settings...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Notification Recipient Modal -->
+  <div id="add-recipient-modal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+      <div class="modal-header">
+        <h2>Add Notification Recipient</h2>
+        <span class="close" onclick="closeAddRecipientModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="add-recipient-form" onsubmit="saveNotificationRecipient(event)">
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+              Full Name *
+            </label>
+            <input type="text" id="recipient-name" required placeholder="John Doe" style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3;">
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+              Email Address *
+            </label>
+            <input type="email" id="recipient-email" required placeholder="john@example.com" style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3;">
+          </div>
+
+          <div style="margin-bottom: 24px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1.5px;">
+              Phone Number (for SMS)
+            </label>
+            <input type="tel" id="recipient-phone" placeholder="+1234567890" style="width: 100%; padding: 14px 18px; font-size: 15px; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-family: 'JetBrains Mono', monospace; background: rgba(13, 17, 23, 0.6); color: #e6edf3;">
+            <div style="font-size: 11px; color: #6b7280; margin-top: 6px;">Required if you want this person to receive SMS notifications</div>
+          </div>
+
+          <div style="display: flex; gap: 12px;">
+            <button type="button" onclick="closeAddRecipientModal()" style="flex: 1; padding: 12px 24px; background: linear-gradient(135deg, rgba(107, 114, 128, 0.2), rgba(75, 85, 99, 0.2)); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.4); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+              Cancel
+            </button>
+            <button type="submit" id="save-recipient-btn" style="flex: 1; padding: 12px 24px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+              Add Recipient
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -3254,6 +3319,11 @@
         activeTab.style.borderBottomColor = '#00FFFF';
         activeTab.classList.add('active');
       }
+
+      // Load notification recipients when notifications tab is opened
+      if (tabName === 'notifications') {
+        loadNotificationRecipients();
+      }
     }
 
     function clearPasswordFields() {
@@ -3261,6 +3331,215 @@
       document.getElementById('new-password').value = '';
       document.getElementById('confirm-password').value = '';
     }
+
+    // ============ NOTIFICATION RECIPIENTS FUNCTIONS ============
+    let notificationRecipients = [];
+
+    async function loadNotificationRecipients() {
+      const container = document.getElementById('notification-recipients-container');
+      container.innerHTML = '<div style="text-align: center; padding: 40px; color: #9ca3af;"><p>Loading notification settings...</p></div>';
+
+      try {
+        const agentId = currentUser.agent_ids[0];
+        const res = await fetch(`/api/notification-recipients/${agentId}`);
+        if (!res.ok) throw new Error('Failed to load recipients');
+
+        const data = await res.json();
+        notificationRecipients = data.recipients || [];
+        renderNotificationRecipients();
+      } catch (error) {
+        console.error('Error loading notification recipients:', error);
+        container.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #f85149;">
+            <p>Failed to load notification settings</p>
+            <button onclick="loadNotificationRecipients()" style="margin-top: 16px; padding: 8px 16px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 6px; cursor: pointer;">Retry</button>
+          </div>
+        `;
+      }
+    }
+
+    function renderNotificationRecipients() {
+      const container = document.getElementById('notification-recipients-container');
+
+      if (notificationRecipients.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 60px 20px; background: rgba(13, 17, 23, 0.4); border: 1px dashed rgba(0, 255, 255, 0.3); border-radius: 12px;">
+            <div style="font-size: 48px; margin-bottom: 16px;">📧</div>
+            <h4 style="color: #e6edf3; font-size: 16px; margin-bottom: 8px;">No notification recipients configured</h4>
+            <p style="color: #9ca3af; font-size: 13px; margin-bottom: 20px;">Add team members to receive email and SMS notifications for calls.</p>
+            <button onclick="openAddNotificationRecipient()" style="padding: 10px 20px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; text-transform: uppercase;">+ Add Your First Recipient</button>
+          </div>
+        `;
+        return;
+      }
+
+      const categories = ['New Lead', 'Existing Client', 'Attorney', 'Insurance', 'Medical', 'Other'];
+      const categoryKeys = {
+        'New Lead': 'new_lead',
+        'Existing Client': 'existing_client',
+        'Attorney': 'attorney',
+        'Insurance': 'insurance',
+        'Medical': 'medical',
+        'Other': 'other'
+      };
+
+      let html = '';
+
+      notificationRecipients.forEach(recipient => {
+        html += `
+          <div style="background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <div>
+                <h4 style="color: #e6edf3; font-size: 16px; font-weight: 700; margin: 0 0 4px 0;">${recipient.name}</h4>
+                <div style="font-size: 13px; color: #00FFFF; font-family: 'JetBrains Mono', monospace;">${recipient.email}</div>
+                ${recipient.phone ? `<div style="font-size: 12px; color: #9ca3af; margin-top: 2px;">📱 ${recipient.phone}</div>` : '<div style="font-size: 12px; color: #6b7280; margin-top: 2px;">No phone (SMS disabled)</div>'}
+              </div>
+              <button onclick="deleteNotificationRecipient(${recipient.id}, '${recipient.name}')" style="padding: 6px 12px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600;">Remove</button>
+            </div>
+
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                <thead>
+                  <tr style="border-bottom: 1px solid rgba(0, 255, 255, 0.2);">
+                    <th style="text-align: left; padding: 8px 12px; color: #9ca3af; font-weight: 600; font-size: 11px; text-transform: uppercase;">Category</th>
+                    <th style="text-align: center; padding: 8px 12px; color: #9ca3af; font-weight: 600; font-size: 11px; text-transform: uppercase;">Email</th>
+                    <th style="text-align: center; padding: 8px 12px; color: #9ca3af; font-weight: 600; font-size: 11px; text-transform: uppercase;">SMS</th>
+                  </tr>
+                </thead>
+                <tbody>
+        `;
+
+        categories.forEach(category => {
+          const key = categoryKeys[category];
+          const emailEnabled = recipient[`${key}_email`] !== false;
+          const smsEnabled = recipient[`${key}_sms`] === true;
+          const smsDisabled = !recipient.phone;
+
+          html += `
+            <tr style="border-bottom: 1px solid rgba(48, 54, 61, 0.5);">
+              <td style="padding: 10px 12px; color: #e6edf3;">${category}</td>
+              <td style="text-align: center; padding: 10px 12px;">
+                <label style="cursor: pointer;">
+                  <input type="checkbox" ${emailEnabled ? 'checked' : ''} onchange="updateRecipientPreference(${recipient.id}, '${key}_email', this.checked)" style="cursor: pointer; width: 18px; height: 18px; accent-color: #00FFFF;">
+                </label>
+              </td>
+              <td style="text-align: center; padding: 10px 12px;">
+                <label style="cursor: ${smsDisabled ? 'not-allowed' : 'pointer'}; opacity: ${smsDisabled ? '0.4' : '1'};">
+                  <input type="checkbox" ${smsEnabled ? 'checked' : ''} ${smsDisabled ? 'disabled' : ''} onchange="updateRecipientPreference(${recipient.id}, '${key}_sms', this.checked)" style="cursor: ${smsDisabled ? 'not-allowed' : 'pointer'}; width: 18px; height: 18px; accent-color: #00FFFF;">
+                </label>
+              </td>
+            </tr>
+          `;
+        });
+
+        html += `
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function openAddNotificationRecipient() {
+      document.getElementById('recipient-name').value = '';
+      document.getElementById('recipient-email').value = '';
+      document.getElementById('recipient-phone').value = '';
+      document.getElementById('add-recipient-modal').style.display = 'block';
+    }
+
+    function closeAddRecipientModal() {
+      document.getElementById('add-recipient-modal').style.display = 'none';
+    }
+
+    async function saveNotificationRecipient(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('recipient-name').value.trim();
+      const email = document.getElementById('recipient-email').value.trim();
+      const phone = document.getElementById('recipient-phone').value.trim();
+      const btn = document.getElementById('save-recipient-btn');
+
+      if (!name || !email) {
+        showToast('Name and email are required', 'error');
+        return;
+      }
+
+      btn.textContent = 'Adding...';
+      btn.disabled = true;
+
+      try {
+        const agentId = currentUser.agent_ids[0];
+        const res = await fetch('/api/notification-recipients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ agent_id: agentId, name, email, phone: phone || null })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to add recipient');
+        }
+
+        showToast(`${name} added as notification recipient`, 'success');
+        closeAddRecipientModal();
+        loadNotificationRecipients();
+      } catch (error) {
+        showToast(error.message, 'error');
+      } finally {
+        btn.textContent = 'Add Recipient';
+        btn.disabled = false;
+      }
+    }
+
+    async function updateRecipientPreference(recipientId, field, value) {
+      try {
+        const res = await fetch(`/api/notification-preferences/${recipientId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ [field]: value })
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to update preference');
+        }
+
+        // Update local state
+        const recipient = notificationRecipients.find(r => r.id === recipientId);
+        if (recipient) {
+          recipient[field] = value;
+        }
+
+        console.log(`Updated ${field} = ${value} for recipient ${recipientId}`);
+      } catch (error) {
+        showToast('Failed to update preference', 'error');
+        loadNotificationRecipients(); // Reload to reset checkboxes
+      }
+    }
+
+    async function deleteNotificationRecipient(recipientId, name) {
+      if (!confirm(`Remove ${name} from notification recipients?`)) return;
+
+      try {
+        const res = await fetch(`/api/notification-recipients/${recipientId}`, {
+          method: 'DELETE'
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to remove recipient');
+        }
+
+        showToast(`${name} removed from notifications`, 'success');
+        loadNotificationRecipients();
+      } catch (error) {
+        showToast(error.message, 'error');
+      }
+    }
+
+    // ============ END NOTIFICATION RECIPIENTS FUNCTIONS ============
 
     async function saveSettings(event) {
       event.preventDefault();
