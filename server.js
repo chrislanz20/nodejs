@@ -960,6 +960,8 @@ INSTRUCTIONS:
 Categorize this call into ONE of these categories:
 
 **New Lead** - ONLY if the caller is inquiring about legal services for the FIRST TIME. Look for:
+  • IMPORTANT: If caller says they were "injured" or describes their own accident, they are likely a New Lead
+    seeking legal help. Trust this initial answer unless clear evidence shows otherwise.
   • Asking IF the firm can help them ("Can you help me with...", "Do you handle...")
   • Describing an accident/injury that hasn't been discussed with this firm before
   • No mention of existing representation or case
@@ -968,6 +970,8 @@ Categorize this call into ONE of these categories:
   • Shopping for attorneys or comparing options
 
 **Existing Client** - ONLY if there is CLEAR EVIDENCE the caller THEMSELVES already has a case with this firm. Look for:
+  • IMPORTANT: If caller says they're an existing client or references "my case", trust that.
+    But verify they're talking about THEIR OWN case (not someone else's).
   • Explicit mention of case number, file number, or claim number FOR THEIR OWN CASE
   • Phrases like: "I'm calling about MY case", "I'm already a client", "MY lawyer", "MY attorney"
   • Asking for updates/status on "THEIR" case (not someone else's case)
@@ -978,14 +982,16 @@ Categorize this call into ONE of these categories:
   • IMPORTANT: If caller just mentions calling before but no case is established, it's likely still a New Lead
 
 **Attorney** - Caller is another attorney, law firm, or legal professional (NOT a potential client or existing client)
-  • Explicitly identifies as an attorney, lawyer, or legal professional
-  • Asks if they are an attorney and confirms YES
+  • DEFINITIVE RULES (if ANY of these are true, categorize as Attorney):
+    - Caller explicitly identifies as attorney, lawyer, paralegal, or legal professional
+    - Caller says "I represent..." or "my client..." (legal representation language)
+    - Email domain is a law firm (e.g., @smithlaw.com, @lawoffice.com)
+  • IMPORTANT: The caller's initial answer is usually truthful - if they say "Attorney", trust that.
+    However, if caller says "something else" but then clearly identifies as an attorney (by title,
+    firm name, or legal representation language), prioritize the actual evidence.
   • Calling about "a client" or "their client" (not their own injury)
   • Opposing counsel calling about a case
-  • Represents a law firm or legal entity
-  • Email domain suggests law firm/legal entity (@lawfirm.com, not personal gmail/yahoo)
   • CRITICAL: They reference cases/clients in THIRD PERSON, not first person
-  • If they say "I represent..." or "my client..." → Attorney
 
 **Insurance** - Caller works for an insurance company (NOT a law firm, NOT a medical facility)
   • DEFINITIVE RULES (if ANY of these are true, categorize as Insurance):
@@ -1010,15 +1016,17 @@ Categorize this call into ONE of these categories:
   • If unsure whether Insurance or Medical: Does caller work for insurer (Insurance) or healthcare facility (Medical)?
 
 **Medical** - Medical providers, billing companies, or healthcare facilities calling about OTHER PEOPLE'S cases
-  • Medical provider, hospital, radiology, ASC (Ambulatory Surgical Center), or healthcare facility calling
+  • DEFINITIVE RULES (if ANY of these are true, categorize as Medical):
+    - Caller identifies as medical provider, doctor, nurse, billing department, or healthcare staff
+    - Caller says they're from a hospital, clinic, radiology center, ASC, or medical facility
+    - Caller discusses medical liens, treatment billing, or medical records for a PATIENT
+  • IMPORTANT: The caller's initial answer is usually truthful - if they say "Medical", trust that.
+    However, if caller says "something else" but then clearly identifies as medical (by facility name,
+    role, or discussing patient billing/treatment), prioritize the actual evidence.
   • Medical billing companies or medical revenue cycle companies
   • Calling about medical liens, settlement payment, or billing for treatment of A PATIENT (not themselves)
-  • Asking about payment/settlement timing for someone else's case
-  • Healthcare staff calling about patient care or billing matters
-  • They identify as "medical provider" or "calling from [medical facility name]"
   • CRITICAL: They're calling about SOMEONE ELSE (a patient), not their own injury
-  • Medical-related business calls (not patient calling about their own injury)
-  • Examples: "Integrated Specialty ASC", "XYZ Radiology", "ABC Billing Services"
+  • Examples: "Integrated Specialty ASC", "XYZ Radiology", "ABC Billing Services", "Newark General Hospital"
 
 **Other** - Wrong number, spam, telemarketer, unrelated business, nonsensical calls, calls that end during greeting, or cannot determine purpose
   • Clearly wrong number or misdial
