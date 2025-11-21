@@ -1241,6 +1241,11 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
             }
           }
 
+          // Calculate call duration in seconds for filtering
+          const durationSeconds = fullCall.end_timestamp && fullCall.start_timestamp
+            ? Math.round((fullCall.end_timestamp - fullCall.start_timestamp) / 1000)
+            : 0;
+
           // Build comprehensive call data with fallbacks
           const callData = {
             // Basic info
@@ -1249,6 +1254,7 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
             phone_number: phoneNumber,
             from_number: fullCall.from_number,
             to_number: fullCall.to_number,
+            duration_seconds: durationSeconds,
 
             // Contact info
             email: extractedData?.email || fullCall.extracted_data?.email || null,
