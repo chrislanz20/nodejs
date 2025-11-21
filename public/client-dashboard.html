@@ -4584,16 +4584,12 @@
             </div>
           </div>
 
-          ${lead.incident_description ? `
-            <div style="background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(48, 54, 61, 0.8); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-              <div style="color: #00FFFF; font-weight: 600; font-size: 12px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
-                Call Summary
-              </div>
-              <div style="color: #e6edf3; line-height: 1.6; font-size: 14px;">
-                ${lead.incident_description}
-              </div>
+          <div id="lead-call-summary-${lead.id}" style="background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+            <div style="color: #00FFFF; font-weight: 700; font-size: 13px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
+              📋 Call Summary
             </div>
-          ` : ''}
+            <div style="color: #7d8590; font-size: 14px;">Loading detailed summary...</div>
+          </div>
 
           ${lead.notes ? `
             <div style="background: rgba(${lead.status === 'Approved' ? '0, 255, 0' : lead.status === 'Denied' ? '255, 0, 0' : '255, 165, 0'}, 0.05); border-left: 3px solid rgba(${lead.status === 'Approved' ? '0, 255, 0' : lead.status === 'Denied' ? '255, 0, 0' : '255, 165, 0'}, 0.3); padding: 12px; border-radius: 6px; margin-bottom: 16px;">
@@ -4651,6 +4647,48 @@
       `;
 
       showModal('Lead Details', modalContent);
+
+      // Fetch and display the detailed call summary
+      loadLeadCallSummary(lead.call_id, lead.id);
+    }
+
+    async function loadLeadCallSummary(callId, leadId) {
+      const summaryContainer = document.getElementById(`lead-call-summary-${leadId}`);
+      if (!summaryContainer) return;
+
+      try {
+        const response = await fetch(`/api/calls/${callId}`);
+        if (!response.ok) throw new Error('Failed to fetch call');
+
+        const call = await response.json();
+        const callSummary = call.call_analysis?.call_summary || null;
+
+        if (callSummary) {
+          summaryContainer.innerHTML = `
+            <div style="color: #00FFFF; font-weight: 700; font-size: 13px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
+              📋 Call Summary
+            </div>
+            <div style="color: #e6edf3; line-height: 1.7; font-size: 14px;">
+              ${callSummary}
+            </div>
+          `;
+        } else {
+          summaryContainer.innerHTML = `
+            <div style="color: #00FFFF; font-weight: 700; font-size: 13px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
+              📋 Call Summary
+            </div>
+            <div style="color: #7d8590; font-size: 14px;">No summary available for this call.</div>
+          `;
+        }
+      } catch (error) {
+        console.error('Error loading call summary:', error);
+        summaryContainer.innerHTML = `
+          <div style="color: #00FFFF; font-weight: 700; font-size: 13px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
+            📋 Call Summary
+          </div>
+          <div style="color: #f85149; font-size: 14px;">Failed to load summary</div>
+        `;
+      }
     }
 
     async function loadLeadCallDetails(callId, leadId) {
