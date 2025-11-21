@@ -959,27 +959,42 @@ INSTRUCTIONS:
 
 Categorize this call into ONE of these categories:
 
-**New Lead** - ONLY if the caller is inquiring about legal services for the FIRST TIME. Look for:
-  • IMPORTANT: If caller says they were "injured" or describes their own accident, they are likely a New Lead
-    seeking legal help. Trust this initial answer unless clear evidence shows otherwise.
-  • Asking IF the firm can help them ("Can you help me with...", "Do you handle...")
-  • Describing an accident/injury that hasn't been discussed with this firm before
-  • No mention of existing representation or case
-  • Asking about the firm's services, fees, or process
-  • Phrases like: "I was in an accident", "I need a lawyer", "I'm looking for representation"
-  • Shopping for attorneys or comparing options
+**New Lead** - THE MOST IMPORTANT CATEGORY. Missing a new client is a critical business failure.
+  • WHEN IN DOUBT BETWEEN NEW LEAD AND EXISTING CLIENT → CHOOSE NEW LEAD (safer to follow up than to miss)
+  • DEFINITIVE NEW LEAD INDICATORS (if ANY of these, categorize as New Lead):
+    - Caller says they were "injured" when asked what type of caller they are
+    - Caller describes an accident that happened to THEM (car crash, slip and fall, work injury, etc.)
+    - Caller asks "Can you help me with..." or "Do you handle..." (exploring if firm can help)
+    - Caller says "I was in an accident", "I got hurt", "I need a lawyer", "I'm looking for an attorney"
+    - Caller asking about fees, process, or how to get started
+    - Caller mentions an accident date (recent or past) for THEIR OWN injury
+    - Caller provides details about THEIR injuries (broken bones, back pain, surgery, etc.)
+  • NEW LEAD even if they called before - unless they have an ACTIVE CASE:
+    - Caller says "I called before but never hired anyone" → Still New Lead
+    - Caller says "I spoke to someone last week about my accident" but no case opened → Still New Lead
+    - Caller asking about a NEW accident (even if they had a previous case) → New Lead for this accident
+  • SPECIFIC PHRASES THAT MEAN NEW LEAD:
+    - "I was in a car accident" / "I got into an accident"
+    - "I fell at [location]" / "I slipped and fell"
+    - "I got hurt at work" / "I was injured on the job"
+    - "I need to speak to a lawyer about my accident"
+    - "Can you help me with my case?" (when no existing case)
+    - "I want to file a claim" / "I want to sue"
+    - "Someone hit me" / "I was rear-ended"
 
-**Existing Client** - ONLY if there is CLEAR EVIDENCE the caller THEMSELVES already has a case with this firm. Look for:
-  • IMPORTANT: If caller says they're an existing client or references "my case", trust that.
-    But verify they're talking about THEIR OWN case (not someone else's).
-  • Explicit mention of case number, file number, or claim number FOR THEIR OWN CASE
-  • Phrases like: "I'm calling about MY case", "I'm already a client", "MY lawyer", "MY attorney"
-  • Asking for updates/status on "THEIR" case (not someone else's case)
-  • Referencing previous calls/conversations with this firm specifically about THEIR OWN injury
-  • Calling back about an ongoing case THEY'VE already opened for THEMSELVES
-  • Mentions being represented by this firm or having signed with them
-  • CRITICAL: If caller asks "Is the case still active?" or references "a client" or "this case" for SOMEONE ELSE, they are NOT an existing client - they are likely Attorney/Medical/Insurance
-  • IMPORTANT: If caller just mentions calling before but no case is established, it's likely still a New Lead
+**Existing Client** - ONLY if there is CLEAR, EXPLICIT evidence of an ACTIVE case with THIS firm
+  • MUST HAVE AT LEAST ONE OF THESE (not just "I called before"):
+    - Caller explicitly says "I'm already a client" or "I'm one of your clients"
+    - Caller says "I'm calling about MY case" AND mentions case number or attorney name at firm
+    - Caller says "MY lawyer is [name at CourtLaw]" or "MY attorney at your firm"
+    - Caller references specific case details only an active client would know
+    - Caller says "I signed with you" or "You're representing me"
+  • NOT EXISTING CLIENT (these are still New Lead or Other):
+    - Just called before but no case was opened → New Lead
+    - Left a message before but never spoke to anyone → New Lead
+    - Had a consultation but didn't sign → New Lead
+    - Asking about "a case" in general (might be Attorney/Medical/Insurance asking about someone else)
+  • CRITICAL: "Existing Client" requires ACTIVE representation, not just previous contact
 
 **Attorney** - Caller is another attorney, law firm, or legal professional (NOT a potential client or existing client)
   • DEFINITIVE RULES (if ANY of these are true, categorize as Attorney):
