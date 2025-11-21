@@ -996,19 +996,29 @@ Categorize this call into ONE of these categories:
     - "This is my first time calling" / "I'm a new client"
 
 **Existing Client** - ONLY if there is CLEAR, EXPLICIT evidence of an ACTIVE case with THIS firm
+  • DEFINITIVE EXISTING CLIENT INDICATORS (if ANY of these, categorize as Existing Client):
+    - Caller says "I have my case with you" / "I have a case with you guys" / "my case is with you"
+    - Caller says "I'm already working with [firm name]" (even if mispronounced like "four plow" for "CourtLaw")
+    - Caller received a LETTER from the firm about their case (settlement offer, case update, etc.)
+    - Caller mentions a settlement offer on THEIR case from defendant's insurance
+    - Caller references a letter signed by an attorney at the firm (e.g., "Michael Labrada", "Karim")
+    - Caller has specific accident date that matches correspondence from the firm
+
   • AI RECEPTIONIST CLARIFYING QUESTIONS - Pay close attention to these exchanges:
-    - If receptionist asks "Do you have a case with us?" and caller says YES → might be Existing Client (verify further)
+    - If receptionist asks "Do you have a case with us?" and caller says YES → Existing Client
     - If receptionist asks "Are you an existing client?" and caller says YES → Existing Client
+    - If receptionist asks "Are you currently working with [firm] on your case?" and caller says YES → Existing Client
     - If caller provides a CASE NUMBER when asked → Existing Client
-    - If caller names their attorney at the firm (e.g., "I work with Karim") → Existing Client
+    - If caller names their attorney at the firm (e.g., "I work with Karim", "Michael Labrada") → Existing Client
 
   • MUST HAVE AT LEAST ONE OF THESE (not just "I called before"):
     - Caller explicitly says "I'm already a client" or "I'm one of your clients" or "Yes" to "are you existing client?"
     - Caller says "I'm calling about MY case" AND mentions case number or attorney name at firm
     - Caller says "MY lawyer is [name at CourtLaw]" or "MY attorney at your firm"
-    - Caller references specific case details only an active client would know
+    - Caller references specific case details only an active client would know (settlement offers, letters received)
     - Caller says "I signed with you" or "You're representing me"
     - Caller knows their case number or file number
+    - Caller received correspondence/letter from the firm about their active case
 
   • NOT EXISTING CLIENT (categorize as New Lead instead):
     - Just called before but no case was opened → New Lead
