@@ -1280,6 +1280,13 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
     console.log(`\n📞 Retell webhook: ${callId.substring(0, 25)}... (event: ${eventType || 'none'})`);
     console.log(`   Agent: ${agentId?.substring(0, 25)}...`);
 
+    // ONLY process call_ended events - ignore call_started and other events
+    // call_started has no transcript (call hasn't happened yet)
+    if (eventType && eventType !== 'call_ended' && eventType !== 'call_analyzed') {
+      console.log(`   ⏭️  Ignoring ${eventType} event (waiting for call_ended)`);
+      return res.status(204).send();
+    }
+
     // DEDUPLICATION: Check if we already processed this call_id (in-memory for same instance)
     if (processedWebhooks.has(callId)) {
       console.log(`⚠️  DUPLICATE webhook ignored (in-memory) - call ${callId.substring(0, 30)}...`);
