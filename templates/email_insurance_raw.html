@@ -1,15 +1,16 @@
-=<!-- Personal Injury Inbound Call Notification (Attorney) -->
+<!-- Personal Injury Inbound Call Notification (Insurance) -->
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/199/xhtml">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8">
     <meta name="x-apple-disable-message-reformatting">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Inbound Call – Attorney</title>
+    <title>Inbound Call – Insurance</title>
   </head>
   <body style="margin:0; padding:0; background-color:#f4f6f8;">
     <!-- Preheader (hidden in most clients) -->
     <div style="display:none; font-size:1px; color:#f4f6f8; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden;">
+      Insurance company inquiry - action may be required
     </div>
 
     <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f4f6f8;">
@@ -19,8 +20,8 @@
             <!-- Header -->
             <tr>
               <td style="padding:20px 24px; background:#131313; color:#ffffff; font-family:Arial, Helvetica, sans-serif;">
-                <div style="font-size:18px; font-weight:bold;">Inbound Call Alert — Attorney</div>
-                <div style="font-size:12px; opacity:0.9; margin-top:6px;">Personal Injury Intake • Action Required</div>
+                <div style="font-size:18px; font-weight:bold;">Inbound Call Alert — Insurance</div>
+                <div style="font-size:12px; opacity:0.9; margin-top:6px;">Insurance Inquiry • Action Required</div>
               </td>
             </tr>
 
@@ -62,24 +63,20 @@
                     </td>
                   </tr>
 <tr>
-                    <td style="padding:6px 0; color:#555; vertical-align:top;">Who Representing</td>
-                    <td style="padding:6px 0;">
-                      {{ $json['Who Representing'] }}
-                    </td>
+                    <td style="padding:6px 0; width:160px; color:#555;">Claim Number</td>
+                    <td style="padding:6px 0;">{{ $json.Claim }}
+</td>
                   </tr>
 <tr>
-                    <td style="padding:6px 0; color:#555; vertical-align:top;">Case Name</td>
-                    <td style="padding:6px 0;">
-                      {{ $json['Case Name'] }}
-                    </td>
+                    <td style="padding:6px 0; width:160px; color:#555;">Who Representing</td>
+                    <td style="padding:6px 0;">{{ $json.representing_who }}
+</td>
                   </tr>
 <tr>
-                    <td style="padding:6px 0; color:#555; vertical-align:top;">Claim Number</td>
-                    <td style="padding:6px 0;">
-                      {{ $json['Claim Num'] }}
-                    </td>
+                    <td style="padding:6px 0; width:160px; color:#555;">Client Name</td>
+                    <td style="padding:6px 0;">{{ $json.client_name }}
+</td>
                   </tr>
-
                   <tr>
                     <td style="padding:6px 0; color:#555; vertical-align:top;">Purpose</td>
                     <td style="padding:6px 0;">
@@ -90,6 +87,9 @@
               </td>
             </tr>
 
+                </table>
+              </td>
+            </tr>
             <!-- Patient/Case Snapshot -->
             <tr>
               <td style="padding:0 24px 12px 24px; font-family:Arial, Helvetica, sans-serif;">
