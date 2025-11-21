@@ -1173,19 +1173,34 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
     console.log(`\n📞 Retell webhook received for call: ${callId.substring(0, 30)}...`);
     console.log(`   Agent: ${agentId?.substring(0, 30)}...`);
 
-    // DEDUPLICATION: Check if we already processed this call_id
+    // DEDUPLICATION: Check if we already processed this call_id (in-memory for same instance)
     if (processedWebhooks.has(callId)) {
-      console.log(`⚠️  DUPLICATE webhook ignored - call ${callId.substring(0, 30)}... already processed`);
+      console.log(`⚠️  DUPLICATE webhook ignored (in-memory) - call ${callId.substring(0, 30)}...`);
       return res.status(204).send();
     }
 
-    // Mark as processed immediately
+    // Mark as processed immediately (in-memory)
     processedWebhooks.add(callId);
 
     // Auto-cleanup after timeout to prevent memory leak
     setTimeout(() => {
       processedWebhooks.delete(callId);
     }, WEBHOOK_DEDUP_TIMEOUT);
+
+    // DATABASE DEDUPLICATION: Check if call_id already exists (works across Vercel instances)
+    try {
+      const existingCategory = await pool.query(
+        'SELECT call_id FROM call_categories WHERE call_id = $1',
+        [callId]
+      );
+      if (existingCategory.rows.length > 0) {
+        console.log(`⚠️  DUPLICATE webhook ignored (database) - call ${callId.substring(0, 30)}... already processed`);
+        return res.status(204).send();
+      }
+    } catch (dbError) {
+      console.error(`⚠️  Database dedup check failed, continuing: ${dbError.message}`);
+      // Continue processing if database check fails - better to risk duplicate than miss notification
+    }
 
     // Process categorization BEFORE responding (Vercel terminates after response)
     try {
