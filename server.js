@@ -987,10 +987,20 @@ Categorize this call into ONE of these categories:
   • CRITICAL: They reference cases/clients in THIRD PERSON, not first person
   • If they say "I represent..." or "my client..." → Attorney
 
-**Insurance** - Caller identifies as insurance company, adjuster, or discusses insurance claims/coverage from insurance company perspective
-  • Works for insurance company
-  • Insurance adjuster calling about a claim
-  • Speaking from insurance company's perspective (not client talking about their insurance)
+**Insurance** - Caller works for an insurance company (NOT a law firm, NOT a medical facility)
+  • Identifies as: adjuster, claims representative, claims handler, or works for insurance company
+  • WELL-KNOWN INSURANCE COMPANIES (recognize even without "insurance" in name):
+    Progressive, State Farm, Geico, Allstate, Liberty Mutual, Farmers, USAA, Nationwide,
+    Travelers, American Family, MetLife, Esurance, The Hartford, Kemper, Erie, Mercury,
+    AAA, NJM, Plymouth Rock, Amica, Bristol West, Infinity, SafeAuto, Root, Lemonade
+  • Discusses from INSURER perspective: coverage, liability determination, settlement offers, policy limits
+  • May reference a claimant or injured party they are handling a claim for
+  • CRITICAL DISTINCTIONS (do NOT confuse with other categories):
+    - vs Attorney: Attorneys discuss LEGAL representation ("my client", "I represent"); Insurance discusses COVERAGE/LIABILITY
+    - vs Medical: Medical providers discuss TREATMENT/BILLS/LIENS; Insurance discusses CLAIMS/COVERAGE/SETTLEMENT OFFERS
+    - NOTE: All three (Attorney, Medical, Insurance) may mention claim numbers - that alone is NOT distinguishing
+  • If unsure whether Insurance or Attorney: Does caller discuss coverage/liability (Insurance) or legal representation (Attorney)?
+  • If unsure whether Insurance or Medical: Does caller work for insurer (Insurance) or healthcare facility (Medical)?
 
 **Medical** - Medical providers, billing companies, or healthcare facilities calling about OTHER PEOPLE'S cases
   • Medical provider, hospital, radiology, ASC (Ambulatory Surgical Center), or healthcare facility calling
