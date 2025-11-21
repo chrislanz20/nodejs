@@ -3069,7 +3069,7 @@
 
         // Refresh stats if Lead Tracker is affected
         if (result.lead_removed || newCategory === 'New Lead') {
-          await loadLeads();
+          await loadClientLeads();
         }
 
         // Update category distribution chart
