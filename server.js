@@ -1188,12 +1188,8 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
       processedWebhooks.delete(callId);
     }, WEBHOOK_DEDUP_TIMEOUT);
 
-    // Respond immediately to Retell with 204 (as required by Retell docs)
-    res.status(204).send();
-
-    // Process async (categorize + send notifications) - NO delay needed, call is already finalized
-    (async () => {
-      try {
+    // Process categorization BEFORE responding (Vercel terminates after response)
+    try {
         // Fetch full call details
         const fullCall = await retellClient.call.retrieve(callId);
         const transcript = fullCall.transcript_object || fullCall.transcript || [];
@@ -1313,10 +1309,14 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
           await sendNotifications(agentId, categoryResult.category, callData);
         }
 
-      } catch (error) {
-        console.error(`❌ Error processing webhook for ${callId}:`, error.message);
-      }
-    })(); // Execute immediately - no delay needed
+      // Respond with 204 after successful processing
+      res.status(204).send();
+
+    } catch (error) {
+      console.error(`❌ Error processing webhook for ${callId}:`, error.message);
+      // Still respond with 204 even if processing fails (webhook was received)
+      res.status(204).send();
+    }
 
   } catch (error) {
     console.error('❌ Webhook error:', error);
