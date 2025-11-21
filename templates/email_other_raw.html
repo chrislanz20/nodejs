@@ -65,6 +65,31 @@
               </td>
             </tr>
 
+            <!-- Inquiry Details (only shown if relevant) -->
+            <tr>
+              <td style="padding:0 24px 20px 24px; font-family:Arial, Helvetica, sans-serif; color:#111;">
+                <div style="font-size:16px; font-weight:bold; margin-bottom:12px;">Inquiry Details</div>
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="font-size:14px;">
+                  <tr>
+                    <td style="padding:6px 0; width:160px; color:#555;">Purpose</td>
+                    <td style="padding:6px 0;">{{ $json.Purpose }}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Who Representing</td>
+                    <td style="padding:6px 0;">{{ $json.representing_who }}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Client Name</td>
+                    <td style="padding:6px 0;">{{ $json.client_name }}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:6px 0; color:#555;">Claim Number</td>
+                    <td style="padding:6px 0;">{{ $json.claim_num }}</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
             <!-- CTA Buttons -->
             <tr>
               <td align="center" style="padding:8px 24px 24px 24px; font-family:Arial, Helvetica, sans-serif;">
