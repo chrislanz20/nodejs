@@ -1262,8 +1262,9 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
             claim_number: extractedData?.claim_number || fullCall.extracted_data?.claim_number || null,
             claim_num: extractedData?.claim_number || fullCall.extracted_data?.claim_num || null,
 
-            // New Lead base fields
-            incident_description: extractedData?.incident_description || fullCall.call_analysis?.call_summary || categoryResult.summary || categoryResult.reasoning,
+            // New Lead base fields - use Retell's call_summary (better quality) as primary
+            call_summary: fullCall.call_analysis?.call_summary || null,
+            incident_description: fullCall.call_analysis?.call_summary || extractedData?.incident_description || categoryResult.summary || categoryResult.reasoning,
             incident_date: extractedData?.incident_date || null,
             incident_location: extractedData?.incident_location || null,
             case_type: extractedData?.case_type || null,
@@ -1610,8 +1611,9 @@ app.post('/api/update-category', async (req, res) => {
             claim_number: extractedData?.claim_number || fullCall.extracted_data?.claim_number || null,
             claim_num: extractedData?.claim_number || fullCall.extracted_data?.claim_num || null,
 
-            // New Lead base fields
-            incident_description: extractedData?.incident_description || fullCall.call_analysis?.call_summary || reasoning,
+            // New Lead base fields - use Retell's call_summary (better quality) as primary
+            call_summary: fullCall.call_analysis?.call_summary || null,
+            incident_description: fullCall.call_analysis?.call_summary || extractedData?.incident_description || reasoning,
             incident_date: extractedData?.incident_date || null,
             incident_location: extractedData?.incident_location || null,
             case_type: extractedData?.case_type || null,
