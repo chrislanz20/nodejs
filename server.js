@@ -117,6 +117,15 @@ app.use(cors({
   credentials: true
 }));
 
+// Redirect client subdomain to client portal
+app.use((req, res, next) => {
+  const host = req.get('host') || '';
+  if (host.startsWith('client.') && req.path === '/') {
+    return res.redirect('/client-portal');
+  }
+  next();
+});
+
 // Serve the marketing site
 const publicDir = path.join(__dirname, "public");
 
