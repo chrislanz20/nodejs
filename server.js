@@ -1247,15 +1247,14 @@ app.get('/api/webhook-debug', (req, res) => {
 });
 
 // POST /webhook/retell-call-ended - Retell webhook for call completion
-// NOTE: Retell sends 3 events: call_started, call_ended, call_analyzed
-// We ONLY process call_analyzed because that's when transcript/summary are ready
 app.post('/webhook/retell-call-ended', async (req, res) => {
   try {
     const callData = req.body;
     const eventType = callData.event;
     const callId = callData.call?.call_id || callData.call_id;
+    const agentId = callData.call?.agent_id || callData.agent_id;
 
-    // DEBUG: Log every webhook payload to database for debugging
+    // DEBUG: Log webhook to database
     try {
       await pool.query(`
         INSERT INTO activity_log (action, call_id, details, created_at)
@@ -1264,26 +1263,13 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
         'webhook_received',
         callId || null,
         JSON.stringify({
-          event: eventType || 'NO EVENT FIELD',
+          event: eventType || 'NONE',
           has_transcript: !!(callData.call?.transcript_object?.length || callData.call?.transcript),
-          has_call_analysis: !!callData.call?.call_analysis,
-          transcript_length: callData.call?.transcript_object?.length || 0,
-          all_top_level_keys: Object.keys(callData),
-          call_keys: callData.call ? Object.keys(callData.call) : 'NO CALL OBJECT'
+          transcript_length: callData.call?.transcript_object?.length || 0
         })
       ]);
     } catch (dbErr) {
-      console.error('Failed to log webhook debug:', dbErr.message);
-    }
-    const agentId = callData.call?.agent_id || callData.agent_id;
-
-    console.log(`\n📞 Retell webhook received - Event: ${eventType}, Call: ${callId?.substring(0, 20)}...`);
-
-    // ONLY process call_analyzed events - this is when transcript/summary are ready
-    // Ignore call_started and call_ended events
-    if (eventType !== 'call_analyzed') {
-      console.log(`   ⏭️  Ignoring ${eventType} event (waiting for call_analyzed)`);
-      return res.status(200).send();
+      console.error('Webhook debug log failed:', dbErr.message);
     }
 
     if (!callId) {
@@ -1291,8 +1277,8 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
       return res.status(400).send();
     }
 
-    console.log(`   ✅ Processing call_analyzed event...`);
-    console.log(`   Agent: ${agentId?.substring(0, 30)}...`);
+    console.log(`\n📞 Retell webhook: ${callId.substring(0, 25)}... (event: ${eventType || 'none'})`);
+    console.log(`   Agent: ${agentId?.substring(0, 25)}...`);
 
     // DEDUPLICATION: Check if we already processed this call_id (in-memory for same instance)
     if (processedWebhooks.has(callId)) {
@@ -1325,30 +1311,36 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
 
     // Process categorization BEFORE responding (Vercel terminates after response)
     try {
-        // Fetch full call details - since we're processing call_analyzed event,
-        // transcript and call_analysis should already be available
-        console.log(`   📥 Fetching call details...`);
+        // Wait for transcript with retry - Retell may take time to process
+        let fullCall;
+        let transcript = [];
+        const MAX_RETRIES = 12;  // 12 attempts × 5 seconds = 60 seconds max
+        const RETRY_DELAY = 5000;
 
-        // First try to use data from webhook payload (call_analyzed includes full data)
-        let fullCall = callData.call || callData;
-        let transcript = fullCall.transcript_object || fullCall.transcript || [];
+        console.log(`   ⏳ Waiting for transcript (up to 60 seconds)...`);
 
-        // If webhook payload doesn't have transcript, fetch from API
-        if (!transcript || transcript.length === 0) {
-          console.log(`   📡 Transcript not in webhook payload, fetching from API...`);
+        for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
           fullCall = await retellClient.call.retrieve(callId);
           transcript = fullCall.transcript_object || fullCall.transcript || [];
-        }
 
-        // Log what we have
-        if (transcript && transcript.length > 0) {
-          console.log(`   ✅ Transcript available (${Array.isArray(transcript) ? transcript.length + ' messages' : transcript.length + ' chars'})`);
-        } else if (fullCall.call_analysis?.call_summary) {
-          // Use call_summary as fallback if no transcript
-          console.log(`   📝 Using call_summary for categorization: "${fullCall.call_analysis.call_summary.substring(0, 100)}..."`);
-          transcript = fullCall.call_analysis.call_summary;
-        } else {
-          console.log(`   ⚠️  No transcript or call_summary available`);
+          if (transcript && transcript.length > 0) {
+            console.log(`   ✅ Transcript ready after ${(attempt - 1) * 5}s (${Array.isArray(transcript) ? transcript.length + ' messages' : 'string'})`);
+            break;
+          }
+
+          // Also check if call_summary is available as fallback
+          if (fullCall.call_analysis?.call_summary) {
+            console.log(`   📝 Using call_summary (transcript not ready): "${fullCall.call_analysis.call_summary.substring(0, 80)}..."`);
+            transcript = fullCall.call_analysis.call_summary;
+            break;
+          }
+
+          if (attempt < MAX_RETRIES) {
+            console.log(`   ⏳ Attempt ${attempt}/${MAX_RETRIES}: No transcript yet, waiting 5s...`);
+            await sleep(RETRY_DELAY);
+          } else {
+            console.log(`   ⚠️  No transcript after 60 seconds`);
+          }
         }
 
         const phoneNumber = fullCall.from_number || fullCall.to_number;
