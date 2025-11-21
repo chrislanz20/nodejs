@@ -1745,12 +1745,11 @@ app.post('/api/update-category', async (req, res) => {
     // Trigger notifications if requested (default: true)
     const shouldSendNotifications = send_notifications !== false; // Default to true unless explicitly false
 
-    if (shouldSendNotifications) {
-      // Process async - fetch call data and send notifications
+    // Always process lead tracking for "New Lead" category, and notifications if enabled
+    // This runs async to not block the response
+    if (category === 'New Lead' || shouldSendNotifications) {
       (async () => {
         try {
-          console.log(`   📧 Triggering notifications for manual category change...`);
-
           // Fetch full call details from Retell
           const fullCall = await retellClient.call.retrieve(call_id);
           const transcript = fullCall.transcript_object || fullCall.transcript || [];
@@ -1840,7 +1839,7 @@ app.post('/api/update-category', async (req, res) => {
             ...fullCall.extracted_data
           };
 
-          // Track lead if category is "New Lead"
+          // Track lead if category is "New Lead" (always runs regardless of notification setting)
           if (category === 'New Lead') {
             try {
               console.log(`   📝 Tracking lead for manual "New Lead" categorization...`);
@@ -1856,13 +1855,15 @@ app.post('/api/update-category', async (req, res) => {
             }
           }
 
-          // Send notifications
-          console.log(`   📤 Sending notifications for ${category}...`);
-          await sendNotifications(agentId, category, callData);
-          console.log(`   ✅ Notifications sent for manual category change`);
+          // Send notifications only if enabled
+          if (shouldSendNotifications) {
+            console.log(`   📤 Sending notifications for ${category}...`);
+            await sendNotifications(agentId, category, callData);
+            console.log(`   ✅ Notifications sent for manual category change`);
+          }
 
         } catch (error) {
-          console.error(`   ❌ Error sending notifications for manual category change:`, error.message);
+          console.error(`   ❌ Error processing manual category change:`, error.message);
         }
       })(); // Execute immediately
     }
