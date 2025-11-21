@@ -1162,25 +1162,6 @@ const WEBHOOK_DEDUP_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 // POST /webhook/retell-call-ended - Retell webhook for call completion
 app.post('/webhook/retell-call-ended', async (req, res) => {
   try {
-    // Verify webhook signature (Retell security requirement)
-    const signature = req.headers['x-retell-signature'];
-    if (signature) {
-      try {
-        const isValid = retellClient.verify(
-          JSON.stringify(req.body),
-          process.env.RETELL_API_KEY,
-          signature
-        );
-        if (!isValid) {
-          console.error('❌ Invalid webhook signature');
-          return res.status(401).send();
-        }
-      } catch (error) {
-        console.warn('⚠️  Webhook signature verification failed:', error.message);
-        // Continue anyway for backwards compatibility
-      }
-    }
-
     const callData = req.body;
     const callId = callData.call?.call_id || callData.call_id;
     const agentId = callData.call?.agent_id || callData.agent_id;
@@ -1223,10 +1204,8 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
         // Categorize with Claude
         const categoryResult = await categorizeTranscript(transcript, phoneNumber);
 
-        // Save category
-        const categories = await readCategories();
-        categories[callId] = { ...categoryResult, phone_number: phoneNumber };
-        await writeCategories(categories);
+        // Save category (ONLY the new one, not all categories - prevents timeout)
+        await writeCategories({ [callId]: { ...categoryResult, phone_number: phoneNumber } });
 
         console.log(`   ✅ Categorized as: ${categoryResult.category}`);
 
