@@ -16,7 +16,6 @@ const crypto = require('crypto');
 const compression = require('compression');
 const { sendNotifications } = require('./lib/ghlNotifications');
 const { trackLead, updateLeadStatus, getLeadsByAgent, getLeadStats, getAllLeadStats } = require('./lib/leadTracking');
-const { extractLeadDataFromTranscript } = require('./lib/extractLeadData');
 
 const app = express();
 
@@ -1294,7 +1293,7 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
             const leadTrackingResult = await trackLead(callId, agentId, categoryResult.category, callData);
             if (leadTrackingResult) {
               if (leadTrackingResult.isNewLead) {
-                console.log(`   📝 New lead tracked: ${extractedName || phoneNumber}`);
+                console.log(`   📝 New lead tracked: ${callData.name || phoneNumber}`);
               }
               if (leadTrackingResult.conversionDetected) {
                 console.log(`   🎉 CONVERSION DETECTED! Lead became client`);
@@ -1448,7 +1447,7 @@ app.post('/api/categorize-batch', async (req, res) => {
             const callData = {
               phone: call.phone_number,
               phone_number: call.phone_number,
-              name: call.caller_name || extractCallerName(call),
+              name: call.caller_name || extractNameFromCall(call),
               email: null, // Batch calls typically don't have email extracted
               incident_description: result.summary || result.reasoning
             };
