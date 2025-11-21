@@ -1811,6 +1811,22 @@ app.post('/api/update-category', async (req, res) => {
             ...fullCall.extracted_data
           };
 
+          // Track lead if category is "New Lead"
+          if (category === 'New Lead') {
+            try {
+              console.log(`   📝 Tracking lead for manual "New Lead" categorization...`);
+              const leadTrackingResult = await trackLead(call_id, agentId, category, callData);
+              if (leadTrackingResult && leadTrackingResult.isNewLead) {
+                console.log(`   ✅ New lead added to tracker: ${callData.name || phoneNumber}`);
+              } else if (leadTrackingResult) {
+                console.log(`   ℹ️  Lead already exists in tracker`);
+              }
+            } catch (leadError) {
+              console.error(`   ⚠️  Lead tracking error:`, leadError.message);
+              // Don't fail the whole operation if lead tracking fails
+            }
+          }
+
           // Send notifications
           console.log(`   📤 Sending notifications for ${category}...`);
           await sendNotifications(agentId, category, callData);
