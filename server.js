@@ -1703,6 +1703,35 @@ app.post('/api/update-category', async (req, res) => {
       return res.status(400).json({ error: 'Invalid category' });
     }
 
+    // Check if category is changing FROM "New Lead" to something else
+    // If so, we need to remove the lead from the leads table
+    let previousCategory = null;
+    let leadRemoved = false;
+    try {
+      const existingCategory = await pool.query(
+        'SELECT category FROM call_categories WHERE call_id = $1',
+        [call_id]
+      );
+      if (existingCategory.rows.length > 0) {
+        previousCategory = existingCategory.rows[0].category;
+      }
+
+      // If changing FROM "New Lead" to something else, delete the lead
+      if (previousCategory === 'New Lead' && category !== 'New Lead') {
+        const deleteResult = await pool.query(
+          'DELETE FROM leads WHERE call_id = $1 RETURNING id',
+          [call_id]
+        );
+        if (deleteResult.rows.length > 0) {
+          leadRemoved = true;
+          console.log(`   🗑️  Removed lead (ID: ${deleteResult.rows[0].id}) - category changed from New Lead to ${category}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking/removing lead:', error.message);
+      // Continue with category update even if lead removal fails
+    }
+
     // Update category directly in database
     await writeCategory(call_id, {
       category,
@@ -1842,8 +1871,10 @@ app.post('/api/update-category', async (req, res) => {
       success: true,
       call_id,
       category,
+      previous_category: previousCategory,
       reasoning,
-      notifications_triggered: shouldSendNotifications
+      notifications_triggered: shouldSendNotifications,
+      lead_removed: leadRemoved
     });
   } catch (error) {
     console.error('Error updating category:', error);

@@ -2939,7 +2939,24 @@
           </div>
           <div class="field">
             <div class="field-label">Category</div>
-            <div class="field-value">${getCategoryBadge(category)}</div>
+            <div class="field-value" id="modal-category-${callId}">
+              ${getCategoryBadge(category)}
+              <button onclick="showCategoryEditor('${callId}')" style="margin-left: 12px; padding: 6px 12px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Change</button>
+            </div>
+            <div id="category-editor-${callId}" style="display: none; margin-top: 12px; padding: 16px; background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 4px;">
+              <select id="category-select-${callId}" style="width: 100%; padding: 10px; border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(13, 17, 23, 0.8); color: #e6edf3; border-radius: 4px; font-size: 13px; margin-bottom: 10px;">
+                <option value="New Lead">New Lead</option>
+                <option value="Existing Client">Existing Client</option>
+                <option value="Attorney">Attorney</option>
+                <option value="Insurance">Insurance</option>
+                <option value="Medical">Medical</option>
+                <option value="Other">Other</option>
+              </select>
+              <div style="display: flex; gap: 10px;">
+                <button onclick="saveCategoryChange('${callId}')" style="flex: 1; padding: 8px; background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 600; text-transform: uppercase;">Save</button>
+                <button onclick="hideCategoryEditor('${callId}')" style="flex: 1; padding: 8px; background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.4); border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 600; text-transform: uppercase;">Cancel</button>
+              </div>
+            </div>
           </div>
           ${heardAbout ? `
             <div class="field">
@@ -2974,6 +2991,109 @@
         audio.currentTime = 0;
       });
       modal.style.display = 'none';
+    }
+
+    // Category Editor Functions
+    function showCategoryEditor(callId) {
+      const editor = document.getElementById(`category-editor-${callId}`);
+      const select = document.getElementById(`category-select-${callId}`);
+
+      if (!editor || !select) return;
+
+      // Set current category as selected
+      const currentCategory = categories[callId]?.category || 'Other';
+      select.value = currentCategory;
+
+      editor.style.display = 'block';
+    }
+
+    function hideCategoryEditor(callId) {
+      const editor = document.getElementById(`category-editor-${callId}`);
+      if (editor) {
+        editor.style.display = 'none';
+      }
+    }
+
+    async function saveCategoryChange(callId) {
+      const select = document.getElementById(`category-select-${callId}`);
+      if (!select) return;
+
+      const newCategory = select.value;
+      const saveButton = select.parentElement.querySelector('button');
+
+      // Show loading state
+      if (saveButton) {
+        saveButton.textContent = 'Saving...';
+        saveButton.disabled = true;
+      }
+
+      try {
+        const res = await fetch('/api/update-category', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            call_id: callId,
+            category: newCategory,
+            reasoning: 'Manually categorized by client'
+          })
+        });
+
+        if (!res.ok) {
+          throw new Error(`Failed to update category: ${res.status}`);
+        }
+
+        const result = await res.json();
+
+        // Update local categories
+        categories[callId] = {
+          ...categories[callId],
+          category: newCategory,
+          reasoning: 'Manually categorized by client',
+          manual: true
+        };
+
+        // Update the modal display
+        const modalCategory = document.getElementById(`modal-category-${callId}`);
+        if (modalCategory) {
+          modalCategory.innerHTML = `
+            ${getCategoryBadge(newCategory)}
+            <button onclick="showCategoryEditor('${callId}')" style="margin-left: 12px; padding: 6px 12px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Change</button>
+          `;
+        }
+
+        // Hide editor
+        hideCategoryEditor(callId);
+
+        // Refresh the calls table to show updated category
+        renderCallsTable();
+
+        // Refresh stats if Lead Tracker is affected
+        if (result.lead_removed || newCategory === 'New Lead') {
+          await loadLeads();
+        }
+
+        // Update category distribution chart
+        renderCategoryDistributionChart();
+
+        console.log(`✓ Updated category for ${callId} to ${newCategory}`);
+
+        // Show success notification
+        const notification = document.createElement('div');
+        notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: rgba(16, 185, 129, 0.9); color: white; padding: 12px 24px; border-radius: 8px; z-index: 10000; font-weight: 600;';
+        notification.textContent = `Category updated to ${newCategory}`;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+
+      } catch (error) {
+        alert(`Error updating category: ${error.message}`);
+        console.error('Error:', error);
+
+        // Reset button
+        if (saveButton) {
+          saveButton.textContent = 'Save';
+          saveButton.disabled = false;
+        }
+      }
     }
 
     // Generic modal helper function
