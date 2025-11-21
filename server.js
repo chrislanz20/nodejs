@@ -1258,13 +1258,13 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
     // DEBUG: Log every webhook payload to database for debugging
     try {
       await pool.query(`
-        INSERT INTO activity_log (action_type, details, created_at)
-        VALUES ($1, $2, NOW())
+        INSERT INTO activity_log (action, call_id, details, created_at)
+        VALUES ($1, $2, $3, NOW())
       `, [
         'webhook_received',
+        callId || null,
         JSON.stringify({
           event: eventType || 'NO EVENT FIELD',
-          call_id: callId || 'NO CALL ID',
           has_transcript: !!(callData.call?.transcript_object?.length || callData.call?.transcript),
           has_call_analysis: !!callData.call?.call_analysis,
           transcript_length: callData.call?.transcript_object?.length || 0,
