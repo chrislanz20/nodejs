@@ -992,9 +992,9 @@ Categorize this call into ONE of these categories:
     - Caller says they are "from [Company Name]" where company is a known insurer (e.g., "from Progressive")
     - Caller's email domain is an insurance company (e.g., @progressive.com, @geico.com, @statefarm.com)
     - Caller identifies as adjuster, claims rep, or says they work for an insurance company
-  • IMPORTANT: Ignore what caller initially says when asked "injured, medical, insurance, attorney, or something else" -
-    some callers say "something else" or misunderstand the question. Look at the FULL CONTEXT of the call instead.
-    If they later identify as being from an insurance company, categorize as Insurance (not Other).
+  • IMPORTANT: The caller's initial answer is usually truthful - if they say "Insurance", trust that.
+    However, if caller says "something else" but then clearly identifies as insurance (by company name,
+    email domain, or role), prioritize the actual evidence and categorize as Insurance.
   • Identifies as: adjuster, claims representative, claims handler, or works for insurance company
   • WELL-KNOWN INSURANCE COMPANIES (recognize even without "insurance" in name):
     Progressive, State Farm, Geico, Allstate, Liberty Mutual, Farmers, USAA, Nationwide,
