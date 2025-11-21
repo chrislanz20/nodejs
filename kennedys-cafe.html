@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kennedy's Cafe - Home of the Viral Bucket Latte | Stoneham, MA</title>
+    <meta name="description" content="Kennedy's Cafe in Stoneham, MA - Home of the viral 34oz Bucket Latte, Dubai Chocolate Donuts, Acai Bowls, and more. Order now for pickup or delivery!">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom color palette */
+        :root {
+            --primary-turquoise: #7AAAC5;
+            --secondary-navy: #353F44;
+            --light-bg: #ACBCCA;
+            --white: #FFFFFF;
+        }
+
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Hero background overlay */
+        .hero-overlay {
+            background: linear-gradient(rgba(53, 63, 68, 0.75), rgba(53, 63, 68, 0.75));
+        }
+
+        /* Horizontal scroll snap for products */
+        .scroll-container {
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .scroll-item {
+            scroll-snap-align: start;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Custom button styles */
+        .btn-primary {
+            background-color: #7AAAC5;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #5c8ca3;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(122, 170, 197, 0.4);
+        }
+
+        /* Image fallback */
+        img {
+            background-color: #ACBCCA;
+        }
+
+        /* Sticky header */
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+    </style>
+</head>
+<body class="bg-white text-[#353F44]">
+
+    <!-- Header & Navigation -->
+    <header class="sticky-header shadow-lg">
+        <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75cc095b9c3bfecfa29f.jpg"
+                     alt="Kennedy's Cafe Logo"
+                     class="h-12 w-auto rounded-lg shadow-md"
+                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23ACBCCA%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2214%22 fill=%22%23353F44%22%3EKennedy%27s%3C/text%3E%3C/svg%3E'">
+            </div>
+
+            <!-- Desktop Navigation -->
+            <ul class="hidden md:flex space-x-8 text-[#353F44] font-semibold">
+                <li><a href="#hero" class="hover:text-[#7AAAC5] transition-all">Home</a></li>
+                <li><a href="#viral-products" class="hover:text-[#7AAAC5] transition-all">Viral Products</a></li>
+                <li><a href="#menu" class="hover:text-[#7AAAC5] transition-all">Menu</a></li>
+                <li><a href="#about" class="hover:text-[#7AAAC5] transition-all">About</a></li>
+                <li><a href="#contact" class="hover:text-[#7AAAC5] transition-all">Contact</a></li>
+            </ul>
+
+            <button onclick="openModal()" class="btn-primary text-white px-6 py-3 rounded-full font-bold shadow-xl hidden md:block">
+                Order Now
+            </button>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobileMenuBtn" class="md:hidden text-[#353F44]" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </nav>
+
+        <!-- Mobile Navigation -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white shadow-lg">
+            <ul class="flex flex-col space-y-4 p-4 text-[#353F44] font-semibold">
+                <li><a href="#hero" class="hover:text-[#7AAAC5] transition-all" onclick="toggleMobileMenu()">Home</a></li>
+                <li><a href="#viral-products" class="hover:text-[#7AAAC5] transition-all" onclick="toggleMobileMenu()">Viral Products</a></li>
+                <li><a href="#menu" class="hover:text-[#7AAAC5] transition-all" onclick="toggleMobileMenu()">Menu</a></li>
+                <li><a href="#about" class="hover:text-[#7AAAC5] transition-all" onclick="toggleMobileMenu()">About</a></li>
+                <li><a href="#contact" class="hover:text-[#7AAAC5] transition-all" onclick="toggleMobileMenu()">Contact</a></li>
+                <li><button onclick="openModal(); toggleMobileMenu();" class="btn-primary text-white px-6 py-3 rounded-full font-bold shadow-xl w-full">Order Now</button></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="relative h-screen flex items-center justify-center text-center">
+        <!-- Background Image -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b760a6e306f2acd5d8186.jpg"
+                 alt="Ice Latte Bucket"
+                 class="w-full h-full object-cover"
+                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%221920%22 height=%221080%22%3E%3Crect fill=%22%23ACBCCA%22 width=%221920%22 height=%221080%22/%3E%3C/svg%3E'">
+            <div class="hero-overlay absolute inset-0"></div>
+        </div>
+
+        <!-- Hero Content -->
+        <div class="relative z-10 max-w-4xl mx-auto px-4">
+            <h1 class="text-5xl md:text-7xl font-black text-white mb-6 drop-shadow-2xl leading-tight">
+                Home of the Viral<br>Bucket Latte
+            </h1>
+            <p class="text-2xl md:text-3xl text-white mb-8 drop-shadow-xl font-semibold">
+                Stoneham, MA
+            </p>
+            <button onclick="openModal()" class="btn-primary text-white px-10 py-5 rounded-full text-xl font-bold shadow-2xl">
+                Order Now for Pickup or Delivery
+            </button>
+        </div>
+    </section>
+
+    <!-- Viral Products Section -->
+    <section id="viral-products" class="py-20 bg-[#ACBCCA]">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl md:text-6xl font-black text-[#353F44] text-center mb-12">
+                The Viral Signatures
+            </h2>
+
+            <!-- Products Grid/Carousel -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+                <!-- Ice Latte Bucket -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all hover:scale-105 hover:shadow-2xl">
+                    <div class="h-64 overflow-hidden">
+                        <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75eddc2a5462eb7af258.jpg"
+                             alt="Ice Latte Bucket"
+                             class="w-full h-full object-cover"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23ACBCCA%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2220%22 fill=%22%23353F44%22%3EIce Latte Bucket%3C/text%3E%3C/svg%3E'">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-[#353F44] mb-3">Ice Latte Bucket</h3>
+                        <p class="text-[#353F44] text-base">The legendary 34oz drink that started it all. Rich, creamy, and perfectly iced for maximum refreshment.</p>
+                    </div>
+                </div>
+
+                <!-- Dubai Chocolate Donuts -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all hover:scale-105 hover:shadow-2xl">
+                    <div class="h-64 overflow-hidden">
+                        <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75896e306f01dd5d6efd.jpg"
+                             alt="Dubai Chocolate Donuts"
+                             class="w-full h-full object-cover"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23ACBCCA%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2218%22 fill=%22%23353F44%22%3EDubai Chocolate%3C/text%3E%3C/svg%3E'">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-[#353F44] mb-3">Dubai Chocolate Donuts</h3>
+                        <p class="text-[#353F44] text-base">Trending, decadent, and luxurious. An exotic twist on a classic favorite that's taking social media by storm.</p>
+                    </div>
+                </div>
+
+                <!-- Cinno-Honey Bear Iced Latte -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all hover:scale-105 hover:shadow-2xl">
+                    <div class="h-64 overflow-hidden">
+                        <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75636fadaa54cd567e8b.jpg"
+                             alt="Cinno-Honey Bear Iced Latte"
+                             class="w-full h-full object-cover"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23ACBCCA%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2218%22 fill=%22%23353F44%22%3ECinno-Honey Bear%3C/text%3E%3C/svg%3E'">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-[#353F44] mb-3">Cinno-Honey Bear Iced Latte</h3>
+                        <p class="text-[#353F44] text-base">Our signature flavor blend of cinnamon and honey creates the perfect sweet and spicy harmony.</p>
+                    </div>
+                </div>
+
+                <!-- Fluffy Spartan Iced Latte -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all hover:scale-105 hover:shadow-2xl">
+                    <div class="h-64 overflow-hidden">
+                        <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b7592bbb4c8cff024d53c.jpg"
+                             alt="Fluffy Spartan Iced Latte"
+                             class="w-full h-full object-cover"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23ACBCCA%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2218%22 fill=%22%23353F44%22%3EFluffy Spartan%3C/text%3E%3C/svg%3E'">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-[#353F44] mb-3">Fluffy Spartan Iced Latte</h3>
+                        <p class="text-[#353F44] text-base">Featuring our signature cold foam that's impossibly light and perfectly sweet. A cloud in a cup.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Full Menu & Diversity Section -->
+    <section id="menu" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl md:text-6xl font-black text-[#353F44] text-center mb-12">
+                Full Menu Selection
+            </h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+
+                <!-- Side A: Healthy Focus -->
+                <div class="bg-[#ACBCCA] rounded-2xl shadow-xl overflow-hidden">
+                    <div class="h-80 overflow-hidden">
+                        <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b74fcbbb4c8861a24bfd7.jpg"
+                             alt="Acai Bowls"
+                             class="w-full h-full object-cover"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22400%22%3E%3Crect fill=%22%23ACBCCA%22 width=%22600%22 height=%22400%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2224%22 fill=%22%23353F44%22%3EAcai Bowls%3C/text%3E%3C/svg%3E'">
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-3xl font-bold text-[#353F44] mb-4">Acai Bowls & Smoothies</h3>
+                        <p class="text-[#353F44] text-lg mb-6">Fresh, nutritious, and delicious. Fuel your day the healthy way.</p>
+                        <ul class="space-y-3 text-[#353F44]">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-[#7AAAC5] mr-3 mt-1"></i>
+                                <span><strong>Peanut Butter Acai Bowl</strong> - Creamy peanut butter blended with organic acai, topped with fresh fruit and granola</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-[#7AAAC5] mr-3 mt-1"></i>
+                                <span><strong>Green Monstah Smoothie</strong> - Power-packed with spinach, kale, banana, and tropical fruits</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-[#7AAAC5] mr-3 mt-1"></i>
+                                <span>Classic Acai Bowl, Berry Blast Smoothie & more</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Side B: Savory Focus -->
+                <div class="bg-[#ACBCCA] rounded-2xl shadow-xl overflow-hidden">
+                    <div class="h-80 overflow-hidden">
+                        <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75af7b2dc520653415e8.jpg"
+                             alt="Gluten Free Sandwiches"
+                             class="w-full h-full object-cover"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22400%22%3E%3Crect fill=%22%23ACBCCA%22 width=%22600%22 height=%22400%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2220%22 fill=%22%23353F44%22%3EGluten Free Sandwiches%3C/text%3E%3C/svg%3E'">
+                    </div>
+                    <div class="p-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-3xl font-bold text-[#353F44]">Sandwiches & Breakfast</h3>
+                            <span class="bg-[#7AAAC5] text-white px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap">Gluten-Free Available</span>
+                        </div>
+                        <p class="text-[#353F44] text-lg mb-6">Hearty, satisfying, made-to-order perfection.</p>
+                        <ul class="space-y-3 text-[#353F44]">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-[#7AAAC5] mr-3 mt-1"></i>
+                                <span><strong>Breakfast Burrito</strong> - Scrambled eggs, cheese, peppers, and your choice of protein wrapped in a warm tortilla</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-[#7AAAC5] mr-3 mt-1"></i>
+                                <span><strong>Linguica Egg & Cheese</strong> - Portuguese sausage, farm-fresh eggs, and melted cheese on your choice of bread</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-[#7AAAC5] mr-3 mt-1"></i>
+                                <span>Turkey Club, BLT, Veggie Wrap & more</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- About & Experience Section -->
+    <section id="about" class="py-20 bg-[#ACBCCA]">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl md:text-6xl font-black text-[#353F44] text-center mb-12">
+                More Than a Cafe, It's a Community
+            </h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+                <!-- Image -->
+                <div class="rounded-2xl shadow-2xl overflow-hidden">
+                    <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b78ca7b2dc57bee34abe4.jpg"
+                         alt="Kennedy's Cafe Storefront"
+                         class="w-full h-full object-cover"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22600%22%3E%3Crect fill=%22%23ACBCCA%22 width=%22800%22 height=%22600%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2228%22 fill=%22%23353F44%22%3EKennedy%27s Cafe%3C/text%3E%3C/svg%3E'">
+                </div>
+
+                <!-- Text Content -->
+                <div>
+                    <p class="text-xl text-[#353F44] leading-relaxed mb-8">
+                        Kennedy's Cafe has been a Stoneham staple, known for our commitment to quality, unique flavor innovation, and friendly atmosphere. We pride ourselves on sourcing the best ingredients for every item, from our Acai Bowls to our signature Bucket Lattes.
+                    </p>
+                    <p class="text-xl text-[#353F44] leading-relaxed mb-8">
+                        Come visit the spot where <strong>local charm meets viral fame</strong>.
+                    </p>
+
+                    <!-- Amenities Card -->
+                    <div class="bg-white rounded-2xl shadow-xl p-8">
+                        <h3 class="text-2xl font-bold text-[#353F44] mb-6">Why Visit Us?</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-wifi text-[#7AAAC5] text-2xl mr-4"></i>
+                                <span class="text-lg text-[#353F44]"><strong>Free Wi-Fi</strong> - Stay connected while you sip</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-umbrella-beach text-[#7AAAC5] text-2xl mr-4"></i>
+                                <span class="text-lg text-[#353F44]"><strong>Outdoor Seating</strong> - Enjoy the fresh air</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-parking text-[#7AAAC5] text-2xl mr-4"></i>
+                                <span class="text-lg text-[#353F44]"><strong>Plenty of Parking</strong> - Easy and convenient</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Location, Hours, & Contact Footer -->
+    <footer id="contact" class="bg-[#353F44] text-white py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+
+                <!-- Location -->
+                <div>
+                    <h3 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-map-marker-alt text-[#7AAAC5] mr-3"></i>
+                        Location
+                    </h3>
+                    <p class="text-lg mb-4">362 Main St<br>Stoneham, MA 02180</p>
+                    <a href="https://www.google.com/maps/search/?api=1&query=362+Main+St+Stoneham+MA+02180"
+                       target="_blank"
+                       class="inline-block btn-primary text-white px-6 py-3 rounded-full font-bold shadow-xl mt-4">
+                        <i class="fas fa-directions mr-2"></i>Get Directions
+                    </a>
+                </div>
+
+                <!-- Hours -->
+                <div>
+                    <h3 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-clock text-[#7AAAC5] mr-3"></i>
+                        Hours
+                    </h3>
+                    <div class="text-lg space-y-2">
+                        <p><strong>Monday - Saturday:</strong><br>6:00 AM - 4:00 PM</p>
+                        <p class="pt-4"><strong>Sunday:</strong><br>7:00 AM - 1:00 PM</p>
+                    </div>
+                </div>
+
+                <!-- Delivery & Social -->
+                <div>
+                    <h3 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-truck text-[#7AAAC5] mr-3"></i>
+                        Order Delivery
+                    </h3>
+                    <div class="flex space-x-4 mb-8">
+                        <a href="https://www.ubereats.com" target="_blank" class="text-4xl hover:text-[#7AAAC5] transition-all">
+                            <i class="fas fa-utensils"></i>
+                        </a>
+                        <a href="https://www.doordash.com" target="_blank" class="text-4xl hover:text-[#7AAAC5] transition-all">
+                            <i class="fas fa-motorcycle"></i>
+                        </a>
+                        <a href="https://www.grubhub.com" target="_blank" class="text-4xl hover:text-[#7AAAC5] transition-all">
+                            <i class="fas fa-hamburger"></i>
+                        </a>
+                    </div>
+
+                    <h3 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-share-nodes text-[#7AAAC5] mr-3"></i>
+                        Follow Us
+                    </h3>
+                    <div class="flex space-x-4">
+                        <a href="https://www.instagram.com" target="_blank" class="text-4xl hover:text-[#7AAAC5] transition-all">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.tiktok.com" target="_blank" class="text-4xl hover:text-[#7AAAC5] transition-all">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Copyright -->
+            <div class="border-t border-[#7AAAC5] pt-8 text-center">
+                <p class="text-lg">© 2025 Kennedy's Cafe. All rights reserved. | Made with <i class="fas fa-heart text-[#7AAAC5]"></i> in Stoneham, MA</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Delivery Modal -->
+    <div id="deliveryModal" class="modal">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 p-8 relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-[#353F44] hover:text-[#7AAAC5] text-3xl font-bold transition-all">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <h2 class="text-4xl font-black text-[#353F44] mb-6 text-center">Order for Pickup or Delivery</h2>
+            <p class="text-xl text-[#353F44] mb-8 text-center">Choose your preferred delivery service:</p>
+
+            <div class="space-y-4">
+                <a href="https://www.ubereats.com" target="_blank" class="block bg-[#7AAAC5] hover:bg-[#5c8ca3] text-white text-center py-6 rounded-xl font-bold text-xl shadow-xl transition-all transform hover:scale-105">
+                    <i class="fas fa-utensils mr-3"></i>Order on Uber Eats
+                </a>
+                <a href="https://www.doordash.com" target="_blank" class="block bg-[#7AAAC5] hover:bg-[#5c8ca3] text-white text-center py-6 rounded-xl font-bold text-xl shadow-xl transition-all transform hover:scale-105">
+                    <i class="fas fa-motorcycle mr-3"></i>Order on DoorDash
+                </a>
+                <a href="https://www.grubhub.com" target="_blank" class="block bg-[#7AAAC5] hover:bg-[#5c8ca3] text-white text-center py-6 rounded-xl font-bold text-xl shadow-xl transition-all transform hover:scale-105">
+                    <i class="fas fa-hamburger mr-3"></i>Order on Grubhub
+                </a>
+            </div>
+
+            <div class="mt-8 text-center">
+                <p class="text-[#353F44] text-lg">Or visit us in person at <strong>362 Main St, Stoneham, MA</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Modal Functions
+        function openModal() {
+            const modal = document.getElementById('deliveryModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('deliveryModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('deliveryModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('#mobileMenu a').forEach(link => {
+            link.addEventListener('click', () => {
+                toggleMobileMenu();
+            });
+        });
+
+        // Smooth scroll with offset for sticky header
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offset = 80; // Height of sticky header
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
