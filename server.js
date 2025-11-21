@@ -1255,18 +1255,25 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
     const eventType = callData.event;
     const callId = callData.call?.call_id || callData.call_id;
 
-    // DEBUG: Log every webhook payload we receive
-    webhookDebugLog.unshift({
-      timestamp: new Date().toISOString(),
-      event: eventType || 'NO EVENT FIELD',
-      call_id: callId || 'NO CALL ID',
-      has_transcript: !!(callData.call?.transcript_object?.length || callData.call?.transcript),
-      has_call_analysis: !!callData.call?.call_analysis,
-      all_top_level_keys: Object.keys(callData),
-      call_keys: callData.call ? Object.keys(callData.call) : 'NO CALL OBJECT'
-    });
-    if (webhookDebugLog.length > MAX_WEBHOOK_DEBUG) {
-      webhookDebugLog.pop();
+    // DEBUG: Log every webhook payload to database for debugging
+    try {
+      await pool.query(`
+        INSERT INTO activity_log (action_type, details, created_at)
+        VALUES ($1, $2, NOW())
+      `, [
+        'webhook_received',
+        JSON.stringify({
+          event: eventType || 'NO EVENT FIELD',
+          call_id: callId || 'NO CALL ID',
+          has_transcript: !!(callData.call?.transcript_object?.length || callData.call?.transcript),
+          has_call_analysis: !!callData.call?.call_analysis,
+          transcript_length: callData.call?.transcript_object?.length || 0,
+          all_top_level_keys: Object.keys(callData),
+          call_keys: callData.call ? Object.keys(callData.call) : 'NO CALL OBJECT'
+        })
+      ]);
+    } catch (dbErr) {
+      console.error('Failed to log webhook debug:', dbErr.message);
     }
     const agentId = callData.call?.agent_id || callData.agent_id;
 
