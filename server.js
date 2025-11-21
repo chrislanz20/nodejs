@@ -1063,18 +1063,21 @@ Categorize this call into ONE of these categories:
   • If unsure whether Insurance or Attorney: Does caller discuss coverage/liability (Insurance) or legal representation (Attorney)?
   • If unsure whether Insurance or Medical: Does caller work for insurer (Insurance) or healthcare facility (Medical)?
 
-**Medical** - Medical providers, billing companies, or healthcare facilities calling about OTHER PEOPLE'S cases
+**Medical** - Medical providers, billing companies, medical records companies, or healthcare facilities calling about OTHER PEOPLE'S cases
   • DEFINITIVE RULES (if ANY of these are true, categorize as Medical):
     - Caller identifies as medical provider, doctor, nurse, billing department, or healthcare staff
     - Caller says they're from a hospital, clinic, radiology center, ASC, or medical facility
     - Caller discusses medical liens, treatment billing, or medical records for a PATIENT
+    - Caller is from a MEDICAL RECORDS company (e.g., ChartSwap, Ciox Health, HealthMark, Verisma, MRO)
+    - Caller is requesting or following up on medical records for a patient
   • IMPORTANT: The caller's initial answer is usually truthful - if they say "Medical", trust that.
     However, if caller says "something else" but then clearly identifies as medical (by facility name,
-    role, or discussing patient billing/treatment), prioritize the actual evidence.
+    role, or discussing patient billing/treatment/records), prioritize the actual evidence.
   • Medical billing companies or medical revenue cycle companies
-  • Calling about medical liens, settlement payment, or billing for treatment of A PATIENT (not themselves)
+  • Medical records retrieval companies (ChartSwap, Ciox, etc.) - these handle records requests for law firms
+  • Calling about medical liens, settlement payment, billing, or MEDICAL RECORDS for a PATIENT (not themselves)
   • CRITICAL: They're calling about SOMEONE ELSE (a patient), not their own injury
-  • Examples: "Integrated Specialty ASC", "XYZ Radiology", "ABC Billing Services", "Newark General Hospital"
+  • Examples: "Integrated Specialty ASC", "XYZ Radiology", "ABC Billing Services", "Newark General Hospital", "ChartSwap", "Ciox Health"
 
 **Other** - Wrong number, spam, telemarketer, unrelated business, nonsensical calls, calls that end during greeting, or cannot determine purpose
   • Clearly wrong number or misdial
