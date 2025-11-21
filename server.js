@@ -1162,13 +1162,32 @@ const WEBHOOK_DEDUP_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 // POST /webhook/retell-call-ended - Retell webhook for call completion
 app.post('/webhook/retell-call-ended', async (req, res) => {
   try {
+    // Verify webhook signature (Retell security requirement)
+    const signature = req.headers['x-retell-signature'];
+    if (signature) {
+      try {
+        const isValid = retellClient.verify(
+          JSON.stringify(req.body),
+          process.env.RETELL_API_KEY,
+          signature
+        );
+        if (!isValid) {
+          console.error('❌ Invalid webhook signature');
+          return res.status(401).send();
+        }
+      } catch (error) {
+        console.warn('⚠️  Webhook signature verification failed:', error.message);
+        // Continue anyway for backwards compatibility
+      }
+    }
+
     const callData = req.body;
     const callId = callData.call?.call_id || callData.call_id;
     const agentId = callData.call?.agent_id || callData.agent_id;
 
     if (!callId) {
       console.error('❌ Webhook received without call_id');
-      return res.status(400).json({ error: 'call_id is required' });
+      return res.status(400).send();
     }
 
     console.log(`\n📞 Retell webhook received for call: ${callId.substring(0, 30)}...`);
@@ -1177,7 +1196,7 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
     // DEDUPLICATION: Check if we already processed this call_id
     if (processedWebhooks.has(callId)) {
       console.log(`⚠️  DUPLICATE webhook ignored - call ${callId.substring(0, 30)}... already processed`);
-      return res.json({ success: true, message: 'Webhook already processed (duplicate)' });
+      return res.status(204).send();
     }
 
     // Mark as processed immediately
@@ -1188,8 +1207,8 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
       processedWebhooks.delete(callId);
     }, WEBHOOK_DEDUP_TIMEOUT);
 
-    // Respond immediately to Retell (don't make them wait)
-    res.json({ success: true, message: 'Webhook received' });
+    // Respond immediately to Retell with 204 (as required by Retell docs)
+    res.status(204).send();
 
     // Process async (categorize + send notifications) - NO delay needed, call is already finalized
     (async () => {
