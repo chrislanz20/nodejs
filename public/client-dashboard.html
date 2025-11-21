@@ -3065,7 +3065,7 @@
         hideCategoryEditor(callId);
 
         // Refresh the calls table to show updated category
-        renderCallsTable();
+        renderCallsTable(filteredCalls);
 
         // Refresh stats if Lead Tracker is affected
         if (result.lead_removed || newCategory === 'New Lead') {
