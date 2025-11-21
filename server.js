@@ -988,6 +988,10 @@ Categorize this call into ONE of these categories:
   • If they say "I represent..." or "my client..." → Attorney
 
 **Insurance** - Caller works for an insurance company (NOT a law firm, NOT a medical facility)
+  • DEFINITIVE RULES (if ANY of these are true, categorize as Insurance):
+    - Caller says "Insurance" when asked what type of caller they are
+    - Caller says they are "from [Company Name]" where company is a known insurer
+    - Caller's email domain is an insurance company (e.g., @progressive.com, @geico.com, @statefarm.com)
   • Identifies as: adjuster, claims representative, claims handler, or works for insurance company
   • WELL-KNOWN INSURANCE COMPANIES (recognize even without "insurance" in name):
     Progressive, State Farm, Geico, Allstate, Liberty Mutual, Farmers, USAA, Nationwide,
