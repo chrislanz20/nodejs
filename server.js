@@ -961,6 +961,14 @@ Categorize this call into ONE of these categories:
 
 **New Lead** - THE MOST IMPORTANT CATEGORY. Missing a new client is a critical business failure.
   • WHEN IN DOUBT BETWEEN NEW LEAD AND EXISTING CLIENT → CHOOSE NEW LEAD (safer to follow up than to miss)
+
+  • AI RECEPTIONIST CLARIFYING QUESTIONS - Pay close attention to these exchanges:
+    - If receptionist asks "Are you calling because you were injured?" and caller says YES → New Lead
+    - If receptionist asks "Is this a new case or are you an existing client?" and caller says NEW → New Lead
+    - If receptionist asks "Do you currently have a case with us?" and caller says NO → New Lead
+    - If receptionist asks "Have you spoken with an attorney here before?" and caller says NO → New Lead
+    - If caller says they are a "new client" or "first time calling about this" → New Lead
+
   • DEFINITIVE NEW LEAD INDICATORS (if ANY of these, categorize as New Lead):
     - Caller says they were "injured" when asked what type of caller they are
     - Caller describes an accident that happened to THEM (car crash, slip and fall, work injury, etc.)
@@ -969,31 +977,46 @@ Categorize this call into ONE of these categories:
     - Caller asking about fees, process, or how to get started
     - Caller mentions an accident date (recent or past) for THEIR OWN injury
     - Caller provides details about THEIR injuries (broken bones, back pain, surgery, etc.)
+    - Caller gives their contact info for the FIRST TIME (name, phone, email for callback)
+
   • NEW LEAD even if they called before - unless they have an ACTIVE CASE:
     - Caller says "I called before but never hired anyone" → Still New Lead
     - Caller says "I spoke to someone last week about my accident" but no case opened → Still New Lead
     - Caller asking about a NEW accident (even if they had a previous case) → New Lead for this accident
+    - Caller says "No" when asked if they have an existing case → New Lead
+
   • SPECIFIC PHRASES THAT MEAN NEW LEAD:
     - "I was in a car accident" / "I got into an accident"
     - "I fell at [location]" / "I slipped and fell"
     - "I got hurt at work" / "I was injured on the job"
     - "I need to speak to a lawyer about my accident"
-    - "Can you help me with my case?" (when no existing case)
+    - "Can you help me with my case?" (when no existing case established)
     - "I want to file a claim" / "I want to sue"
     - "Someone hit me" / "I was rear-ended"
+    - "This is my first time calling" / "I'm a new client"
 
 **Existing Client** - ONLY if there is CLEAR, EXPLICIT evidence of an ACTIVE case with THIS firm
+  • AI RECEPTIONIST CLARIFYING QUESTIONS - Pay close attention to these exchanges:
+    - If receptionist asks "Do you have a case with us?" and caller says YES → might be Existing Client (verify further)
+    - If receptionist asks "Are you an existing client?" and caller says YES → Existing Client
+    - If caller provides a CASE NUMBER when asked → Existing Client
+    - If caller names their attorney at the firm (e.g., "I work with Karim") → Existing Client
+
   • MUST HAVE AT LEAST ONE OF THESE (not just "I called before"):
-    - Caller explicitly says "I'm already a client" or "I'm one of your clients"
+    - Caller explicitly says "I'm already a client" or "I'm one of your clients" or "Yes" to "are you existing client?"
     - Caller says "I'm calling about MY case" AND mentions case number or attorney name at firm
     - Caller says "MY lawyer is [name at CourtLaw]" or "MY attorney at your firm"
     - Caller references specific case details only an active client would know
     - Caller says "I signed with you" or "You're representing me"
-  • NOT EXISTING CLIENT (these are still New Lead or Other):
+    - Caller knows their case number or file number
+
+  • NOT EXISTING CLIENT (categorize as New Lead instead):
     - Just called before but no case was opened → New Lead
     - Left a message before but never spoke to anyone → New Lead
     - Had a consultation but didn't sign → New Lead
+    - Says "No" or "I don't think so" when asked if they have a case → New Lead
     - Asking about "a case" in general (might be Attorney/Medical/Insurance asking about someone else)
+
   • CRITICAL: "Existing Client" requires ACTIVE representation, not just previous contact
 
 **Attorney** - Caller is another attorney, law firm, or legal professional (NOT a potential client or existing client)
