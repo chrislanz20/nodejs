@@ -2325,6 +2325,42 @@ app.post('/api/admin/auth/seed', async (req, res) => {
   }
 });
 
+// POST /api/admin/auth/reset - Reset admin user credentials (temporary - remove after use)
+app.post('/api/admin/auth/reset', async (req, res) => {
+  try {
+    const { email, password, name } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    // Hash the password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Update the first admin user
+    const result = await pool.query(
+      `UPDATE admin_users
+       SET email = $1, password_hash = $2, name = $3, updated_at = NOW()
+       WHERE id = (SELECT id FROM admin_users ORDER BY created_at ASC LIMIT 1)
+       RETURNING id, email, name, role`,
+      [email, passwordHash, name || 'Admin']
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No admin user found' });
+    }
+
+    console.log(`Admin credentials reset for: ${email}`);
+    res.json({
+      message: 'Admin credentials reset successfully',
+      admin: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Admin reset error:', error);
+    res.status(500).json({ error: 'Failed to reset admin credentials' });
+  }
+});
+
 // GET /api/admin/auth/me - Get current logged in admin
 app.get('/api/admin/auth/me', authenticateAdminToken, (req, res) => {
   res.json({
