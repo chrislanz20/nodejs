@@ -4646,41 +4646,70 @@
       }
     }, 2000);
 
-    // Onboarding Tour
+    // Onboarding Tour - Professional guided walkthrough
     let tourStep = 0;
     const tourSteps = [
       {
-        title: 'Welcome! 👋',
-        text: 'This dashboard shows all your incoming calls. Your AI answers 24/7 and tracks leads automatically.',
+        title: 'Welcome to Your Dashboard! 👋',
+        text: 'This is your <strong>AI-powered call center</strong>. Every call to your business is answered by AI, transcribed, and categorized automatically. Let me show you around!',
         target: null,
-        position: 'center'
+        position: 'center',
+        icon: '🏠'
       },
       {
-        title: 'Your Call Stats',
-        text: 'See totals at a glance - Total Calls, New Leads, Existing Clients, and Others.',
+        title: 'Your Numbers at a Glance',
+        text: 'These 4 cards show your <strong>key metrics</strong>:<br><br>• <strong>Total Calls</strong> - All calls received<br>• <strong>New Leads</strong> - Potential new clients<br>• <strong>Existing Clients</strong> - Your current clients calling back<br>• <strong>Other Calls</strong> - Everything else (vendors, wrong numbers, etc.)',
         target: '.stats-grid',
         position: 'bottom',
-        arrow: 'top'
+        arrow: 'top',
+        icon: '📊'
       },
       {
-        title: 'Lead Tracker',
-        text: 'New injury calls appear here. Click ✅ to approve or ❌ to deny leads.',
+        title: 'Call Activity Charts',
+        text: 'See your <strong>call volume trends</strong> over the past week and how calls break down by category. This helps you spot busy days and understand your call mix.',
+        target: '.analytics-section',
+        position: 'bottom',
+        arrow: 'top',
+        icon: '📈'
+      },
+      {
+        title: '⭐ Lead Tracker - Your Action Center',
+        text: 'This is the <strong>most important section!</strong> When someone calls about a potential case, they appear here as a pending lead.<br><br>• Click <strong style="color: #10b981;">✅ APPROVE</strong> to mark them as a real lead<br>• Click <strong style="color: #ef4444;">❌ DENY</strong> if it\'s not a valid lead<br><br>You\'ll get notified when new leads come in!',
         target: '#lead-tracker-section',
         position: 'bottom',
-        arrow: 'top'
+        arrow: 'top',
+        icon: '🎯'
       },
       {
-        title: 'All Your Calls',
-        text: 'Click any call to see the full transcript, caller info, and AI summary.',
+        title: 'Filter Your Leads',
+        text: 'Use these tabs to quickly filter leads:<br><br>• <strong>📋 Pending</strong> - Needs your review<br>• <strong>✅ Approved</strong> - Confirmed leads<br>• <strong>❌ Denied</strong> - Rejected calls',
+        target: '#tab-pending',
+        position: 'bottom',
+        arrow: 'top',
+        icon: '🔍'
+      },
+      {
+        title: 'Complete Call History',
+        text: 'Every single call is logged here. You can:<br><br>• <strong>Search</strong> by phone number or keyword<br>• <strong>Filter</strong> by date, category, or duration<br>• <strong>Click any row</strong> to see the full transcript and AI summary',
         target: '#recent-calls-section',
         position: 'top',
-        arrow: 'bottom'
+        arrow: 'bottom',
+        icon: '📞'
       },
       {
-        title: 'You\'re all set! 🎉',
-        text: 'Start reviewing your calls. Click any row to see details.',
+        title: 'Filter by Date & Category',
+        text: 'Use these filters to find specific calls:<br><br>• <strong>Date Presets</strong> - Today, This Week, This Month<br>• <strong>Custom Range</strong> - Pick any date range<br>• <strong>Category</strong> - Filter by call type<br>• <strong>Duration</strong> - Find short or long calls',
+        target: '#filters-section',
+        position: 'bottom',
+        arrow: 'top',
+        icon: '📅'
+      },
+      {
+        title: 'You\'re Ready! 🎉',
+        text: 'That\'s everything you need to know!<br><br><strong>Quick tips:</strong><br>• Check the Lead Tracker daily for new leads<br>• Click any call row to read the full conversation<br>• Use filters to find specific calls<br><br>Need help? Contact your SaveYa support team.',
         target: null,
-        position: 'center'
+        position: 'center',
+        icon: '✨'
       }
     ];
 
@@ -4739,30 +4768,58 @@
       const currentStep = tourSteps[step];
       const progress = `${step + 1}/${tourSteps.length}`;
 
+      // Build progress dots
+      const progressDots = tourSteps.map((_, i) =>
+        `<div style="width: ${i === step ? '24px' : '8px'}; height: 8px; border-radius: 4px; background: ${i === step ? '#00FFFF' : i < step ? 'rgba(0, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.2)'}; transition: all 0.3s;"></div>`
+      ).join('');
+
       tooltip.innerHTML = `
         <div style="margin-bottom: 20px;">
-          <div style="color: #9ca3af; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
-            Step ${progress}
+          <!-- Progress indicator -->
+          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 16px;">
+            ${progressDots}
+            <span style="margin-left: auto; color: #9ca3af; font-size: 12px; font-weight: 600;">${step + 1} of ${tourSteps.length}</span>
           </div>
-          <h3 style="color: #00FFFF; font-size: 22px; font-weight: 700; margin-bottom: 10px; line-height: 1.3;">
-            ${currentStep.title}
-          </h3>
-          <p style="color: #e6edf3; font-size: 16px; line-height: 1.5; margin: 0;">
+
+          <!-- Icon and Title -->
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            ${currentStep.icon ? `<span style="font-size: 32px; line-height: 1;">${currentStep.icon}</span>` : ''}
+            <h3 style="color: #00FFFF; font-size: 20px; font-weight: 700; margin: 0; line-height: 1.3;">
+              ${currentStep.title}
+            </h3>
+          </div>
+
+          <!-- Description -->
+          <div style="color: #e6edf3; font-size: 14px; line-height: 1.7; margin: 0;">
             ${currentStep.text}
-          </p>
+          </div>
         </div>
-        <div style="margin-bottom: 14px; padding: 10px; background: rgba(0, 0, 0, 0.3); border-radius: 8px;">
-          <label style="display: flex; align-items: center; cursor: pointer; color: #9ca3af; font-size: 13px;">
-            <input type="checkbox" id="dont-show-tour-again" style="width: 16px; height: 16px; margin-right: 8px; cursor: pointer; accent-color: #00FFFF; flex-shrink: 0;">
-            <span>Don't show again</span>
-          </label>
-        </div>
+
+        <!-- Look Here indicator for targeted steps -->
+        ${currentStep.target ? `
+          <div style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; margin-bottom: 16px;">
+            <span style="font-size: 18px;">👆</span>
+            <span style="color: #00FFFF; font-size: 13px; font-weight: 600;">Look at the highlighted area above</span>
+          </div>
+        ` : ''}
+
+        <!-- Don't show again (only on last step) -->
+        ${step === tourSteps.length - 1 ? `
+          <div style="margin-bottom: 14px; padding: 10px; background: rgba(0, 0, 0, 0.3); border-radius: 8px;">
+            <label style="display: flex; align-items: center; cursor: pointer; color: #9ca3af; font-size: 13px;">
+              <input type="checkbox" id="dont-show-tour-again" style="width: 16px; height: 16px; margin-right: 8px; cursor: pointer; accent-color: #00FFFF; flex-shrink: 0;">
+              <span>Don't show this tour again</span>
+            </label>
+          </div>
+        ` : ''}
+
+        <!-- Buttons -->
         <div style="display: flex; gap: 10px;">
-          <button onclick="skipTour()" style="flex: 1; padding: 12px; background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.4); border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-            Skip
+          <button onclick="skipTour()" style="flex: 1; padding: 14px; background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.4); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+            ${step === 0 ? 'Skip Tour' : 'Exit'}
           </button>
-          <button onclick="nextTourStep()" style="flex: 2; padding: 12px; background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2)); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-            ${step === tourSteps.length - 1 ? 'Got it!' : 'Next →'}
+          <button onclick="nextTourStep()" style="flex: 2; padding: 14px; background: linear-gradient(135deg, #00FFFF, #00CED1); color: #0d1117; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(0, 255, 255, 0.4);">
+            ${step === tourSteps.length - 1 ? '✓ Finish Tour' : 'Next Step →'}
           </button>
         </div>
       `;
