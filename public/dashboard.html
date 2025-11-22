@@ -555,9 +555,9 @@
     }
 
     .cost-highlight {
-      color: #10b981;
+      color: #00FFFF;
       font-weight: 800;
-      text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
       font-family: 'JetBrains Mono', monospace;
     }
 
@@ -868,7 +868,7 @@
 
     .progress-bar-fill {
       height: 100%;
-      background: linear-gradient(90deg, #10b981, #00FFFF);
+      background: linear-gradient(90deg, #00CED1, #00FFFF);
       transition: width 0.3s ease;
       box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
     }
@@ -2601,7 +2601,7 @@
           </div>
           <div style="background: rgba(13, 17, 23, 0.6); padding: 12px; border: 1px solid rgba(48, 54, 61, 0.5);">
             <div style="font-size: 10px; color: #7d8590; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Total Cost</div>
-            <div style="font-size: 24px; font-weight: 900; color: #10b981; font-family: 'JetBrains Mono', monospace;">$${totalCost.toFixed(2)}</div>
+            <div style="font-size: 24px; font-weight: 900; color: #00FFFF; font-family: 'JetBrains Mono', monospace;">$${totalCost.toFixed(2)}</div>
           </div>
           <div style="background: rgba(13, 17, 23, 0.6); padding: 12px; border: 1px solid rgba(48, 54, 61, 0.5);">
             <div style="font-size: 10px; color: #7d8590; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Avg Cost/Call</div>
@@ -2629,7 +2629,7 @@
                   <div style="background: rgba(13, 17, 23, 0.4); padding: 10px; border-left: 3px solid #00FFFF;">
                     <div style="font-size: 12px; color: #e6edf3; font-weight: 700; margin-bottom: 4px;">${agent}</div>
                     <div style="font-size: 11px; color: #7d8590; font-family: 'JetBrains Mono', monospace;">
-                      ${data.count} calls • <span style="color: #10b981;">$${data.cost.toFixed(2)}</span>
+                      ${data.count} calls • <span style="color: #00FFFF;">$${data.cost.toFixed(2)}</span>
                     </div>
                   </div>
                 `).join('')}
@@ -2859,7 +2859,7 @@
                 <option value="Other">Other</option>
               </select>
               <div style="display: flex; gap: 8px;">
-                <button onclick="saveCategoryChange('${callId}')" style="flex: 1; padding: 8px; background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); font-size: 12px; cursor: pointer; font-weight: 600; text-transform: uppercase;">Save</button>
+                <button onclick="saveCategoryChange('${callId}')" style="flex: 1; padding: 8px; background: rgba(0, 255, 255, 0.2); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.4); font-size: 12px; cursor: pointer; font-weight: 600; text-transform: uppercase;">Save</button>
                 <button onclick="hideCategoryEditor('${callId}')" style="flex: 1; padding: 8px; background: rgba(107, 114, 128, 0.2); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.4); font-size: 12px; cursor: pointer; font-weight: 600; text-transform: uppercase;">Cancel</button>
               </div>
             </div>
