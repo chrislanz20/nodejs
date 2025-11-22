@@ -150,7 +150,13 @@ app.get("/client-dashboard", (_req, res) => {
   res.sendFile(path.join(publicDir, "client-dashboard.html"));
 });
 
-app.get("/admin", (_req, res) => {
+// Admin portal login page (public)
+app.get("/admin-portal", (_req, res) => {
+  res.sendFile(path.join(publicDir, "admin-portal.html"));
+});
+
+// Admin dashboard (protected - requires authentication)
+app.get("/admin", authenticateAdminToken, (_req, res) => {
   res.sendFile(path.join(publicDir, "admin.html"));
 });
 
@@ -246,6 +252,22 @@ async function initializeDatabase() {
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW(),
         active BOOLEAN DEFAULT TRUE
+      )
+    `);
+
+    // Create admin_users table for admin dashboard authentication
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS admin_users (
+        id SERIAL PRIMARY KEY,
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        name TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'admin',
+        active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        last_login TIMESTAMP,
+        CONSTRAINT admin_users_role_check CHECK (role IN ('super_admin', 'admin'))
       )
     `);
 
@@ -1969,6 +1991,38 @@ function authenticateToken(req, res, next) {
   }
 }
 
+// Middleware to verify admin JWT token
+function authenticateAdminToken(req, res, next) {
+  const token = req.cookies.admin_auth_token;
+
+  if (!token) {
+    // For API routes, return JSON error
+    if (req.path.startsWith('/api/')) {
+      return res.status(401).json({ error: 'Admin authentication required' });
+    }
+    // For page routes, redirect to admin login
+    return res.redirect('/admin-portal');
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    // Verify this is an admin token
+    if (!decoded.is_admin) {
+      if (req.path.startsWith('/api/')) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+      return res.redirect('/admin-portal');
+    }
+    req.admin = decoded;
+    next();
+  } catch (error) {
+    if (req.path.startsWith('/api/')) {
+      return res.status(403).json({ error: 'Invalid admin token' });
+    }
+    return res.redirect('/admin-portal');
+  }
+}
+
 // Permission middleware - checks if user has required permission
 // Permissions: view, export, manage_team
 function requirePermission(permission) {
@@ -2149,6 +2203,135 @@ app.post('/api/auth/change-password', authenticateToken, async (req, res) => {
     console.error('Change password error:', error);
     res.status(500).json({ error: 'Failed to change password' });
   }
+});
+
+// ============ ADMIN AUTHENTICATION ROUTES ============
+
+// POST /api/admin/auth/login - Admin login
+app.post('/api/admin/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password required' });
+    }
+
+    // Find admin in database
+    const result = await pool.query(
+      'SELECT * FROM admin_users WHERE email = $1 AND active = TRUE',
+      [email.toLowerCase()]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const admin = result.rows[0];
+
+    // Verify password
+    const validPassword = await bcrypt.compare(password, admin.password_hash);
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Update last login timestamp
+    await pool.query(
+      'UPDATE admin_users SET last_login = NOW() WHERE id = $1',
+      [admin.id]
+    );
+
+    // Create JWT token (expires in 24 hours for admin - more secure)
+    const token = jwt.sign(
+      {
+        id: admin.id,
+        email: admin.email,
+        name: admin.name,
+        role: admin.role,
+        is_admin: true
+      },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    // Set cookie (expires in 24 hours)
+    res.cookie('admin_auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: 'lax'
+    });
+
+    console.log(`Admin logged in: ${admin.email}`);
+
+    res.json({
+      success: true,
+      admin: {
+        email: admin.email,
+        name: admin.name,
+        role: admin.role
+      }
+    });
+  } catch (error) {
+    console.error('Admin login error:', error);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+// POST /api/admin/auth/logout - Admin logout
+app.post('/api/admin/auth/logout', (req, res) => {
+  res.clearCookie('admin_auth_token');
+  res.json({ success: true });
+});
+
+// POST /api/admin/auth/seed - Create initial admin user (only works if no admin users exist)
+app.post('/api/admin/auth/seed', async (req, res) => {
+  try {
+    // Check if any admin users exist
+    const existingAdmins = await pool.query('SELECT COUNT(*) FROM admin_users');
+    if (parseInt(existingAdmins.rows[0].count) > 0) {
+      return res.status(403).json({ error: 'Admin users already exist. Cannot seed.' });
+    }
+
+    const { email, password, name } = req.body;
+
+    if (!email || !password || !name) {
+      return res.status(400).json({ error: 'Email, password, and name are required' });
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Create admin user
+    const result = await pool.query(
+      `INSERT INTO admin_users (email, password_hash, name, role)
+       VALUES ($1, $2, $3, 'super_admin')
+       RETURNING id, email, name, role, created_at`,
+      [email.toLowerCase(), passwordHash, name]
+    );
+
+    console.log(`Initial admin user created: ${email}`);
+
+    res.json({
+      success: true,
+      message: 'Initial admin user created successfully',
+      admin: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Admin seed error:', error);
+    if (error.code === '23505') {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+    res.status(500).json({ error: 'Failed to create admin user' });
+  }
+});
+
+// GET /api/admin/auth/me - Get current logged in admin
+app.get('/api/admin/auth/me', authenticateAdminToken, (req, res) => {
+  res.json({
+    email: req.admin.email,
+    name: req.admin.name,
+    role: req.admin.role
+  });
 });
 
 // ============ TEAM MEMBER ROUTES ============
@@ -2486,7 +2669,7 @@ app.get('/api/run-migration', async (req, res) => {
 // ============ ADMIN ROUTES (for managing clients) ============
 
 // GET /api/admin/clients - List all clients
-app.get('/api/admin/clients', async (req, res) => {
+app.get('/api/admin/clients', authenticateAdminToken, async (req, res) => {
   try {
     // Check if last_login column exists first
     const columnCheck = await pool.query(`
@@ -2518,7 +2701,7 @@ app.get('/api/admin/clients', async (req, res) => {
 });
 
 // POST /api/admin/clients - Create new client account
-app.post('/api/admin/clients', async (req, res) => {
+app.post('/api/admin/clients', authenticateAdminToken, async (req, res) => {
   try {
     const { email, password, business_name, agent_ids } = req.body;
 
@@ -2550,7 +2733,7 @@ app.post('/api/admin/clients', async (req, res) => {
 });
 
 // PUT /api/admin/clients/:id - Update client
-app.put('/api/admin/clients/:id', async (req, res) => {
+app.put('/api/admin/clients/:id', authenticateAdminToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { email, password, business_name, agent_ids, active } = req.body;
@@ -2610,7 +2793,7 @@ app.put('/api/admin/clients/:id', async (req, res) => {
 });
 
 // DELETE /api/admin/clients/:id - Delete/deactivate client
-app.delete('/api/admin/clients/:id', async (req, res) => {
+app.delete('/api/admin/clients/:id', authenticateAdminToken, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -2632,7 +2815,7 @@ app.delete('/api/admin/clients/:id', async (req, res) => {
 });
 
 // POST /api/admin/clients/:id/reset-password - Reset client password
-app.post('/api/admin/clients/:id/reset-password', async (req, res) => {
+app.post('/api/admin/clients/:id/reset-password', authenticateAdminToken, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -2923,7 +3106,7 @@ app.get('/api/leads/stats/:agentId', async (req, res) => {
 });
 
 // GET /api/admin/leads/stats - Get lead statistics across all clients (admin only)
-app.get('/api/admin/leads/stats', async (req, res) => {
+app.get('/api/admin/leads/stats', authenticateAdminToken, async (req, res) => {
   try {
     const stats = await getAllLeadStats();
     res.json(stats);
