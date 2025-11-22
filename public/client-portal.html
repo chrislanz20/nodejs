@@ -239,6 +239,97 @@
         transform: scale(0.98);
       }
     }
+
+    /* ============================================
+       PREMIUM THEME OVERRIDE
+       ============================================ */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif !important;
+      background: #09090b !important;
+    }
+
+    body::before {
+      display: none !important;
+    }
+
+    .login-container {
+      background: #18181b !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
+      border-radius: 14px !important;
+    }
+
+    .logo h1 {
+      font-family: 'Inter', sans-serif !important;
+      font-size: 28px !important;
+      font-weight: 600 !important;
+      color: #fafafa !important;
+      text-shadow: none !important;
+      letter-spacing: -0.02em !important;
+    }
+
+    .logo p {
+      font-family: 'Inter', sans-serif !important;
+      color: #71717a !important;
+      font-size: 14px !important;
+      font-weight: 400 !important;
+      letter-spacing: 0 !important;
+      text-transform: none !important;
+    }
+
+    label {
+      font-family: 'Inter', sans-serif !important;
+      color: #a1a1aa !important;
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      letter-spacing: 0 !important;
+      text-transform: none !important;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      font-family: 'Inter', sans-serif !important;
+      background: #09090b !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 10px !important;
+      color: #fafafa !important;
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      border-color: #00FFFF !important;
+      box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1) !important;
+    }
+
+    .login-btn {
+      font-family: 'Inter', sans-serif !important;
+      background: #00FFFF !important;
+      border: none !important;
+      color: #000 !important;
+      font-weight: 600 !important;
+      letter-spacing: 0 !important;
+      text-transform: none !important;
+      border-radius: 10px !important;
+    }
+
+    .login-btn:hover {
+      background: #67e8f9 !important;
+      box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3) !important;
+    }
+
+    .error-message {
+      font-family: 'Inter', sans-serif !important;
+      background: rgba(248, 113, 113, 0.1) !important;
+      border: 1px solid rgba(248, 113, 113, 0.3) !important;
+      border-radius: 10px !important;
+    }
+
+    .footer {
+      font-family: 'Inter', sans-serif !important;
+      color: #71717a !important;
+    }
   </style>
 </head>
 <body>

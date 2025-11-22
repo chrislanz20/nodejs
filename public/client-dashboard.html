@@ -1643,6 +1643,183 @@
         margin-bottom: 0;
       }
     }
+
+    /* ============================================
+       PREMIUM THEME OVERRIDE
+       Clean, Minimal, Professional
+       ============================================ */
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    :root {
+      --bg-primary: #09090b;
+      --bg-secondary: #18181b;
+      --bg-tertiary: #27272a;
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-default: rgba(255, 255, 255, 0.1);
+      --text-primary: #fafafa;
+      --text-secondary: #a1a1aa;
+      --text-tertiary: #71717a;
+      --accent: #00FFFF;
+      --accent-subtle: rgba(0, 255, 255, 0.1);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.5);
+      --radius-md: 10px;
+      --radius-lg: 14px;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif !important;
+      background: var(--bg-primary) !important;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .header {
+      background: var(--bg-secondary) !important;
+      border-bottom: 1px solid var(--border-subtle) !important;
+      box-shadow: var(--shadow-md) !important;
+    }
+
+    .header h1 {
+      font-family: 'Inter', sans-serif !important;
+      font-size: 24px !important;
+      font-weight: 600 !important;
+      color: var(--text-primary) !important;
+      text-shadow: none !important;
+      letter-spacing: -0.02em !important;
+    }
+
+    .business-name {
+      font-family: 'Inter', sans-serif !important;
+      color: var(--text-tertiary) !important;
+    }
+
+    .logout-btn {
+      font-family: 'Inter', sans-serif !important;
+      border-radius: var(--radius-md) !important;
+    }
+
+    .stat-card, .chart-card {
+      background: var(--bg-secondary) !important;
+      border: 1px solid var(--border-subtle) !important;
+      box-shadow: var(--shadow-md) !important;
+      border-radius: var(--radius-lg) !important;
+    }
+
+    .stat-card:hover, .chart-card:hover {
+      border-color: var(--border-default) !important;
+      box-shadow: var(--shadow-lg) !important;
+      transform: translateY(-2px) !important;
+    }
+
+    .stat-label, .chart-title {
+      font-family: 'Inter', sans-serif !important;
+      color: var(--text-tertiary) !important;
+      font-size: 12px !important;
+      font-weight: 500 !important;
+      letter-spacing: 0.05em !important;
+      text-shadow: none !important;
+    }
+
+    .stat-value {
+      font-family: 'Inter', sans-serif !important;
+      font-size: 32px !important;
+      font-weight: 600 !important;
+      color: var(--accent) !important;
+      text-shadow: none !important;
+      letter-spacing: -0.02em !important;
+    }
+
+    .calls-table {
+      background: var(--bg-secondary) !important;
+      border: 1px solid var(--border-subtle) !important;
+      box-shadow: var(--shadow-md) !important;
+      border-radius: var(--radius-lg) !important;
+    }
+
+    .table-header {
+      background: var(--bg-primary) !important;
+      border-bottom: 1px solid var(--border-subtle) !important;
+    }
+
+    .table-title {
+      font-family: 'Inter', sans-serif !important;
+      color: var(--text-primary) !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      text-shadow: none !important;
+      letter-spacing: -0.01em !important;
+    }
+
+    th {
+      font-family: 'Inter', sans-serif !important;
+      background: var(--bg-primary) !important;
+      color: var(--text-tertiary) !important;
+      font-size: 12px !important;
+      font-weight: 500 !important;
+      letter-spacing: 0.05em !important;
+      border-bottom: 1px solid var(--border-subtle) !important;
+    }
+
+    td {
+      font-family: 'Inter', sans-serif !important;
+      color: var(--text-primary) !important;
+      border-top: 1px solid var(--border-subtle) !important;
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.02) !important;
+    }
+
+    .search-box {
+      font-family: 'Inter', sans-serif !important;
+      background: var(--bg-primary) !important;
+      border: 1px solid var(--border-default) !important;
+      border-radius: var(--radius-md) !important;
+    }
+
+    .search-box:focus {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 3px var(--accent-subtle) !important;
+    }
+
+    /* Modal styling */
+    .modal-content {
+      background: var(--bg-secondary) !important;
+      border: 1px solid var(--border-default) !important;
+      border-radius: var(--radius-lg) !important;
+      box-shadow: var(--shadow-lg) !important;
+    }
+
+    .modal-header {
+      border-bottom: 1px solid var(--border-subtle) !important;
+    }
+
+    .modal-header h3 {
+      font-family: 'Inter', sans-serif !important;
+      color: var(--text-primary) !important;
+      text-shadow: none !important;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
   </style>
 </head>
 <body>
