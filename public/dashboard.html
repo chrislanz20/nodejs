@@ -1319,6 +1319,35 @@
       background: var(--accent-subtle);
       color: var(--text-primary);
     }
+
+    /* All Calls Filter Section Override */
+    input[type="date"],
+    input[type="text"],
+    select {
+      font-family: 'Inter', sans-serif !important;
+      background: var(--bg-primary) !important;
+      border: 1px solid var(--border-default) !important;
+      border-radius: var(--radius-md) !important;
+      color: var(--text-primary) !important;
+    }
+
+    input[type="date"]:focus,
+    input[type="text"]:focus,
+    select:focus {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 3px var(--accent-subtle) !important;
+      outline: none !important;
+    }
+
+    /* Filter buttons */
+    button[onclick*="setDateRange"],
+    .analyze-button {
+      font-family: 'Inter', sans-serif !important;
+      border-radius: var(--radius-md) !important;
+      font-weight: 500 !important;
+      letter-spacing: 0 !important;
+      text-transform: none !important;
+    }
   </style>
 </head>
 <body>
