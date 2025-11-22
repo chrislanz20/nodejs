@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Chart fix deployed: 2025-11-20 | Category numbers centered -->
+<!-- Chart fix deployed: 2025-11-22 | Dynamic scaling + Mobile professional design -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -210,130 +210,145 @@
     .bar-chart {
       display: flex;
       align-items: flex-end;
-      justify-content: space-evenly;
-      height: 240px;
-      gap: 12px;
-      padding: 16px 12px 20px 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      background: transparent;
-      border-radius: 8px;
+      justify-content: space-between;
+      height: 200px;
+      gap: 8px;
+      padding: 12px 8px 16px 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(13, 17, 23, 0.3);
+      border-radius: 12px;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
     }
 
     .bar-wrapper {
       flex: 1;
+      max-width: 60px;
+      min-width: 32px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
-      position: relative;
+      gap: 4px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .bar-container {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      min-height: 0;
     }
 
     .bar {
       width: 100%;
-      background: linear-gradient(180deg, #00FFFF, rgba(0, 200, 200, 0.6));
-      border-radius: 4px 4px 0 0;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      max-width: 40px;
+      background: linear-gradient(180deg, #00FFFF, rgba(0, 206, 209, 0.7));
+      border-radius: 6px 6px 2px 2px;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
       position: relative;
       min-height: 4px;
-      max-height: 160px;
-      box-shadow: none;
-      margin-top: auto;
+      box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
     }
 
     .bar:hover {
-      background: linear-gradient(180deg, rgba(0, 255, 255, 0.8), rgba(0, 200, 200, 0.5));
-      box-shadow: 0 4px 16px rgba(0, 255, 255, 0.4);
+      background: linear-gradient(180deg, #67e8f9, #00FFFF);
+      box-shadow: 0 4px 20px rgba(0, 255, 255, 0.5);
+      transform: scaleY(1.02);
     }
 
     .bar-label {
       font-size: 11px;
       color: #9ca3af;
       font-weight: 600;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
       text-align: center;
-      padding: 4px;
-      margin-top: 8px;
+      padding: 2px 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .bar-value {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
       color: #fafafa;
       text-shadow: none;
       white-space: nowrap;
       text-align: center;
-      margin-bottom: 4px;
+      flex-shrink: 0;
+      padding: 2px 0;
     }
 
     .category-chart {
       display: flex;
       flex-direction: column;
-      gap: 18px;
-      padding: 16px 0;
+      gap: 14px;
+      padding: 12px 0;
     }
 
     .category-item {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
     }
 
     .category-color {
-      width: 14px;
-      height: 14px;
-      border-radius: 3px;
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
       flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
     .category-name {
-      flex: 0 0 150px;
-      font-size: 13px;
+      flex: 0 0 120px;
+      font-size: 12px;
       font-weight: 600;
       color: #e6edf3;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.2px;
     }
 
     .category-bar-bg {
       flex: 1;
-      height: 36px;
-      background: rgba(13, 17, 23, 0.6);
-      border-radius: 8px;
+      height: 32px;
+      background: rgba(13, 17, 23, 0.5);
+      border-radius: 6px;
       position: relative;
-      overflow: visible;
-      border: 1px solid rgba(48, 54, 61, 0.5);
+      overflow: hidden;
+      border: 1px solid rgba(48, 54, 61, 0.4);
+      min-width: 80px;
     }
 
     .category-bar-fill {
       height: 100%;
-      background: linear-gradient(90deg, rgba(0, 255, 255, 0.3), rgba(0, 255, 255, 0.6));
-      border-radius: 7px;
-      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 5px;
+      transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
       position: relative;
-      box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
-      overflow: visible;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: fit-content;
     }
 
     .category-count {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
       color: #fafafa;
-      text-shadow: none;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
       white-space: nowrap;
+      padding: 0 10px;
       z-index: 2;
     }
 
     .category-percentage {
       flex: 0 0 50px;
-      text-align: right;
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 12px;
+      font-weight: 600;
       color: #9ca3af;
+      text-align: right;
     }
 
     /* Toast Notifications */
@@ -1179,81 +1194,123 @@
         justify-content: center;
       }
 
-      /* Charts improvements - Simplified mobile design */
+      /* Charts improvements - Professional mobile design */
+      .analytics-section {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
       .chart-card {
-        padding: 20px 16px;
+        padding: 20px 14px;
+        border-radius: 12px;
         overflow: visible;
       }
 
       .chart-title {
-        font-size: 14px;
-        margin-bottom: 20px;
+        font-size: 13px;
+        margin-bottom: 16px;
         padding-bottom: 10px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         text-align: center;
-        line-height: 1.3;
+        line-height: 1.4;
         font-weight: 600;
+        letter-spacing: 0.5px;
       }
 
       .bar-chart {
-        height: 180px;
+        height: 160px;
         padding: 8px 4px 12px 4px;
         display: flex;
         gap: 4px;
         justify-content: space-between;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        background: transparent;
-        overflow: hidden;
+        align-items: flex-end;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(13, 17, 23, 0.3);
+        border-radius: 8px;
+        overflow: visible;
       }
 
       .bar-wrapper {
         flex: 1;
-        min-width: 0;
+        min-width: 28px;
+        max-width: 48px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 4px;
+        gap: 3px;
+        height: 100%;
+        justify-content: flex-end;
+      }
+
+      .bar-container {
+        flex: 1;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        min-height: 0;
       }
 
       .bar {
         width: 100%;
-        margin-top: auto;
+        max-width: 28px;
+        border-radius: 4px 4px 2px 2px;
       }
 
       .bar-value {
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 700;
-        margin-bottom: 4px;
+        padding: 1px 0;
       }
 
       .bar-label {
-        font-size: 11px;
-        margin-top: 8px;
-        text-align: center;
+        font-size: 10px;
+        padding: 2px;
       }
 
-      /* Category breakdown */
+      /* Category breakdown - mobile optimized */
+      .category-chart {
+        gap: 10px;
+        padding: 8px 0;
+      }
+
       .category-item {
-        padding: 10px;
         gap: 8px;
+        padding: 0;
+      }
+
+      .category-color {
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
       }
 
       .category-name {
-        flex: 0 0 90px;
+        flex: 0 0 80px;
         font-size: 11px;
+        font-weight: 600;
       }
 
-      .category-bar {
-        height: 80px;
+      .category-bar-bg {
+        height: 28px;
+        border-radius: 5px;
+        min-width: 60px;
+      }
+
+      .category-bar-fill {
+        border-radius: 4px;
       }
 
       .category-count {
         font-size: 11px;
+        padding: 0 8px;
       }
 
       .category-percentage {
-        flex: 0 0 38px;
+        flex: 0 0 40px;
         font-size: 11px;
+        text-align: right;
       }
 
       /* Table wrapper with better scroll */
@@ -1732,17 +1789,17 @@
       transform: translateY(-2px) !important;
     }
 
-    /* Remove all cyan glows */
+    /* Professional subtle effects */
     .header {
       box-shadow: var(--shadow-md) !important;
     }
 
     .bar {
-      box-shadow: none !important;
+      box-shadow: 0 1px 4px rgba(0, 255, 255, 0.15) !important;
     }
 
     .bar:hover {
-      box-shadow: none !important;
+      box-shadow: 0 4px 12px rgba(0, 255, 255, 0.25) !important;
     }
 
     .stat-label, .chart-title {
@@ -2839,8 +2896,6 @@
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      const oneDayMs = 24 * 60 * 60 * 1000;
-
       // Prepare data for last 7 days (using calendar days, not 24hr periods)
       const dailyData = [];
       for (let i = days - 1; i >= 0; i--) {
@@ -2861,31 +2916,28 @@
         dailyData.push({ label, count: callsCount });
       }
 
-      // Dynamic scaling based on data range
+      // Dynamic percentage-based scaling - bars will ALWAYS fit
       const maxCount = Math.max(...dailyData.map(d => d.count), 1);
-      const minCount = Math.min(...dailyData.map(d => d.count), 0);
-      const range = maxCount - minCount;
+      const minBarPercent = 8; // Minimum bar height percentage (ensures visibility)
+      const maxBarPercent = 85; // Maximum bar height percentage (leaves room for labels)
 
-      // Adaptive bar height - scales within container (max 160px to match CSS)
-      const maxBarHeight = 160;
-      const minBarHeight = 12; // Minimum visible height
-
-      // Render bars with dynamic scaling
+      // Render bars with percentage-based heights
       chartContainer.innerHTML = dailyData.map(day => {
-        let heightPx;
-        if (range === 0) {
-          // All values are the same
-          heightPx = maxBarHeight * 0.6;
+        let heightPercent;
+        if (maxCount === 0) {
+          heightPercent = minBarPercent;
         } else {
-          // Scale based on the actual data range
-          const normalizedValue = (day.count - minCount) / range;
-          heightPx = minBarHeight + (normalizedValue * (maxBarHeight - minBarHeight));
+          // Scale linearly from minBarPercent to maxBarPercent
+          const ratio = day.count / maxCount;
+          heightPercent = minBarPercent + (ratio * (maxBarPercent - minBarPercent));
         }
 
         return `
           <div class="bar-wrapper">
             <div class="bar-value">${day.count}</div>
-            <div class="bar" style="height: ${Math.round(heightPx)}px" title="${day.count} calls on ${day.label}"></div>
+            <div class="bar-container">
+              <div class="bar" style="height: ${heightPercent.toFixed(1)}%" title="${day.count} calls on ${day.label}"></div>
+            </div>
             <div class="bar-label">${day.label}</div>
           </div>
         `;
@@ -2938,22 +2990,27 @@
         'Uncategorized': '#374151'
       };
 
-      // Render category bars
+      // Find max count for scaling
+      const maxCategoryCount = Math.max(...Object.values(categoryCounts).filter(c => c > 0), 1);
+
+      // Render category bars with dynamic scaling
       chartContainer.innerHTML = Object.entries(categoryCounts)
         .filter(([_, count]) => count > 0)
         .sort((a, b) => b[1] - a[1])
         .map(([category, count]) => {
           const percentage = ((count / totalCalls) * 100).toFixed(1);
-          const widthPercent = percentage;
+          // Scale width relative to max category (ensures bars don't overflow)
+          // Use minimum 15% width to ensure count is visible
+          const widthPercent = Math.max(15, (count / maxCategoryCount) * 100);
           const color = categoryColors[category];
 
           return `
             <div class="category-item">
-              <div class="category-color" style="background: ${color};"></div>
+              <div class="category-color" style="background: ${color}; box-shadow: 0 2px 8px ${color}40;"></div>
               <div class="category-name">${category}</div>
               <div class="category-bar-bg">
-                <div class="category-bar-fill" style="width: ${widthPercent}%; background: linear-gradient(90deg, ${color}55, ${color}99);">
-                  <div class="category-count">${count}</div>
+                <div class="category-bar-fill" style="width: ${widthPercent.toFixed(1)}%; background: linear-gradient(90deg, ${color}66, ${color}bb);">
+                  <span class="category-count">${count}</span>
                 </div>
               </div>
               <div class="category-percentage">${percentage}%</div>
