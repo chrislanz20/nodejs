@@ -211,13 +211,14 @@
       display: flex;
       align-items: flex-end;
       justify-content: space-evenly;
-      height: 260px;
-      gap: 14px;
-      padding: 20px 16px 24px 16px;
-      border-bottom: 2px solid rgba(0, 255, 255, 0.15);
-      background: linear-gradient(180deg, rgba(0, 255, 255, 0.03) 0%, transparent 100%);
+      height: 240px;
+      gap: 12px;
+      padding: 16px 12px 20px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: transparent;
       border-radius: 8px;
       position: relative;
+      overflow: hidden;
     }
 
     .bar-wrapper {
@@ -231,13 +232,13 @@
 
     .bar {
       width: 100%;
-      background: linear-gradient(180deg, rgba(0, 255, 255, 0.6), rgba(0, 200, 200, 0.3));
+      background: linear-gradient(180deg, #00FFFF, rgba(0, 200, 200, 0.6));
       border-radius: 4px 4px 0 0;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
-      min-height: 8px;
-      max-height: 180px;
-      box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
+      min-height: 4px;
+      max-height: 160px;
+      box-shadow: none;
       margin-top: auto;
     }
 
@@ -1038,50 +1039,64 @@
 
       /* Header improvements */
       .header {
-        padding: 18px 16px;
+        padding: 16px;
         gap: 12px;
-        align-items: center;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .header > div:first-child {
+        flex-direction: row !important;
+        justify-content: flex-start;
+        gap: 12px !important;
+      }
+
+      .header > div:first-child img {
+        height: 36px !important;
       }
 
       .header h1 {
-        font-size: 22px;
+        font-size: 20px;
         line-height: 1.2;
-        text-align: center;
-        width: 100%;
+        text-align: left;
       }
 
       .business-name {
-        font-size: 12px;
-        margin-top: 4px;
-        text-align: center;
-        width: 100%;
+        font-size: 11px;
+        margin-top: 2px;
+        text-align: left;
+      }
+
+      .header > div:last-child {
+        display: flex;
+        gap: 8px;
       }
 
       .logout-btn {
-        width: 100%;
-        padding: 14px;
-        font-size: 14px;
+        flex: 1;
+        padding: 12px;
+        font-size: 13px;
         text-align: center;
       }
 
-      /* Stats grid - single column on mobile */
+      /* Stats grid - 2 columns on mobile */
       .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 14px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
       }
 
       .stat-card {
-        padding: 20px;
+        padding: 16px;
         text-align: center;
       }
 
       .stat-value {
-        font-size: 32px;
+        font-size: 28px;
       }
 
       .stat-label {
-        font-size: 13px;
-        margin-top: 6px;
+        font-size: 11px;
+        margin-top: 4px;
         opacity: 0.9;
       }
 
@@ -1144,10 +1159,10 @@
       }
 
       .section-title {
-        font-size: 20px;
+        font-size: 18px;
         text-align: center;
-        padding-bottom: 12px;
-        border-bottom: 2px solid rgba(0, 255, 255, 0.2);
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         font-weight: 600;
       }
 
@@ -1171,21 +1186,24 @@
       }
 
       .chart-title {
-        font-size: 15px;
-        margin-bottom: 28px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid rgba(0, 255, 255, 0.25);
+        font-size: 14px;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         text-align: center;
         line-height: 1.3;
         font-weight: 600;
       }
 
       .bar-chart {
-        height: 200px;
-        padding: 8px 2px 16px 2px;
+        height: 180px;
+        padding: 8px 4px 12px 4px;
         display: flex;
-        gap: 6px;
+        gap: 4px;
         justify-content: space-between;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        background: transparent;
+        overflow: hidden;
       }
 
       .bar-wrapper {
@@ -2848,9 +2866,9 @@
       const minCount = Math.min(...dailyData.map(d => d.count), 0);
       const range = maxCount - minCount;
 
-      // Adaptive bar height - scales to use more space when volume is higher
-      const maxBarHeight = maxCount <= 5 ? 160 : maxCount <= 20 ? 180 : 200;
-      const minBarHeight = 16; // Minimum visible height
+      // Adaptive bar height - scales within container (max 160px to match CSS)
+      const maxBarHeight = 160;
+      const minBarHeight = 12; // Minimum visible height
 
       // Render bars with dynamic scaling
       chartContainer.innerHTML = dailyData.map(day => {
