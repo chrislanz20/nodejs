@@ -1589,6 +1589,93 @@
         background: rgba(0, 255, 255, 0.3);
         border-radius: 3px;
       }
+
+      /* Recent Calls Table - Card Layout on Mobile */
+      #recent-calls-section #calls-table {
+        min-width: unset;
+        width: 100%;
+      }
+
+      #recent-calls-section #calls-table thead {
+        display: none;
+      }
+
+      #recent-calls-section #calls-table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+      }
+
+      #recent-calls-section #calls-table tbody tr {
+        display: flex;
+        flex-direction: column;
+        background: rgba(30, 36, 44, 0.6);
+        border: 1px solid rgba(48, 54, 61, 0.8);
+        border-radius: 12px;
+        padding: 16px;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      #recent-calls-section #calls-table tbody tr:hover {
+        background: rgba(30, 36, 44, 0.8);
+        border-color: rgba(0, 255, 255, 0.3);
+      }
+
+      #recent-calls-section #calls-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 0;
+        border: none;
+        background: transparent;
+      }
+
+      #recent-calls-section #calls-table tbody td::before {
+        content: attr(data-label);
+        font-size: 11px;
+        font-weight: 600;
+        color: #7d8590;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Phone number - prominent */
+      #recent-calls-section #calls-table tbody td:first-child {
+        font-size: 15px;
+        font-weight: 600;
+        color: #00FFFF;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        margin-bottom: 4px;
+      }
+
+      #recent-calls-section #calls-table tbody td:first-child::before {
+        display: none;
+      }
+
+      /* Category badge styling */
+      #recent-calls-section #calls-table tbody td:last-child {
+        padding-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        margin-top: 4px;
+      }
+
+      /* Quick Filters - horizontal scroll on mobile */
+      #recent-calls-section .filters-row > div:first-child > div:last-child {
+        display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        gap: 8px;
+        padding-bottom: 4px;
+      }
+
+      #recent-calls-section .filters-row > div:first-child > div:last-child::-webkit-scrollbar {
+        display: none;
+      }
     }
 
     /* Extra optimizations for very small phones (< 375px) */
@@ -3217,11 +3304,11 @@
 
         return `
           <tr onclick="openCallModal('${call.call_id}')">
-            <td>${phoneNumber}</td>
-            <td>${date}</td>
-            <td>${duration}</td>
-            <td>${confidenceDisplay}</td>
-            <td>${getCategoryBadge(category)}</td>
+            <td data-label="Phone">${phoneNumber}</td>
+            <td data-label="Date">${date}</td>
+            <td data-label="Duration">${duration}</td>
+            <td data-label="Confidence">${confidenceDisplay}</td>
+            <td data-label="Category">${getCategoryBadge(category)}</td>
           </tr>
         `;
       }).join('');
