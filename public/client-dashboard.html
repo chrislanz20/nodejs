@@ -1437,7 +1437,123 @@
         padding: 12px;
       }
 
-      /* Lead Tracker table */
+      /* Lead Tracker - Mobile Optimized */
+      #lead-tracker-section .section-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+      }
+
+      #lead-tracker-section .section-header > div {
+        justify-content: center;
+      }
+
+      /* Leads tabs - horizontal scroll on mobile */
+      #lead-tracker-section > div:nth-child(4) {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -16px 20px -16px;
+        padding: 0 16px;
+        scrollbar-width: none;
+      }
+
+      #lead-tracker-section > div:nth-child(4)::-webkit-scrollbar {
+        display: none;
+      }
+
+      .leads-tab {
+        padding: 10px 16px;
+        font-size: 13px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      /* Lead table - card style on mobile */
+      #leads-pending-container table,
+      #leads-approved-container table,
+      #leads-denied-container table {
+        display: block;
+        min-width: unset;
+      }
+
+      #leads-pending-container thead,
+      #leads-approved-container thead,
+      #leads-denied-container thead {
+        display: none;
+      }
+
+      #leads-pending-container tbody,
+      #leads-approved-container tbody,
+      #leads-denied-container tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      #leads-pending-container tbody tr,
+      #leads-approved-container tbody tr,
+      #leads-denied-container tbody tr {
+        display: flex;
+        flex-direction: column;
+        background: rgba(30, 36, 44, 0.6);
+        border: 1px solid rgba(48, 54, 61, 0.8);
+        border-radius: 12px;
+        padding: 16px;
+        gap: 8px;
+      }
+
+      #leads-pending-container tbody tr:hover,
+      #leads-approved-container tbody tr:hover,
+      #leads-denied-container tbody tr:hover {
+        border-color: rgba(0, 255, 255, 0.3);
+      }
+
+      #leads-pending-container tbody td,
+      #leads-approved-container tbody td,
+      #leads-denied-container tbody td {
+        padding: 0;
+        border: none;
+        background: transparent;
+      }
+
+      /* Name - larger and bold */
+      #leads-pending-container tbody td:first-child,
+      #leads-approved-container tbody td:first-child,
+      #leads-denied-container tbody td:first-child {
+        font-size: 16px;
+        font-weight: 600;
+        color: #e6edf3;
+        margin-bottom: 4px;
+      }
+
+      /* Phone */
+      #leads-pending-container tbody td:nth-child(2),
+      #leads-approved-container tbody td:nth-child(2),
+      #leads-denied-container tbody td:nth-child(2) {
+        color: #00FFFF !important;
+        font-size: 14px !important;
+      }
+
+      /* Actions - full width buttons */
+      #leads-pending-container tbody td:last-child,
+      #leads-approved-container tbody td:last-child,
+      #leads-denied-container tbody td:last-child {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      #leads-pending-container .btn-approve,
+      #leads-pending-container .btn-deny {
+        flex: 1;
+        padding: 12px 8px !important;
+        font-size: 12px !important;
+        margin: 0 !important;
+      }
+
+      /* Lead tracker table fallback */
       .lead-tracker-table {
         font-size: 12px;
         min-width: 700px;
