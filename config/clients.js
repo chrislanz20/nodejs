@@ -8,7 +8,7 @@ const CLIENT_CONFIGS = {
 
     // GoHighLevel Configuration
     ghl_location_id: 'lneM3M1j3P5i0JYeNK18',
-    ghl_api_key: 'pit-e0730a40-bcf9-43bc-bb39-9fc71668b7d2',
+    ghl_api_key: process.env.GHL_API_KEY,
 
     // Mode: 'test' or 'production'
     // In test mode, notifications only go to test recipients
