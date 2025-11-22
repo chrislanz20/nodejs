@@ -1822,6 +1822,50 @@
       text-shadow: none !important;
     }
 
+    /* Input fields */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="date"],
+    select,
+    textarea {
+      font-family: 'Inter', sans-serif !important;
+      background: var(--bg-primary) !important;
+      border: 1px solid var(--border-default) !important;
+      border-radius: var(--radius-md) !important;
+      color: var(--text-primary) !important;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 3px var(--accent-subtle) !important;
+      outline: none !important;
+    }
+
+    /* Buttons */
+    button {
+      font-family: 'Inter', sans-serif !important;
+    }
+
+    /* Filter buttons */
+    .filter-btn {
+      font-family: 'Inter', sans-serif !important;
+      background: var(--bg-primary) !important;
+      border: 1px solid var(--border-default) !important;
+      border-radius: var(--radius-md) !important;
+      color: var(--text-secondary) !important;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      border-color: var(--accent) !important;
+      color: var(--accent) !important;
+      background: var(--accent-subtle) !important;
+    }
+
     /* Scrollbar */
     ::-webkit-scrollbar {
       width: 10px;
@@ -3115,7 +3159,7 @@
         // Show lazy load button
         contentHTML = `
           <div id="lazy-load-container-${callId}" style="text-align: center; padding: 48px 32px;">
-            <button onclick="loadTranscriptAndRecordingForModal('${callId}')" id="load-btn-${callId}" style="padding: 16px 32px; background: linear-gradient(135deg, #1e3a8a, #1e40af); color: #60a5fa; border: 1.5px solid #3b82f6; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);">
+            <button onclick="loadTranscriptAndRecordingForModal('${callId}')" id="load-btn-${callId}" style="padding: 16px 32px; background: rgba(0, 255, 255, 0.1); color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
               📄 Click here to load the transcript and call recording
             </button>
           </div>
