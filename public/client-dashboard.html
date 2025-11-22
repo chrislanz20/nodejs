@@ -210,27 +210,43 @@
     .bar-chart {
       display: flex;
       align-items: flex-end;
-      justify-content: space-between;
-      height: 200px;
-      gap: 8px;
-      padding: 12px 8px 16px 8px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(13, 17, 23, 0.3);
+      justify-content: space-around;
+      height: 220px;
+      padding: 20px 16px 0 16px;
+      background: linear-gradient(180deg, rgba(13, 17, 23, 0.4) 0%, rgba(13, 17, 23, 0.2) 100%);
       border-radius: 12px;
       position: relative;
-      overflow: visible;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Grid lines for visual reference */
+    .bar-chart::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 16px;
+      right: 16px;
+      bottom: 50px;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent calc(25% - 1px),
+        rgba(255, 255, 255, 0.04) calc(25% - 1px),
+        rgba(255, 255, 255, 0.04) 25%
+      );
+      pointer-events: none;
     }
 
     .bar-wrapper {
       flex: 1;
-      max-width: 60px;
-      min-width: 32px;
+      max-width: 70px;
+      min-width: 36px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
       height: 100%;
-      justify-content: flex-end;
+      position: relative;
+      z-index: 1;
     }
 
     .bar-container {
@@ -240,115 +256,125 @@
       flex-direction: column;
       justify-content: flex-end;
       align-items: center;
-      min-height: 0;
+      padding-bottom: 8px;
     }
 
     .bar {
-      width: 100%;
-      max-width: 40px;
-      background: linear-gradient(180deg, #00FFFF, rgba(0, 206, 209, 0.7));
-      border-radius: 6px 6px 2px 2px;
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      position: relative;
+      width: 70%;
+      max-width: 36px;
+      min-width: 20px;
+      background: linear-gradient(180deg, #00FFFF 0%, #0891b2 100%);
+      border-radius: 4px 4px 2px 2px;
+      transition: all 0.3s ease;
       min-height: 4px;
-      box-shadow: 0 2px 8px rgba(0, 255, 255, 0.2);
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.3);
     }
 
     .bar:hover {
-      background: linear-gradient(180deg, #67e8f9, #00FFFF);
-      box-shadow: 0 4px 20px rgba(0, 255, 255, 0.5);
-      transform: scaleY(1.02);
+      background: linear-gradient(180deg, #22d3ee 0%, #00FFFF 100%);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+      transform: scaleX(1.1);
     }
 
     .bar-label {
-      font-size: 11px;
+      font-size: 12px;
       color: #9ca3af;
       font-weight: 600;
-      letter-spacing: 0.3px;
       text-align: center;
-      padding: 2px 4px;
+      padding: 10px 4px 8px 4px;
       white-space: nowrap;
-      flex-shrink: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      width: 100%;
+      background: rgba(13, 17, 23, 0.3);
+      margin-top: auto;
     }
 
     .bar-value {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
-      color: #fafafa;
-      text-shadow: none;
-      white-space: nowrap;
+      color: #ffffff;
       text-align: center;
-      flex-shrink: 0;
-      padding: 2px 0;
+      padding: 6px 0;
+      min-height: 28px;
     }
 
     .category-chart {
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      padding: 12px 0;
+      gap: 12px;
+      padding: 8px 0;
     }
 
     .category-item {
-      display: flex;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
       gap: 12px;
+      padding: 8px 12px;
+      background: rgba(13, 17, 23, 0.3);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      transition: all 0.2s ease;
+    }
+
+    .category-item:hover {
+      background: rgba(13, 17, 23, 0.5);
+      border-color: rgba(0, 255, 255, 0.1);
+    }
+
+    .category-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 110px;
     }
 
     .category-color {
-      width: 12px;
-      height: 12px;
-      border-radius: 4px;
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
       flex-shrink: 0;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
     .category-name {
-      flex: 0 0 120px;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
       color: #e6edf3;
-      letter-spacing: 0.2px;
+      white-space: nowrap;
     }
 
     .category-bar-bg {
-      flex: 1;
-      height: 32px;
-      background: rgba(13, 17, 23, 0.5);
-      border-radius: 6px;
+      height: 24px;
+      background: rgba(30, 36, 44, 0.6);
+      border-radius: 4px;
       position: relative;
       overflow: hidden;
-      border: 1px solid rgba(48, 54, 61, 0.4);
-      min-width: 80px;
+      min-width: 60px;
     }
 
     .category-bar-fill {
       height: 100%;
-      border-radius: 5px;
-      transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      position: relative;
+      border-radius: 4px;
+      transition: width 0.5s ease-out;
       display: flex;
       align-items: center;
-      justify-content: center;
-      min-width: fit-content;
+      padding-left: 10px;
     }
 
     .category-count {
       font-size: 12px;
       font-weight: 700;
-      color: #fafafa;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      color: #ffffff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
       white-space: nowrap;
-      padding: 0 10px;
-      z-index: 2;
     }
 
     .category-percentage {
-      flex: 0 0 50px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #9ca3af;
+      font-size: 13px;
+      font-weight: 700;
+      color: #00FFFF;
       text-align: right;
+      min-width: 48px;
     }
 
     /* Toast Notifications */
@@ -1218,99 +1244,91 @@
       }
 
       .bar-chart {
-        height: 160px;
-        padding: 8px 4px 12px 4px;
-        display: flex;
-        gap: 4px;
-        justify-content: space-between;
-        align-items: flex-end;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(13, 17, 23, 0.3);
-        border-radius: 8px;
-        overflow: visible;
+        height: 180px;
+        padding: 16px 8px 0 8px;
+        justify-content: space-around;
+        background: linear-gradient(180deg, rgba(13, 17, 23, 0.4) 0%, rgba(13, 17, 23, 0.2) 100%);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .bar-chart::before {
+        top: 16px;
+        left: 8px;
+        right: 8px;
+        bottom: 44px;
       }
 
       .bar-wrapper {
-        flex: 1;
-        min-width: 28px;
-        max-width: 48px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 3px;
-        height: 100%;
-        justify-content: flex-end;
+        min-width: 32px;
+        max-width: 50px;
       }
 
       .bar-container {
-        flex: 1;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        align-items: center;
-        min-height: 0;
+        padding-bottom: 6px;
       }
 
       .bar {
-        width: 100%;
+        width: 80%;
         max-width: 28px;
-        border-radius: 4px 4px 2px 2px;
+        min-width: 16px;
+        border-radius: 3px 3px 1px 1px;
       }
 
       .bar-value {
         font-size: 12px;
-        font-weight: 700;
-        padding: 1px 0;
+        padding: 4px 0;
+        min-height: 24px;
       }
 
       .bar-label {
-        font-size: 10px;
-        padding: 2px;
+        font-size: 11px;
+        padding: 8px 2px 6px 2px;
       }
 
       /* Category breakdown - mobile optimized */
       .category-chart {
-        gap: 10px;
-        padding: 8px 0;
+        gap: 8px;
+        padding: 4px 0;
       }
 
       .category-item {
+        grid-template-columns: auto 1fr auto;
         gap: 8px;
-        padding: 0;
+        padding: 6px 10px;
+      }
+
+      .category-left {
+        min-width: 90px;
+        gap: 8px;
       }
 
       .category-color {
-        width: 10px;
-        height: 10px;
-        border-radius: 3px;
+        width: 8px;
+        height: 8px;
+        border-radius: 2px;
       }
 
       .category-name {
-        flex: 0 0 80px;
         font-size: 11px;
-        font-weight: 600;
       }
 
       .category-bar-bg {
-        height: 28px;
-        border-radius: 5px;
-        min-width: 60px;
+        height: 20px;
+        min-width: 40px;
       }
 
       .category-bar-fill {
-        border-radius: 4px;
+        padding-left: 6px;
       }
 
       .category-count {
-        font-size: 11px;
-        padding: 0 8px;
+        font-size: 10px;
       }
 
       .category-percentage {
-        flex: 0 0 40px;
         font-size: 11px;
-        text-align: right;
+        min-width: 40px;
       }
 
       /* Table wrapper with better scroll */
@@ -3006,10 +3024,12 @@
 
           return `
             <div class="category-item">
-              <div class="category-color" style="background: ${color}; box-shadow: 0 2px 8px ${color}40;"></div>
-              <div class="category-name">${category}</div>
+              <div class="category-left">
+                <div class="category-color" style="background: ${color};"></div>
+                <div class="category-name">${category}</div>
+              </div>
               <div class="category-bar-bg">
-                <div class="category-bar-fill" style="width: ${widthPercent.toFixed(1)}%; background: linear-gradient(90deg, ${color}66, ${color}bb);">
+                <div class="category-bar-fill" style="width: ${widthPercent.toFixed(1)}%; background: linear-gradient(90deg, ${color}, ${color}cc);">
                   <span class="category-count">${count}</span>
                 </div>
               </div>
