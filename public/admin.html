@@ -958,25 +958,67 @@
     }
 
     async function deleteClient(id) {
-      if (!confirm('Are you sure you want to deactivate this client? They will no longer be able to log in.')) {
-        return;
-      }
+      const client = clients.find(c => c.id === id);
+      const clientName = client ? client.business_name : 'this client';
 
-      try {
-        const response = await fetch(`/api/admin/clients/${id}`, {
-          method: 'DELETE'
-        });
+      // Give user choice between deactivate and permanent delete
+      const choice = prompt(
+        `What would you like to do with "${clientName}"?\n\n` +
+        `Type "deactivate" to disable their login (can be reactivated later)\n` +
+        `Type "DELETE" to permanently remove them (cannot be undone)\n\n` +
+        `Enter your choice:`
+      );
 
-        if (response.ok) {
-          alert('Client deactivated successfully');
-          loadClients();
-        } else {
-          const data = await response.json();
-          alert('Error: ' + (data.error || 'Failed to delete client'));
+      if (!choice) return;
+
+      const trimmedChoice = choice.trim().toLowerCase();
+
+      if (trimmedChoice === 'delete') {
+        // Extra confirmation for permanent delete
+        if (!confirm(`⚠️ PERMANENT DELETE ⚠️\n\nAre you absolutely sure you want to permanently delete "${clientName}"?\n\nThis action CANNOT be undone!`)) {
+          return;
         }
-      } catch (error) {
-        console.error('Error deleting client:', error);
-        alert('Network error. Please try again.');
+
+        try {
+          const response = await fetch(`/api/admin/clients/${id}?permanent=true`, {
+            method: 'DELETE',
+            credentials: 'include'
+          });
+
+          if (response.ok) {
+            alert(`✓ "${clientName}" has been permanently deleted.`);
+            loadClients();
+          } else {
+            const data = await response.json();
+            alert('Error: ' + (data.error || 'Failed to delete client'));
+          }
+        } catch (error) {
+          console.error('Error deleting client:', error);
+          alert('Network error. Please try again.');
+        }
+      } else if (trimmedChoice === 'deactivate') {
+        try {
+          const response = await fetch(`/api/admin/clients/${id}`, {
+            method: 'DELETE',
+            credentials: 'include'
+          });
+
+          if (response.ok) {
+            alert(`✓ "${clientName}" has been deactivated. They can no longer log in.`);
+            // Switch to Active Only filter so user sees the client removed
+            document.getElementById('status-filter').value = 'Active Only';
+            filterByStatus('Active Only');
+            loadClients();
+          } else {
+            const data = await response.json();
+            alert('Error: ' + (data.error || 'Failed to deactivate client'));
+          }
+        } catch (error) {
+          console.error('Error deactivating client:', error);
+          alert('Network error. Please try again.');
+        }
+      } else {
+        alert('Invalid choice. Please type "deactivate" or "DELETE".');
       }
     }
 
