@@ -889,10 +889,10 @@
       --text-primary: #fafafa;
       --text-secondary: #a1a1aa;
       --text-tertiary: #71717a;
-      --accent: #818cf8;
-      --accent-hover: #a5b4fc;
-      --accent-subtle: rgba(129, 140, 248, 0.1);
-      --accent-glow: rgba(129, 140, 248, 0.15);
+      --accent: #00FFFF;
+      --accent-hover: #67e8f9;
+      --accent-subtle: rgba(0, 255, 255, 0.1);
+      --accent-glow: rgba(0, 255, 255, 0.15);
       --success: #4ade80;
       --success-bg: rgba(74, 222, 128, 0.1);
       --danger: #f87171;
@@ -1304,7 +1304,7 @@
     }
 
     .progress-bar-fill {
-      background: linear-gradient(90deg, var(--accent), var(--success)) !important;
+      background: linear-gradient(90deg, #00CED1, #00FFFF) !important;
       box-shadow: none !important;
     }
 
@@ -1981,8 +1981,8 @@
           <div class="table-header">
             <div class="table-title">Recent Calls (Showing ${Math.min(50, allCalls.length)} most recent)</div>
             <div style="display: flex; gap: 8px;">
-              <button class="analyze-button" onclick="exportCategories()" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #10b981;">💾 Export</button>
-              <button class="analyze-button" onclick="importCategories()" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #3b82f6;">📥 Import</button>
+              <button class="analyze-button" onclick="exportCategories()" style="background: rgba(0, 255, 255, 0.1); border-color: rgba(0, 255, 255, 0.3); color: #00FFFF;">💾 Export</button>
+              <button class="analyze-button" onclick="importCategories()" style="background: rgba(0, 255, 255, 0.1); border-color: rgba(0, 255, 255, 0.3); color: #00FFFF;">📥 Import</button>
             </div>
           </div>
           <table>
@@ -2447,8 +2447,8 @@
             <div class="table-header">
               <div class="table-title">All Calls</div>
               <div style="display: flex; gap: 8px;">
-                <button class="analyze-button" onclick="exportCategories()" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #10b981;">💾 Export</button>
-                <button class="analyze-button" onclick="importCategories()" style="background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: #3b82f6;">📥 Import</button>
+                <button class="analyze-button" onclick="exportCategories()" style="background: rgba(0, 255, 255, 0.1); border-color: rgba(0, 255, 255, 0.3); color: #00FFFF;">💾 Export</button>
+                <button class="analyze-button" onclick="importCategories()" style="background: rgba(0, 255, 255, 0.1); border-color: rgba(0, 255, 255, 0.3); color: #00FFFF;">📥 Import</button>
               </div>
             </div>
             <table id="all-calls-table">
@@ -2645,10 +2645,10 @@
               <div style="font-size: 11px; font-weight: 700; color: #00FFFF; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Breakdown by Status</div>
               <div style="display: flex; gap: 12px; flex-wrap: wrap;">
                 ${Object.entries(byStatus).map(([status, data]) => `
-                  <div style="background: rgba(13, 17, 23, 0.4); padding: 10px; border-left: 3px solid ${status === 'completed' ? '#10b981' : '#3b82f6'}; min-width: 150px;">
+                  <div style="background: rgba(13, 17, 23, 0.4); padding: 10px; border-left: 3px solid ${status === 'completed' ? '#10b981' : '#00FFFF'}; min-width: 150px;">
                     <div style="font-size: 12px; color: #e6edf3; font-weight: 700; margin-bottom: 4px; text-transform: uppercase;">${status}</div>
                     <div style="font-size: 11px; color: #7d8590; font-family: 'JetBrains Mono', monospace;">
-                      ${data.count} calls • <span style="color: #10b981;">$${data.cost.toFixed(2)}</span>
+                      ${data.count} calls • <span style="color: #00FFFF;">$${data.cost.toFixed(2)}</span>
                     </div>
                   </div>
                 `).join('')}
@@ -2779,7 +2779,7 @@
         transcriptHTML = `
           <div class="transcript-box" id="transcript-container-${callId}">
             <div style="text-align: center; padding: 48px 32px;">
-              <button onclick="loadTranscriptAndRecording('${callId}')" id="load-transcript-btn-${callId}" style="padding: 16px 32px; background: linear-gradient(135deg, #1e3a8a, #1e40af); color: #60a5fa; border: 1.5px solid #3b82f6; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);">
+              <button onclick="loadTranscriptAndRecording('${callId}')" id="load-transcript-btn-${callId}" style="padding: 16px 32px; background: linear-gradient(135deg, #0e4a4a, #0d4040); color: #00FFFF; border: 1.5px solid #00CED1; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0, 255, 255, 0.2);">
                 📄 Click here to load the transcript and call recording
               </button>
             </div>
@@ -2967,7 +2967,7 @@
             <div style="color: #ef4444; text-align: center; padding: 32px;">
               ❌ Failed to load: ${error.message}
               <br><br>
-              <button onclick="loadTranscriptAndRecording('${callId}')" style="padding: 16px 32px; background: linear-gradient(135deg, #1e3a8a, #1e40af); color: #60a5fa; border: 1.5px solid #3b82f6; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+              <button onclick="loadTranscriptAndRecording('${callId}')" style="padding: 16px 32px; background: linear-gradient(135deg, #0e4a4a, #0d4040); color: #00FFFF; border: 1.5px solid #00CED1; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
                 🔄 Retry
               </button>
             </div>
