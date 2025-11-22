@@ -285,26 +285,31 @@
       transform: scaleX(1.1);
     }
 
+    .bar-label-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 4px 8px 4px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      width: 100%;
+      background: rgba(13, 17, 23, 0.3);
+      margin-top: auto;
+      gap: 2px;
+    }
+
     .bar-label {
       font-size: 12px;
       color: #9ca3af;
       font-weight: 600;
       text-align: center;
-      padding: 10px 4px 8px 4px;
       white-space: nowrap;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      width: 100%;
-      background: rgba(13, 17, 23, 0.3);
-      margin-top: auto;
     }
 
     .bar-value {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 700;
-      color: #ffffff;
+      color: #00FFFF;
       text-align: center;
-      padding: 6px 0;
-      min-height: 28px;
     }
 
     .category-chart {
@@ -1284,15 +1289,17 @@
         border-radius: 3px 3px 1px 1px;
       }
 
-      .bar-value {
-        font-size: 12px;
-        padding: 4px 0;
-        min-height: 24px;
+      .bar-label-group {
+        padding: 8px 2px 6px 2px;
+        gap: 1px;
       }
 
       .bar-label {
         font-size: 11px;
-        padding: 8px 2px 6px 2px;
+      }
+
+      .bar-value {
+        font-size: 13px;
       }
 
       /* Category breakdown - mobile optimized */
@@ -2961,11 +2968,13 @@
 
         return `
           <div class="bar-wrapper">
-            <div class="bar-value">${day.count}</div>
             <div class="bar-container">
               <div class="bar" style="height: ${heightPercent.toFixed(1)}%" title="${day.count} calls on ${day.label}"></div>
             </div>
-            <div class="bar-label">${day.label}</div>
+            <div class="bar-label-group">
+              <div class="bar-label">${day.label}</div>
+              <div class="bar-value">${day.count}</div>
+            </div>
           </div>
         `;
       }).join('');
@@ -3017,18 +3026,15 @@
         'Uncategorized': '#374151'
       };
 
-      // Find max count for scaling
-      const maxCategoryCount = Math.max(...Object.values(categoryCounts).filter(c => c > 0), 1);
-
-      // Render category bars with dynamic scaling
+      // Render category bars showing actual percentage of total
       chartContainer.innerHTML = Object.entries(categoryCounts)
         .filter(([_, count]) => count > 0)
         .sort((a, b) => b[1] - a[1])
         .map(([category, count]) => {
-          const percentage = ((count / totalCalls) * 100).toFixed(1);
-          // Scale width relative to max category (ensures bars don't overflow)
-          // Use minimum 15% width to ensure count is visible
-          const widthPercent = Math.max(15, (count / maxCategoryCount) * 100);
+          const percentage = ((count / totalCalls) * 100);
+          // Bar width = actual percentage (so 58.8% shows as ~59% width)
+          // Minimum 12% width to ensure count number is visible
+          const widthPercent = Math.max(12, percentage);
           const color = categoryColors[category];
 
           return `
@@ -3042,7 +3048,7 @@
                   <span class="category-count">${count}</span>
                 </div>
               </div>
-              <div class="category-percentage">${percentage}%</div>
+              <div class="category-percentage">${percentage.toFixed(1)}%</div>
             </div>
           `;
         }).join('');
