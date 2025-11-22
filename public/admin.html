@@ -680,23 +680,32 @@
       padding-right: 40px !important;
     }
 
-    /* Scrollbar styling */
+    /* Scrollbar - more visible */
     ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 10px;
+      height: 10px;
     }
 
     ::-webkit-scrollbar-track {
-      background: transparent;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 5px;
     }
 
     ::-webkit-scrollbar-thumb {
-      background: var(--border-default);
-      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background: var(--border-strong);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Ensure body scrolls properly */
+    html, body {
+      overflow-x: hidden;
+      overflow-y: auto !important;
+      height: auto !important;
+      min-height: 100vh;
     }
 
     /* Fix inline button styles */
