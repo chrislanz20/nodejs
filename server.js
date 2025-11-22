@@ -112,9 +112,38 @@ app.use(compression({
 app.use(express.json({ limit: '50mb' }));  // Allow large payloads for category migration
 app.use(cookieParser());
 
-// Allow your site to call this API (we can restrict origins later)
+// CORS - restrict to allowed origins only
+const allowedOrigins = [
+  'https://saveyatech.app',
+  'https://client.saveyatech.app',
+  'https://www.saveyatech.app',
+  // Allow Vercel preview deployments
+  /https:\/\/nodejs-.*-chris-lanzillis-projects\.vercel\.app$/,
+  // Local development
+  'http://localhost:3000',
+  'http://localhost:3001'
+];
+
 app.use(cors({
-  origin: true,
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+
+    // Check if origin matches allowed list
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (allowed instanceof RegExp) {
+        return allowed.test(origin);
+      }
+      return allowed === origin;
+    });
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked request from: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
@@ -172,7 +201,12 @@ app.use(express.static(publicDir));
 const RETELL_API_KEY = process.env.RETELL_API_KEY;
 const RETELL_AGENT_ID = process.env.RETELL_AGENT_ID;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error("CRITICAL: JWT_SECRET environment variable is not set!");
+  console.error("Authentication will not work without this. Set it in Vercel project settings.");
+}
 
 if (!RETELL_API_KEY) {
   console.error("ERROR: RETELL_API_KEY environment variable is not set!");
