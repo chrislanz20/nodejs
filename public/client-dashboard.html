@@ -29,6 +29,7 @@
       background: #0d1117;
       color: #e6edf3;
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     .header {
@@ -673,6 +674,7 @@
       cursor: pointer;
       transition: all 0.2s;
       white-space: nowrap;
+      text-align: center;
     }
 
     .quick-date-btn:hover {
@@ -734,7 +736,9 @@
       letter-spacing: 1px;
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
+      text-align: center;
     }
 
     .action-btn:hover {
@@ -1758,6 +1762,7 @@
       transition: all 0.2s;
       pointer-events: none;
       line-height: 1.4;
+      max-width: calc(100vw - 40px);
     }
 
     .tooltip-text::after {
@@ -1898,6 +1903,7 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
+      text-align: center;
     }
 
     .btn-approve {
@@ -1949,9 +1955,12 @@
       /* Make buttons stack vertically on very small screens in tables */
       td .btn-approve,
       td .btn-deny {
-        display: block;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         width: 100%;
         margin-bottom: 8px;
+        text-align: center;
       }
 
       td .btn-deny {
