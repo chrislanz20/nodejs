@@ -344,7 +344,7 @@ async function initializeDatabase() {
         client_id INTEGER REFERENCES clients(id) ON DELETE CASCADE,
         email TEXT NOT NULL,
         name TEXT NOT NULL,
-        role TEXT NOT NULL DEFAULT 'member',
+        role TEXT NOT NULL DEFAULT 'Viewer',
         password_hash TEXT NOT NULL,
         active BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT NOW(),
@@ -352,7 +352,8 @@ async function initializeDatabase() {
         last_login TIMESTAMP,
         reset_token TEXT,
         reset_token_expires TIMESTAMP,
-        UNIQUE(client_id, email)
+        UNIQUE(client_id, email),
+        CONSTRAINT team_members_role_check CHECK (role IN ('Admin', 'Sales', 'Support', 'Viewer'))
       )
     `);
 
@@ -2847,12 +2848,12 @@ app.post('/api/team/register', async (req, res) => {
     // Hash password
     const password_hash = await bcrypt.hash(password, 10);
 
-    // Create team member
+    // Create team member (default role is Viewer for self-registration)
     const result = await pool.query(`
       INSERT INTO team_members (client_id, email, name, role, password_hash)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING id, email, name, role
-    `, [client.id, email.toLowerCase(), name, 'member', password_hash]);
+    `, [client.id, email.toLowerCase(), name, 'Viewer', password_hash]);
 
     // Send welcome email via GHL (non-blocking)
     sendGHLEmail(client.ghl_location_id, email, 'Welcome to ' + client.business_name,
