@@ -3954,13 +3954,8 @@ app.post('/api/chatbot/message', async (req, res) => {
       };
       chatbotSessions.set(sessionId, session);
 
-      // Send notification for new conversation
+      // Log new conversation (email will be sent when conversation ends/closes)
       console.log(`🤖 New chatbot conversation started by ${clientName || 'Unknown Client'}`);
-
-      // Send email notification (non-blocking)
-      sendChatbotNotification(clientName || 'A client', message).catch(err => {
-        console.error('Failed to send chatbot notification:', err);
-      });
     }
 
     // Add user message to history
