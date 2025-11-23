@@ -2977,10 +2977,13 @@ app.post('/api/team/forgot-password', async (req, res) => {
       );
 
       const resetUrl = `https://client.saveyatech.app/client-portal.html?reset=${resetToken}&type=team`;
-      // Fire and forget - don't block response waiting for email
-      sendEmail(member.email, 'Reset Your Password',
-        `Hi ${member.name},\n\nYou requested a password reset for your ${member.business_name} account.\n\nClick this link to reset your password (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\n${member.business_name}`
-      ).catch(err => console.error('Failed to send reset email:', err));
+
+      // Send email and wait for result
+      console.log(`📧 Sending password reset email to: ${member.email}`);
+      const emailResult = await sendEmail(member.email, 'Reset Your Password',
+        `Hi ${member.name},\n\nYou requested a password reset for your ${member.business_name} account.\n\nClick this link to reset your password (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nSaveYa Tech`
+      );
+      console.log(`📧 Password reset email result:`, emailResult);
 
       // Mark this email as recently requested
       recentResetRequests.set(emailLower, Date.now());
@@ -3009,10 +3012,13 @@ app.post('/api/team/forgot-password', async (req, res) => {
       );
 
       const resetUrl = `https://client.saveyatech.app/client-portal.html?reset=${resetToken}&type=client`;
-      // Fire and forget - don't block response waiting for email
-      sendEmail(client.email, 'Reset Your Password',
+
+      // Send email and wait for result
+      console.log(`📧 Sending password reset email to: ${client.email}`);
+      const emailResult = await sendEmail(client.email, 'Reset Your Password',
         `Hi,\n\nYou requested a password reset for your ${client.business_name} account.\n\nClick this link to reset your password (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nSaveYa Tech`
-      ).catch(err => console.error('Failed to send reset email:', err));
+      );
+      console.log(`📧 Password reset email result:`, emailResult);
 
       // Mark this email as recently requested
       recentResetRequests.set(emailLower, Date.now());
