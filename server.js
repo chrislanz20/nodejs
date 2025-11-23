@@ -3338,6 +3338,248 @@ app.delete('/api/leads/:leadId', async (req, res) => {
   }
 });
 
+// ============================================
+// FEEDBACK CHATBOT API
+// ============================================
+
+// Store the Maria AI Receptionist prompt for context
+const MARIA_PROMPT_SUMMARY = `
+Maria is CourtLaw's AI intake specialist with these key behaviors:
+- Asks ONE question at a time (CRITICAL rule - never bundles questions)
+- Uses 5th grade reading level, simple language
+- Slow, clear, methodical pace
+- Bilingual (English/Spanish)
+- Warm, compassionate tone
+
+CALLER WORKFLOWS:
+1. Injured Party: Language → Location check (NJ/NY only) → Get story → Qualify → Collect info → Schedule callback
+2. Medical Professional: Get info → Take message (NEVER gives case details)
+3. Attorney: Get info → Take message (NEVER gives case details)
+4. Other: Take message with full context
+
+CASE TYPES HANDLED:
+- Car accidents, Uber/Rideshare, Construction, Motorcycle, Truck/Bus/Taxi, Slip & Fall, Workers' Compensation
+
+KEY GUARDRAILS:
+- NEVER provides legal advice or case predictions
+- NEVER discusses settlement amounts
+- Only handles NJ and NY cases
+- Confirms all info (phone, email, names) by spelling back
+
+INFORMATION COLLECTION (one at a time):
+1. Full name
+2. Phone number (repeat back)
+3. Email (spell back)
+4. Incident date (specific date required)
+5. Location
+6. How they heard about CourtLaw
+7. Case-specific questions based on type
+
+TECHNICAL BEHAVIORS:
+- Uses filler words naturally ("umm", "so")
+- Reads phone numbers in groups: "five-five-five... one-two-three..."
+- Spells emails: "J O H N - dot - S M I T H - at - gmail - dot - com"
+- Handles audio issues gracefully
+`;
+
+// Chatbot conversation sessions (in-memory for simplicity)
+const chatbotSessions = new Map();
+
+// POST /api/chatbot/message - Handle chatbot messages
+app.post('/api/chatbot/message', async (req, res) => {
+  try {
+    const { message, sessionId, clientName } = req.body;
+
+    if (!message || !sessionId) {
+      return res.status(400).json({ error: 'message and sessionId are required' });
+    }
+
+    // Get or create session
+    let session = chatbotSessions.get(sessionId);
+    if (!session) {
+      session = {
+        messages: [],
+        clientName: clientName || 'Client',
+        startedAt: new Date().toISOString(),
+        notificationSent: false
+      };
+      chatbotSessions.set(sessionId, session);
+
+      // Send notification for new conversation
+      console.log(`🤖 New chatbot conversation started by ${clientName || 'Unknown Client'}`);
+
+      // Send email notification (non-blocking)
+      sendChatbotNotification(clientName || 'A client', message).catch(err => {
+        console.error('Failed to send chatbot notification:', err);
+      });
+    }
+
+    // Add user message to history
+    session.messages.push({ role: 'user', content: message });
+
+    // Build the system prompt for Claude
+    const systemPrompt = `You are a friendly feedback assistant for SaveYa Tech, helping clients of CourtLaw improve their AI receptionist named Maria.
+
+YOUR ROLE:
+- Help clients articulate what they want changed about their AI receptionist
+- Ask clarifying questions to understand their specific concerns
+- Be conversational and friendly - NOT technical
+- NEVER mention "prompts", "system instructions", "AI training", or technical terms
+- Speak as if you're helping them customize their phone answering service
+
+THE CLIENT'S AI RECEPTIONIST (Maria) - YOUR CONTEXT:
+${MARIA_PROMPT_SUMMARY}
+
+HOW TO HELP:
+1. Listen to their feedback (frustrations, suggestions, observations)
+2. Ask clarifying questions like:
+   - "Can you tell me more about what happened on that call?"
+   - "What would you have preferred Maria to say instead?"
+   - "How often does this happen?"
+   - "Is there a specific type of caller this affects?"
+3. Once you understand the issue, summarize what they want changed
+4. Ask if there's anything else they'd like to adjust
+
+WHEN THE CONVERSATION REACHES A CLEAR CONCLUSION:
+After understanding their feedback, end with a summary like:
+"Got it! I've noted your feedback: [brief summary]. Our team will review this and make adjustments to improve how Maria handles these situations. Is there anything else you'd like to address?"
+
+TONE:
+- Warm, helpful, patient
+- Use simple language
+- Never make the client feel like they need to understand how AI works
+- Treat this like they're customizing a service, not programming
+
+IMPORTANT: You're gathering feedback that will be turned into specific improvements. Focus on understanding WHAT they want changed and WHY.`;
+
+    // Call Claude API
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 500,
+      system: systemPrompt,
+      messages: session.messages.map(m => ({
+        role: m.role,
+        content: m.content
+      }))
+    });
+
+    const assistantMessage = response.content[0].text;
+
+    // Add assistant response to history
+    session.messages.push({ role: 'assistant', content: assistantMessage });
+
+    // Keep only last 20 messages to prevent token overflow
+    if (session.messages.length > 20) {
+      session.messages = session.messages.slice(-20);
+    }
+
+    res.json({
+      success: true,
+      message: assistantMessage,
+      sessionId
+    });
+
+  } catch (error) {
+    console.error('Chatbot error:', error);
+    res.status(500).json({
+      error: 'Failed to process message',
+      message: "I'm having trouble right now. Please try again in a moment."
+    });
+  }
+});
+
+// POST /api/chatbot/end - End conversation and generate recommendations
+app.post('/api/chatbot/end', async (req, res) => {
+  try {
+    const { sessionId, clientName } = req.body;
+
+    const session = chatbotSessions.get(sessionId);
+    if (!session || session.messages.length === 0) {
+      return res.json({ success: true, message: 'No conversation to analyze' });
+    }
+
+    // Generate recommendations using Claude
+    const conversationText = session.messages
+      .map(m => `${m.role === 'user' ? 'Client' : 'Assistant'}: ${m.content}`)
+      .join('\n\n');
+
+    const analysisPrompt = `You are an AI prompt engineering expert. Analyze this feedback conversation and generate SPECIFIC, ACTIONABLE recommendations for improving the AI receptionist's prompt.
+
+THE CURRENT AI RECEPTIONIST PROMPT STRUCTURE:
+${MARIA_PROMPT_SUMMARY}
+
+FEEDBACK CONVERSATION:
+${conversationText}
+
+Generate a report with:
+
+1. FEEDBACK SUMMARY (2-3 sentences of what the client wants)
+
+2. SPECIFIC PROMPT MODIFICATIONS (be precise):
+   - What section of the prompt to modify
+   - The exact change to make
+   - Example of new/modified instruction
+
+3. PRIORITY LEVEL: High/Medium/Low
+
+Format your response clearly with headers. Be specific enough that a developer can implement the changes directly.`;
+
+    const analysisResponse = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{
+        role: 'user',
+        content: analysisPrompt
+      }]
+    });
+
+    const recommendations = analysisResponse.content[0].text;
+
+    // Send detailed notification with recommendations
+    await sendChatbotRecommendations(clientName || session.clientName, conversationText, recommendations);
+
+    // Clean up session
+    chatbotSessions.delete(sessionId);
+
+    res.json({
+      success: true,
+      message: 'Feedback submitted successfully',
+      recommendations
+    });
+
+  } catch (error) {
+    console.error('Error generating recommendations:', error);
+    res.status(500).json({ error: 'Failed to process feedback' });
+  }
+});
+
+// Helper: Send notification when chatbot conversation starts
+async function sendChatbotNotification(clientName, firstMessage) {
+  const { sendNotifications } = require('./lib/ghlNotifications');
+
+  // For now, just log - you can add email notification here
+  console.log(`\n📱 CHATBOT NOTIFICATION`);
+  console.log(`Client: ${clientName}`);
+  console.log(`First message: ${firstMessage}`);
+  console.log(`Time: ${new Date().toLocaleString()}`);
+  console.log(`---`);
+}
+
+// Helper: Send recommendations when conversation ends
+async function sendChatbotRecommendations(clientName, conversation, recommendations) {
+  console.log(`\n🎯 CHATBOT FEEDBACK RECOMMENDATIONS`);
+  console.log(`═══════════════════════════════════════`);
+  console.log(`Client: ${clientName}`);
+  console.log(`Time: ${new Date().toLocaleString()}`);
+  console.log(`\n📝 CONVERSATION:`);
+  console.log(conversation);
+  console.log(`\n💡 RECOMMENDATIONS:`);
+  console.log(recommendations);
+  console.log(`═══════════════════════════════════════\n`);
+
+  // TODO: Add email notification here if needed
+}
+
 // Railway will set PORT for us
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Proxy listening on ${PORT}`));

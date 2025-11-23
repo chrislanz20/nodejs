@@ -6617,6 +6617,294 @@
 
     // Initialize
     checkAuth();
+
+    // ============================================
+    // FEEDBACK CHATBOT
+    // ============================================
+
+    const chatbotSessionId = 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    let chatbotOpen = false;
+
+    function toggleChatbot() {
+      const chatWindow = document.getElementById('chatbot-window');
+      const chatBubble = document.getElementById('chatbot-bubble');
+      chatbotOpen = !chatbotOpen;
+
+      if (chatbotOpen) {
+        chatWindow.style.display = 'flex';
+        chatBubble.innerHTML = '✕';
+        chatBubble.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+        // Focus input
+        setTimeout(() => document.getElementById('chatbot-input').focus(), 100);
+      } else {
+        chatWindow.style.display = 'none';
+        chatBubble.innerHTML = '💬';
+        chatBubble.style.background = 'linear-gradient(135deg, #00FFFF, #00cccc)';
+      }
+    }
+
+    async function sendChatMessage() {
+      const input = document.getElementById('chatbot-input');
+      const message = input.value.trim();
+      if (!message) return;
+
+      const messagesContainer = document.getElementById('chatbot-messages');
+
+      // Add user message
+      messagesContainer.innerHTML += `
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
+          <div style="background: linear-gradient(135deg, #00FFFF, #00cccc); color: #0d1117; padding: 10px 14px; border-radius: 16px 16px 4px 16px; max-width: 80%; font-size: 14px;">
+            ${escapeHtml(message)}
+          </div>
+        </div>
+      `;
+
+      input.value = '';
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      // Show typing indicator
+      const typingId = 'typing-' + Date.now();
+      messagesContainer.innerHTML += `
+        <div id="${typingId}" style="display: flex; justify-content: flex-start; margin-bottom: 12px;">
+          <div style="background: rgba(255,255,255,0.1); color: #e6edf3; padding: 10px 14px; border-radius: 16px 16px 16px 4px; font-size: 14px;">
+            <span class="typing-dots">...</span>
+          </div>
+        </div>
+      `;
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      try {
+        const response = await fetch('/api/chatbot/message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message,
+            sessionId: chatbotSessionId,
+            clientName: currentUser?.business_name || 'Client'
+          })
+        });
+
+        const data = await response.json();
+
+        // Remove typing indicator
+        document.getElementById(typingId)?.remove();
+
+        // Add bot response
+        messagesContainer.innerHTML += `
+          <div style="display: flex; justify-content: flex-start; margin-bottom: 12px;">
+            <div style="background: rgba(255,255,255,0.1); color: #e6edf3; padding: 10px 14px; border-radius: 16px 16px 16px 4px; max-width: 80%; font-size: 14px; line-height: 1.5;">
+              ${escapeHtml(data.message)}
+            </div>
+          </div>
+        `;
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      } catch (error) {
+        document.getElementById(typingId)?.remove();
+        messagesContainer.innerHTML += `
+          <div style="display: flex; justify-content: flex-start; margin-bottom: 12px;">
+            <div style="background: rgba(239, 68, 68, 0.2); color: #ff6b6b; padding: 10px 14px; border-radius: 16px; font-size: 14px;">
+              Sorry, I'm having trouble connecting. Please try again.
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function handleChatKeypress(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMessage();
+      }
+    }
+
+    async function endChatSession() {
+      if (confirm('Submit your feedback? Our team will review it and make improvements.')) {
+        try {
+          await fetch('/api/chatbot/end', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionId: chatbotSessionId,
+              clientName: currentUser?.business_name || 'Client'
+            })
+          });
+
+          showToast('✅ Feedback submitted! Thank you.', 'success');
+
+          // Reset chat
+          document.getElementById('chatbot-messages').innerHTML = `
+            <div style="display: flex; justify-content: flex-start; margin-bottom: 12px;">
+              <div style="background: rgba(255,255,255,0.1); color: #e6edf3; padding: 10px 14px; border-radius: 16px 16px 16px 4px; max-width: 85%; font-size: 14px; line-height: 1.5;">
+                Hi! I'm here to help improve your AI receptionist. What would you like to see changed or improved? Feel free to share any feedback, frustrations, or suggestions.
+              </div>
+            </div>
+          `;
+          toggleChatbot();
+        } catch (error) {
+          showToast('Failed to submit feedback', 'error');
+        }
+      }
+    }
   </script>
+
+  <!-- Feedback Chatbot UI -->
+  <style>
+    #chatbot-bubble {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00FFFF, #00cccc);
+      color: #0d1117;
+      border: none;
+      cursor: pointer;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(0, 255, 255, 0.4);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+    #chatbot-bubble:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 30px rgba(0, 255, 255, 0.6);
+    }
+    #chatbot-window {
+      position: fixed;
+      bottom: 100px;
+      right: 24px;
+      width: 380px;
+      height: 500px;
+      background: rgba(13, 17, 23, 0.98);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 16px;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      overflow: hidden;
+    }
+    #chatbot-header {
+      padding: 16px 20px;
+      background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(0, 200, 200, 0.1));
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #chatbot-header h3 {
+      margin: 0;
+      color: #00FFFF;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    #chatbot-messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    #chatbot-input-area {
+      padding: 12px 16px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      gap: 10px;
+      background: rgba(0,0,0,0.2);
+    }
+    #chatbot-input {
+      flex: 1;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      color: #e6edf3;
+      font-size: 14px;
+      outline: none;
+    }
+    #chatbot-input:focus {
+      border-color: rgba(0, 255, 255, 0.5);
+    }
+    #chatbot-input::placeholder {
+      color: #7d8590;
+    }
+    #chatbot-send {
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #00FFFF, #00cccc);
+      color: #0d1117;
+      border: none;
+      border-radius: 24px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    #chatbot-send:hover {
+      transform: scale(1.05);
+    }
+    .typing-dots {
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0.3; }
+    }
+    #chatbot-submit-btn {
+      padding: 6px 12px;
+      background: rgba(0, 255, 255, 0.1);
+      color: #00FFFF;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    #chatbot-submit-btn:hover {
+      background: rgba(0, 255, 255, 0.2);
+    }
+    @media (max-width: 480px) {
+      #chatbot-window {
+        width: calc(100vw - 32px);
+        right: 16px;
+        bottom: 90px;
+        height: 60vh;
+      }
+      #chatbot-bubble {
+        right: 16px;
+        bottom: 16px;
+      }
+    }
+  </style>
+
+  <!-- Chat Bubble -->
+  <button id="chatbot-bubble" onclick="toggleChatbot()" title="Give Feedback">💬</button>
+
+  <!-- Chat Window -->
+  <div id="chatbot-window">
+    <div id="chatbot-header">
+      <h3>💡 Feedback Assistant</h3>
+      <button id="chatbot-submit-btn" onclick="endChatSession()">Submit Feedback</button>
+    </div>
+    <div id="chatbot-messages">
+      <div style="display: flex; justify-content: flex-start; margin-bottom: 12px;">
+        <div style="background: rgba(255,255,255,0.1); color: #e6edf3; padding: 10px 14px; border-radius: 16px 16px 16px 4px; max-width: 85%; font-size: 14px; line-height: 1.5;">
+          Hi! I'm here to help improve your AI receptionist. What would you like to see changed or improved? Feel free to share any feedback, frustrations, or suggestions.
+        </div>
+      </div>
+    </div>
+    <div id="chatbot-input-area">
+      <input type="text" id="chatbot-input" placeholder="Type your feedback..." onkeypress="handleChatKeypress(event)">
+      <button id="chatbot-send" onclick="sendChatMessage()">Send</button>
+    </div>
+  </div>
 </body>
 </html>
