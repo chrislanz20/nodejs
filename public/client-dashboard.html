@@ -5473,105 +5473,135 @@
       }
     }, 2000);
 
-    // Onboarding Tour - Professional guided walkthrough
+    // Onboarding Tour - Simple guided walkthrough (5th grade reading level)
     let tourStep = 0;
     const tourSteps = [
       {
-        title: 'Welcome to Your Dashboard! 👋',
-        text: 'This is your <strong>AI-powered call center</strong>. Every call to your business is answered by AI, transcribed, and categorized automatically. Let me show you around!',
+        title: 'Welcome!',
+        text: 'This is where you see all your phone calls. Our AI answers every call for you. It writes down what people say and sorts the calls. Let me show you how it works!',
         target: null,
         position: 'center',
-        icon: '🏠'
+        icon: '👋'
       },
       {
-        title: 'Your Numbers at a Glance',
-        text: 'These 4 cards show your <strong>key metrics</strong>:<br><br>• <strong>Total Calls</strong> - All calls received<br>• <strong>New Leads</strong> - Potential new clients<br>• <strong>Existing Clients</strong> - Your current clients calling back<br>• <strong>Other Calls</strong> - Everything else (vendors, wrong numbers, etc.)',
+        title: 'Your Call Numbers',
+        text: 'These boxes show how many calls you got:<br><br>• <b>Total Calls</b> - Every call<br>• <b>New Leads</b> - People who might need your help<br>• <b>Existing Clients</b> - People you already know<br>• <b>Other</b> - Wrong numbers and sales calls',
         target: '.stats-grid',
-        position: 'bottom',
-        arrow: 'top',
+        position: 'below',
         icon: '📊'
       },
       {
-        title: 'Call Activity Charts',
-        text: 'See your <strong>call volume trends</strong> over the past week and how calls break down by category. This helps you spot busy days and understand your call mix.',
-        target: '.analytics-section',
-        position: 'bottom',
-        arrow: 'top',
+        title: 'Call Charts',
+        text: 'These charts show you:<br><br>• How many calls you get each day<br>• What types of calls come in<br><br>This helps you see your busiest days!',
+        target: '#analytics-section',
+        position: 'below',
         icon: '📈'
       },
       {
-        title: '⭐ Lead Tracker - Your Action Center',
-        text: 'This is the <strong>most important section!</strong> When someone calls about a potential case, they appear here as a pending lead.<br><br>• Click <strong style="color: #10b981;">✅ APPROVE</strong> to mark them as a real lead<br>• Click <strong style="color: #ef4444;">❌ DENY</strong> if it\'s not a valid lead<br><br>You\'ll get notified when new leads come in!',
+        title: 'New Leads - Very Important!',
+        text: 'This is your most important section!<br><br>When someone calls who might need your help, they show up here. You need to:<br><br>• Tap <b style="color:#10b981;">APPROVE</b> if they are a real lead<br>• Tap <b style="color:#ef4444;">DENY</b> if they are not',
         target: '#lead-tracker-section',
-        position: 'bottom',
-        arrow: 'top',
-        icon: '🎯'
+        position: 'below',
+        icon: '⭐'
       },
       {
-        title: 'Filter Your Leads',
-        text: 'Use these tabs to quickly filter leads:<br><br>• <strong>📋 Pending</strong> - Needs your review<br>• <strong>✅ Approved</strong> - Confirmed leads<br>• <strong>❌ Denied</strong> - Rejected calls',
-        target: '#tab-pending',
-        position: 'bottom',
-        arrow: 'top',
-        icon: '🔍'
+        title: 'Sort Your Leads',
+        text: 'Use these buttons to see different leads:<br><br>• <b>Pending</b> - Leads you need to check<br>• <b>Approved</b> - Leads you said yes to<br>• <b>Denied</b> - Leads you said no to',
+        target: '.leads-tabs',
+        position: 'below',
+        icon: '📋'
       },
       {
-        title: 'Complete Call History',
-        text: 'Every single call is logged here. You can:<br><br>• <strong>Search</strong> by phone number or keyword<br>• <strong>Filter</strong> by date, category, or duration<br>• <strong>Click any row</strong> to see the full transcript and AI summary',
+        title: 'All Your Calls',
+        text: 'Every single call is saved here. You can:<br><br>• Search for a phone number<br>• Click on any call to read what was said<br>• See how long each call lasted',
         target: '#recent-calls-section',
-        position: 'top',
-        arrow: 'bottom',
+        position: 'above',
         icon: '📞'
       },
       {
-        title: 'Filter by Date & Category',
-        text: 'Use these filters to find specific calls:<br><br>• <strong>Date Presets</strong> - Today, This Week, This Month<br>• <strong>Custom Range</strong> - Pick any date range<br>• <strong>Category</strong> - Filter by call type<br>• <strong>Duration</strong> - Find short or long calls',
+        title: 'Find Specific Calls',
+        text: 'Use these buttons to find calls:<br><br>• <b>Today</b> - Calls from today<br>• <b>This Week</b> - Calls from this week<br>• <b>Category</b> - Pick a call type<br><br>You can also pick any dates you want!',
         target: '#filters-section',
-        position: 'bottom',
-        arrow: 'top',
-        icon: '📅'
+        position: 'below',
+        icon: '🔍'
       },
       {
-        title: 'You\'re Ready! 🎉',
-        text: 'That\'s everything you need to know!<br><br><strong>Quick tips:</strong><br>• Check the Lead Tracker daily for new leads<br>• Click any call row to read the full conversation<br>• Use filters to find specific calls<br><br>Need help? Contact your SaveYa support team.',
+        title: 'You\'re All Set!',
+        text: 'That\'s everything! Here are some tips:<br><br>• Check your <b>New Leads</b> every day<br>• Click any call to read the full conversation<br>• Use the search to find old calls<br><br>Need help? Contact SaveYa support anytime!',
         target: null,
         position: 'center',
-        icon: '✨'
+        icon: '🎉'
       }
     ];
 
     function showOnboarding() {
-      // Add tour CSS
+      // Add tour CSS with arrow styles
       if (!document.getElementById('tour-styles')) {
         const tourStyles = document.createElement('style');
         tourStyles.id = 'tour-styles';
         tourStyles.textContent = `
-          @keyframes tourGlow {
-            0%, 100% { box-shadow: 0 0 20px 5px rgba(0, 255, 255, 0.5), inset 0 0 0 2px rgba(0, 255, 255, 0.8); }
-            50% { box-shadow: 0 0 30px 10px rgba(0, 255, 255, 0.3), inset 0 0 0 2px rgba(0, 255, 255, 0.6); }
+          @keyframes tourPulse {
+            0%, 100% { box-shadow: 0 0 0 4px rgba(0, 255, 255, 0.4), 0 0 20px 8px rgba(0, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 0 8px rgba(0, 255, 255, 0.3), 0 0 30px 12px rgba(0, 255, 255, 0.15); }
           }
-          @keyframes tourBounce {
+          @keyframes tourArrowBounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+            50% { transform: translateY(-6px); }
           }
           .tour-highlight {
             position: relative;
             z-index: 10001 !important;
-            animation: tourGlow 1.5s ease-in-out infinite !important;
+            animation: tourPulse 2s ease-in-out infinite !important;
             border-radius: 12px !important;
+            outline: 3px solid #00FFFF !important;
+            outline-offset: 4px !important;
+          }
+          .tour-arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            z-index: 10003;
+          }
+          .tour-arrow-down {
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-top: 14px solid #00FFFF;
+            animation: tourArrowBounce 1s ease-in-out infinite;
+          }
+          .tour-arrow-up {
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-bottom: 14px solid #00FFFF;
+            animation: tourArrowBounce 1s ease-in-out infinite;
+          }
+          .tour-arrow-left {
+            border-top: 14px solid transparent;
+            border-bottom: 14px solid transparent;
+            border-right: 14px solid #00FFFF;
+          }
+          .tour-arrow-right {
+            border-top: 14px solid transparent;
+            border-bottom: 14px solid transparent;
+            border-left: 14px solid #00FFFF;
+          }
+          #tour-tooltip {
+            max-height: 90vh;
+            overflow-y: auto;
           }
         `;
         document.head.appendChild(tourStyles);
       }
 
-      // Remove any existing tour elements to prevent duplicates
+      // Remove any existing tour elements
       const existingOverlay = document.getElementById('tour-overlay');
       const existingTooltip = document.getElementById('tour-tooltip');
+      const existingArrow = document.getElementById('tour-arrow');
       if (existingOverlay) existingOverlay.remove();
       if (existingTooltip) existingTooltip.remove();
+      if (existingArrow) existingArrow.remove();
       document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
 
-      // Create overlay - lighter so content is visible
+      // Create semi-transparent overlay
       const overlay = document.createElement('div');
       overlay.id = 'tour-overlay';
       overlay.style.cssText = `
@@ -5580,278 +5610,313 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.6);
         z-index: 10000;
         opacity: 0;
         transition: opacity 0.3s ease;
         pointer-events: none;
       `;
 
-      // Create tooltip - mobile responsive
+      // Create tooltip
       const tooltip = document.createElement('div');
       tooltip.id = 'tour-tooltip';
-      const isMobile = window.innerWidth < 768;
       tooltip.style.cssText = `
         position: fixed;
-        background: rgba(13, 17, 23, 0.98);
+        background: linear-gradient(180deg, rgba(13, 17, 23, 0.98) 0%, rgba(20, 25, 35, 0.98) 100%);
         backdrop-filter: blur(20px);
         border: 2px solid #00FFFF;
         border-radius: 16px;
-        padding: ${isMobile ? '20px' : '24px'};
-        width: ${isMobile ? 'calc(100% - 24px)' : '400px'};
-        max-width: 400px;
+        padding: 20px;
+        width: 340px;
+        max-width: calc(100vw - 32px);
         z-index: 10002;
-        box-shadow: 0 8px 32px rgba(0, 255, 255, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 255, 255, 0.3), 0 0 60px rgba(0, 255, 255, 0.1);
         opacity: 0;
         transition: opacity 0.3s ease, transform 0.3s ease;
-        transform: translateY(10px);
         pointer-events: auto;
       `;
 
+      // Create arrow element
+      const arrow = document.createElement('div');
+      arrow.id = 'tour-arrow';
+      arrow.className = 'tour-arrow';
+      arrow.style.display = 'none';
+
       document.body.appendChild(overlay);
       document.body.appendChild(tooltip);
+      document.body.appendChild(arrow);
 
       setTimeout(() => {
         overlay.style.opacity = '1';
         tooltip.style.opacity = '1';
-        tooltip.style.transform = 'translateY(0)';
       }, 10);
 
-      showTourStep(0, tooltip, overlay);
+      showTourStep(0, tooltip, overlay, arrow);
     }
 
-    function showTourStep(step, tooltip, overlay) {
+    function showTourStep(step, tooltip, overlay, arrow) {
       if (step >= tourSteps.length) {
-        closeTour(tooltip, overlay);
+        closeTour(tooltip, overlay, arrow);
         return;
       }
 
       const currentStep = tourSteps[step];
       const isMobile = window.innerWidth < 768;
 
-      // Build progress dots
-      const progressDots = tourSteps.map((_, i) =>
-        `<div style="width: ${i === step ? '20px' : '6px'}; height: 6px; border-radius: 3px; background: ${i === step ? '#00FFFF' : i < step ? 'rgba(0, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.2)'}; transition: all 0.3s;"></div>`
-      ).join('');
+      // Build progress bar
+      const progressPercent = ((step + 1) / tourSteps.length) * 100;
 
       tooltip.innerHTML = `
-        <div style="margin-bottom: ${isMobile ? '12px' : '16px'};">
-          <!-- Progress indicator -->
-          <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 12px;">
-            ${progressDots}
-            <span style="margin-left: auto; color: #9ca3af; font-size: 11px; font-weight: 600;">${step + 1} of ${tourSteps.length}</span>
+        <!-- Progress bar -->
+        <div style="margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="color: #00FFFF; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Step ${step + 1} of ${tourSteps.length}</span>
           </div>
-
-          <!-- Icon and Title -->
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-            ${currentStep.icon ? `<span style="font-size: ${isMobile ? '24px' : '28px'}; line-height: 1;">${currentStep.icon}</span>` : ''}
-            <h3 style="color: #00FFFF; font-size: ${isMobile ? '16px' : '18px'}; font-weight: 700; margin: 0; line-height: 1.3;">
-              ${currentStep.title}
-            </h3>
-          </div>
-
-          <!-- Description -->
-          <div style="color: #e6edf3; font-size: ${isMobile ? '13px' : '14px'}; line-height: 1.6; margin: 0;">
-            ${currentStep.text}
+          <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
+            <div style="height: 100%; width: ${progressPercent}%; background: linear-gradient(90deg, #00FFFF, #00CED1); border-radius: 2px; transition: width 0.3s;"></div>
           </div>
         </div>
 
-        <!-- Look Here indicator for targeted steps -->
-        ${currentStep.target ? `
-          <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(0, 255, 255, 0.15); border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 8px; margin-bottom: 12px;">
-            <span style="font-size: 16px; animation: tourBounce 1s infinite;">👆</span>
-            <span style="color: #00FFFF; font-size: 12px; font-weight: 600;">Look at the highlighted section</span>
-          </div>
-        ` : ''}
+        <!-- Title with icon -->
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <span style="font-size: 32px; line-height: 1;">${currentStep.icon}</span>
+          <h3 style="color: #ffffff; font-size: ${isMobile ? '18px' : '20px'}; font-weight: 700; margin: 0; line-height: 1.2;">
+            ${currentStep.title}
+          </h3>
+        </div>
 
-        <!-- Don't show again checkbox - ALWAYS visible -->
-        <div style="margin-bottom: 12px; padding: 8px 10px; background: rgba(0, 0, 0, 0.3); border-radius: 8px;">
-          <label style="display: flex; align-items: center; cursor: pointer; color: #9ca3af; font-size: 12px;">
-            <input type="checkbox" id="dont-show-tour-again" style="width: 16px; height: 16px; margin-right: 8px; cursor: pointer; accent-color: #00FFFF; flex-shrink: 0;">
+        <!-- Description - larger, clearer text -->
+        <div style="color: #d1d5db; font-size: ${isMobile ? '14px' : '15px'}; line-height: 1.7; margin-bottom: 16px;">
+          ${currentStep.text}
+        </div>
+
+        <!-- Don't show again -->
+        <div style="margin-bottom: 14px; padding: 10px 12px; background: rgba(0, 0, 0, 0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+          <label style="display: flex; align-items: center; cursor: pointer; color: #9ca3af; font-size: 13px;">
+            <input type="checkbox" id="dont-show-tour-again" style="width: 18px; height: 18px; margin-right: 10px; cursor: pointer; accent-color: #00FFFF; flex-shrink: 0;">
             <span>Don't show this tour again</span>
           </label>
         </div>
 
         <!-- Buttons -->
-        <div style="display: flex; gap: 8px;">
-          <button onclick="skipTour()" style="flex: 1; padding: ${isMobile ? '12px' : '14px'}; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-            ✕ Skip
+        <div style="display: flex; gap: 10px;">
+          <button onclick="skipTour()" style="flex: 1; padding: 14px 16px; background: transparent; color: #9ca3af; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+            Skip Tour
           </button>
-          <button onclick="nextTourStep()" style="flex: 2; padding: ${isMobile ? '12px' : '14px'}; background: linear-gradient(135deg, #00FFFF, #00CED1); color: #0d1117; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(0, 255, 255, 0.4);">
-            ${step === tourSteps.length - 1 ? '✓ Finish' : 'Next →'}
+          <button onclick="nextTourStep()" style="flex: 1.5; padding: 14px 16px; background: linear-gradient(135deg, #00FFFF, #00CED1); color: #0d1117; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(0, 255, 255, 0.4);">
+            ${step === tourSteps.length - 1 ? 'Done!' : 'Next →'}
           </button>
         </div>
       `;
 
       // Remove previous highlights
       document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+      arrow.style.display = 'none';
 
-      // Position tooltip
+      // Position tooltip and arrow
       if (currentStep.target) {
         const targetEl = document.querySelector(currentStep.target);
         if (targetEl) {
-          // Add highlight class to target
           targetEl.classList.add('tour-highlight');
 
-          // Scroll element into view
+          // First scroll to element, then position tooltip after scroll completes
           targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
+          // Wait for scroll to complete before positioning
           setTimeout(() => {
-            const rect = targetEl.getBoundingClientRect();
-
-            if (isMobile) {
-              // Mobile: position at bottom of screen
-              tooltip.style.position = 'fixed';
-              tooltip.style.bottom = '12px';
-              tooltip.style.left = '12px';
-              tooltip.style.right = '12px';
-              tooltip.style.top = 'auto';
-              tooltip.style.transform = 'none';
-              tooltip.style.width = 'auto';
-              tooltip.style.maxWidth = 'none';
-            } else {
-              // Desktop: position near target but ensure visibility
-              tooltip.style.position = 'fixed';
-              tooltip.style.width = '380px';
-              tooltip.style.maxWidth = '380px';
-
-              // Try to position below or above the target
-              const tooltipHeight = 400; // estimated
-              const spaceBelow = window.innerHeight - rect.bottom;
-              const spaceAbove = rect.top;
-
-              if (spaceBelow > tooltipHeight + 20) {
-                // Position below
-                tooltip.style.top = `${rect.bottom + 16}px`;
-                tooltip.style.bottom = 'auto';
-              } else if (spaceAbove > tooltipHeight + 20) {
-                // Position above
-                tooltip.style.bottom = `${window.innerHeight - rect.top + 16}px`;
-                tooltip.style.top = 'auto';
-              } else {
-                // Position to the side
-                tooltip.style.top = '50%';
-                tooltip.style.transform = 'translateY(-50%)';
-                tooltip.style.bottom = 'auto';
-              }
-
-              // Horizontal positioning
-              if (rect.left > window.innerWidth / 2) {
-                // Target is on right, position tooltip on left
-                tooltip.style.right = `${window.innerWidth - rect.left + 20}px`;
-                tooltip.style.left = 'auto';
-              } else {
-                // Target is on left, position tooltip on right
-                tooltip.style.left = `${rect.right + 20}px`;
-                tooltip.style.right = 'auto';
-              }
-            }
-          }, 100);
+            positionTooltipNearTarget(tooltip, arrow, targetEl, currentStep.position, isMobile);
+          }, 400);
         } else {
-          // Fallback: Center the tooltip
-          console.warn(`Tour step ${step + 1}: Element "${currentStep.target}" not found.`);
+          console.warn(`[TOUR] Element not found: ${currentStep.target}`);
           positionTooltipCenter(tooltip, isMobile);
         }
       } else {
-        // Center position for intro/outro
         positionTooltipCenter(tooltip, isMobile);
       }
 
       tourStep = step;
     }
 
-    function positionTooltipCenter(tooltip, isMobile) {
+    function positionTooltipNearTarget(tooltip, arrow, targetEl, preferredPosition, isMobile) {
+      const rect = targetEl.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
+      const padding = 16;
+      const arrowSize = 14;
+
+      // Reset all positioning
+      tooltip.style.top = 'auto';
+      tooltip.style.bottom = 'auto';
+      tooltip.style.left = 'auto';
+      tooltip.style.right = 'auto';
+      tooltip.style.transform = 'none';
+
       if (isMobile) {
-        tooltip.style.position = 'fixed';
-        tooltip.style.bottom = '12px';
-        tooltip.style.left = '12px';
-        tooltip.style.right = '12px';
-        tooltip.style.top = 'auto';
-        tooltip.style.transform = 'none';
+        // Mobile: Smart positioning to not cover target
+        const targetCenterY = rect.top + rect.height / 2;
+        const screenMiddle = window.innerHeight / 2;
+
+        if (targetCenterY < screenMiddle) {
+          // Target is in top half - put tooltip at bottom
+          tooltip.style.bottom = '16px';
+          tooltip.style.left = '16px';
+          tooltip.style.right = '16px';
+          tooltip.style.width = 'auto';
+          tooltip.style.maxWidth = 'none';
+
+          // Arrow points up toward target
+          arrow.className = 'tour-arrow tour-arrow-up';
+          arrow.style.display = 'block';
+          arrow.style.bottom = (window.innerHeight - parseInt(tooltip.style.bottom) - tooltipRect.height - arrowSize) + 'px';
+          arrow.style.left = '50%';
+          arrow.style.transform = 'translateX(-50%)';
+        } else {
+          // Target is in bottom half - put tooltip at top
+          tooltip.style.top = '80px'; // Below header
+          tooltip.style.left = '16px';
+          tooltip.style.right = '16px';
+          tooltip.style.width = 'auto';
+          tooltip.style.maxWidth = 'none';
+
+          // Arrow points down toward target
+          arrow.className = 'tour-arrow tour-arrow-down';
+          arrow.style.display = 'block';
+          const tooltipBottom = 80 + tooltip.offsetHeight;
+          arrow.style.top = tooltipBottom + 'px';
+          arrow.style.left = '50%';
+          arrow.style.transform = 'translateX(-50%)';
+        }
+      } else {
+        // Desktop: Position tooltip to the side of target, never covering it
+        const spaceRight = window.innerWidth - rect.right;
+        const spaceLeft = rect.left;
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        const tooltipWidth = 340;
+        const tooltipHeight = 400; // Estimated
+
+        // Prefer positioning based on step preference, but ensure visibility
+        if (preferredPosition === 'below' && spaceBelow > tooltipHeight + padding + arrowSize) {
+          // Position below target
+          tooltip.style.top = (rect.bottom + padding + arrowSize) + 'px';
+          tooltip.style.left = Math.max(padding, Math.min(rect.left + rect.width/2 - tooltipWidth/2, window.innerWidth - tooltipWidth - padding)) + 'px';
+
+          arrow.className = 'tour-arrow tour-arrow-up';
+          arrow.style.display = 'block';
+          arrow.style.top = (rect.bottom + padding - 2) + 'px';
+          arrow.style.left = (rect.left + rect.width/2 - arrowSize) + 'px';
+        } else if (preferredPosition === 'above' && spaceAbove > tooltipHeight + padding + arrowSize) {
+          // Position above target
+          tooltip.style.bottom = (window.innerHeight - rect.top + padding + arrowSize) + 'px';
+          tooltip.style.left = Math.max(padding, Math.min(rect.left + rect.width/2 - tooltipWidth/2, window.innerWidth - tooltipWidth - padding)) + 'px';
+
+          arrow.className = 'tour-arrow tour-arrow-down';
+          arrow.style.display = 'block';
+          arrow.style.bottom = (window.innerHeight - rect.top + padding - 2) + 'px';
+          arrow.style.left = (rect.left + rect.width/2 - arrowSize) + 'px';
+        } else if (spaceRight > tooltipWidth + padding + arrowSize) {
+          // Position to the right of target
+          tooltip.style.left = (rect.right + padding + arrowSize) + 'px';
+          tooltip.style.top = Math.max(padding, Math.min(rect.top + rect.height/2 - tooltipHeight/2, window.innerHeight - tooltipHeight - padding)) + 'px';
+
+          arrow.className = 'tour-arrow tour-arrow-left';
+          arrow.style.display = 'block';
+          arrow.style.left = (rect.right + padding - 2) + 'px';
+          arrow.style.top = (rect.top + rect.height/2 - arrowSize) + 'px';
+        } else if (spaceLeft > tooltipWidth + padding + arrowSize) {
+          // Position to the left of target
+          tooltip.style.right = (window.innerWidth - rect.left + padding + arrowSize) + 'px';
+          tooltip.style.top = Math.max(padding, Math.min(rect.top + rect.height/2 - tooltipHeight/2, window.innerHeight - tooltipHeight - padding)) + 'px';
+
+          arrow.className = 'tour-arrow tour-arrow-right';
+          arrow.style.display = 'block';
+          arrow.style.right = (window.innerWidth - rect.left + padding - 2) + 'px';
+          arrow.style.top = (rect.top + rect.height/2 - arrowSize) + 'px';
+        } else {
+          // Fallback: position at bottom right corner
+          tooltip.style.bottom = padding + 'px';
+          tooltip.style.right = padding + 'px';
+          arrow.style.display = 'none';
+        }
+      }
+    }
+
+    function positionTooltipCenter(tooltip, isMobile) {
+      const arrow = document.getElementById('tour-arrow');
+      if (arrow) arrow.style.display = 'none';
+
+      tooltip.style.top = 'auto';
+      tooltip.style.bottom = 'auto';
+      tooltip.style.left = 'auto';
+      tooltip.style.right = 'auto';
+
+      if (isMobile) {
+        tooltip.style.top = '50%';
+        tooltip.style.left = '16px';
+        tooltip.style.right = '16px';
+        tooltip.style.transform = 'translateY(-50%)';
         tooltip.style.width = 'auto';
         tooltip.style.maxWidth = 'none';
       } else {
-        tooltip.style.position = 'fixed';
         tooltip.style.top = '50%';
         tooltip.style.left = '50%';
         tooltip.style.transform = 'translate(-50%, -50%)';
-        tooltip.style.right = 'auto';
-        tooltip.style.bottom = 'auto';
-        tooltip.style.width = '420px';
-        tooltip.style.maxWidth = '420px';
+        tooltip.style.width = '380px';
       }
     }
 
     window.nextTourStep = function() {
       const tooltip = document.getElementById('tour-tooltip');
       const overlay = document.getElementById('tour-overlay');
+      const arrow = document.getElementById('tour-arrow');
 
-      // Remove highlight from previous target
       document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
 
-      showTourStep(tourStep + 1, tooltip, overlay);
+      showTourStep(tourStep + 1, tooltip, overlay, arrow);
     };
 
     window.skipTour = function() {
       const tooltip = document.getElementById('tour-tooltip');
       const overlay = document.getElementById('tour-overlay');
-      closeTour(tooltip, overlay);
+      const arrow = document.getElementById('tour-arrow');
+      closeTour(tooltip, overlay, arrow);
     };
 
-    function closeTour(tooltip, overlay) {
-      // Check if "don't show again" is checked - THIS WORKS ON ANY STEP NOW
+    function closeTour(tooltip, overlay, arrow) {
       const dontShowAgain = document.getElementById('dont-show-tour-again');
       if (dontShowAgain && dontShowAgain.checked) {
         localStorage.setItem('dashboard-tour-never-show', 'true');
-        console.log('[TOUR] User checked "Don\'t show again" - saving preference');
       }
 
-      // Remove all highlights
       document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
 
       tooltip.style.opacity = '0';
       overlay.style.opacity = '0';
+      if (arrow) arrow.style.opacity = '0';
 
       setTimeout(() => {
         tooltip.remove();
         overlay.remove();
+        if (arrow) arrow.remove();
       }, 300);
     }
 
-    // Check if user has seen the tour
     function checkOnboarding() {
       const neverShowAgain = localStorage.getItem('dashboard-tour-never-show');
 
-      console.log('[TOUR] Checking if tour should show...');
-      console.log('[TOUR] neverShowAgain:', neverShowAgain);
-      console.log('[TOUR] currentUser:', currentUser ? 'SET' : 'NOT SET');
-
-      // Show tour on EVERY login unless they've checked "don't show again"
       if (!neverShowAgain && currentUser) {
-        console.log('[TOUR] Starting tour in 1.5 seconds...');
         setTimeout(() => {
           showOnboarding();
         }, 1500);
-      } else {
-        console.log('[TOUR] Tour blocked. Reason:', !currentUser ? 'No user' : 'User chose not to see again');
       }
     }
 
-    // Add manual tour trigger for testing
     window.startTourManually = function() {
-      console.log('[TOUR] Manually starting tour...');
       showOnboarding();
     };
 
-    // Function to manually retake the tour (called from Settings)
     window.retakeTour = function() {
-      // Close settings modal
       closeSettingsModal();
-
-      // Clear the "never show again" flag so tour can show
       localStorage.removeItem('dashboard-tour-never-show');
-
-      // Wait a moment then show tour
       setTimeout(() => {
         showOnboarding();
       }, 300);
