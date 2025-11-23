@@ -318,6 +318,17 @@ async function initializeDatabase() {
       ALTER TABLE clients ADD COLUMN IF NOT EXISTS ai_receptionist_prompt TEXT
     `);
 
+    // Add ghl_location_id column for GHL integration
+    await client.query(`
+      ALTER TABLE clients ADD COLUMN IF NOT EXISTS ghl_location_id TEXT
+    `);
+
+    // Set CourtLaw's ghl_location_id
+    await client.query(`
+      UPDATE clients SET ghl_location_id = 'lneM3M1j3P5i0JYeNK18'
+      WHERE business_name = 'CourtLaw Injury Lawyers' AND ghl_location_id IS NULL
+    `);
+
     // Add invitation code fields for team member self-registration
     await client.query(`
       ALTER TABLE clients ADD COLUMN IF NOT EXISTS invitation_code TEXT UNIQUE
