@@ -1427,17 +1427,50 @@
         font-size: 24px;
       }
 
+      /* Settings modal - full screen on mobile */
+      #settings-modal .modal-content {
+        margin: 0;
+        max-width: 100%;
+        width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #settings-modal .modal-header {
+        flex-shrink: 0;
+      }
+
+      #settings-modal .modal-body {
+        flex: 1;
+        overflow-y: auto;
+        padding-bottom: 20px;
+      }
+
       /* Settings modal tabs - horizontal scroll on mobile */
       #settings-modal .modal-body > div:first-child {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        margin: 0 -16px 32px -16px;
+        margin: 0 -16px 24px -16px;
         padding: 0 16px;
+        display: flex;
+        gap: 8px;
+        position: relative;
       }
 
-      #settings-modal .modal-body > div:first-child::-webkit-scrollbar {
-        display: none;
+      /* Fade indicator for more tabs */
+      #settings-modal .modal-body > div:first-child::after {
+        content: '';
+        position: sticky;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 30px;
+        background: linear-gradient(to right, transparent, rgba(30, 36, 44, 0.98));
+        pointer-events: none;
+        flex-shrink: 0;
       }
 
       .settings-tab {
