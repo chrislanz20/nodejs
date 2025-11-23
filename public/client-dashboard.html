@@ -101,6 +101,128 @@
       margin-bottom: 32px;
     }
 
+    /* New Lead Alert - Quick Action at Top */
+    .new-lead-alert {
+      margin-bottom: 24px;
+    }
+
+    .new-lead-alert-inner {
+      background: linear-gradient(135deg, rgba(0, 180, 120, 0.15), rgba(0, 255, 180, 0.08));
+      border: 1px solid rgba(0, 220, 150, 0.4);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 4px 20px rgba(0, 220, 150, 0.15);
+    }
+
+    .new-lead-alert-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 220, 150, 0.2);
+      color: #00dda0;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: #00ff99;
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+      box-shadow: 0 0 8px #00ff99;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    .new-lead-alert-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex: 1;
+      gap: 16px;
+    }
+
+    .new-lead-alert-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .new-lead-alert-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .new-lead-alert-details {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .detail-separator {
+      opacity: 0.4;
+    }
+
+    .new-lead-alert-actions {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .new-lead-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .new-lead-btn-approve {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .new-lead-btn-approve:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+    }
+
+    .new-lead-btn-deny {
+      background: linear-gradient(135deg, #dc2626, #ef4444);
+      color: white;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .new-lead-btn-deny:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+    }
+
     .stat-card {
       background: rgba(30, 36, 44, 0.6);
       backdrop-filter: blur(10px);
@@ -1140,6 +1262,48 @@
         padding: 12px;
         font-size: 13px;
         text-align: center;
+      }
+
+      /* New Lead Alert - Mobile */
+      .new-lead-alert-inner {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 14px 16px;
+        gap: 12px;
+      }
+
+      .new-lead-alert-badge {
+        align-self: flex-start;
+        padding: 5px 10px;
+        font-size: 10px;
+      }
+
+      .new-lead-alert-content {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+
+      .new-lead-alert-name {
+        font-size: 15px;
+        white-space: normal;
+      }
+
+      .new-lead-alert-details {
+        font-size: 12px;
+        flex-wrap: wrap;
+      }
+
+      .new-lead-alert-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .new-lead-btn {
+        justify-content: center;
+        padding: 12px 14px;
+        font-size: 12px;
       }
 
       /* Stats grid - 2 columns on mobile */
@@ -2368,6 +2532,41 @@
     </div>
 
     <div id="dashboard-content" style="display: none;">
+      <!-- New Lead Alert - Quick Action at Top -->
+      <div id="new-lead-alert" class="new-lead-alert" style="display: none;">
+        <div class="new-lead-alert-inner">
+          <div class="new-lead-alert-badge">
+            <span class="pulse-dot"></span>
+            NEW LEAD
+          </div>
+          <div class="new-lead-alert-content">
+            <div class="new-lead-alert-info">
+              <div class="new-lead-alert-name" id="new-lead-name">Loading...</div>
+              <div class="new-lead-alert-details">
+                <span id="new-lead-phone">--</span>
+                <span class="detail-separator">•</span>
+                <span id="new-lead-date">--</span>
+              </div>
+            </div>
+            <div class="new-lead-alert-actions">
+              <button class="new-lead-btn new-lead-btn-approve" onclick="approveNewLead()" title="Approve Lead">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>APPROVE</span>
+              </button>
+              <button class="new-lead-btn new-lead-btn-deny" onclick="denyNewLead()" title="Deny Lead">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                <span>DENY</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-label">
@@ -5358,6 +5557,7 @@
 
     // Global storage for leads data
     let allLeadsData = [];
+    let newestPendingLeadId = null; // For the quick action alert at top
 
     // Pagination state for leads
     let currentPendingPage = 1;
@@ -5432,6 +5632,9 @@
         renderApprovedLeads(approvedLeads);
         renderDeniedLeads(deniedLeads);
 
+        // Update the new lead alert at top of dashboard
+        updateNewLeadAlert(pendingLeads);
+
       } catch (error) {
         console.error('Error loading leads:', error);
         document.getElementById('leads-pending-container').innerHTML = `
@@ -5442,6 +5645,57 @@
           </div>
         `;
       }
+    }
+
+    // Update the new lead alert at the top of dashboard
+    function updateNewLeadAlert(pendingLeads) {
+      const alertEl = document.getElementById('new-lead-alert');
+
+      if (!pendingLeads || pendingLeads.length === 0) {
+        alertEl.style.display = 'none';
+        newestPendingLeadId = null;
+        return;
+      }
+
+      // Sort by first_call_date descending to get the newest lead
+      const sortedLeads = [...pendingLeads].sort((a, b) => {
+        const dateA = new Date(a.first_call_date || 0);
+        const dateB = new Date(b.first_call_date || 0);
+        return dateB - dateA;
+      });
+
+      const newestLead = sortedLeads[0];
+      newestPendingLeadId = newestLead.id;
+
+      // Update the alert content
+      document.getElementById('new-lead-name').textContent = newestLead.name || 'Unknown';
+      document.getElementById('new-lead-phone').textContent = newestLead.phone || 'No phone';
+
+      // Format date
+      const leadDate = newestLead.first_call_date ? new Date(newestLead.first_call_date) : null;
+      const dateStr = leadDate ? leadDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No date';
+      document.getElementById('new-lead-date').textContent = dateStr;
+
+      // Show the alert
+      alertEl.style.display = 'block';
+    }
+
+    // Approve the newest lead from the quick action alert
+    async function approveNewLead() {
+      if (!newestPendingLeadId) {
+        showToast('No pending lead to approve', 'error');
+        return;
+      }
+      await updateClientLeadStatus(newestPendingLeadId, 'Approved');
+    }
+
+    // Deny the newest lead from the quick action alert
+    async function denyNewLead() {
+      if (!newestPendingLeadId) {
+        showToast('No pending lead to deny', 'error');
+        return;
+      }
+      await updateClientLeadStatus(newestPendingLeadId, 'Denied');
     }
 
     function switchLeadsTab(tab) {
