@@ -181,6 +181,18 @@
       opacity: 0.4;
     }
 
+    .new-lead-alert-summary {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 6px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-style: italic;
+    }
+
     .new-lead-alert-actions {
       display: flex;
       gap: 10px;
@@ -2547,6 +2559,7 @@
                 <span class="detail-separator">•</span>
                 <span id="new-lead-date">--</span>
               </div>
+              <div class="new-lead-alert-summary" id="new-lead-summary"></div>
             </div>
             <div class="new-lead-alert-actions">
               <button class="new-lead-btn new-lead-btn-approve" onclick="approveNewLead()" title="Approve Lead">
@@ -5669,7 +5682,7 @@
 
       // Update the alert content
       document.getElementById('new-lead-name').textContent = newestLead.name || 'Unknown';
-      document.getElementById('new-lead-phone').textContent = newestLead.phone || 'No phone';
+      document.getElementById('new-lead-phone').textContent = newestLead.phone_number || 'No phone';
 
       // Format date
       const leadDate = newestLead.first_call_date ? new Date(newestLead.first_call_date) : null;
@@ -5678,6 +5691,37 @@
 
       // Show the alert
       alertEl.style.display = 'block';
+
+      // Load call summary for the newest lead
+      loadNewLeadSummary(newestLead.call_id);
+    }
+
+    // Load call summary for the new lead alert
+    async function loadNewLeadSummary(callId) {
+      const summaryEl = document.getElementById('new-lead-summary');
+      if (!summaryEl || !callId) {
+        if (summaryEl) summaryEl.textContent = '';
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/calls/${callId}`);
+        if (!response.ok) throw new Error('Failed to fetch call');
+
+        const call = await response.json();
+        const callSummary = call.call_analysis?.call_summary || null;
+
+        if (callSummary) {
+          // Truncate to ~100 chars for the preview
+          const truncated = callSummary.length > 120 ? callSummary.substring(0, 120) + '...' : callSummary;
+          summaryEl.textContent = `"${truncated}"`;
+        } else {
+          summaryEl.textContent = '';
+        }
+      } catch (error) {
+        console.error('Error loading new lead summary:', error);
+        summaryEl.textContent = '';
+      }
     }
 
     // Approve the newest lead from the quick action alert
