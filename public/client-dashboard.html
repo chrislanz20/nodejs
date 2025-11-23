@@ -6807,6 +6807,33 @@
         `;
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
+        // Check if conversation auto-ended (server detected closing message)
+        if (data.conversationEnded) {
+          // Show completion message after a short delay
+          setTimeout(() => {
+            messagesContainer.innerHTML += `
+              <div class="chat-message-bot">
+                <div style="background: rgba(0, 255, 255, 0.15); border: 1px solid rgba(0, 255, 255, 0.3);">
+                  ✅ Your feedback has been submitted! Our team will review it. Thank you!
+                </div>
+              </div>
+            `;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Auto-close chatbot after showing the success message
+            setTimeout(() => {
+              showToast('✅ Feedback submitted! Thank you.', 'success');
+              // Reset chat for next time
+              document.getElementById('chatbot-messages').innerHTML = `
+                <div class="chat-message-bot">
+                  <div>Hi! I'm here to help improve your AI receptionist. What would you like to see changed or improved?</div>
+                </div>
+              `;
+              toggleChatbot();
+            }, 2500);
+          }, 1000);
+        }
+
       } catch (error) {
         document.getElementById(typingId)?.remove();
         messagesContainer.innerHTML += `
@@ -7111,7 +7138,6 @@
     <div id="chatbot-input-area">
       <input type="text" id="chatbot-input" placeholder="Type your feedback..." onkeypress="handleChatKeypress(event)">
       <button id="chatbot-send" onclick="sendChatMessage()">Send</button>
-      <button id="chatbot-done" onclick="endChatSession()">Done</button>
     </div>
   </div>
 </body>
