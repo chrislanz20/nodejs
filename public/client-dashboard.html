@@ -4066,7 +4066,7 @@
           </div>
           ${heardAbout ? `
             <div class="field">
-              <div class="field-label">Where Heard About CourtLaw</div>
+              <div class="field-label">Where They Heard About You</div>
               <div class="field-value" style="color: #00FFFF;">📣 ${heardAbout}</div>
             </div>
           ` : ''}
@@ -6866,25 +6866,28 @@
     #chatbot-send:hover {
       transform: scale(1.05);
     }
+    #chatbot-done {
+      padding: 12px 16px;
+      background: transparent;
+      color: #7d8590;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 24px;
+      font-weight: 500;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    #chatbot-done:hover {
+      background: rgba(255,255,255,0.1);
+      color: #e6edf3;
+      border-color: rgba(255,255,255,0.3);
+    }
     .typing-dots {
       animation: blink 1s infinite;
     }
     @keyframes blink {
       0%, 50% { opacity: 1; }
       51%, 100% { opacity: 0.3; }
-    }
-    #chatbot-submit-btn {
-      padding: 6px 12px;
-      background: rgba(0, 255, 255, 0.1);
-      color: #00FFFF;
-      border: 1px solid rgba(0, 255, 255, 0.3);
-      border-radius: 6px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    #chatbot-submit-btn:hover {
-      background: rgba(0, 255, 255, 0.2);
     }
     @media (max-width: 480px) {
       #chatbot-window {
@@ -6909,7 +6912,6 @@
   <div id="chatbot-window">
     <div id="chatbot-header">
       <h3>💡 Feedback Assistant</h3>
-      <button id="chatbot-submit-btn" onclick="endChatSession()">Submit Feedback</button>
     </div>
     <div id="chatbot-messages">
       <div style="display: flex; justify-content: flex-start; margin-bottom: 12px;">
@@ -6921,6 +6923,7 @@
     <div id="chatbot-input-area">
       <input type="text" id="chatbot-input" placeholder="Type your feedback..." onkeypress="handleChatKeypress(event)">
       <button id="chatbot-send" onclick="sendChatMessage()">Send</button>
+      <button id="chatbot-done" onclick="endChatSession()">Done</button>
     </div>
   </div>
 </body>
