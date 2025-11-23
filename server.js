@@ -2967,6 +2967,8 @@ app.post('/api/team/reset-password', async (req, res) => {
   try {
     const { token, password, type } = req.body;
 
+    console.log(`🔑 Reset password attempt - type: ${type}, token prefix: ${token?.substring(0, 10)}...`);
+
     if (!token || !password) {
       return res.status(400).json({ error: 'Token and password are required' });
     }
@@ -2979,11 +2981,34 @@ app.post('/api/team/reset-password', async (req, res) => {
 
     // If type is specified, check only that table
     if (type === 'client') {
+      // First, let's see what's in the database for debugging
+      const debugResult = await pool.query(
+        'SELECT id, reset_token, reset_token_expires, reset_token_expires > NOW() as not_expired FROM clients WHERE reset_token IS NOT NULL LIMIT 5'
+      );
+      console.log('🔍 Debug - Clients with reset tokens:', debugResult.rows.map(r => ({
+        id: r.id,
+        tokenPrefix: r.reset_token?.substring(0, 10),
+        expires: r.reset_token_expires,
+        notExpired: r.not_expired
+      })));
+
       const result = await pool.query(
         'SELECT id FROM clients WHERE reset_token = $1 AND reset_token_expires > NOW() AND active = TRUE',
         [token]
       );
+      console.log(`🔍 Query result for token: ${result.rows.length} rows found`);
+
       if (result.rows.length === 0) {
+        // Check if token exists but is expired
+        const expiredCheck = await pool.query(
+          'SELECT id, reset_token_expires FROM clients WHERE reset_token = $1',
+          [token]
+        );
+        if (expiredCheck.rows.length > 0) {
+          console.log(`⚠️ Token found but expired at: ${expiredCheck.rows[0].reset_token_expires}`);
+        } else {
+          console.log(`❌ Token not found in database`);
+        }
         return res.status(400).json({ error: 'Invalid or expired reset token' });
       }
       await pool.query(
