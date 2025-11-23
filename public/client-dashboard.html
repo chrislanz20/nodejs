@@ -1881,12 +1881,10 @@
 
       .notif-table input[type="checkbox"] {
         cursor: pointer !important;
-        margin: 0 -2px !important;
+        margin: 0 !important;
         accent-color: #00FFFF !important;
-        width: 14px !important;
-        height: 14px !important;
-        transform: scale(0.55) !important;
-        transform-origin: center !important;
+        width: 16px !important;
+        height: 16px !important;
       }
 
       /* Leads tabs - horizontal scroll on mobile */
@@ -4572,14 +4570,14 @@
                 <label style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
                   <span class="notif-icon">📧</span>
                   <span class="notif-label">Email</span>
-                  <input type="checkbox" class="notif-checkbox" ${emailEnabled ? 'checked' : ''} onchange="updateRecipientPreference(${recipient.id}, '${key}_email', this.checked)" style="cursor: pointer; accent-color: #00FFFF; width: 14px; height: 14px; transform: scale(0.55);">
+                  <input type="checkbox" class="notif-checkbox" ${emailEnabled ? 'checked' : ''} onchange="updateRecipientPreference(${recipient.id}, '${key}_email', this.checked)" style="cursor: pointer; accent-color: #00FFFF; width: 16px; height: 16px;">
                 </label>
               </td>
               <td class="notif-sms" style="text-align: center; padding: 10px 12px;">
                 <label style="cursor: ${smsDisabled ? 'not-allowed' : 'pointer'}; opacity: ${smsDisabled ? '0.4' : '1'}; display: inline-flex; align-items: center; gap: 6px;">
                   <span class="notif-icon">💬</span>
                   <span class="notif-label">Text</span>
-                  <input type="checkbox" class="notif-checkbox" ${smsEnabled ? 'checked' : ''} ${smsDisabled ? 'disabled' : ''} onchange="updateRecipientPreference(${recipient.id}, '${key}_sms', this.checked)" style="cursor: ${smsDisabled ? 'not-allowed' : 'pointer'}; accent-color: #00FFFF; width: 14px; height: 14px; transform: scale(0.55);">
+                  <input type="checkbox" class="notif-checkbox" ${smsEnabled ? 'checked' : ''} ${smsDisabled ? 'disabled' : ''} onchange="updateRecipientPreference(${recipient.id}, '${key}_sms', this.checked)" style="cursor: ${smsDisabled ? 'not-allowed' : 'pointer'}; accent-color: #00FFFF; width: 16px; height: 16px;">
                 </label>
               </td>
             </tr>

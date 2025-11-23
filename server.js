@@ -336,6 +336,12 @@ async function initializeDatabase() {
     await client.query(`
       ALTER TABLE clients ADD COLUMN IF NOT EXISTS invitation_code_created_at TIMESTAMP
     `);
+    await client.query(`
+      ALTER TABLE clients ADD COLUMN IF NOT EXISTS reset_token TEXT
+    `);
+    await client.query(`
+      ALTER TABLE clients ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMP
+    `);
 
     // Create team_members table for client team management
     await client.query(`
@@ -2885,7 +2891,7 @@ app.post('/api/team/register', async (req, res) => {
   }
 });
 
-// POST /api/team/forgot-password - Request password reset (public)
+// POST /api/team/forgot-password - Request password reset for team members OR business owners (public)
 app.post('/api/team/forgot-password', async (req, res) => {
   try {
     const { email } = req.body;
@@ -2894,35 +2900,61 @@ app.post('/api/team/forgot-password', async (req, res) => {
       return res.status(400).json({ error: 'Email is required' });
     }
 
-    // Find team member and get client info
-    const result = await pool.query(`
+    const emailLower = email.toLowerCase();
+
+    // First, check team_members table
+    const teamResult = await pool.query(`
       SELECT tm.id, tm.email, tm.name, c.business_name, c.ghl_location_id
       FROM team_members tm
       JOIN clients c ON tm.client_id = c.id
       WHERE tm.email = $1 AND tm.active = TRUE
-    `, [email.toLowerCase()]);
+    `, [emailLower]);
 
-    // Always return success to prevent email enumeration
-    if (result.rows.length === 0) {
+    if (teamResult.rows.length > 0) {
+      // Found team member
+      const member = teamResult.rows[0];
+      const resetToken = generateResetToken();
+      const expires = new Date(Date.now() + 3600000); // 1 hour
+
+      await pool.query(
+        'UPDATE team_members SET reset_token = $1, reset_token_expires = $2 WHERE id = $3',
+        [resetToken, expires, member.id]
+      );
+
+      const resetUrl = `https://saveyatech.app/client-portal.html?reset=${resetToken}&type=team`;
+      await sendGHLEmail(member.ghl_location_id, member.email, 'Reset Your Password',
+        `Hi ${member.name},\n\nYou requested a password reset for your ${member.business_name} account.\n\nClick this link to reset your password (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\n${member.business_name}`
+      );
+
       return res.json({ success: true, message: 'If an account exists with this email, you will receive a reset link.' });
     }
 
-    const member = result.rows[0];
-    const resetToken = generateResetToken();
-    const expires = new Date(Date.now() + 3600000); // 1 hour
-
-    // Save reset token
-    await pool.query(
-      'UPDATE team_members SET reset_token = $1, reset_token_expires = $2 WHERE id = $3',
-      [resetToken, expires, member.id]
+    // Check clients table (business owners)
+    const clientResult = await pool.query(
+      'SELECT id, email, business_name, ghl_location_id FROM clients WHERE email = $1 AND active = TRUE',
+      [emailLower]
     );
 
-    // Send reset email via GHL
-    const resetUrl = `https://client.saveyatech.app/reset-password?token=${resetToken}`;
-    await sendGHLEmail(member.ghl_location_id, member.email, 'Reset Your Password',
-      `Hi ${member.name},\n\nYou requested a password reset for your ${member.business_name} account.\n\nClick this link to reset your password (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\n${member.business_name}`
-    );
+    if (clientResult.rows.length > 0) {
+      // Found business owner
+      const client = clientResult.rows[0];
+      const resetToken = generateResetToken();
+      const expires = new Date(Date.now() + 3600000); // 1 hour
 
+      await pool.query(
+        'UPDATE clients SET reset_token = $1, reset_token_expires = $2 WHERE id = $3',
+        [resetToken, expires, client.id]
+      );
+
+      const resetUrl = `https://saveyatech.app/client-portal.html?reset=${resetToken}&type=client`;
+      await sendGHLEmail(client.ghl_location_id, client.email, 'Reset Your Password',
+        `Hi,\n\nYou requested a password reset for your ${client.business_name} account.\n\nClick this link to reset your password (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nSaveYa Tech`
+      );
+
+      return res.json({ success: true, message: 'If an account exists with this email, you will receive a reset link.' });
+    }
+
+    // Email not found in either table - return success anyway to prevent enumeration
     res.json({ success: true, message: 'If an account exists with this email, you will receive a reset link.' });
   } catch (error) {
     console.error('Error sending reset email:', error);
@@ -2930,10 +2962,10 @@ app.post('/api/team/forgot-password', async (req, res) => {
   }
 });
 
-// POST /api/team/reset-password - Reset password with token (public)
+// POST /api/team/reset-password - Reset password with token for team members OR business owners (public)
 app.post('/api/team/reset-password', async (req, res) => {
   try {
-    const { token, password } = req.body;
+    const { token, password, type } = req.body;
 
     if (!token || !password) {
       return res.status(400).json({ error: 'Token and password are required' });
@@ -2943,25 +2975,68 @@ app.post('/api/team/reset-password', async (req, res) => {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
     }
 
-    // Find team member with valid token
-    const result = await pool.query(
+    const password_hash = await bcrypt.hash(password, 10);
+
+    // If type is specified, check only that table
+    if (type === 'client') {
+      const result = await pool.query(
+        'SELECT id FROM clients WHERE reset_token = $1 AND reset_token_expires > NOW() AND active = TRUE',
+        [token]
+      );
+      if (result.rows.length === 0) {
+        return res.status(400).json({ error: 'Invalid or expired reset token' });
+      }
+      await pool.query(
+        'UPDATE clients SET password_hash = $1, reset_token = NULL, reset_token_expires = NULL, updated_at = NOW() WHERE id = $2',
+        [password_hash, result.rows[0].id]
+      );
+      return res.json({ success: true, message: 'Password reset successfully! You can now log in.' });
+    }
+
+    if (type === 'team') {
+      const result = await pool.query(
+        'SELECT id FROM team_members WHERE reset_token = $1 AND reset_token_expires > NOW() AND active = TRUE',
+        [token]
+      );
+      if (result.rows.length === 0) {
+        return res.status(400).json({ error: 'Invalid or expired reset token' });
+      }
+      await pool.query(
+        'UPDATE team_members SET password_hash = $1, reset_token = NULL, reset_token_expires = NULL, updated_at = NOW() WHERE id = $2',
+        [password_hash, result.rows[0].id]
+      );
+      return res.json({ success: true, message: 'Password reset successfully! You can now log in.' });
+    }
+
+    // No type specified - check team_members first, then clients
+    let result = await pool.query(
       'SELECT id FROM team_members WHERE reset_token = $1 AND reset_token_expires > NOW() AND active = TRUE',
       [token]
     );
 
-    if (result.rows.length === 0) {
-      return res.status(400).json({ error: 'Invalid or expired reset token' });
+    if (result.rows.length > 0) {
+      await pool.query(
+        'UPDATE team_members SET password_hash = $1, reset_token = NULL, reset_token_expires = NULL, updated_at = NOW() WHERE id = $2',
+        [password_hash, result.rows[0].id]
+      );
+      return res.json({ success: true, message: 'Password reset successfully! You can now log in.' });
     }
 
-    const password_hash = await bcrypt.hash(password, 10);
-
-    // Update password and clear token
-    await pool.query(
-      'UPDATE team_members SET password_hash = $1, reset_token = NULL, reset_token_expires = NULL, updated_at = NOW() WHERE id = $2',
-      [password_hash, result.rows[0].id]
+    // Check clients table
+    result = await pool.query(
+      'SELECT id FROM clients WHERE reset_token = $1 AND reset_token_expires > NOW() AND active = TRUE',
+      [token]
     );
 
-    res.json({ success: true, message: 'Password reset successfully! You can now log in.' });
+    if (result.rows.length > 0) {
+      await pool.query(
+        'UPDATE clients SET password_hash = $1, reset_token = NULL, reset_token_expires = NULL, updated_at = NOW() WHERE id = $2',
+        [password_hash, result.rows[0].id]
+      );
+      return res.json({ success: true, message: 'Password reset successfully! You can now log in.' });
+    }
+
+    return res.status(400).json({ error: 'Invalid or expired reset token' });
   } catch (error) {
     console.error('Error resetting password:', error);
     res.status(500).json({ error: 'Failed to reset password' });

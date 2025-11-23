@@ -374,6 +374,30 @@
         <button type="submit" class="btn btn-primary" id="forgot-btn">Send Reset Link</button>
       </form>
     </div>
+
+    <!-- Reset Password View (when user clicks email link) -->
+    <div id="reset-view" class="view">
+      <div class="logo">
+        <h1>Set New Password</h1>
+        <p>Enter your new password below</p>
+      </div>
+
+      <div id="reset-message" class="message"></div>
+
+      <form id="reset-form">
+        <div class="form-group">
+          <label for="reset-password">New Password</label>
+          <input type="password" id="reset-password" required autocomplete="new-password" placeholder="At least 6 characters" minlength="6">
+        </div>
+
+        <div class="form-group">
+          <label for="reset-confirm">Confirm Password</label>
+          <input type="password" id="reset-confirm" required autocomplete="new-password" placeholder="Confirm your password">
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="reset-btn">Reset Password</button>
+      </form>
+    </div>
   </div>
 
   <script>
@@ -547,6 +571,68 @@
       btn.disabled = false;
       btn.textContent = 'Send Reset Link';
     });
+
+    // RESET PASSWORD (from email link)
+    let resetToken = null;
+    let resetType = null;
+
+    document.getElementById('reset-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('reset-btn');
+      const password = document.getElementById('reset-password').value;
+      const confirm = document.getElementById('reset-confirm').value;
+
+      if (password !== confirm) {
+        showMessage('reset-message', 'Passwords do not match', 'error');
+        return;
+      }
+
+      if (password.length < 6) {
+        showMessage('reset-message', 'Password must be at least 6 characters', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Resetting...';
+
+      try {
+        const response = await fetch('/api/team/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: resetToken, password, type: resetType })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          showMessage('reset-message', 'Password reset successfully! Redirecting to login...', 'success');
+          setTimeout(() => {
+            window.location.href = '/client-portal.html';
+          }, 2000);
+        } else {
+          showMessage('reset-message', data.error || 'Failed to reset password', 'error');
+          btn.disabled = false;
+          btn.textContent = 'Reset Password';
+        }
+      } catch (error) {
+        showMessage('reset-message', 'Network error. Please try again.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Reset Password';
+      }
+    });
+
+    // Check URL parameters on page load
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      resetToken = params.get('reset');
+      resetType = params.get('type');
+
+      if (resetToken) {
+        // Show reset password view
+        showView('reset');
+        return;
+      }
+    })();
 
     // Check if already logged in
     (async () => {
