@@ -14,7 +14,7 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
 const compression = require('compression');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const { sendNotifications, findOrCreateGHLContact } = require('./lib/ghlNotifications');
 const { trackLead, updateLeadStatus, getLeadsByAgent, getLeadStats, getAllLeadStats } = require('./lib/leadTracking');
 const { getClientConfig } = require('./config/clients');
@@ -40,43 +40,42 @@ function generateResetToken() {
   return crypto.randomBytes(32).toString('hex');
 }
 
-// Gmail transporter for notifications
-const gmailTransporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER || 'notifications@saveyatech.com',
-    pass: process.env.GMAIL_APP_PASSWORD
-  }
-});
+// Resend client for email sending
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
- * Send email via Gmail (for password resets, notifications)
+ * Send email via Resend (for password resets, notifications, welcome emails)
  * @param {string} toEmail - Recipient email
  * @param {string} subject - Email subject
  * @param {string} body - Email body (plain text, newlines converted to <br>)
- * @returns {Promise<{success: boolean, error?: string}>}
+ * @param {string} fromName - Optional sender name (defaults to 'SaveYa Tech')
+ * @returns {Promise<{success: boolean, error?: string, messageId?: string}>}
  */
-async function sendGmailEmail(toEmail, subject, body) {
+async function sendEmail(toEmail, subject, body, fromName = 'SaveYa Tech') {
   try {
-    if (!process.env.GMAIL_APP_PASSWORD) {
-      console.log('❌ Gmail app password not configured, skipping email');
-      return { success: false, error: 'GMAIL_APP_PASSWORD not configured' };
+    if (!process.env.RESEND_API_KEY) {
+      console.log('❌ Resend API key not configured, skipping email');
+      return { success: false, error: 'RESEND_API_KEY not configured' };
     }
 
-    console.log(`📧 sendGmailEmail: Sending to ${toEmail}`);
+    console.log(`📧 sendEmail: Sending to ${toEmail}`);
 
-    const mailOptions = {
-      from: 'SaveYa Tech <notifications@saveyatech.com>',
+    const { data, error } = await resend.emails.send({
+      from: `${fromName} <notifications@saveyatech.com>`,
       to: toEmail,
       subject: subject,
       html: body.replace(/\n/g, '<br>')
-    };
+    });
 
-    const result = await gmailTransporter.sendMail(mailOptions);
-    console.log(`✅ Gmail email sent successfully to ${toEmail}`, result.messageId);
-    return { success: true, messageId: result.messageId };
+    if (error) {
+      console.error('❌ Error sending email via Resend:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log(`✅ Email sent successfully to ${toEmail}`, data.id);
+    return { success: true, messageId: data.id };
   } catch (error) {
-    console.error('❌ Error sending Gmail email:', error);
+    console.error('❌ Error sending email:', error);
     return { success: false, error: error.message };
   }
 }
@@ -2914,9 +2913,10 @@ app.post('/api/team/register', async (req, res) => {
       RETURNING id, email, name, phone, role
     `, [client.id, email.toLowerCase(), name, phone || null, 'Viewer', password_hash]);
 
-    // Send welcome email via GHL (non-blocking)
-    sendGHLEmail(client.ghl_location_id, email, 'Welcome to ' + client.business_name,
-      `Hi ${name},\n\nYour account has been created successfully!\n\nYou can now log in at: https://client.saveyatech.app\n\nBest regards,\n${client.business_name}`
+    // Send welcome email via Resend (non-blocking)
+    sendEmail(email, 'Welcome to ' + client.business_name,
+      `Hi ${name},\n\nYour account has been created successfully!\n\nYou can now log in at: https://client.saveyatech.app\n\nBest regards,\n${client.business_name}`,
+      client.business_name
     ).catch(err => console.error('Failed to send welcome email:', err));
 
     res.json({
@@ -2974,7 +2974,7 @@ app.post('/api/team/forgot-password', async (req, res) => {
 
       const resetUrl = `https://saveyatech.app/client-portal.html?reset=${resetToken}&type=team`;
       // Fire and forget - don't block response waiting for email
-      sendGmailEmail(member.email, 'Reset Your Password',
+      sendEmail(member.email, 'Reset Your Password',
         `Hi ${member.name},\n\nYou requested a password reset for your ${member.business_name} account.\n\nClick this link to reset your password (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\n${member.business_name}`
       ).catch(err => console.error('Failed to send reset email:', err));
 
@@ -3003,7 +3003,7 @@ app.post('/api/team/forgot-password', async (req, res) => {
 
       const resetUrl = `https://saveyatech.app/client-portal.html?reset=${resetToken}&type=client`;
       // Fire and forget - don't block response waiting for email
-      sendGmailEmail(client.email, 'Reset Your Password',
+      sendEmail(client.email, 'Reset Your Password',
         `Hi,\n\nYou requested a password reset for your ${client.business_name} account.\n\nClick this link to reset your password (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nSaveYa Tech`
       ).catch(err => console.error('Failed to send reset email:', err));
 
@@ -3310,16 +3310,15 @@ app.get('/api/test-email', async (req, res) => {
     const locationId = result.rows[0].ghl_location_id;
     console.log(`📧 Test email to ${toEmail} using location ${locationId}`);
 
-    // Try to send test email
-    const emailResult = await sendGHLEmail(locationId, toEmail, 'Test Email from SaveYa Tech',
+    // Try to send test email via Resend
+    const emailResult = await sendEmail(toEmail, 'Test Email from SaveYa Tech',
       `This is a test email sent at ${new Date().toISOString()}\n\nIf you receive this, email sending is working!`
     );
 
     res.json({
       emailResult,
       message: `Test email to ${toEmail}`,
-      locationId,
-      hasGHLKey: !!process.env.GHL_API_KEY
+      hasResendKey: !!process.env.RESEND_API_KEY
     });
   } catch (error) {
     console.error('Test email error:', error);
@@ -4270,7 +4269,7 @@ ${recommendations}
 ═══════════════════════════════════════
 This is an automated summary from the SaveYa Tech feedback chatbot.`;
 
-      await sendGHLEmail(locationId, 'chris@saveyatech.com', subject, body);
+      await sendEmail('chris@saveyatech.com', subject, body);
       console.log('✅ Chatbot summary email sent to chris@saveyatech.com');
     }
   } catch (error) {
