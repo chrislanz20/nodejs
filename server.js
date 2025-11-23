@@ -2858,7 +2858,7 @@ app.post('/api/team/register', async (req, res) => {
       return res.status(400).json({ error: 'Email already exists' });
     }
     console.error('Error registering team member:', error);
-    res.status(500).json({ error: 'Failed to create account' });
+    res.status(500).json({ error: 'Failed to create account', details: error.message });
   }
 });
 
