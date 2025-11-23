@@ -14,6 +14,7 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
 const compression = require('compression');
+const nodemailer = require('nodemailer');
 const { sendNotifications, findOrCreateGHLContact } = require('./lib/ghlNotifications');
 const { trackLead, updateLeadStatus, getLeadsByAgent, getLeadStats, getAllLeadStats } = require('./lib/leadTracking');
 const { getClientConfig } = require('./config/clients');
@@ -37,6 +38,47 @@ function generateInvitationCode() {
  */
 function generateResetToken() {
   return crypto.randomBytes(32).toString('hex');
+}
+
+// Gmail transporter for notifications
+const gmailTransporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER || 'notifications@saveyatech.com',
+    pass: process.env.GMAIL_APP_PASSWORD
+  }
+});
+
+/**
+ * Send email via Gmail (for password resets, notifications)
+ * @param {string} toEmail - Recipient email
+ * @param {string} subject - Email subject
+ * @param {string} body - Email body (plain text, newlines converted to <br>)
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+async function sendGmailEmail(toEmail, subject, body) {
+  try {
+    if (!process.env.GMAIL_APP_PASSWORD) {
+      console.log('❌ Gmail app password not configured, skipping email');
+      return { success: false, error: 'GMAIL_APP_PASSWORD not configured' };
+    }
+
+    console.log(`📧 sendGmailEmail: Sending to ${toEmail}`);
+
+    const mailOptions = {
+      from: 'SaveYa Tech <notifications@saveyatech.com>',
+      to: toEmail,
+      subject: subject,
+      html: body.replace(/\n/g, '<br>')
+    };
+
+    const result = await gmailTransporter.sendMail(mailOptions);
+    console.log(`✅ Gmail email sent successfully to ${toEmail}`, result.messageId);
+    return { success: true, messageId: result.messageId };
+  } catch (error) {
+    console.error('❌ Error sending Gmail email:', error);
+    return { success: false, error: error.message };
+  }
 }
 
 /**
@@ -2931,9 +2973,10 @@ app.post('/api/team/forgot-password', async (req, res) => {
       );
 
       const resetUrl = `https://saveyatech.app/client-portal.html?reset=${resetToken}&type=team`;
-      await sendGHLEmail(member.ghl_location_id, member.email, 'Reset Your Password',
+      // Fire and forget - don't block response waiting for email
+      sendGmailEmail(member.email, 'Reset Your Password',
         `Hi ${member.name},\n\nYou requested a password reset for your ${member.business_name} account.\n\nClick this link to reset your password (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\n${member.business_name}`
-      );
+      ).catch(err => console.error('Failed to send reset email:', err));
 
       // Mark this email as recently requested
       recentResetRequests.set(emailLower, Date.now());
@@ -2959,9 +3002,10 @@ app.post('/api/team/forgot-password', async (req, res) => {
       );
 
       const resetUrl = `https://saveyatech.app/client-portal.html?reset=${resetToken}&type=client`;
-      await sendGHLEmail(client.ghl_location_id, client.email, 'Reset Your Password',
+      // Fire and forget - don't block response waiting for email
+      sendGmailEmail(client.email, 'Reset Your Password',
         `Hi,\n\nYou requested a password reset for your ${client.business_name} account.\n\nClick this link to reset your password (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nSaveYa Tech`
-      );
+      ).catch(err => console.error('Failed to send reset email:', err));
 
       // Mark this email as recently requested
       recentResetRequests.set(emailLower, Date.now());
