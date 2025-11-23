@@ -6630,15 +6630,19 @@
       const chatBubble = document.getElementById('chatbot-bubble');
       chatbotOpen = !chatbotOpen;
 
+      const logoImg = '<img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/68bcea80938a4e0fd2da0e79.png" alt="SaveYa" style="width: 34px; height: 34px; object-fit: contain;">';
+
       if (chatbotOpen) {
         chatWindow.style.display = 'flex';
         chatBubble.innerHTML = '✕';
         chatBubble.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+        chatBubble.style.fontSize = '24px';
+        chatBubble.style.color = '#fff';
         // Focus input
         setTimeout(() => document.getElementById('chatbot-input').focus(), 100);
       } else {
         chatWindow.style.display = 'none';
-        chatBubble.innerHTML = '💬';
+        chatBubble.innerHTML = logoImg;
         chatBubble.style.background = 'linear-gradient(135deg, #00FFFF, #00cccc)';
       }
     }
@@ -6886,7 +6890,9 @@
   </style>
 
   <!-- Chat Bubble -->
-  <button id="chatbot-bubble" onclick="toggleChatbot()" title="Give Feedback">💬</button>
+  <button id="chatbot-bubble" onclick="toggleChatbot()" title="Give Feedback">
+    <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/68bcea80938a4e0fd2da0e79.png" alt="SaveYa" style="width: 34px; height: 34px; object-fit: contain;" id="chatbot-logo-img">
+  </button>
 
   <!-- Chat Window -->
   <div id="chatbot-window">
