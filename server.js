@@ -2313,12 +2313,17 @@ app.post('/api/auth/logout', (req, res) => {
   res.json({ success: true });
 });
 
-// GET /api/auth/me - Get current logged in client
+// GET /api/auth/me - Get current logged in client (owner only, not team members)
 app.get('/api/auth/me', authenticateToken, (req, res) => {
+  // Team members should use /api/team/auth/me instead
+  if (req.user.is_team_member) {
+    return res.status(403).json({ error: 'Use team member auth endpoint' });
+  }
   res.json({
     email: req.user.email,
     business_name: req.user.business_name,
-    agent_ids: req.user.agent_ids
+    agent_ids: req.user.agent_ids,
+    is_team_member: false
   });
 });
 
