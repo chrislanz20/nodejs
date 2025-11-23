@@ -5507,7 +5507,7 @@
       {
         title: 'Lead Filter Tabs',
         text: 'Use these tabs to organize your leads:<br><br>• <b style="color:#fbbf24;">PENDING</b> — Leads waiting for you to review (check these first!)<br>• <b style="color:#10b981;">APPROVED</b> — Leads you confirmed as real customers<br>• <b style="color:#ef4444;">DENIED</b> — Leads you marked as not real<br><br><i>The number badge shows how many leads are in each category.</i>',
-        target: '.leads-tabs',
+        target: '#tab-pending',
         position: 'below',
         icon: '📋'
       },
@@ -5535,102 +5535,79 @@
     ];
 
     function showOnboarding() {
-      // Add comprehensive tour CSS with spotlight cutout effect
+      // Add tour CSS
       if (!document.getElementById('tour-styles')) {
         const tourStyles = document.createElement('style');
         tourStyles.id = 'tour-styles';
         tourStyles.textContent = `
           @keyframes tourPulse {
-            0%, 100% {
-              box-shadow: 0 0 0 4px #00FFFF, 0 0 0 8px rgba(0, 255, 255, 0.6), 0 0 30px rgba(0, 255, 255, 0.4), inset 0 0 20px rgba(0, 255, 255, 0.1);
-            }
-            50% {
-              box-shadow: 0 0 0 6px #00FFFF, 0 0 0 12px rgba(0, 255, 255, 0.4), 0 0 50px rgba(0, 255, 255, 0.3), inset 0 0 30px rgba(0, 255, 255, 0.15);
-            }
+            0%, 100% { box-shadow: 0 0 0 4px #00FFFF, 0 0 20px #00FFFF; }
+            50% { box-shadow: 0 0 0 8px #00FFFF, 0 0 40px #00FFFF; }
           }
           @keyframes tourArrowBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.1); }
           }
-          @keyframes tourFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          .tour-highlight {
-            position: relative;
-            z-index: 10001 !important;
-            animation: tourPulse 1.5s ease-in-out infinite !important;
-            border-radius: 16px !important;
-            outline: 3px dashed #00FFFF !important;
-            outline-offset: 4px !important;
-          }
-          .tour-highlight::before {
-            content: '';
-            position: absolute;
-            top: -8px;
-            left: -8px;
-            right: -8px;
-            bottom: -8px;
-            background: rgba(0, 255, 255, 0.08);
-            border-radius: 20px;
+          #tour-spotlight-border {
+            position: fixed;
+            border: 4px solid #00FFFF;
+            border-radius: 16px;
+            z-index: 10001;
             pointer-events: none;
-            z-index: -1;
+            animation: tourPulse 1s ease-in-out infinite;
+            transition: all 0.3s ease;
           }
           #tour-arrow {
             position: fixed;
             z-index: 10003;
-            font-size: 48px;
-            animation: tourArrowBounce 0.8s ease-in-out infinite;
-            filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.8));
+            font-size: 56px;
+            animation: tourArrowBounce 0.6s ease-in-out infinite;
+            filter: drop-shadow(0 4px 20px rgba(0, 255, 255, 1));
             pointer-events: none;
-          }
-          #tour-tooltip {
-            animation: tourFadeIn 0.3s ease-out;
+            text-shadow: 0 0 20px #00FFFF;
           }
           #tour-label {
             position: fixed;
             z-index: 10003;
-            background: linear-gradient(135deg, #00FFFF, #00CED1);
-            color: #0d1117;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 14px;
+            background: #00FFFF;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 800;
+            font-size: 16px;
             pointer-events: none;
-            box-shadow: 0 4px 20px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 4px 30px rgba(0, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
           }
         `;
         document.head.appendChild(tourStyles);
       }
 
       // Remove any existing tour elements
-      const existingOverlay = document.getElementById('tour-overlay');
-      const existingTooltip = document.getElementById('tour-tooltip');
-      const existingArrow = document.getElementById('tour-arrow');
-      const existingLabel = document.getElementById('tour-label');
-      if (existingOverlay) existingOverlay.remove();
-      if (existingTooltip) existingTooltip.remove();
-      if (existingArrow) existingArrow.remove();
-      if (existingLabel) existingLabel.remove();
-      document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+      document.querySelectorAll('#tour-overlay-top, #tour-overlay-bottom, #tour-overlay-left, #tour-overlay-right, #tour-spotlight-border, #tour-tooltip, #tour-arrow, #tour-label').forEach(el => el.remove());
 
-      // Create dark overlay with pointer events for clicking through to highlighted element
-      const overlay = document.createElement('div');
-      overlay.id = 'tour-overlay';
-      overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.85);
-        z-index: 10000;
-        opacity: 0;
-        transition: opacity 0.4s ease;
-        pointer-events: none;
-      `;
+      // Create 4 overlay panels for spotlight cutout effect
+      const overlayTop = document.createElement('div');
+      overlayTop.id = 'tour-overlay-top';
+      const overlayBottom = document.createElement('div');
+      overlayBottom.id = 'tour-overlay-bottom';
+      const overlayLeft = document.createElement('div');
+      overlayLeft.id = 'tour-overlay-left';
+      const overlayRight = document.createElement('div');
+      overlayRight.id = 'tour-overlay-right';
 
-      // Create bouncing arrow pointer
+      const overlayStyle = `position: fixed; background: rgba(0, 0, 0, 0.88); z-index: 10000; pointer-events: none; transition: all 0.4s ease;`;
+      overlayTop.style.cssText = overlayStyle;
+      overlayBottom.style.cssText = overlayStyle;
+      overlayLeft.style.cssText = overlayStyle;
+      overlayRight.style.cssText = overlayStyle;
+
+      // Spotlight border that goes around the highlighted element
+      const spotlightBorder = document.createElement('div');
+      spotlightBorder.id = 'tour-spotlight-border';
+
+      // Bouncing arrow
       const arrow = document.createElement('div');
       arrow.id = 'tour-arrow';
       arrow.innerHTML = '👇';
@@ -5662,62 +5639,97 @@
         margin: 0 auto;
       `;
 
-      document.body.appendChild(overlay);
+      document.body.appendChild(overlayTop);
+      document.body.appendChild(overlayBottom);
+      document.body.appendChild(overlayLeft);
+      document.body.appendChild(overlayRight);
+      document.body.appendChild(spotlightBorder);
       document.body.appendChild(arrow);
       document.body.appendChild(label);
       document.body.appendChild(tooltip);
 
       setTimeout(() => {
-        overlay.style.opacity = '1';
         tooltip.style.opacity = '1';
       }, 10);
 
-      showTourStep(0, tooltip, overlay, arrow, label);
+      showTourStep(0, tooltip, { top: overlayTop, bottom: overlayBottom, left: overlayLeft, right: overlayRight, border: spotlightBorder }, arrow, label);
     }
 
-    function showTourStep(step, tooltip, overlay, arrow, label) {
+    function positionSpotlight(targetEl, overlays) {
+      const padding = 12; // Space around the element
+      const rect = targetEl.getBoundingClientRect();
+      const top = rect.top - padding;
+      const bottom = rect.bottom + padding;
+      const left = rect.left - padding;
+      const right = rect.right + padding;
+      const winW = window.innerWidth;
+      const winH = window.innerHeight;
+
+      // Position 4 overlay panels to create a "window" around the target
+      overlays.top.style.cssText += `top: 0; left: 0; width: 100%; height: ${Math.max(0, top)}px;`;
+      overlays.bottom.style.cssText += `top: ${bottom}px; left: 0; width: 100%; height: ${Math.max(0, winH - bottom)}px;`;
+      overlays.left.style.cssText += `top: ${top}px; left: 0; width: ${Math.max(0, left)}px; height: ${bottom - top}px;`;
+      overlays.right.style.cssText += `top: ${top}px; left: ${right}px; width: ${Math.max(0, winW - right)}px; height: ${bottom - top}px;`;
+
+      // Position spotlight border
+      overlays.border.style.cssText += `top: ${top}px; left: ${left}px; width: ${right - left}px; height: ${bottom - top}px;`;
+    }
+
+    function hideSpotlight(overlays) {
+      // Cover entire screen with overlays (no cutout)
+      overlays.top.style.cssText += `top: 0; left: 0; width: 100%; height: 100%;`;
+      overlays.bottom.style.cssText += `top: 100%; left: 0; width: 0; height: 0;`;
+      overlays.left.style.cssText += `top: 0; left: 0; width: 0; height: 0;`;
+      overlays.right.style.cssText += `top: 0; left: 0; width: 0; height: 0;`;
+      overlays.border.style.cssText += `display: none;`;
+    }
+
+    function showTourStep(step, tooltip, overlays, arrow, label) {
       if (step >= tourSteps.length) {
-        closeTour(tooltip, overlay, arrow, label);
+        closeTour(tooltip, overlays, arrow, label);
         return;
       }
 
       const currentStep = tourSteps[step];
       const isMobile = window.innerWidth < 768;
 
-      // Remove previous highlight
-      document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+      // Hide arrow and label initially
       arrow.style.display = 'none';
       label.style.display = 'none';
 
-      // If there's a target, scroll to it and highlight it
+      // If there's a target, scroll to it and spotlight it
       if (currentStep.target) {
         const targetEl = document.querySelector(currentStep.target);
         if (targetEl) {
-          // Scroll element into view with offset for the tooltip at bottom
+          // Scroll element into view
           const rect = targetEl.getBoundingClientRect();
-          const scrollTop = window.pageYOffset + rect.top - 100;
+          const scrollTop = window.pageYOffset + rect.top - 120;
           window.scrollTo({ top: Math.max(0, scrollTop), behavior: 'smooth' });
 
-          // Add highlight and position arrow after scroll
+          // Position spotlight and arrow after scroll completes
           setTimeout(() => {
-            targetEl.classList.add('tour-highlight');
+            positionSpotlight(targetEl, overlays);
+            overlays.border.style.display = 'block';
 
-            // Position the bouncing arrow above the element
+            // Position bouncing arrow above element
             const newRect = targetEl.getBoundingClientRect();
-            arrow.style.left = (newRect.left + newRect.width / 2 - 24) + 'px';
-            arrow.style.top = (newRect.top - 60) + 'px';
+            const arrowX = newRect.left + newRect.width / 2 - 28;
+            const arrowY = newRect.top - 70;
+            arrow.style.left = arrowX + 'px';
+            arrow.style.top = Math.max(10, arrowY) + 'px';
             arrow.style.display = 'block';
 
-            // Position label above arrow
-            label.textContent = '👀 LOOK HERE';
-            label.style.left = (newRect.left + newRect.width / 2 - 60) + 'px';
-            label.style.top = (newRect.top - 100) + 'px';
+            // Position "LOOK HERE" label
+            label.textContent = 'LOOK HERE';
+            label.style.left = (newRect.left + newRect.width / 2 - 65) + 'px';
+            label.style.top = Math.max(10, arrowY - 45) + 'px';
             label.style.display = 'block';
-          }, 400);
+          }, 450);
         }
       } else {
-        // No target - scroll to top for intro/outro
+        // No target - scroll to top and cover full screen with overlay
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        hideSpotlight(overlays);
       }
 
       // Build tooltip content
@@ -5788,50 +5800,50 @@
       tourStep = step;
     }
 
+    function getTourElements() {
+      return {
+        tooltip: document.getElementById('tour-tooltip'),
+        overlays: {
+          top: document.getElementById('tour-overlay-top'),
+          bottom: document.getElementById('tour-overlay-bottom'),
+          left: document.getElementById('tour-overlay-left'),
+          right: document.getElementById('tour-overlay-right'),
+          border: document.getElementById('tour-spotlight-border')
+        },
+        arrow: document.getElementById('tour-arrow'),
+        label: document.getElementById('tour-label')
+      };
+    }
+
     window.nextTourStep = function() {
-      const tooltip = document.getElementById('tour-tooltip');
-      const overlay = document.getElementById('tour-overlay');
-      const arrow = document.getElementById('tour-arrow');
-      const label = document.getElementById('tour-label');
-      showTourStep(tourStep + 1, tooltip, overlay, arrow, label);
+      const els = getTourElements();
+      showTourStep(tourStep + 1, els.tooltip, els.overlays, els.arrow, els.label);
     };
 
     window.prevTourStep = function() {
-      const tooltip = document.getElementById('tour-tooltip');
-      const overlay = document.getElementById('tour-overlay');
-      const arrow = document.getElementById('tour-arrow');
-      const label = document.getElementById('tour-label');
+      const els = getTourElements();
       if (tourStep > 0) {
-        showTourStep(tourStep - 1, tooltip, overlay, arrow, label);
+        showTourStep(tourStep - 1, els.tooltip, els.overlays, els.arrow, els.label);
       }
     };
 
     window.skipTour = function() {
-      const tooltip = document.getElementById('tour-tooltip');
-      const overlay = document.getElementById('tour-overlay');
-      const arrow = document.getElementById('tour-arrow');
-      const label = document.getElementById('tour-label');
-      closeTour(tooltip, overlay, arrow, label);
+      const els = getTourElements();
+      closeTour(els.tooltip, els.overlays, els.arrow, els.label);
     };
 
-    function closeTour(tooltip, overlay, arrow, label) {
+    function closeTour(tooltip, overlays, arrow, label) {
       const dontShowAgain = document.getElementById('dont-show-tour-again');
       if (dontShowAgain && dontShowAgain.checked) {
         localStorage.setItem('dashboard-tour-never-show', 'true');
       }
 
-      document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
-
       if (tooltip) tooltip.style.opacity = '0';
-      if (overlay) overlay.style.opacity = '0';
       if (arrow) arrow.style.display = 'none';
       if (label) label.style.display = 'none';
 
       setTimeout(() => {
-        if (tooltip) tooltip.remove();
-        if (overlay) overlay.remove();
-        if (arrow) arrow.remove();
-        if (label) label.remove();
+        document.querySelectorAll('#tour-overlay-top, #tour-overlay-bottom, #tour-overlay-left, #tour-overlay-right, #tour-spotlight-border, #tour-tooltip, #tour-arrow, #tour-label').forEach(el => el.remove());
       }, 400);
     }
 
