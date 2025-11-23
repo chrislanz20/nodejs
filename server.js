@@ -3187,6 +3187,8 @@ app.get('/api/debug-db', async (req, res) => {
 app.get('/api/debug-token', async (req, res) => {
   try {
     const email = req.query.email;
+    const verifyToken = req.query.token; // Optional: verify a specific token
+
     if (!email) return res.json({ error: 'email query param required' });
 
     const clientResult = await pool.query(
@@ -3201,21 +3203,31 @@ app.get('/api/debug-token', async (req, res) => {
 
     const dbTimeResult = await pool.query('SELECT NOW() as db_time');
 
+    const clientData = clientResult.rows[0];
+    let tokenMatch = null;
+    if (verifyToken && clientData?.reset_token) {
+      tokenMatch = verifyToken === clientData.reset_token;
+    }
+
     res.json({
       serverTime: new Date().toISOString(),
       dbTime: dbTimeResult.rows[0].db_time,
-      client: clientResult.rows[0] ? {
-        id: clientResult.rows[0].id,
-        hasToken: !!clientResult.rows[0].reset_token,
-        tokenPrefix: clientResult.rows[0].reset_token?.substring(0, 10) + '...',
-        expires: clientResult.rows[0].reset_token_expires,
-        isExpired: clientResult.rows[0].reset_token_expires ? new Date(clientResult.rows[0].reset_token_expires) < new Date() : null
+      client: clientData ? {
+        id: clientData.id,
+        hasToken: !!clientData.reset_token,
+        tokenPrefix: clientData.reset_token?.substring(0, 10) + '...',
+        tokenLength: clientData.reset_token?.length,
+        expires: clientData.reset_token_expires,
+        isExpired: clientData.reset_token_expires ? new Date(clientData.reset_token_expires) < new Date() : null,
+        tokenMatch: tokenMatch
       } : null,
       teamMember: teamResult.rows[0] ? {
         id: teamResult.rows[0].id,
         hasToken: !!teamResult.rows[0].reset_token,
         expires: teamResult.rows[0].reset_token_expires
-      } : null
+      } : null,
+      verifyTokenProvided: !!verifyToken,
+      verifyTokenLength: verifyToken?.length
     });
   } catch (error) {
     res.json({ error: error.message });
