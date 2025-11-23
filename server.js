@@ -21,6 +21,25 @@ const { getClientConfig } = require('./config/clients');
 const app = express();
 
 /**
+ * Generate a secure invitation code (8 chars, uppercase alphanumeric)
+ */
+function generateInvitationCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Excluded confusing chars like 0,O,1,I
+  let code = '';
+  for (let i = 0; i < 8; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
+/**
+ * Generate a secure password reset token
+ */
+function generateResetToken() {
+  return crypto.randomBytes(32).toString('hex');
+}
+
+/**
  * Extract caller name from Retell call data
  * Tries multiple sources in priority order:
  * 1. extracted_data.name
@@ -298,6 +317,34 @@ async function initializeDatabase() {
     await client.query(`
       ALTER TABLE clients ADD COLUMN IF NOT EXISTS ai_receptionist_prompt TEXT
     `);
+
+    // Add invitation code fields for team member self-registration
+    await client.query(`
+      ALTER TABLE clients ADD COLUMN IF NOT EXISTS invitation_code TEXT UNIQUE
+    `);
+    await client.query(`
+      ALTER TABLE clients ADD COLUMN IF NOT EXISTS invitation_code_created_at TIMESTAMP
+    `);
+
+    // Add password reset fields to team_members
+    await client.query(`
+      ALTER TABLE team_members ADD COLUMN IF NOT EXISTS reset_token TEXT
+    `);
+    await client.query(`
+      ALTER TABLE team_members ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMP
+    `);
+
+    // Generate invitation codes for existing clients that don't have one
+    const clientsWithoutCodes = await client.query(`
+      SELECT id FROM clients WHERE invitation_code IS NULL
+    `);
+    for (const row of clientsWithoutCodes.rows) {
+      const code = generateInvitationCode();
+      await client.query(
+        'UPDATE clients SET invitation_code = $1, invitation_code_created_at = NOW() WHERE id = $2',
+        [code, row.id]
+      );
+    }
 
     // Update CourtLaw with Maria's AI receptionist info (one-time migration)
     await client.query(`
@@ -2701,6 +2748,271 @@ app.get('/api/team/auth/me', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Failed to get team member info' });
   }
 });
+
+// ============ INVITATION CODE SYSTEM ============
+
+// POST /api/team/validate-code - Validate invitation code (public)
+app.post('/api/team/validate-code', async (req, res) => {
+  try {
+    const { code } = req.body;
+
+    if (!code) {
+      return res.status(400).json({ error: 'Code is required' });
+    }
+
+    const result = await pool.query(
+      'SELECT id, business_name FROM clients WHERE invitation_code = $1 AND active = TRUE',
+      [code.toUpperCase().trim()]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Invalid invitation code' });
+    }
+
+    res.json({
+      valid: true,
+      business_name: result.rows[0].business_name
+    });
+  } catch (error) {
+    console.error('Error validating code:', error);
+    res.status(500).json({ error: 'Failed to validate code' });
+  }
+});
+
+// POST /api/team/register - Team member self-registration with invitation code (public)
+app.post('/api/team/register', async (req, res) => {
+  try {
+    const { code, email, name, password } = req.body;
+
+    if (!code || !email || !name || !password) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+
+    // Find the client by invitation code
+    const clientResult = await pool.query(
+      'SELECT id, business_name, ghl_location_id FROM clients WHERE invitation_code = $1 AND active = TRUE',
+      [code.toUpperCase().trim()]
+    );
+
+    if (clientResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Invalid invitation code' });
+    }
+
+    const client = clientResult.rows[0];
+
+    // Check if email already exists
+    const existingCheck = await pool.query(
+      'SELECT id FROM team_members WHERE email = $1 AND client_id = $2',
+      [email.toLowerCase(), client.id]
+    );
+
+    if (existingCheck.rows.length > 0) {
+      return res.status(400).json({ error: 'An account with this email already exists' });
+    }
+
+    // Hash password
+    const password_hash = await bcrypt.hash(password, 10);
+
+    // Create team member
+    const result = await pool.query(`
+      INSERT INTO team_members (client_id, email, name, role, password_hash)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING id, email, name, role
+    `, [client.id, email.toLowerCase(), name, 'member', password_hash]);
+
+    // Send welcome email via GHL (non-blocking)
+    sendGHLEmail(client.ghl_location_id, email, 'Welcome to ' + client.business_name,
+      `Hi ${name},\n\nYour account has been created successfully!\n\nYou can now log in at: https://client.saveyatech.app\n\nBest regards,\n${client.business_name}`
+    ).catch(err => console.error('Failed to send welcome email:', err));
+
+    res.json({
+      success: true,
+      message: 'Account created successfully! You can now log in.',
+      member: result.rows[0]
+    });
+  } catch (error) {
+    if (error.code === '23505') {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+    console.error('Error registering team member:', error);
+    res.status(500).json({ error: 'Failed to create account' });
+  }
+});
+
+// POST /api/team/forgot-password - Request password reset (public)
+app.post('/api/team/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    // Find team member and get client info
+    const result = await pool.query(`
+      SELECT tm.id, tm.email, tm.name, c.business_name, c.ghl_location_id
+      FROM team_members tm
+      JOIN clients c ON tm.client_id = c.id
+      WHERE tm.email = $1 AND tm.active = TRUE
+    `, [email.toLowerCase()]);
+
+    // Always return success to prevent email enumeration
+    if (result.rows.length === 0) {
+      return res.json({ success: true, message: 'If an account exists with this email, you will receive a reset link.' });
+    }
+
+    const member = result.rows[0];
+    const resetToken = generateResetToken();
+    const expires = new Date(Date.now() + 3600000); // 1 hour
+
+    // Save reset token
+    await pool.query(
+      'UPDATE team_members SET reset_token = $1, reset_token_expires = $2 WHERE id = $3',
+      [resetToken, expires, member.id]
+    );
+
+    // Send reset email via GHL
+    const resetUrl = `https://client.saveyatech.app/reset-password?token=${resetToken}`;
+    await sendGHLEmail(member.ghl_location_id, member.email, 'Reset Your Password',
+      `Hi ${member.name},\n\nYou requested a password reset for your ${member.business_name} account.\n\nClick this link to reset your password (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\n${member.business_name}`
+    );
+
+    res.json({ success: true, message: 'If an account exists with this email, you will receive a reset link.' });
+  } catch (error) {
+    console.error('Error sending reset email:', error);
+    res.status(500).json({ error: 'Failed to send reset email' });
+  }
+});
+
+// POST /api/team/reset-password - Reset password with token (public)
+app.post('/api/team/reset-password', async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({ error: 'Token and password are required' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+
+    // Find team member with valid token
+    const result = await pool.query(
+      'SELECT id FROM team_members WHERE reset_token = $1 AND reset_token_expires > NOW() AND active = TRUE',
+      [token]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ error: 'Invalid or expired reset token' });
+    }
+
+    const password_hash = await bcrypt.hash(password, 10);
+
+    // Update password and clear token
+    await pool.query(
+      'UPDATE team_members SET password_hash = $1, reset_token = NULL, reset_token_expires = NULL, updated_at = NOW() WHERE id = $2',
+      [password_hash, result.rows[0].id]
+    );
+
+    res.json({ success: true, message: 'Password reset successfully! You can now log in.' });
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+});
+
+// GET /api/client/invitation-code - Get client's invitation code (owner only)
+app.get('/api/client/invitation-code', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.is_team_member) {
+      return res.status(403).json({ error: 'Only business owners can access this' });
+    }
+
+    const result = await pool.query(
+      'SELECT invitation_code, invitation_code_created_at FROM clients WHERE id = $1',
+      [req.user.id]
+    );
+
+    res.json({
+      invitation_code: result.rows[0]?.invitation_code,
+      created_at: result.rows[0]?.invitation_code_created_at
+    });
+  } catch (error) {
+    console.error('Error getting invitation code:', error);
+    res.status(500).json({ error: 'Failed to get invitation code' });
+  }
+});
+
+// POST /api/client/regenerate-code - Regenerate invitation code (owner only)
+app.post('/api/client/regenerate-code', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.is_team_member) {
+      return res.status(403).json({ error: 'Only business owners can regenerate codes' });
+    }
+
+    const newCode = generateInvitationCode();
+
+    await pool.query(
+      'UPDATE clients SET invitation_code = $1, invitation_code_created_at = NOW() WHERE id = $2',
+      [newCode, req.user.id]
+    );
+
+    res.json({
+      success: true,
+      invitation_code: newCode,
+      message: 'Invitation code regenerated successfully'
+    });
+  } catch (error) {
+    console.error('Error regenerating code:', error);
+    res.status(500).json({ error: 'Failed to regenerate code' });
+  }
+});
+
+// Helper function to send email via GHL
+async function sendGHLEmail(locationId, toEmail, subject, body) {
+  try {
+    const ghlApiKey = process.env.GHL_API_KEY;
+    if (!ghlApiKey) {
+      console.log('GHL API key not configured, skipping email');
+      return;
+    }
+
+    // Find or create contact
+    const contact = await findOrCreateGHLContact(locationId, toEmail, toEmail.split('@')[0]);
+    if (!contact) {
+      console.error('Could not find or create GHL contact');
+      return;
+    }
+
+    // Send email
+    const response = await fetch(`https://services.leadconnectorhq.com/conversations/messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${ghlApiKey}`,
+        'Content-Type': 'application/json',
+        'Version': '2021-07-28'
+      },
+      body: JSON.stringify({
+        type: 'Email',
+        contactId: contact.id,
+        subject: subject,
+        html: body.replace(/\n/g, '<br>'),
+        emailFrom: 'SaveYa Tech <notifications@saveyatech.com>'
+      })
+    });
+
+    if (!response.ok) {
+      console.error('GHL email send failed:', await response.text());
+    }
+  } catch (error) {
+    console.error('Error sending GHL email:', error);
+  }
+}
 
 // ============ DEBUG ENDPOINT ============
 // Check which database URL is being used

@@ -15,450 +15,541 @@
     }
 
     body {
-      font-family: 'JetBrains Mono', 'Courier New', monospace, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
-      background: #0d1117;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: #09090b;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
-      animation: pulse 8s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.3; }
-      50% { transform: scale(1.1); opacity: 0.5; }
     }
 
     .login-container {
-      background: rgba(30, 36, 44, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3);
-      border: 1px solid rgba(0, 255, 255, 0.3);
+      background: #18181b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      border-radius: 14px;
       padding: 48px;
       width: 100%;
       max-width: 420px;
-      position: relative;
-      z-index: 1;
     }
 
     .logo {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 32px;
+    }
+
+    .logo img {
+      height: 48px;
+      margin-bottom: 16px;
     }
 
     .logo h1 {
-      font-size: 32px;
-      font-weight: 700;
-      color: #00FFFF;
-      margin-bottom: 12px;
-      text-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
-      letter-spacing: 2px;
+      font-size: 24px;
+      font-weight: 600;
+      color: #fafafa;
+      margin-bottom: 8px;
     }
 
     .logo p {
-      font-size: 13px;
-      color: #9ca3af;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-weight: 600;
+      font-size: 14px;
+      color: #71717a;
     }
 
     .form-group {
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     label {
       display: block;
-      font-size: 12px;
-      font-weight: 700;
-      color: #9ca3af;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #a1a1aa;
+      margin-bottom: 8px;
     }
 
-    input[type="email"],
-    input[type="password"] {
+    input {
       width: 100%;
-      padding: 14px 18px;
+      padding: 14px 16px;
       font-size: 15px;
-      border: 1px solid rgba(0, 255, 255, 0.3);
+      font-family: 'Inter', sans-serif;
+      background: #09090b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 10px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      font-family: 'JetBrains Mono', monospace;
-      background: rgba(13, 17, 23, 0.6);
-      color: #e6edf3;
+      color: #fafafa;
+      transition: all 0.2s;
     }
 
-    input[type="email"]:focus,
-    input[type="password"]:focus {
+    input:focus {
       outline: none;
       border-color: #00FFFF;
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-      background: rgba(13, 17, 23, 0.8);
+      box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1);
     }
 
-    input[type="email"]::placeholder,
-    input[type="password"]::placeholder {
-      color: #6b7280;
+    input::placeholder {
+      color: #52525b;
     }
 
-    .login-btn {
+    .btn {
       width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 200, 0.2));
-      color: #00FFFF;
+      padding: 14px;
       font-size: 14px;
-      font-weight: 700;
-      border: 1px solid rgba(0, 255, 255, 0.4);
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
       border-radius: 10px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      margin-top: 8px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
+      transition: all 0.2s;
+      border: none;
     }
 
-    .login-btn:hover {
-      transform: translateY(-2px);
-      background: linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(0, 200, 200, 0.3));
-      box-shadow: 0 10px 30px rgba(0, 255, 255, 0.4);
-      border-color: #00FFFF;
+    .btn-primary {
+      background: linear-gradient(135deg, #00FFFF, #00cccc);
+      color: #09090b;
     }
 
-    .login-btn:active {
-      transform: translateY(0);
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3);
     }
 
-    .login-btn:disabled {
+    .btn-secondary {
+      background: transparent;
+      color: #a1a1aa;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 12px;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fafafa;
+    }
+
+    .btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
       transform: none;
     }
 
-    .error-message {
-      background: rgba(239, 68, 68, 0.2);
-      color: #ff6b6b;
-      padding: 14px 18px;
+    .message {
+      padding: 14px 16px;
       border-radius: 10px;
-      border: 1px solid rgba(239, 68, 68, 0.3);
       font-size: 13px;
       margin-bottom: 20px;
       display: none;
-      font-weight: 600;
     }
 
-    .error-message.show {
+    .message.show {
       display: block;
+    }
+
+    .message.error {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .message.success {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 24px 0;
+      color: #52525b;
+      font-size: 12px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .divider span {
+      padding: 0 16px;
+    }
+
+    .links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .link {
+      font-size: 13px;
+      color: #71717a;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .link:hover {
+      color: #00FFFF;
+    }
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #71717a;
+      margin-bottom: 24px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: #fafafa;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .business-badge {
+      background: rgba(0, 255, 255, 0.1);
+      color: #00FFFF;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 20px;
+      border: 1px solid rgba(0, 255, 255, 0.2);
     }
 
     .footer {
       text-align: center;
-      margin-top: 28px;
-      font-size: 11px;
-      color: #6b7280;
-      letter-spacing: 0.5px;
+      margin-top: 24px;
+      font-size: 12px;
+      color: #52525b;
     }
 
-    /* Mobile responsiveness */
-    @media (max-width: 768px) {
+    /* Mobile */
+    @media (max-width: 480px) {
       body {
         padding: 16px;
       }
 
       .login-container {
         padding: 32px 24px;
-        max-width: 100%;
       }
 
       .logo h1 {
-        font-size: 28px;
+        font-size: 20px;
       }
 
-      .logo p {
-        font-size: 12px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .login-container {
-        padding: 24px 20px;
-        border-radius: 16px;
-      }
-
-      .logo h1 {
-        font-size: 24px;
-      }
-
-      .logo p {
-        font-size: 11px;
-      }
-
-      input[type="email"],
-      input[type="password"] {
-        padding: 12px 16px;
-        font-size: 14px;
-      }
-
-      .login-btn {
-        padding: 14px;
-        font-size: 13px;
+      input, .btn {
+        font-size: 16px; /* Prevents zoom on iOS */
         min-height: 48px;
       }
 
-      label {
-        font-size: 11px;
+      .links {
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
       }
-
-      .error-message {
-        padding: 12px 16px;
-        font-size: 12px;
-      }
-    }
-
-    /* Touch device improvements */
-    @media (hover: none) and (pointer: coarse) {
-      input[type="email"],
-      input[type="password"],
-      .login-btn {
-        min-height: 48px;
-      }
-
-      .login-btn:active {
-        transform: scale(0.98);
-      }
-    }
-
-    /* ============================================
-       PREMIUM THEME OVERRIDE
-       ============================================ */
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif !important;
-      background: #09090b !important;
-    }
-
-    body::before {
-      display: none !important;
-    }
-
-    .login-container {
-      background: #18181b !important;
-      border: 1px solid rgba(255, 255, 255, 0.1) !important;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
-      border-radius: 14px !important;
-    }
-
-    .logo h1 {
-      font-family: 'Inter', sans-serif !important;
-      font-size: 28px !important;
-      font-weight: 600 !important;
-      color: #fafafa !important;
-      text-shadow: none !important;
-      letter-spacing: -0.02em !important;
-    }
-
-    .logo p {
-      font-family: 'Inter', sans-serif !important;
-      color: #71717a !important;
-      font-size: 14px !important;
-      font-weight: 400 !important;
-      letter-spacing: 0 !important;
-      text-transform: none !important;
-    }
-
-    label {
-      font-family: 'Inter', sans-serif !important;
-      color: #a1a1aa !important;
-      font-size: 13px !important;
-      font-weight: 500 !important;
-      letter-spacing: 0 !important;
-      text-transform: none !important;
-    }
-
-    input[type="email"],
-    input[type="password"] {
-      font-family: 'Inter', sans-serif !important;
-      background: #09090b !important;
-      border: 1px solid rgba(255, 255, 255, 0.1) !important;
-      border-radius: 10px !important;
-      color: #fafafa !important;
-    }
-
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-      border-color: #00FFFF !important;
-      box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1) !important;
-    }
-
-    .login-btn {
-      font-family: 'Inter', sans-serif !important;
-      background: #00FFFF !important;
-      border: none !important;
-      color: #000 !important;
-      font-weight: 600 !important;
-      letter-spacing: 0 !important;
-      text-transform: none !important;
-      border-radius: 10px !important;
-    }
-
-    .login-btn:hover {
-      background: #67e8f9 !important;
-      box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3) !important;
-    }
-
-    .error-message {
-      font-family: 'Inter', sans-serif !important;
-      background: rgba(248, 113, 113, 0.1) !important;
-      border: 1px solid rgba(248, 113, 113, 0.3) !important;
-      border-radius: 10px !important;
-    }
-
-    .footer {
-      font-family: 'Inter', sans-serif !important;
-      color: #71717a !important;
     }
   </style>
 </head>
 <body>
   <div class="login-container">
-    <div class="logo">
-      <h1>Client Portal</h1>
-      <p>Access your AI receptionist dashboard</p>
-    </div>
-
-    <div id="error-message" class="error-message"></div>
-
-    <form id="login-form">
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          required
-          autocomplete="email"
-          placeholder="you@example.com"
-        >
+    <!-- LOGIN VIEW -->
+    <div id="login-view" class="view active">
+      <div class="logo">
+        <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/68bcea80938a4e0fd2da0e79.png" alt="SaveYa">
+        <h1>Client Portal</h1>
+        <p>Access your AI receptionist dashboard</p>
       </div>
 
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          required
-          autocomplete="current-password"
-          placeholder="Enter your password"
-        >
+      <div id="login-message" class="message"></div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" required autocomplete="email" placeholder="you@example.com">
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" required autocomplete="current-password" placeholder="Enter your password">
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="login-btn">Sign In</button>
+      </form>
+
+      <div class="links">
+        <span class="link" onclick="showView('forgot')">Forgot Password?</span>
+        <span class="link" onclick="showView('join')">Join with Code</span>
       </div>
 
-      <button type="submit" class="login-btn" id="login-btn">
-        Sign In
-      </button>
-    </form>
-
-    <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(0, 255, 255, 0.2);">
-      <p style="font-size: 12px; color: #9ca3af; margin-bottom: 8px; font-weight: 600;">Forgot your password?</p>
-      <p style="font-size: 11px; color: #6b7280; line-height: 1.6;">Please contact your account administrator to reset your password.</p>
+      <div class="footer">© 2025 SaveYa Tech</div>
     </div>
 
-    <div class="footer">
-      © 2025 AI Receptionist Dashboard
+    <!-- JOIN WITH CODE VIEW -->
+    <div id="join-view" class="view">
+      <div class="back-link" onclick="showView('login')">← Back to Login</div>
+
+      <div class="logo">
+        <h1>Join Your Team</h1>
+        <p>Enter your invitation code to create an account</p>
+      </div>
+
+      <div id="join-message" class="message"></div>
+
+      <!-- Step 1: Enter Code -->
+      <div id="join-step1">
+        <form id="code-form">
+          <div class="form-group">
+            <label for="invitation-code">Invitation Code</label>
+            <input type="text" id="invitation-code" required placeholder="Enter 8-character code" maxlength="8" style="text-transform: uppercase; letter-spacing: 2px; text-align: center; font-size: 18px;">
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="code-btn">Continue</button>
+        </form>
+      </div>
+
+      <!-- Step 2: Create Account -->
+      <div id="join-step2" style="display: none;">
+        <div id="business-badge" class="business-badge"></div>
+
+        <form id="register-form">
+          <input type="hidden" id="register-code">
+
+          <div class="form-group">
+            <label for="register-name">Your Name</label>
+            <input type="text" id="register-name" required placeholder="John Smith">
+          </div>
+
+          <div class="form-group">
+            <label for="register-email">Email Address</label>
+            <input type="email" id="register-email" required autocomplete="email" placeholder="you@example.com">
+          </div>
+
+          <div class="form-group">
+            <label for="register-password">Create Password</label>
+            <input type="password" id="register-password" required autocomplete="new-password" placeholder="Minimum 6 characters" minlength="6">
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="register-btn">Create Account</button>
+          <button type="button" class="btn btn-secondary" onclick="resetJoinForm()">Use Different Code</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- FORGOT PASSWORD VIEW -->
+    <div id="forgot-view" class="view">
+      <div class="back-link" onclick="showView('login')">← Back to Login</div>
+
+      <div class="logo">
+        <h1>Reset Password</h1>
+        <p>Enter your email to receive a reset link</p>
+      </div>
+
+      <div id="forgot-message" class="message"></div>
+
+      <form id="forgot-form">
+        <div class="form-group">
+          <label for="forgot-email">Email Address</label>
+          <input type="email" id="forgot-email" required autocomplete="email" placeholder="you@example.com">
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="forgot-btn">Send Reset Link</button>
+      </form>
     </div>
   </div>
 
   <script>
-    const form = document.getElementById('login-form');
-    const errorMessage = document.getElementById('error-message');
-    const loginBtn = document.getElementById('login-btn');
+    // View switching
+    function showView(view) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById(view + '-view').classList.add('active');
+      // Clear messages
+      document.querySelectorAll('.message').forEach(m => {
+        m.classList.remove('show');
+        m.textContent = '';
+      });
+    }
 
-    form.addEventListener('submit', async (e) => {
+    function showMessage(elementId, text, type) {
+      const el = document.getElementById(elementId);
+      el.textContent = text;
+      el.className = 'message show ' + type;
+    }
+
+    // LOGIN
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const btn = document.getElementById('login-btn');
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
 
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-
-      // Clear previous error
-      errorMessage.classList.remove('show');
-      loginBtn.disabled = true;
-      loginBtn.textContent = 'Signing in...';
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
 
       try {
         // Try client login first
         let response = await fetch('/api/auth/login', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify({ email, password })
         });
 
         let data = await response.json();
 
-        // If client login fails with 401, try team member login
+        // If client login fails, try team member login
         if (response.status === 401) {
           response = await fetch('/api/team/auth/login', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
             body: JSON.stringify({ email, password })
           });
-
           data = await response.json();
         }
 
         if (response.ok) {
-          // Successful login - redirect to client dashboard
           window.location.href = '/client-dashboard';
         } else {
-          // Show error
-          errorMessage.textContent = data.error || 'Login failed. Please try again.';
-          errorMessage.classList.add('show');
-          loginBtn.disabled = false;
-          loginBtn.textContent = 'Sign In';
+          showMessage('login-message', data.error || 'Invalid email or password', 'error');
+          btn.disabled = false;
+          btn.textContent = 'Sign In';
         }
       } catch (error) {
-        console.error('Login error:', error);
-        errorMessage.textContent = 'Network error. Please check your connection.';
-        errorMessage.classList.add('show');
-        loginBtn.disabled = false;
-        loginBtn.textContent = 'Sign In';
+        showMessage('login-message', 'Network error. Please try again.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
       }
+    });
+
+    // VALIDATE CODE
+    document.getElementById('code-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('code-btn');
+      const code = document.getElementById('invitation-code').value.toUpperCase().trim();
+
+      btn.disabled = true;
+      btn.textContent = 'Validating...';
+
+      try {
+        const response = await fetch('/api/team/validate-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          document.getElementById('register-code').value = code;
+          document.getElementById('business-badge').textContent = 'Joining: ' + data.business_name;
+          document.getElementById('join-step1').style.display = 'none';
+          document.getElementById('join-step2').style.display = 'block';
+        } else {
+          showMessage('join-message', data.error || 'Invalid code', 'error');
+        }
+      } catch (error) {
+        showMessage('join-message', 'Network error. Please try again.', 'error');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Continue';
+    });
+
+    // REGISTER
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('register-btn');
+
+      btn.disabled = true;
+      btn.textContent = 'Creating Account...';
+
+      try {
+        const response = await fetch('/api/team/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            code: document.getElementById('register-code').value,
+            name: document.getElementById('register-name').value,
+            email: document.getElementById('register-email').value,
+            password: document.getElementById('register-password').value
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          showMessage('join-message', 'Account created! Redirecting to login...', 'success');
+          setTimeout(() => {
+            showView('login');
+            showMessage('login-message', 'Account created successfully! Please sign in.', 'success');
+            resetJoinForm();
+          }, 1500);
+        } else {
+          showMessage('join-message', data.error || 'Failed to create account', 'error');
+        }
+      } catch (error) {
+        showMessage('join-message', 'Network error. Please try again.', 'error');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
+    });
+
+    function resetJoinForm() {
+      document.getElementById('join-step1').style.display = 'block';
+      document.getElementById('join-step2').style.display = 'none';
+      document.getElementById('invitation-code').value = '';
+      document.getElementById('register-form').reset();
+    }
+
+    // FORGOT PASSWORD
+    document.getElementById('forgot-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('forgot-btn');
+      const email = document.getElementById('forgot-email').value;
+
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      try {
+        const response = await fetch('/api/team/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+        showMessage('forgot-message', data.message || 'If an account exists, you will receive a reset link.', 'success');
+      } catch (error) {
+        showMessage('forgot-message', 'Network error. Please try again.', 'error');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Send Reset Link';
     });
 
     // Check if already logged in
     (async () => {
       try {
-        const response = await fetch('/api/auth/me', {
-          credentials: 'include'
-        });
-
+        const response = await fetch('/api/auth/me', { credentials: 'include' });
         if (response.ok) {
-          // Already logged in, redirect to dashboard
           window.location.href = '/client-dashboard';
         }
-      } catch (error) {
-        // Not logged in, stay on login page
-      }
+      } catch (error) {}
     })();
   </script>
 </body>
