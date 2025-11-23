@@ -5535,58 +5535,25 @@
     ];
 
     function showOnboarding() {
-      // Add tour CSS with arrow styles
+      // Add tour CSS - simple spotlight effect
       if (!document.getElementById('tour-styles')) {
         const tourStyles = document.createElement('style');
         tourStyles.id = 'tour-styles';
         tourStyles.textContent = `
-          @keyframes tourPulse {
-            0%, 100% { box-shadow: 0 0 0 4px rgba(0, 255, 255, 0.4), 0 0 20px 8px rgba(0, 255, 255, 0.2); }
-            50% { box-shadow: 0 0 0 8px rgba(0, 255, 255, 0.3), 0 0 30px 12px rgba(0, 255, 255, 0.15); }
+          @keyframes spotlightPulse {
+            0%, 100% {
+              box-shadow: 0 0 0 4px #00FFFF, 0 0 0 8px rgba(0, 255, 255, 0.5), 0 0 40px 10px rgba(0, 255, 255, 0.3);
+            }
+            50% {
+              box-shadow: 0 0 0 6px #00FFFF, 0 0 0 12px rgba(0, 255, 255, 0.4), 0 0 60px 15px rgba(0, 255, 255, 0.2);
+            }
           }
-          @keyframes tourArrowBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
-          }
-          .tour-highlight {
+          .tour-spotlight {
             position: relative;
             z-index: 10001 !important;
-            animation: tourPulse 2s ease-in-out infinite !important;
+            animation: spotlightPulse 1.5s ease-in-out infinite !important;
             border-radius: 12px !important;
-            outline: 3px solid #00FFFF !important;
-            outline-offset: 4px !important;
-          }
-          .tour-arrow {
-            position: absolute;
-            width: 0;
-            height: 0;
-            z-index: 10003;
-          }
-          .tour-arrow-down {
-            border-left: 14px solid transparent;
-            border-right: 14px solid transparent;
-            border-top: 14px solid #00FFFF;
-            animation: tourArrowBounce 1s ease-in-out infinite;
-          }
-          .tour-arrow-up {
-            border-left: 14px solid transparent;
-            border-right: 14px solid transparent;
-            border-bottom: 14px solid #00FFFF;
-            animation: tourArrowBounce 1s ease-in-out infinite;
-          }
-          .tour-arrow-left {
-            border-top: 14px solid transparent;
-            border-bottom: 14px solid transparent;
-            border-right: 14px solid #00FFFF;
-          }
-          .tour-arrow-right {
-            border-top: 14px solid transparent;
-            border-bottom: 14px solid transparent;
-            border-left: 14px solid #00FFFF;
-          }
-          #tour-tooltip {
-            max-height: 90vh;
-            overflow-y: auto;
+            background: rgba(0, 255, 255, 0.05) !important;
           }
         `;
         document.head.appendChild(tourStyles);
@@ -5595,13 +5562,11 @@
       // Remove any existing tour elements
       const existingOverlay = document.getElementById('tour-overlay');
       const existingTooltip = document.getElementById('tour-tooltip');
-      const existingArrow = document.getElementById('tour-arrow');
       if (existingOverlay) existingOverlay.remove();
       if (existingTooltip) existingTooltip.remove();
-      if (existingArrow) existingArrow.remove();
-      document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+      document.querySelectorAll('.tour-spotlight').forEach(el => el.classList.remove('tour-spotlight'));
 
-      // Create semi-transparent overlay
+      // Create dark overlay
       const overlay = document.createElement('div');
       overlay.id = 'tour-overlay';
       overlay.style.cssText = `
@@ -5610,293 +5575,153 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.6);
+        background: rgba(0, 0, 0, 0.75);
         z-index: 10000;
         opacity: 0;
         transition: opacity 0.3s ease;
         pointer-events: none;
       `;
 
-      // Create tooltip
+      // Create tooltip - ALWAYS at bottom
       const tooltip = document.createElement('div');
       tooltip.id = 'tour-tooltip';
       tooltip.style.cssText = `
         position: fixed;
-        background: linear-gradient(180deg, rgba(13, 17, 23, 0.98) 0%, rgba(20, 25, 35, 0.98) 100%);
-        backdrop-filter: blur(20px);
-        border: 2px solid #00FFFF;
-        border-radius: 16px;
-        padding: 20px;
-        width: 340px;
-        max-width: calc(100vw - 32px);
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        background: linear-gradient(180deg, #1a1f2e 0%, #0d1117 100%);
+        border: 3px solid #00FFFF;
+        border-radius: 20px;
+        padding: 24px;
         z-index: 10002;
-        box-shadow: 0 8px 32px rgba(0, 255, 255, 0.3), 0 0 60px rgba(0, 255, 255, 0.1);
+        box-shadow: 0 -10px 40px rgba(0, 255, 255, 0.3), 0 0 0 1px rgba(255,255,255,0.1);
         opacity: 0;
-        transition: opacity 0.3s ease, transform 0.3s ease;
+        transition: opacity 0.3s ease;
         pointer-events: auto;
+        max-width: 500px;
+        margin: 0 auto;
       `;
-
-      // Create arrow element
-      const arrow = document.createElement('div');
-      arrow.id = 'tour-arrow';
-      arrow.className = 'tour-arrow';
-      arrow.style.display = 'none';
 
       document.body.appendChild(overlay);
       document.body.appendChild(tooltip);
-      document.body.appendChild(arrow);
 
       setTimeout(() => {
         overlay.style.opacity = '1';
         tooltip.style.opacity = '1';
       }, 10);
 
-      showTourStep(0, tooltip, overlay, arrow);
+      showTourStep(0, tooltip, overlay);
     }
 
-    function showTourStep(step, tooltip, overlay, arrow) {
+    function showTourStep(step, tooltip, overlay) {
       if (step >= tourSteps.length) {
-        closeTour(tooltip, overlay, arrow);
+        closeTour(tooltip, overlay);
         return;
       }
 
       const currentStep = tourSteps[step];
       const isMobile = window.innerWidth < 768;
 
-      // Build progress bar
-      const progressPercent = ((step + 1) / tourSteps.length) * 100;
+      // Remove previous spotlight
+      document.querySelectorAll('.tour-spotlight').forEach(el => el.classList.remove('tour-spotlight'));
 
+      // If there's a target, scroll to it and highlight it
+      if (currentStep.target) {
+        const targetEl = document.querySelector(currentStep.target);
+        if (targetEl) {
+          // Scroll element to top of viewport so it's clearly visible above the tooltip
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+          // Add spotlight after scroll
+          setTimeout(() => {
+            targetEl.classList.add('tour-spotlight');
+          }, 300);
+        }
+      } else {
+        // No target - scroll to top for intro/outro
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      // Build tooltip content
       tooltip.innerHTML = `
-        <!-- Progress bar -->
-        <div style="margin-bottom: 16px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <span style="color: #00FFFF; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Step ${step + 1} of ${tourSteps.length}</span>
+        <!-- Progress -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+          <div style="display: flex; gap: 6px;">
+            ${tourSteps.map((_, i) => `
+              <div style="width: ${i === step ? '24px' : '8px'}; height: 8px; border-radius: 4px; background: ${i === step ? '#00FFFF' : i < step ? 'rgba(0, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.2)'}; transition: all 0.3s;"></div>
+            `).join('')}
           </div>
-          <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
-            <div style="height: 100%; width: ${progressPercent}%; background: linear-gradient(90deg, #00FFFF, #00CED1); border-radius: 2px; transition: width 0.3s;"></div>
-          </div>
+          <span style="color: #00FFFF; font-size: 12px; font-weight: 600;">${step + 1} / ${tourSteps.length}</span>
         </div>
 
-        <!-- Title with icon -->
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-          <span style="font-size: 32px; line-height: 1;">${currentStep.icon}</span>
-          <h3 style="color: #ffffff; font-size: ${isMobile ? '18px' : '20px'}; font-weight: 700; margin: 0; line-height: 1.2;">
+        <!-- Title -->
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+          <span style="font-size: 36px;">${currentStep.icon}</span>
+          <h3 style="color: #ffffff; font-size: ${isMobile ? '20px' : '22px'}; font-weight: 700; margin: 0;">
             ${currentStep.title}
           </h3>
         </div>
 
-        <!-- Description - larger, clearer text -->
-        <div style="color: #d1d5db; font-size: ${isMobile ? '14px' : '15px'}; line-height: 1.7; margin-bottom: 16px;">
+        <!-- Description -->
+        <div style="color: #d1d5db; font-size: ${isMobile ? '15px' : '16px'}; line-height: 1.8; margin-bottom: 20px;">
           ${currentStep.text}
         </div>
 
+        ${currentStep.target ? `
+          <div style="background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;">
+            <span style="color: #00FFFF; font-size: 14px; font-weight: 600;">👆 Look at the glowing section above</span>
+          </div>
+        ` : ''}
+
         <!-- Don't show again -->
-        <div style="margin-bottom: 14px; padding: 10px 12px; background: rgba(0, 0, 0, 0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
-          <label style="display: flex; align-items: center; cursor: pointer; color: #9ca3af; font-size: 13px;">
-            <input type="checkbox" id="dont-show-tour-again" style="width: 18px; height: 18px; margin-right: 10px; cursor: pointer; accent-color: #00FFFF; flex-shrink: 0;">
+        <div style="margin-bottom: 16px;">
+          <label style="display: flex; align-items: center; cursor: pointer; color: #9ca3af; font-size: 14px;">
+            <input type="checkbox" id="dont-show-tour-again" style="width: 20px; height: 20px; margin-right: 12px; cursor: pointer; accent-color: #00FFFF;">
             <span>Don't show this tour again</span>
           </label>
         </div>
 
         <!-- Buttons -->
-        <div style="display: flex; gap: 10px;">
-          <button onclick="skipTour()" style="flex: 1; padding: 14px 16px; background: transparent; color: #9ca3af; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-            Skip Tour
+        <div style="display: flex; gap: 12px;">
+          <button onclick="skipTour()" style="flex: 1; padding: 16px; background: transparent; color: #9ca3af; border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer;">
+            Skip
           </button>
-          <button onclick="nextTourStep()" style="flex: 1.5; padding: 14px 16px; background: linear-gradient(135deg, #00FFFF, #00CED1); color: #0d1117; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(0, 255, 255, 0.4);">
-            ${step === tourSteps.length - 1 ? 'Done!' : 'Next →'}
+          <button onclick="nextTourStep()" style="flex: 2; padding: 16px; background: linear-gradient(135deg, #00FFFF, #00CED1); color: #0d1117; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 20px rgba(0, 255, 255, 0.4);">
+            ${step === tourSteps.length - 1 ? '✓ Got it!' : 'Next →'}
           </button>
         </div>
       `;
 
-      // Remove previous highlights
-      document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
-      arrow.style.display = 'none';
-
-      // Position tooltip and arrow
-      if (currentStep.target) {
-        const targetEl = document.querySelector(currentStep.target);
-        if (targetEl) {
-          targetEl.classList.add('tour-highlight');
-
-          // First scroll to element, then position tooltip after scroll completes
-          targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-          // Wait for scroll to complete before positioning
-          setTimeout(() => {
-            positionTooltipNearTarget(tooltip, arrow, targetEl, currentStep.position, isMobile);
-          }, 400);
-        } else {
-          console.warn(`[TOUR] Element not found: ${currentStep.target}`);
-          positionTooltipCenter(tooltip, isMobile);
-        }
-      } else {
-        positionTooltipCenter(tooltip, isMobile);
-      }
-
       tourStep = step;
-    }
-
-    function positionTooltipNearTarget(tooltip, arrow, targetEl, preferredPosition, isMobile) {
-      const rect = targetEl.getBoundingClientRect();
-      const tooltipRect = tooltip.getBoundingClientRect();
-      const padding = 16;
-      const arrowSize = 14;
-
-      // Reset all positioning
-      tooltip.style.top = 'auto';
-      tooltip.style.bottom = 'auto';
-      tooltip.style.left = 'auto';
-      tooltip.style.right = 'auto';
-      tooltip.style.transform = 'none';
-
-      if (isMobile) {
-        // Mobile: Smart positioning to not cover target
-        const targetCenterY = rect.top + rect.height / 2;
-        const screenMiddle = window.innerHeight / 2;
-
-        if (targetCenterY < screenMiddle) {
-          // Target is in top half - put tooltip at bottom
-          tooltip.style.bottom = '16px';
-          tooltip.style.left = '16px';
-          tooltip.style.right = '16px';
-          tooltip.style.width = 'auto';
-          tooltip.style.maxWidth = 'none';
-
-          // Arrow points up toward target
-          arrow.className = 'tour-arrow tour-arrow-up';
-          arrow.style.display = 'block';
-          arrow.style.bottom = (window.innerHeight - parseInt(tooltip.style.bottom) - tooltipRect.height - arrowSize) + 'px';
-          arrow.style.left = '50%';
-          arrow.style.transform = 'translateX(-50%)';
-        } else {
-          // Target is in bottom half - put tooltip at top
-          tooltip.style.top = '80px'; // Below header
-          tooltip.style.left = '16px';
-          tooltip.style.right = '16px';
-          tooltip.style.width = 'auto';
-          tooltip.style.maxWidth = 'none';
-
-          // Arrow points down toward target
-          arrow.className = 'tour-arrow tour-arrow-down';
-          arrow.style.display = 'block';
-          const tooltipBottom = 80 + tooltip.offsetHeight;
-          arrow.style.top = tooltipBottom + 'px';
-          arrow.style.left = '50%';
-          arrow.style.transform = 'translateX(-50%)';
-        }
-      } else {
-        // Desktop: Position tooltip to the side of target, never covering it
-        const spaceRight = window.innerWidth - rect.right;
-        const spaceLeft = rect.left;
-        const spaceBelow = window.innerHeight - rect.bottom;
-        const spaceAbove = rect.top;
-        const tooltipWidth = 340;
-        const tooltipHeight = 400; // Estimated
-
-        // Prefer positioning based on step preference, but ensure visibility
-        if (preferredPosition === 'below' && spaceBelow > tooltipHeight + padding + arrowSize) {
-          // Position below target
-          tooltip.style.top = (rect.bottom + padding + arrowSize) + 'px';
-          tooltip.style.left = Math.max(padding, Math.min(rect.left + rect.width/2 - tooltipWidth/2, window.innerWidth - tooltipWidth - padding)) + 'px';
-
-          arrow.className = 'tour-arrow tour-arrow-up';
-          arrow.style.display = 'block';
-          arrow.style.top = (rect.bottom + padding - 2) + 'px';
-          arrow.style.left = (rect.left + rect.width/2 - arrowSize) + 'px';
-        } else if (preferredPosition === 'above' && spaceAbove > tooltipHeight + padding + arrowSize) {
-          // Position above target
-          tooltip.style.bottom = (window.innerHeight - rect.top + padding + arrowSize) + 'px';
-          tooltip.style.left = Math.max(padding, Math.min(rect.left + rect.width/2 - tooltipWidth/2, window.innerWidth - tooltipWidth - padding)) + 'px';
-
-          arrow.className = 'tour-arrow tour-arrow-down';
-          arrow.style.display = 'block';
-          arrow.style.bottom = (window.innerHeight - rect.top + padding - 2) + 'px';
-          arrow.style.left = (rect.left + rect.width/2 - arrowSize) + 'px';
-        } else if (spaceRight > tooltipWidth + padding + arrowSize) {
-          // Position to the right of target
-          tooltip.style.left = (rect.right + padding + arrowSize) + 'px';
-          tooltip.style.top = Math.max(padding, Math.min(rect.top + rect.height/2 - tooltipHeight/2, window.innerHeight - tooltipHeight - padding)) + 'px';
-
-          arrow.className = 'tour-arrow tour-arrow-left';
-          arrow.style.display = 'block';
-          arrow.style.left = (rect.right + padding - 2) + 'px';
-          arrow.style.top = (rect.top + rect.height/2 - arrowSize) + 'px';
-        } else if (spaceLeft > tooltipWidth + padding + arrowSize) {
-          // Position to the left of target
-          tooltip.style.right = (window.innerWidth - rect.left + padding + arrowSize) + 'px';
-          tooltip.style.top = Math.max(padding, Math.min(rect.top + rect.height/2 - tooltipHeight/2, window.innerHeight - tooltipHeight - padding)) + 'px';
-
-          arrow.className = 'tour-arrow tour-arrow-right';
-          arrow.style.display = 'block';
-          arrow.style.right = (window.innerWidth - rect.left + padding - 2) + 'px';
-          arrow.style.top = (rect.top + rect.height/2 - arrowSize) + 'px';
-        } else {
-          // Fallback: position at bottom right corner
-          tooltip.style.bottom = padding + 'px';
-          tooltip.style.right = padding + 'px';
-          arrow.style.display = 'none';
-        }
-      }
-    }
-
-    function positionTooltipCenter(tooltip, isMobile) {
-      const arrow = document.getElementById('tour-arrow');
-      if (arrow) arrow.style.display = 'none';
-
-      tooltip.style.top = 'auto';
-      tooltip.style.bottom = 'auto';
-      tooltip.style.left = 'auto';
-      tooltip.style.right = 'auto';
-
-      if (isMobile) {
-        tooltip.style.top = '50%';
-        tooltip.style.left = '16px';
-        tooltip.style.right = '16px';
-        tooltip.style.transform = 'translateY(-50%)';
-        tooltip.style.width = 'auto';
-        tooltip.style.maxWidth = 'none';
-      } else {
-        tooltip.style.top = '50%';
-        tooltip.style.left = '50%';
-        tooltip.style.transform = 'translate(-50%, -50%)';
-        tooltip.style.width = '380px';
-      }
     }
 
     window.nextTourStep = function() {
       const tooltip = document.getElementById('tour-tooltip');
       const overlay = document.getElementById('tour-overlay');
-      const arrow = document.getElementById('tour-arrow');
-
-      document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
-
-      showTourStep(tourStep + 1, tooltip, overlay, arrow);
+      showTourStep(tourStep + 1, tooltip, overlay);
     };
 
     window.skipTour = function() {
       const tooltip = document.getElementById('tour-tooltip');
       const overlay = document.getElementById('tour-overlay');
-      const arrow = document.getElementById('tour-arrow');
-      closeTour(tooltip, overlay, arrow);
+      closeTour(tooltip, overlay);
     };
 
-    function closeTour(tooltip, overlay, arrow) {
+    function closeTour(tooltip, overlay) {
       const dontShowAgain = document.getElementById('dont-show-tour-again');
       if (dontShowAgain && dontShowAgain.checked) {
         localStorage.setItem('dashboard-tour-never-show', 'true');
       }
 
-      document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+      document.querySelectorAll('.tour-spotlight').forEach(el => el.classList.remove('tour-spotlight'));
 
       tooltip.style.opacity = '0';
       overlay.style.opacity = '0';
-      if (arrow) arrow.style.opacity = '0';
 
       setTimeout(() => {
         tooltip.remove();
         overlay.remove();
-        if (arrow) arrow.remove();
       }, 300);
     }
 
