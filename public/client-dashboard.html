@@ -5473,61 +5473,61 @@
       }
     }, 2000);
 
-    // Onboarding Tour - Simple guided walkthrough (5th grade reading level)
+    // Onboarding Tour - Comprehensive guided walkthrough with spotlight effect
     let tourStep = 0;
     const tourSteps = [
       {
-        title: 'Welcome!',
-        text: 'This is where you see all your phone calls. Our AI answers every call for you. It writes down what people say and sorts the calls. Let me show you how it works!',
+        title: 'Welcome to Your Dashboard!',
+        text: 'This is your command center for all phone calls. Our AI receptionist answers every call for you 24/7, writes down what people say, and sorts them automatically.<br><br><b>Let me give you a quick tour so you know exactly how to use everything!</b>',
         target: null,
         position: 'center',
         icon: '👋'
       },
       {
-        title: 'Your Call Numbers',
-        text: 'These boxes show how many calls you got:<br><br>• <b>Total Calls</b> - Every call<br>• <b>New Leads</b> - People who might need your help<br>• <b>Existing Clients</b> - People you already know<br>• <b>Other</b> - Wrong numbers and sales calls',
+        title: 'Your Call Statistics',
+        text: 'These 4 boxes show your call summary at a glance:<br><br>• <b style="color:#00FFFF;">Total Calls</b> — Every single call that came in<br>• <b style="color:#10b981;">New Leads</b> — Potential customers who need your services<br>• <b style="color:#3b82f6;">Existing Clients</b> — People you\'ve worked with before<br>• <b style="color:#9ca3af;">Other</b> — Spam, wrong numbers, and sales calls<br><br><i>Click any box to filter your calls by that type!</i>',
         target: '.stats-grid',
         position: 'below',
         icon: '📊'
       },
       {
-        title: 'Call Charts',
-        text: 'These charts show you:<br><br>• How many calls you get each day<br>• What types of calls come in<br><br>This helps you see your busiest days!',
+        title: 'Call Analytics Charts',
+        text: 'These charts help you understand your call patterns:<br><br>• <b>Left Chart:</b> Shows how many calls you get each day of the week<br>• <b>Right Chart:</b> Shows the breakdown of call types<br><br><i>Use this to identify your busiest days and plan your schedule!</i>',
         target: '#analytics-section',
         position: 'below',
         icon: '📈'
       },
       {
-        title: 'New Leads - Very Important!',
-        text: 'This is your most important section!<br><br>When someone calls who might need your help, they show up here. You need to:<br><br>• Tap <b style="color:#10b981;">APPROVE</b> if they are a real lead<br>• Tap <b style="color:#ef4444;">DENY</b> if they are not',
+        title: '⭐ NEW LEADS — Your Most Important Section!',
+        text: 'This is where the magic happens! When someone calls who might need your services, they appear here as a "lead".<br><br><b>Your job is to review each lead and decide:</b><br><br>• Tap the <b style="color:#10b981;">✓ APPROVE</b> button if this is a REAL potential customer<br>• Tap the <b style="color:#ef4444;">✗ DENY</b> button if this is NOT a real lead<br><br><i style="color:#fbbf24;">⚠️ Check this section every day so you don\'t miss new business!</i>',
         target: '#lead-tracker-section',
         position: 'below',
         icon: '⭐'
       },
       {
-        title: 'Sort Your Leads',
-        text: 'Use these buttons to see different leads:<br><br>• <b>Pending</b> - Leads you need to check<br>• <b>Approved</b> - Leads you said yes to<br>• <b>Denied</b> - Leads you said no to',
+        title: 'Lead Filter Tabs',
+        text: 'Use these tabs to organize your leads:<br><br>• <b style="color:#fbbf24;">PENDING</b> — Leads waiting for you to review (check these first!)<br>• <b style="color:#10b981;">APPROVED</b> — Leads you confirmed as real customers<br>• <b style="color:#ef4444;">DENIED</b> — Leads you marked as not real<br><br><i>The number badge shows how many leads are in each category.</i>',
         target: '.leads-tabs',
         position: 'below',
         icon: '📋'
       },
       {
-        title: 'All Your Calls',
-        text: 'Every single call is saved here. You can:<br><br>• Search for a phone number<br>• Click on any call to read what was said<br>• See how long each call lasted',
+        title: 'Your Call History',
+        text: 'Every single call is recorded and saved here. For each call you can see:<br><br>• <b>Phone number</b> of the caller<br>• <b>Date and time</b> of the call<br>• <b>How long</b> the call lasted<br>• <b>Category</b> (New Lead, Existing Client, etc.)<br><br><b style="color:#00FFFF;">👆 Click on any call to read the full conversation transcript!</b>',
         target: '#recent-calls-section',
         position: 'above',
         icon: '📞'
       },
       {
-        title: 'Find Specific Calls',
-        text: 'Use these buttons to find calls:<br><br>• <b>Today</b> - Calls from today<br>• <b>This Week</b> - Calls from this week<br>• <b>Category</b> - Pick a call type<br><br>You can also pick any dates you want!',
+        title: 'Search & Filter Calls',
+        text: 'Need to find a specific call? Use these filters:<br><br>• <b>Search box:</b> Type a phone number or name<br>• <b>Today / This Week:</b> Quick date filters<br>• <b>Category dropdown:</b> Filter by call type<br>• <b>Date pickers:</b> Choose any date range<br><br><i>You can also use keyboard shortcuts: Press <b>/</b> to search, <b>R</b> to refresh!</i>',
         target: '#filters-section',
         position: 'below',
         icon: '🔍'
       },
       {
-        title: 'You\'re All Set!',
-        text: 'That\'s everything! Here are some tips:<br><br>• Check your <b>New Leads</b> every day<br>• Click any call to read the full conversation<br>• Use the search to find old calls<br><br>Need help? Contact SaveYa support anytime!',
+        title: 'You\'re Ready to Go!',
+        text: '<b>Here\'s your daily routine:</b><br><br>1️⃣ Check your <b style="color:#fbbf24;">Pending Leads</b> and approve or deny each one<br>2️⃣ Click on new calls to read what was discussed<br>3️⃣ Follow up with approved leads<br><br><b>Pro Tips:</b><br>• The AI sends you email alerts for important calls<br>• Use the Settings gear ⚙️ to customize your preferences<br>• Contact SaveYa support anytime if you need help!<br><br><i style="color:#00FFFF;">You can retake this tour anytime from Settings!</i>',
         target: null,
         position: 'center',
         icon: '🎉'
@@ -5535,25 +5535,69 @@
     ];
 
     function showOnboarding() {
-      // Add tour CSS - simple spotlight effect
+      // Add comprehensive tour CSS with spotlight cutout effect
       if (!document.getElementById('tour-styles')) {
         const tourStyles = document.createElement('style');
         tourStyles.id = 'tour-styles';
         tourStyles.textContent = `
-          @keyframes spotlightPulse {
+          @keyframes tourPulse {
             0%, 100% {
-              box-shadow: 0 0 0 4px #00FFFF, 0 0 0 8px rgba(0, 255, 255, 0.5), 0 0 40px 10px rgba(0, 255, 255, 0.3);
+              box-shadow: 0 0 0 4px #00FFFF, 0 0 0 8px rgba(0, 255, 255, 0.6), 0 0 30px rgba(0, 255, 255, 0.4), inset 0 0 20px rgba(0, 255, 255, 0.1);
             }
             50% {
-              box-shadow: 0 0 0 6px #00FFFF, 0 0 0 12px rgba(0, 255, 255, 0.4), 0 0 60px 15px rgba(0, 255, 255, 0.2);
+              box-shadow: 0 0 0 6px #00FFFF, 0 0 0 12px rgba(0, 255, 255, 0.4), 0 0 50px rgba(0, 255, 255, 0.3), inset 0 0 30px rgba(0, 255, 255, 0.15);
             }
           }
-          .tour-spotlight {
+          @keyframes tourArrowBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+          }
+          @keyframes tourFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .tour-highlight {
             position: relative;
             z-index: 10001 !important;
-            animation: spotlightPulse 1.5s ease-in-out infinite !important;
-            border-radius: 12px !important;
-            background: rgba(0, 255, 255, 0.05) !important;
+            animation: tourPulse 1.5s ease-in-out infinite !important;
+            border-radius: 16px !important;
+            outline: 3px dashed #00FFFF !important;
+            outline-offset: 4px !important;
+          }
+          .tour-highlight::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            background: rgba(0, 255, 255, 0.08);
+            border-radius: 20px;
+            pointer-events: none;
+            z-index: -1;
+          }
+          #tour-arrow {
+            position: fixed;
+            z-index: 10003;
+            font-size: 48px;
+            animation: tourArrowBounce 0.8s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.8));
+            pointer-events: none;
+          }
+          #tour-tooltip {
+            animation: tourFadeIn 0.3s ease-out;
+          }
+          #tour-label {
+            position: fixed;
+            z-index: 10003;
+            background: linear-gradient(135deg, #00FFFF, #00CED1);
+            color: #0d1117;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            pointer-events: none;
+            box-shadow: 0 4px 20px rgba(0, 255, 255, 0.5);
           }
         `;
         document.head.appendChild(tourStyles);
@@ -5562,11 +5606,15 @@
       // Remove any existing tour elements
       const existingOverlay = document.getElementById('tour-overlay');
       const existingTooltip = document.getElementById('tour-tooltip');
+      const existingArrow = document.getElementById('tour-arrow');
+      const existingLabel = document.getElementById('tour-label');
       if (existingOverlay) existingOverlay.remove();
       if (existingTooltip) existingTooltip.remove();
-      document.querySelectorAll('.tour-spotlight').forEach(el => el.classList.remove('tour-spotlight'));
+      if (existingArrow) existingArrow.remove();
+      if (existingLabel) existingLabel.remove();
+      document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
 
-      // Create dark overlay
+      // Create dark overlay with pointer events for clicking through to highlighted element
       const overlay = document.createElement('div');
       overlay.id = 'tour-overlay';
       overlay.style.cssText = `
@@ -5575,35 +5623,48 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.75);
+        background: rgba(0, 0, 0, 0.85);
         z-index: 10000;
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: opacity 0.4s ease;
         pointer-events: none;
       `;
 
-      // Create tooltip - ALWAYS at bottom
+      // Create bouncing arrow pointer
+      const arrow = document.createElement('div');
+      arrow.id = 'tour-arrow';
+      arrow.innerHTML = '👇';
+      arrow.style.display = 'none';
+
+      // Create label for highlighted element
+      const label = document.createElement('div');
+      label.id = 'tour-label';
+      label.style.display = 'none';
+
+      // Create tooltip
       const tooltip = document.createElement('div');
       tooltip.id = 'tour-tooltip';
       tooltip.style.cssText = `
         position: fixed;
-        bottom: 20px;
-        left: 20px;
-        right: 20px;
-        background: linear-gradient(180deg, #1a1f2e 0%, #0d1117 100%);
+        bottom: 24px;
+        left: 16px;
+        right: 16px;
+        background: linear-gradient(180deg, #1e2433 0%, #0d1117 100%);
         border: 3px solid #00FFFF;
-        border-radius: 20px;
-        padding: 24px;
+        border-radius: 24px;
+        padding: 28px;
         z-index: 10002;
-        box-shadow: 0 -10px 40px rgba(0, 255, 255, 0.3), 0 0 0 1px rgba(255,255,255,0.1);
+        box-shadow: 0 -10px 60px rgba(0, 255, 255, 0.4), 0 0 0 1px rgba(255,255,255,0.1), inset 0 1px 0 rgba(255,255,255,0.1);
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: opacity 0.4s ease;
         pointer-events: auto;
-        max-width: 500px;
+        max-width: 520px;
         margin: 0 auto;
       `;
 
       document.body.appendChild(overlay);
+      document.body.appendChild(arrow);
+      document.body.appendChild(label);
       document.body.appendChild(tooltip);
 
       setTimeout(() => {
@@ -5611,32 +5672,48 @@
         tooltip.style.opacity = '1';
       }, 10);
 
-      showTourStep(0, tooltip, overlay);
+      showTourStep(0, tooltip, overlay, arrow, label);
     }
 
-    function showTourStep(step, tooltip, overlay) {
+    function showTourStep(step, tooltip, overlay, arrow, label) {
       if (step >= tourSteps.length) {
-        closeTour(tooltip, overlay);
+        closeTour(tooltip, overlay, arrow, label);
         return;
       }
 
       const currentStep = tourSteps[step];
       const isMobile = window.innerWidth < 768;
 
-      // Remove previous spotlight
-      document.querySelectorAll('.tour-spotlight').forEach(el => el.classList.remove('tour-spotlight'));
+      // Remove previous highlight
+      document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+      arrow.style.display = 'none';
+      label.style.display = 'none';
 
       // If there's a target, scroll to it and highlight it
       if (currentStep.target) {
         const targetEl = document.querySelector(currentStep.target);
         if (targetEl) {
-          // Scroll element to top of viewport so it's clearly visible above the tooltip
-          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Scroll element into view with offset for the tooltip at bottom
+          const rect = targetEl.getBoundingClientRect();
+          const scrollTop = window.pageYOffset + rect.top - 100;
+          window.scrollTo({ top: Math.max(0, scrollTop), behavior: 'smooth' });
 
-          // Add spotlight after scroll
+          // Add highlight and position arrow after scroll
           setTimeout(() => {
-            targetEl.classList.add('tour-spotlight');
-          }, 300);
+            targetEl.classList.add('tour-highlight');
+
+            // Position the bouncing arrow above the element
+            const newRect = targetEl.getBoundingClientRect();
+            arrow.style.left = (newRect.left + newRect.width / 2 - 24) + 'px';
+            arrow.style.top = (newRect.top - 60) + 'px';
+            arrow.style.display = 'block';
+
+            // Position label above arrow
+            label.textContent = '👀 LOOK HERE';
+            label.style.left = (newRect.left + newRect.width / 2 - 60) + 'px';
+            label.style.top = (newRect.top - 100) + 'px';
+            label.style.display = 'block';
+          }, 400);
         }
       } else {
         // No target - scroll to top for intro/outro
@@ -5645,50 +5722,65 @@
 
       // Build tooltip content
       tooltip.innerHTML = `
-        <!-- Progress -->
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-          <div style="display: flex; gap: 6px;">
+        <!-- Progress bar -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+          <div style="display: flex; gap: 6px; flex: 1;">
             ${tourSteps.map((_, i) => `
-              <div style="width: ${i === step ? '24px' : '8px'}; height: 8px; border-radius: 4px; background: ${i === step ? '#00FFFF' : i < step ? 'rgba(0, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.2)'}; transition: all 0.3s;"></div>
+              <div style="
+                flex: 1;
+                height: 6px;
+                border-radius: 3px;
+                background: ${i < step ? '#00FFFF' : i === step ? 'linear-gradient(90deg, #00FFFF, #00CED1)' : 'rgba(255, 255, 255, 0.15)'};
+                transition: all 0.3s;
+                ${i === step ? 'box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);' : ''}
+              "></div>
             `).join('')}
           </div>
-          <span style="color: #00FFFF; font-size: 12px; font-weight: 600;">${step + 1} / ${tourSteps.length}</span>
+          <span style="color: #00FFFF; font-size: 13px; font-weight: 700; margin-left: 16px; background: rgba(0, 255, 255, 0.1); padding: 4px 12px; border-radius: 12px;">
+            Step ${step + 1} of ${tourSteps.length}
+          </span>
         </div>
 
-        <!-- Title -->
-        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
-          <span style="font-size: 36px;">${currentStep.icon}</span>
-          <h3 style="color: #ffffff; font-size: ${isMobile ? '20px' : '22px'}; font-weight: 700; margin: 0;">
+        <!-- Title with icon -->
+        <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px;">
+          <span style="font-size: 42px; line-height: 1;">${currentStep.icon}</span>
+          <h3 style="color: #ffffff; font-size: ${isMobile ? '20px' : '24px'}; font-weight: 800; margin: 0; line-height: 1.3;">
             ${currentStep.title}
           </h3>
         </div>
 
         <!-- Description -->
-        <div style="color: #d1d5db; font-size: ${isMobile ? '15px' : '16px'}; line-height: 1.8; margin-bottom: 20px;">
+        <div style="color: #e5e7eb; font-size: ${isMobile ? '15px' : '16px'}; line-height: 1.9; margin-bottom: 24px; padding-left: 58px;">
           ${currentStep.text}
         </div>
 
         ${currentStep.target ? `
-          <div style="background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;">
-            <span style="color: #00FFFF; font-size: 14px; font-weight: 600;">👆 Look at the glowing section above</span>
+          <div style="background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(0, 255, 255, 0.05)); border: 2px solid rgba(0, 255, 255, 0.4); border-radius: 14px; padding: 14px 18px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 24px;">👆</span>
+            <span style="color: #00FFFF; font-size: 15px; font-weight: 700;">Look at the highlighted section above with the bouncing arrow!</span>
           </div>
         ` : ''}
 
-        <!-- Don't show again -->
-        <div style="margin-bottom: 16px;">
+        <!-- Don't show again checkbox -->
+        <div style="margin-bottom: 20px; padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 12px;">
           <label style="display: flex; align-items: center; cursor: pointer; color: #9ca3af; font-size: 14px;">
-            <input type="checkbox" id="dont-show-tour-again" style="width: 20px; height: 20px; margin-right: 12px; cursor: pointer; accent-color: #00FFFF;">
-            <span>Don't show this tour again</span>
+            <input type="checkbox" id="dont-show-tour-again" style="width: 22px; height: 22px; margin-right: 14px; cursor: pointer; accent-color: #00FFFF; border-radius: 4px;">
+            <span>Don't show this tour automatically next time</span>
           </label>
         </div>
 
-        <!-- Buttons -->
+        <!-- Navigation buttons -->
         <div style="display: flex; gap: 12px;">
-          <button onclick="skipTour()" style="flex: 1; padding: 16px; background: transparent; color: #9ca3af; border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer;">
-            Skip
+          ${step > 0 ? `
+            <button onclick="prevTourStep()" style="padding: 16px 24px; background: rgba(255,255,255,0.05); color: #9ca3af; border: 2px solid rgba(255,255,255,0.15); border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+              ← Back
+            </button>
+          ` : ''}
+          <button onclick="skipTour()" style="padding: 16px 24px; background: transparent; color: #9ca3af; border: 2px solid rgba(255,255,255,0.15); border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'">
+            Skip Tour
           </button>
-          <button onclick="nextTourStep()" style="flex: 2; padding: 16px; background: linear-gradient(135deg, #00FFFF, #00CED1); color: #0d1117; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 20px rgba(0, 255, 255, 0.4);">
-            ${step === tourSteps.length - 1 ? '✓ Got it!' : 'Next →'}
+          <button onclick="nextTourStep()" style="flex: 1; padding: 16px 24px; background: linear-gradient(135deg, #00FFFF, #00CED1); color: #0d1117; border: none; border-radius: 14px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 24px rgba(0, 255, 255, 0.5); transition: all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 30px rgba(0, 255, 255, 0.6)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 24px rgba(0, 255, 255, 0.5)'">
+            ${step === tourSteps.length - 1 ? '✓ Start Using Dashboard!' : 'Next Step →'}
           </button>
         </div>
       `;
@@ -5699,30 +5791,48 @@
     window.nextTourStep = function() {
       const tooltip = document.getElementById('tour-tooltip');
       const overlay = document.getElementById('tour-overlay');
-      showTourStep(tourStep + 1, tooltip, overlay);
+      const arrow = document.getElementById('tour-arrow');
+      const label = document.getElementById('tour-label');
+      showTourStep(tourStep + 1, tooltip, overlay, arrow, label);
+    };
+
+    window.prevTourStep = function() {
+      const tooltip = document.getElementById('tour-tooltip');
+      const overlay = document.getElementById('tour-overlay');
+      const arrow = document.getElementById('tour-arrow');
+      const label = document.getElementById('tour-label');
+      if (tourStep > 0) {
+        showTourStep(tourStep - 1, tooltip, overlay, arrow, label);
+      }
     };
 
     window.skipTour = function() {
       const tooltip = document.getElementById('tour-tooltip');
       const overlay = document.getElementById('tour-overlay');
-      closeTour(tooltip, overlay);
+      const arrow = document.getElementById('tour-arrow');
+      const label = document.getElementById('tour-label');
+      closeTour(tooltip, overlay, arrow, label);
     };
 
-    function closeTour(tooltip, overlay) {
+    function closeTour(tooltip, overlay, arrow, label) {
       const dontShowAgain = document.getElementById('dont-show-tour-again');
       if (dontShowAgain && dontShowAgain.checked) {
         localStorage.setItem('dashboard-tour-never-show', 'true');
       }
 
-      document.querySelectorAll('.tour-spotlight').forEach(el => el.classList.remove('tour-spotlight'));
+      document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
 
-      tooltip.style.opacity = '0';
-      overlay.style.opacity = '0';
+      if (tooltip) tooltip.style.opacity = '0';
+      if (overlay) overlay.style.opacity = '0';
+      if (arrow) arrow.style.display = 'none';
+      if (label) label.style.display = 'none';
 
       setTimeout(() => {
-        tooltip.remove();
-        overlay.remove();
-      }, 300);
+        if (tooltip) tooltip.remove();
+        if (overlay) overlay.remove();
+        if (arrow) arrow.remove();
+        if (label) label.remove();
+      }, 400);
     }
 
     function checkOnboarding() {
