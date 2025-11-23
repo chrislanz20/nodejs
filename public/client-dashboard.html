@@ -1427,6 +1427,41 @@
         font-size: 24px;
       }
 
+      /* Settings modal tabs - horizontal scroll on mobile */
+      #settings-modal .modal-body > div:first-child {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        margin: 0 -16px 32px -16px;
+        padding: 0 16px;
+      }
+
+      #settings-modal .modal-body > div:first-child::-webkit-scrollbar {
+        display: none;
+      }
+
+      .settings-tab {
+        padding: 10px 14px !important;
+        font-size: 12px !important;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      /* Quick filters - center on mobile */
+      #recent-calls-section .filters-row > div:first-child {
+        align-items: center;
+        text-align: center;
+      }
+
+      #recent-calls-section .filters-row > div:first-child > label {
+        text-align: center;
+        width: 100%;
+      }
+
+      #recent-calls-section .filters-row > div:first-child > div {
+        justify-content: center;
+      }
+
       /* Form fields in modals */
       .field-grid {
         grid-template-columns: 1fr;
