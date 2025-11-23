@@ -285,8 +285,18 @@ async function initializeDatabase() {
         agent_ids TEXT[] NOT NULL,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW(),
-        active BOOLEAN DEFAULT TRUE
+        active BOOLEAN DEFAULT TRUE,
+        ai_receptionist_name TEXT DEFAULT 'AI Receptionist',
+        ai_receptionist_prompt TEXT
       )
+    `);
+
+    // Add AI receptionist columns if they don't exist (migration for existing tables)
+    await client.query(`
+      ALTER TABLE clients ADD COLUMN IF NOT EXISTS ai_receptionist_name TEXT DEFAULT 'AI Receptionist'
+    `);
+    await client.query(`
+      ALTER TABLE clients ADD COLUMN IF NOT EXISTS ai_receptionist_prompt TEXT
     `);
 
     // Create admin_users table for admin dashboard authentication
@@ -3388,7 +3398,7 @@ const chatbotSessions = new Map();
 // POST /api/chatbot/message - Handle chatbot messages
 app.post('/api/chatbot/message', async (req, res) => {
   try {
-    const { message, sessionId, clientName } = req.body;
+    const { message, sessionId, clientName, clientId } = req.body;
 
     if (!message || !sessionId) {
       return res.status(400).json({ error: 'message and sessionId are required' });
@@ -3397,9 +3407,31 @@ app.post('/api/chatbot/message', async (req, res) => {
     // Get or create session
     let session = chatbotSessions.get(sessionId);
     if (!session) {
+      // Fetch client's AI receptionist info from database
+      let aiReceptionistName = 'AI Receptionist';
+      let aiReceptionistPrompt = '';
+
+      if (clientId) {
+        const dbClient = await pool.connect();
+        try {
+          const result = await dbClient.query(
+            'SELECT ai_receptionist_name, ai_receptionist_prompt FROM clients WHERE id = $1',
+            [clientId]
+          );
+          if (result.rows.length > 0) {
+            aiReceptionistName = result.rows[0].ai_receptionist_name || 'AI Receptionist';
+            aiReceptionistPrompt = result.rows[0].ai_receptionist_prompt || '';
+          }
+        } finally {
+          dbClient.release();
+        }
+      }
+
       session = {
         messages: [],
         clientName: clientName || 'Client',
+        aiReceptionistName,
+        aiReceptionistPrompt,
         startedAt: new Date().toISOString(),
         notificationSent: false
       };
@@ -3417,8 +3449,11 @@ app.post('/api/chatbot/message', async (req, res) => {
     // Add user message to history
     session.messages.push({ role: 'user', content: message });
 
-    // Build the system prompt for Claude
-    const systemPrompt = `You are a friendly feedback assistant for SaveYa Tech, helping clients improve their AI receptionist named Maria.
+    // Build the system prompt for Claude with dynamic AI receptionist info
+    const aiName = session.aiReceptionistName;
+    const aiPrompt = session.aiReceptionistPrompt || 'No specific details provided about this AI receptionist.';
+
+    const systemPrompt = `You are a friendly feedback assistant for SaveYa Tech, helping clients improve their AI receptionist named ${aiName}.
 
 CRITICAL RULES:
 - Keep responses SHORT (2-4 sentences max)
@@ -3427,8 +3462,8 @@ CRITICAL RULES:
 - NEVER mention "prompts", "AI training", "system", or technical terms
 - Sound like a helpful friend, not a robot
 
-THE CLIENT'S AI RECEPTIONIST (Maria) - YOUR CONTEXT:
-${MARIA_PROMPT_SUMMARY}
+THE CLIENT'S AI RECEPTIONIST (${aiName}) - YOUR CONTEXT:
+${aiPrompt}
 
 HOW TO RESPOND:
 1. Acknowledge what they said (1 sentence)
@@ -3436,7 +3471,7 @@ HOW TO RESPOND:
 
 EXAMPLE RESPONSES:
 - "Got it, that sounds frustrating! Can you tell me when this usually happens?"
-- "I hear you. What would you want Maria to say instead?"
+- "I hear you. What would you want ${aiName} to say instead?"
 - "That makes sense. Does this happen with all callers or just certain ones?"
 
 WHEN DONE:
@@ -3490,6 +3525,10 @@ app.post('/api/chatbot/end', async (req, res) => {
       return res.json({ success: true, message: 'No conversation to analyze' });
     }
 
+    // Use session's dynamic AI receptionist info
+    const aiName = session.aiReceptionistName || 'AI Receptionist';
+    const aiPrompt = session.aiReceptionistPrompt || 'No specific prompt details available.';
+
     // Generate recommendations using Claude
     const conversationText = session.messages
       .map(m => `${m.role === 'user' ? 'Client' : 'Assistant'}: ${m.content}`)
@@ -3497,8 +3536,8 @@ app.post('/api/chatbot/end', async (req, res) => {
 
     const analysisPrompt = `You are an AI prompt engineering expert. Analyze this feedback conversation and generate SPECIFIC, ACTIONABLE recommendations for improving the AI receptionist's prompt.
 
-THE CURRENT AI RECEPTIONIST PROMPT STRUCTURE:
-${MARIA_PROMPT_SUMMARY}
+THE CURRENT AI RECEPTIONIST (${aiName}) PROMPT STRUCTURE:
+${aiPrompt}
 
 FEEDBACK CONVERSATION:
 ${conversationText}

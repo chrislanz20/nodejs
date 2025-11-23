@@ -6686,7 +6686,8 @@
           body: JSON.stringify({
             message,
             sessionId: chatbotSessionId,
-            clientName: currentUser?.business_name || 'Client'
+            clientName: currentUser?.business_name || 'Client',
+            clientId: currentUser?.id
           })
         });
 
@@ -6820,8 +6821,20 @@
     #chatbot-header h3 {
       margin: 0;
       color: #00FFFF;
-      font-size: 16px;
-      font-weight: 600;
+    }
+    #chatbot-close {
+      background: transparent;
+      border: none;
+      color: #7d8590;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    #chatbot-close:hover {
+      background: rgba(255,255,255,0.1);
+      color: #e6edf3;
     }
     #chatbot-messages {
       flex: 1;
@@ -6891,14 +6904,53 @@
     }
     @media (max-width: 480px) {
       #chatbot-window {
-        width: calc(100vw - 32px);
-        right: 16px;
-        bottom: 90px;
-        height: 60vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        z-index: 10001;
+      }
+      #chatbot-header {
+        padding: 16px 20px;
+        padding-top: max(16px, env(safe-area-inset-top));
+      }
+      #chatbot-header h3 {
+        font-size: 18px;
+      }
+      #chatbot-messages {
+        padding: 16px;
+        padding-bottom: 20px;
+      }
+      #chatbot-input-area {
+        padding: 12px 16px;
+        padding-bottom: max(12px, env(safe-area-inset-bottom));
+        gap: 8px;
+      }
+      #chatbot-input {
+        padding: 14px 18px;
+        font-size: 16px; /* Prevents zoom on iOS */
+      }
+      #chatbot-send {
+        padding: 14px 18px;
+        font-size: 15px;
+      }
+      #chatbot-done {
+        padding: 14px 14px;
+        font-size: 14px;
       }
       #chatbot-bubble {
         right: 16px;
         bottom: 16px;
+        width: 56px;
+        height: 56px;
+      }
+      #chatbot-bubble img {
+        width: 32px;
+        height: 32px;
       }
     }
   </style>
@@ -6912,6 +6964,7 @@
   <div id="chatbot-window">
     <div id="chatbot-header">
       <h3>💡 Feedback Assistant</h3>
+      <button id="chatbot-close" onclick="toggleChatbot()">✕</button>
     </div>
     <div id="chatbot-messages">
       <div style="display: flex; justify-content: flex-start; margin-bottom: 12px;">
