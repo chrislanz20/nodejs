@@ -5618,27 +5618,23 @@
       label.id = 'tour-label';
       label.style.display = 'none';
 
-      // Create tooltip - responsive for mobile
+      // Create tooltip - compact and dynamically positioned
       const tooltip = document.createElement('div');
       tooltip.id = 'tour-tooltip';
-      const isMobileView = window.innerWidth < 768;
       tooltip.style.cssText = `
         position: fixed;
-        ${isMobileView ? 'top: 8px;' : 'bottom: 24px;'}
-        left: ${isMobileView ? '8px' : '16px'};
-        right: ${isMobileView ? '8px' : '16px'};
         background: linear-gradient(180deg, #1e2433 0%, #0d1117 100%);
         border: 3px solid #00FFFF;
-        border-radius: ${isMobileView ? '16px' : '24px'};
-        padding: ${isMobileView ? '14px' : '28px'};
+        border-radius: 16px;
+        padding: 16px;
         z-index: 10002;
-        box-shadow: 0 10px 60px rgba(0, 255, 255, 0.4), 0 0 0 1px rgba(255,255,255,0.1), inset 0 1px 0 rgba(255,255,255,0.1);
+        box-shadow: 0 10px 60px rgba(0, 255, 255, 0.4), 0 0 0 1px rgba(255,255,255,0.1);
         opacity: 0;
-        transition: opacity 0.4s ease;
+        transition: opacity 0.4s ease, top 0.3s ease, bottom 0.3s ease;
         pointer-events: auto;
-        max-width: ${isMobileView ? '100%' : '520px'};
-        margin: 0 auto;
-        ${isMobileView ? 'max-height: 55vh; overflow-y: auto;' : ''}
+        max-width: 400px;
+        max-height: 45vh;
+        overflow-y: auto;
       `;
 
       document.body.appendChild(overlayTop);
@@ -5694,76 +5690,104 @@
 
       const currentStep = tourSteps[step];
       const isMobile = window.innerWidth < 768;
+      const winH = window.innerHeight;
+      const winW = window.innerWidth;
 
       // Hide arrow and label initially
       arrow.style.display = 'none';
       label.style.display = 'none';
 
+      // Reset tooltip position
+      tooltip.style.top = '';
+      tooltip.style.bottom = '';
+      tooltip.style.left = '';
+      tooltip.style.right = '';
+
       // If there's a target, scroll to it and spotlight it
       if (currentStep.target) {
         const targetEl = document.querySelector(currentStep.target);
         if (targetEl) {
-          // On mobile, scroll so element is visible below the tooltip (which is at top)
-          // On desktop, scroll so element is above the tooltip (which is at bottom)
+          // Scroll so element is centered in view
           const rect = targetEl.getBoundingClientRect();
-          const tooltipHeight = isMobile ? window.innerHeight * 0.55 : 0; // Tooltip takes ~55% on mobile
-          const scrollTop = isMobile
-            ? window.pageYOffset + rect.top - tooltipHeight - 80 // Position element below tooltip
-            : window.pageYOffset + rect.top - 120;
+          const scrollTop = window.pageYOffset + rect.top - winH / 3;
           window.scrollTo({ top: Math.max(0, scrollTop), behavior: 'smooth' });
 
-          // Position spotlight and arrow after scroll completes
+          // Position spotlight, tooltip, and arrow after scroll completes
           setTimeout(() => {
             positionSpotlight(targetEl, overlays);
             overlays.border.style.display = 'block';
 
             const newRect = targetEl.getBoundingClientRect();
+            const elementCenterY = newRect.top + newRect.height / 2;
+            const elementIsInTopHalf = elementCenterY < winH / 2;
 
-            if (isMobile) {
-              // On mobile: arrow points DOWN from above the element, below the tooltip
-              arrow.innerHTML = '👇';
-              const arrowX = newRect.left + newRect.width / 2 - 28;
-              const arrowY = newRect.top - 70;
-              arrow.style.left = arrowX + 'px';
-              arrow.style.top = Math.max(window.innerHeight * 0.5, arrowY) + 'px';
-              arrow.style.display = 'block';
-
-              // Position "LOOK HERE" label above arrow
-              label.textContent = 'LOOK HERE ↓';
-              label.style.left = Math.max(10, Math.min(window.innerWidth - 140, newRect.left + newRect.width / 2 - 70)) + 'px';
-              label.style.top = Math.max(window.innerHeight * 0.5 - 50, arrowY - 45) + 'px';
-              label.style.display = 'block';
+            // Position tooltip OPPOSITE to the element so both are visible
+            if (elementIsInTopHalf) {
+              // Element is in top half → tooltip at bottom
+              tooltip.style.bottom = '16px';
+              tooltip.style.top = '';
+              tooltip.style.left = isMobile ? '8px' : '16px';
+              tooltip.style.right = isMobile ? '8px' : '16px';
             } else {
-              // On desktop: arrow above element as before
-              const arrowX = newRect.left + newRect.width / 2 - 28;
-              const arrowY = newRect.top - 70;
-              arrow.style.left = arrowX + 'px';
-              arrow.style.top = Math.max(10, arrowY) + 'px';
-              arrow.style.display = 'block';
-
-              // Position "LOOK HERE" label
-              label.textContent = 'LOOK HERE';
-              label.style.left = (newRect.left + newRect.width / 2 - 65) + 'px';
-              label.style.top = Math.max(10, arrowY - 45) + 'px';
-              label.style.display = 'block';
+              // Element is in bottom half → tooltip at top
+              tooltip.style.top = '16px';
+              tooltip.style.bottom = '';
+              tooltip.style.left = isMobile ? '8px' : '16px';
+              tooltip.style.right = isMobile ? '8px' : '16px';
             }
+
+            // Position arrow pointing to element
+            const arrowX = Math.min(winW - 60, Math.max(10, newRect.left + newRect.width / 2 - 28));
+            if (elementIsInTopHalf) {
+              // Arrow below element pointing up
+              arrow.innerHTML = '☝️';
+              arrow.style.top = (newRect.bottom + 10) + 'px';
+            } else {
+              // Arrow above element pointing down
+              arrow.innerHTML = '👇';
+              arrow.style.top = Math.max(10, newRect.top - 70) + 'px';
+            }
+            arrow.style.left = arrowX + 'px';
+            arrow.style.display = 'block';
+
+            // Position label near arrow
+            label.textContent = 'LOOK HERE';
+            label.style.left = Math.max(10, Math.min(winW - 130, arrowX - 35)) + 'px';
+            if (elementIsInTopHalf) {
+              label.style.top = (newRect.bottom + 70) + 'px';
+            } else {
+              label.style.top = Math.max(10, newRect.top - 115) + 'px';
+            }
+            label.style.display = 'block';
           }, 450);
         }
       } else {
-        // No target - scroll to top and cover full screen with overlay
+        // No target - center tooltip and cover full screen with overlay
         window.scrollTo({ top: 0, behavior: 'smooth' });
         hideSpotlight(overlays);
+        // Center the tooltip for welcome/end screens
+        tooltip.style.top = '50%';
+        tooltip.style.left = '50%';
+        tooltip.style.right = '';
+        tooltip.style.bottom = '';
+        tooltip.style.transform = 'translate(-50%, -50%)';
+        tooltip.style.maxWidth = isMobile ? 'calc(100% - 32px)' : '500px';
       }
 
-      // Build tooltip content - compact on mobile
+      // Reset transform for non-centered positioning
+      if (currentStep.target) {
+        tooltip.style.transform = '';
+      }
+
+      // Build tooltip content - compact design
       tooltip.innerHTML = `
         <!-- Progress bar -->
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: ${isMobile ? '10px' : '20px'};">
-          <div style="display: flex; gap: ${isMobile ? '4px' : '6px'}; flex: 1;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+          <div style="display: flex; gap: 4px; flex: 1;">
             ${tourSteps.map((_, i) => `
               <div style="
                 flex: 1;
-                height: ${isMobile ? '4px' : '6px'};
+                height: 4px;
                 border-radius: 3px;
                 background: ${i < step ? '#00FFFF' : i === step ? 'linear-gradient(90deg, #00FFFF, #00CED1)' : 'rgba(255, 255, 255, 0.15)'};
                 transition: all 0.3s;
@@ -5771,50 +5795,43 @@
               "></div>
             `).join('')}
           </div>
-          <span style="color: #00FFFF; font-size: ${isMobile ? '11px' : '13px'}; font-weight: 700; margin-left: ${isMobile ? '8px' : '16px'}; background: rgba(0, 255, 255, 0.1); padding: ${isMobile ? '3px 8px' : '4px 12px'}; border-radius: 12px;">
+          <span style="color: #00FFFF; font-size: 11px; font-weight: 700; margin-left: 10px; background: rgba(0, 255, 255, 0.1); padding: 3px 8px; border-radius: 12px;">
             ${step + 1}/${tourSteps.length}
           </span>
         </div>
 
         <!-- Title with icon -->
-        <div style="display: flex; align-items: flex-start; gap: ${isMobile ? '10px' : '16px'}; margin-bottom: ${isMobile ? '8px' : '16px'};">
-          <span style="font-size: ${isMobile ? '28px' : '42px'}; line-height: 1;">${currentStep.icon}</span>
-          <h3 style="color: #ffffff; font-size: ${isMobile ? '16px' : '24px'}; font-weight: 800; margin: 0; line-height: 1.3;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+          <span style="font-size: 24px; line-height: 1;">${currentStep.icon}</span>
+          <h3 style="color: #ffffff; font-size: ${isMobile ? '15px' : '17px'}; font-weight: 800; margin: 0; line-height: 1.3;">
             ${currentStep.title}
           </h3>
         </div>
 
         <!-- Description -->
-        <div style="color: #e5e7eb; font-size: ${isMobile ? '13px' : '16px'}; line-height: ${isMobile ? '1.6' : '1.9'}; margin-bottom: ${isMobile ? '12px' : '24px'}; padding-left: ${isMobile ? '38px' : '58px'};">
+        <div style="color: #e5e7eb; font-size: ${isMobile ? '13px' : '14px'}; line-height: 1.6; margin-bottom: 12px;">
           ${currentStep.text}
         </div>
 
-        ${currentStep.target ? `
-          <div style="background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(0, 255, 255, 0.05)); border: 2px solid rgba(0, 255, 255, 0.4); border-radius: ${isMobile ? '10px' : '14px'}; padding: ${isMobile ? '8px 12px' : '14px 18px'}; margin-bottom: ${isMobile ? '12px' : '24px'}; display: flex; align-items: center; gap: ${isMobile ? '8px' : '12px'};">
-            <span style="font-size: ${isMobile ? '18px' : '24px'};">👇</span>
-            <span style="color: #00FFFF; font-size: ${isMobile ? '12px' : '15px'}; font-weight: 700;">Scroll down to see the highlighted section!</span>
-          </div>
-        ` : ''}
-
         <!-- Don't show again checkbox -->
-        <div style="margin-bottom: ${isMobile ? '10px' : '20px'}; padding: ${isMobile ? '8px 10px' : '12px 16px'}; background: rgba(255,255,255,0.03); border-radius: ${isMobile ? '8px' : '12px'};">
-          <label style="display: flex; align-items: center; cursor: pointer; color: #9ca3af; font-size: ${isMobile ? '12px' : '14px'};">
-            <input type="checkbox" id="dont-show-tour-again" style="width: ${isMobile ? '18px' : '22px'}; height: ${isMobile ? '18px' : '22px'}; margin-right: ${isMobile ? '10px' : '14px'}; cursor: pointer; accent-color: #00FFFF; border-radius: 4px;">
+        <div style="margin-bottom: 12px; padding: 8px 10px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+          <label style="display: flex; align-items: center; cursor: pointer; color: #9ca3af; font-size: 12px;">
+            <input type="checkbox" id="dont-show-tour-again" style="width: 16px; height: 16px; margin-right: 10px; cursor: pointer; accent-color: #00FFFF; border-radius: 4px;">
             <span>Don't show automatically</span>
           </label>
         </div>
 
         <!-- Navigation buttons -->
-        <div style="display: flex; gap: ${isMobile ? '8px' : '12px'};">
+        <div style="display: flex; gap: 8px;">
           ${step > 0 ? `
-            <button onclick="prevTourStep()" style="padding: ${isMobile ? '10px 14px' : '16px 24px'}; background: rgba(255,255,255,0.05); color: #9ca3af; border: 2px solid rgba(255,255,255,0.15); border-radius: ${isMobile ? '10px' : '14px'}; font-size: ${isMobile ? '13px' : '15px'}; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+            <button onclick="prevTourStep()" style="padding: 10px 14px; background: rgba(255,255,255,0.05); color: #9ca3af; border: 2px solid rgba(255,255,255,0.15); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
               ←
             </button>
           ` : ''}
-          <button onclick="skipTour()" style="padding: ${isMobile ? '10px 14px' : '16px 24px'}; background: transparent; color: #9ca3af; border: 2px solid rgba(255,255,255,0.15); border-radius: ${isMobile ? '10px' : '14px'}; font-size: ${isMobile ? '13px' : '15px'}; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'">
+          <button onclick="skipTour()" style="padding: 10px 14px; background: transparent; color: #9ca3af; border: 2px solid rgba(255,255,255,0.15); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'">
             Skip
           </button>
-          <button onclick="nextTourStep()" style="flex: 1; padding: ${isMobile ? '10px 14px' : '16px 24px'}; background: linear-gradient(135deg, #00FFFF, #00CED1); color: #0d1117; border: none; border-radius: ${isMobile ? '10px' : '14px'}; font-size: ${isMobile ? '14px' : '16px'}; font-weight: 800; cursor: pointer; box-shadow: 0 4px 24px rgba(0, 255, 255, 0.5); transition: all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 30px rgba(0, 255, 255, 0.6)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 24px rgba(0, 255, 255, 0.5)'">
+          <button onclick="nextTourStep()" style="flex: 1; padding: 10px 14px; background: linear-gradient(135deg, #00FFFF, #00CED1); color: #0d1117; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 24px rgba(0, 255, 255, 0.5); transition: all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 30px rgba(0, 255, 255, 0.6)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 24px rgba(0, 255, 255, 0.5)'">
             ${step === tourSteps.length - 1 ? '✓ Done!' : 'Next →'}
           </button>
         </div>
