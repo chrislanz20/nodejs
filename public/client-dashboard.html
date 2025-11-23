@@ -1696,7 +1696,28 @@
       }
 
       #lead-tracker-section .section-header > div {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+      }
+
+      #lead-tracker-section .section-header > div .action-btn {
+        width: 100%;
         justify-content: center;
+        padding: 14px 16px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      #export-leads-btn {
+        background: linear-gradient(135deg, rgba(0, 180, 120, 0.25), rgba(0, 255, 180, 0.15));
+        border-color: rgba(0, 220, 150, 0.5);
+        color: #00ff99;
+      }
+
+      #export-leads-btn:hover {
+        background: linear-gradient(135deg, rgba(0, 180, 120, 0.35), rgba(0, 255, 180, 0.25));
+        border-color: rgba(0, 220, 150, 0.7);
       }
 
       /* Leads tabs - horizontal scroll on mobile */
