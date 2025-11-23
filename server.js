@@ -4053,14 +4053,30 @@ Format your response clearly with headers. Be specific enough that a developer c
 
 // Helper: Send notification when chatbot conversation starts
 async function sendChatbotNotification(clientName, firstMessage) {
-  const { sendNotifications } = require('./lib/ghlNotifications');
-
-  // For now, just log - you can add email notification here
   console.log(`\n📱 CHATBOT NOTIFICATION`);
   console.log(`Client: ${clientName}`);
   console.log(`First message: ${firstMessage}`);
   console.log(`Time: ${new Date().toLocaleString()}`);
   console.log(`---`);
+
+  // Send email notification to chris@saveyatech.com
+  try {
+    // Get CourtLaw's GHL location ID for sending
+    const result = await pool.query(
+      "SELECT ghl_location_id FROM clients WHERE business_name = 'CourtLaw Injury Lawyers' LIMIT 1"
+    );
+    const locationId = result.rows[0]?.ghl_location_id;
+
+    if (locationId) {
+      const subject = `New Chatbot Conversation Started - ${clientName}`;
+      const body = `A new chatbot feedback conversation has started.\n\nClient: ${clientName}\nTime: ${new Date().toLocaleString()}\n\nFirst Message:\n"${firstMessage}"\n\n---\nYou will receive a summary when the conversation ends.`;
+
+      await sendGHLEmail(locationId, 'chris@saveyatech.com', subject, body);
+      console.log('✅ Chatbot start notification email sent to chris@saveyatech.com');
+    }
+  } catch (error) {
+    console.error('Failed to send chatbot start notification email:', error.message);
+  }
 }
 
 // Helper: Send recommendations when conversation ends
@@ -4075,7 +4091,39 @@ async function sendChatbotRecommendations(clientName, conversation, recommendati
   console.log(recommendations);
   console.log(`═══════════════════════════════════════\n`);
 
-  // TODO: Add email notification here if needed
+  // Send email notification with full summary to chris@saveyatech.com
+  try {
+    // Get CourtLaw's GHL location ID for sending
+    const result = await pool.query(
+      "SELECT ghl_location_id FROM clients WHERE business_name = 'CourtLaw Injury Lawyers' LIMIT 1"
+    );
+    const locationId = result.rows[0]?.ghl_location_id;
+
+    if (locationId) {
+      const subject = `Chatbot Feedback Summary - ${clientName}`;
+      const body = `CHATBOT FEEDBACK SUMMARY
+═══════════════════════════════════════
+
+Client: ${clientName}
+Time: ${new Date().toLocaleString()}
+
+📝 CONVERSATION:
+────────────────────────────────────────
+${conversation}
+
+💡 AI RECOMMENDATIONS:
+────────────────────────────────────────
+${recommendations}
+
+═══════════════════════════════════════
+This is an automated summary from the SaveYa Tech feedback chatbot.`;
+
+      await sendGHLEmail(locationId, 'chris@saveyatech.com', subject, body);
+      console.log('✅ Chatbot summary email sent to chris@saveyatech.com');
+    }
+  } catch (error) {
+    console.error('Failed to send chatbot summary email:', error.message);
+  }
 }
 
 // Railway will set PORT for us
