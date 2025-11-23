@@ -4162,7 +4162,6 @@ CRITICAL RULES:
 - "AI Receptionist Name" - Change what the AI calls itself
 - "AI Receptionist Prompt" - Customize how the AI behaves and responds
 - "Notification Preferences" - Email alerts for new leads, daily summaries
-- "Retake Dashboard Tour" - Start the guided tour again
 - "Change Password" - Update account password
 
 🔑 KEYBOARD SHORTCUTS:
