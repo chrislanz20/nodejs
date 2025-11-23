@@ -3158,6 +3158,45 @@ app.get('/api/debug-db', async (req, res) => {
   });
 });
 
+// DEBUG: Check reset token status
+app.get('/api/debug-token', async (req, res) => {
+  try {
+    const email = req.query.email;
+    if (!email) return res.json({ error: 'email query param required' });
+
+    const clientResult = await pool.query(
+      'SELECT id, email, reset_token, reset_token_expires FROM clients WHERE email = $1',
+      [email.toLowerCase()]
+    );
+
+    const teamResult = await pool.query(
+      'SELECT id, email, reset_token, reset_token_expires FROM team_members WHERE email = $1',
+      [email.toLowerCase()]
+    );
+
+    const dbTimeResult = await pool.query('SELECT NOW() as db_time');
+
+    res.json({
+      serverTime: new Date().toISOString(),
+      dbTime: dbTimeResult.rows[0].db_time,
+      client: clientResult.rows[0] ? {
+        id: clientResult.rows[0].id,
+        hasToken: !!clientResult.rows[0].reset_token,
+        tokenPrefix: clientResult.rows[0].reset_token?.substring(0, 10) + '...',
+        expires: clientResult.rows[0].reset_token_expires,
+        isExpired: clientResult.rows[0].reset_token_expires ? new Date(clientResult.rows[0].reset_token_expires) < new Date() : null
+      } : null,
+      teamMember: teamResult.rows[0] ? {
+        id: teamResult.rows[0].id,
+        hasToken: !!teamResult.rows[0].reset_token,
+        expires: teamResult.rows[0].reset_token_expires
+      } : null
+    });
+  } catch (error) {
+    res.json({ error: error.message });
+  }
+});
+
 // DEBUG: Test email sending
 app.get('/api/test-email', async (req, res) => {
   try {
