@@ -1226,8 +1226,9 @@
       }
     }
 
-    /* Hide notification icons on desktop (column headers show EMAIL/SMS instead) */
-    .notif-icon {
+    /* Hide notification icons and labels on desktop (column headers show EMAIL/SMS instead) */
+    .notif-icon,
+    .notif-label {
       display: none;
     }
 
@@ -1835,7 +1836,7 @@
       /* Each row becomes a stacked card - ALL cells become block */
       .notif-table .notif-row {
         display: block !important;
-        padding: 12px 0 !important;
+        padding: 10px 0 !important;
         border-bottom: 1px solid rgba(48, 54, 61, 0.5) !important;
         width: 100% !important;
       }
@@ -1844,33 +1845,43 @@
       .notif-table .notif-category {
         font-weight: 600 !important;
         font-size: 14px !important;
-        padding: 0 0 8px 0 !important;
+        padding: 0 0 6px 0 !important;
         display: block !important;
         width: 100% !important;
         color: #e6edf3 !important;
       }
 
-      /* Email and SMS toggles inline after category */
+      /* Email and Text in a vertical list format */
       .notif-table .notif-email,
       .notif-table .notif-sms {
-        display: inline-flex !important;
+        display: block !important;
+        padding: 4px 0 !important;
+        background: transparent !important;
+      }
+
+      .notif-table .notif-email label,
+      .notif-table .notif-sms label {
+        display: flex !important;
         align-items: center !important;
-        gap: 6px !important;
-        padding: 8px 12px !important;
-        background: rgba(0, 255, 255, 0.15) !important;
-        border-radius: 8px !important;
-        margin-right: 8px !important;
-        vertical-align: middle !important;
+        gap: 8px !important;
+        font-size: 13px !important;
+        color: #9ca3af !important;
       }
 
       .notif-table .notif-icon {
         display: inline !important;
-        font-size: 16px !important;
+        font-size: 14px !important;
+      }
+
+      .notif-table .notif-label {
+        display: inline !important;
+        font-size: 13px !important;
+        color: #e6edf3 !important;
       }
 
       .notif-table input[type="checkbox"] {
-        width: 22px !important;
-        height: 22px !important;
+        width: 16px !important;
+        height: 16px !important;
         cursor: pointer !important;
         margin: 0 !important;
         accent-color: #00FFFF !important;
@@ -4449,13 +4460,15 @@
               <td class="notif-email" style="text-align: center; padding: 10px 12px;">
                 <label style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
                   <span class="notif-icon">📧</span>
-                  <input type="checkbox" ${emailEnabled ? 'checked' : ''} onchange="updateRecipientPreference(${recipient.id}, '${key}_email', this.checked)" style="cursor: pointer; width: 18px; height: 18px; accent-color: #00FFFF;">
+                  <span class="notif-label">Email</span>
+                  <input type="checkbox" ${emailEnabled ? 'checked' : ''} onchange="updateRecipientPreference(${recipient.id}, '${key}_email', this.checked)" style="cursor: pointer; width: 16px; height: 16px; accent-color: #00FFFF;">
                 </label>
               </td>
               <td class="notif-sms" style="text-align: center; padding: 10px 12px;">
                 <label style="cursor: ${smsDisabled ? 'not-allowed' : 'pointer'}; opacity: ${smsDisabled ? '0.4' : '1'}; display: inline-flex; align-items: center; gap: 6px;">
                   <span class="notif-icon">💬</span>
-                  <input type="checkbox" ${smsEnabled ? 'checked' : ''} ${smsDisabled ? 'disabled' : ''} onchange="updateRecipientPreference(${recipient.id}, '${key}_sms', this.checked)" style="cursor: ${smsDisabled ? 'not-allowed' : 'pointer'}; width: 18px; height: 18px; accent-color: #00FFFF;">
+                  <span class="notif-label">Text</span>
+                  <input type="checkbox" ${smsEnabled ? 'checked' : ''} ${smsDisabled ? 'disabled' : ''} onchange="updateRecipientPreference(${recipient.id}, '${key}_sms', this.checked)" style="cursor: ${smsDisabled ? 'not-allowed' : 'pointer'}; width: 16px; height: 16px; accent-color: #00FFFF;">
                 </label>
               </td>
             </tr>
