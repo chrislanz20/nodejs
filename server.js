@@ -344,6 +344,7 @@ async function initializeDatabase() {
         client_id INTEGER REFERENCES clients(id) ON DELETE CASCADE,
         email TEXT NOT NULL,
         name TEXT NOT NULL,
+        phone TEXT,
         role TEXT NOT NULL DEFAULT 'Viewer',
         password_hash TEXT NOT NULL,
         active BOOLEAN DEFAULT TRUE,
@@ -355,6 +356,11 @@ async function initializeDatabase() {
         UNIQUE(client_id, email),
         CONSTRAINT team_members_role_check CHECK (role IN ('Admin', 'Sales', 'Support', 'Viewer'))
       )
+    `);
+
+    // Add phone column to team_members if it doesn't exist (migration)
+    await client.query(`
+      ALTER TABLE team_members ADD COLUMN IF NOT EXISTS phone TEXT
     `);
 
     // Add password reset fields to team_members (migration for existing tables)
@@ -2813,7 +2819,7 @@ app.post('/api/team/validate-code', async (req, res) => {
 // POST /api/team/register - Team member self-registration with invitation code (public)
 app.post('/api/team/register', async (req, res) => {
   try {
-    const { code, email, name, password } = req.body;
+    const { code, email, name, password, phone } = req.body;
 
     if (!code || !email || !name || !password) {
       return res.status(400).json({ error: 'All fields are required' });
@@ -2850,10 +2856,10 @@ app.post('/api/team/register', async (req, res) => {
 
     // Create team member (default role is Viewer for self-registration)
     const result = await pool.query(`
-      INSERT INTO team_members (client_id, email, name, role, password_hash)
-      VALUES ($1, $2, $3, $4, $5)
-      RETURNING id, email, name, role
-    `, [client.id, email.toLowerCase(), name, 'Viewer', password_hash]);
+      INSERT INTO team_members (client_id, email, name, phone, role, password_hash)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING id, email, name, phone, role
+    `, [client.id, email.toLowerCase(), name, phone || null, 'Viewer', password_hash]);
 
     // Send welcome email via GHL (non-blocking)
     sendGHLEmail(client.ghl_location_id, email, 'Welcome to ' + client.business_name,

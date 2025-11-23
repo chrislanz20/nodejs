@@ -3138,7 +3138,7 @@
           <button class="settings-tab" onclick="switchSettingsTab('team')" data-tab="team" id="team-tab" style="padding: 12px 24px; background: none; border: none; color: #6b7280; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.3s; display: none;">
             Team
           </button>
-          <button class="settings-tab" onclick="switchSettingsTab('notifications')" data-tab="notifications" style="padding: 12px 24px; background: none; border: none; color: #6b7280; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.3s;">
+          <button class="settings-tab" onclick="switchSettingsTab('notifications')" data-tab="notifications" id="notifications-tab" style="padding: 12px 24px; background: none; border: none; color: #6b7280; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.3s; display: none;">
             Notifications
           </button>
         </div>
@@ -4348,9 +4348,10 @@
       document.getElementById('new-password').value = '';
       document.getElementById('confirm-password').value = '';
 
-      // Show team tab if user is client owner (not team member)
+      // Show team and notifications tabs if user is client owner (not team member)
       if (!currentUser.is_team_member) {
         document.getElementById('team-tab').style.display = 'block';
+        document.getElementById('notifications-tab').style.display = 'block';
       }
 
       // Switch to account tab by default
