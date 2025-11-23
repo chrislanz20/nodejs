@@ -2945,6 +2945,7 @@ app.post('/api/team/forgot-password', async (req, res) => {
     }
 
     const emailLower = email.toLowerCase();
+    console.log(`🔐 Password reset requested for: ${emailLower}`);
 
     // Check for recent reset request (within 2 minutes) - prevent duplicate emails
     const lastRequest = recentResetRequests.get(emailLower);
@@ -2954,6 +2955,7 @@ app.post('/api/team/forgot-password', async (req, res) => {
     }
 
     // First, check team_members table
+    console.log(`🔍 Checking team_members table for: ${emailLower}`);
     const teamResult = await pool.query(`
       SELECT tm.id, tm.email, tm.name, c.business_name, c.ghl_location_id
       FROM team_members tm
@@ -2961,9 +2963,11 @@ app.post('/api/team/forgot-password', async (req, res) => {
       WHERE tm.email = $1 AND tm.active = TRUE
     `, [emailLower]);
 
+    console.log(`📊 Team members found: ${teamResult.rows.length}`);
     if (teamResult.rows.length > 0) {
       // Found team member
       const member = teamResult.rows[0];
+      console.log(`✅ Found team member: ${member.email} for ${member.business_name}`);
       const resetToken = generateResetToken();
       const expires = new Date(Date.now() + 3600000); // 1 hour
 
@@ -2972,7 +2976,7 @@ app.post('/api/team/forgot-password', async (req, res) => {
         [resetToken, expires, member.id]
       );
 
-      const resetUrl = `https://saveyatech.app/client-portal.html?reset=${resetToken}&type=team`;
+      const resetUrl = `https://client.saveyatech.app/client-portal.html?reset=${resetToken}&type=team`;
       // Fire and forget - don't block response waiting for email
       sendEmail(member.email, 'Reset Your Password',
         `Hi ${member.name},\n\nYou requested a password reset for your ${member.business_name} account.\n\nClick this link to reset your password (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\n${member.business_name}`
@@ -2985,14 +2989,17 @@ app.post('/api/team/forgot-password', async (req, res) => {
     }
 
     // Check clients table (business owners)
+    console.log(`🔍 Checking clients table for: ${emailLower}`);
     const clientResult = await pool.query(
       'SELECT id, email, business_name, ghl_location_id FROM clients WHERE email = $1 AND active = TRUE',
       [emailLower]
     );
 
+    console.log(`📊 Clients found: ${clientResult.rows.length}`);
     if (clientResult.rows.length > 0) {
       // Found business owner
       const client = clientResult.rows[0];
+      console.log(`✅ Found client/business owner: ${client.email} for ${client.business_name}`);
       const resetToken = generateResetToken();
       const expires = new Date(Date.now() + 3600000); // 1 hour
 
@@ -3001,7 +3008,7 @@ app.post('/api/team/forgot-password', async (req, res) => {
         [resetToken, expires, client.id]
       );
 
-      const resetUrl = `https://saveyatech.app/client-portal.html?reset=${resetToken}&type=client`;
+      const resetUrl = `https://client.saveyatech.app/client-portal.html?reset=${resetToken}&type=client`;
       // Fire and forget - don't block response waiting for email
       sendEmail(client.email, 'Reset Your Password',
         `Hi,\n\nYou requested a password reset for your ${client.business_name} account.\n\nClick this link to reset your password (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nSaveYa Tech`
@@ -3014,6 +3021,7 @@ app.post('/api/team/forgot-password', async (req, res) => {
     }
 
     // Email not found in either table - return success anyway to prevent enumeration
+    console.log(`❌ Email not found in any table: ${emailLower}`);
     res.json({ success: true, message: 'If an account exists with this email, you will receive a reset link.' });
   } catch (error) {
     console.error('Error sending reset email:', error);
