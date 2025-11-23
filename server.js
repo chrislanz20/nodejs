@@ -3979,84 +3979,10 @@ REMEMBER: Short. Simple. One question at a time.`;
       session.messages = session.messages.slice(-20);
     }
 
-    // Check if conversation should auto-end (after enough messages and Claude gives a closing response)
-    const closingPhrases = [
-      "i've got your feedback",
-      "got your feedback",
-      "i have your feedback",
-      "thanks for the feedback",
-      "thank you for the feedback",
-      "anything else",
-      "is there anything else",
-      "our team will work on",
-      "we'll work on",
-      "we will work on"
-    ];
-
-    const messageLower = assistantMessage.toLowerCase();
-    const shouldAutoEnd = session.messages.length >= 4 &&
-      closingPhrases.some(phrase => messageLower.includes(phrase));
-
-    if (shouldAutoEnd) {
-      console.log(`🔄 Auto-ending chatbot conversation for ${session.clientName}`);
-
-      // Trigger end process in background (non-blocking)
-      (async () => {
-        try {
-          const conversationText = session.messages
-            .map(m => `${m.role === 'user' ? 'Client' : 'Assistant'}: ${m.content}`)
-            .join('\n\n');
-
-          const aiName = session.aiReceptionistName || 'AI Receptionist';
-          const aiPrompt = session.aiReceptionistPrompt || 'No specific prompt details available.';
-
-          const analysisPrompt = `You are an AI prompt engineering expert. Analyze this feedback conversation and generate SPECIFIC, ACTIONABLE recommendations for improving the AI receptionist's prompt.
-
-THE CURRENT AI RECEPTIONIST (${aiName}) PROMPT STRUCTURE:
-${aiPrompt}
-
-FEEDBACK CONVERSATION:
-${conversationText}
-
-Generate a report with:
-
-1. FEEDBACK SUMMARY (2-3 sentences of what the client wants)
-
-2. SPECIFIC PROMPT MODIFICATIONS (be precise):
-   - What section of the prompt to modify
-   - The exact change to make
-   - Example of new/modified instruction
-
-3. PRIORITY LEVEL: High/Medium/Low
-
-Format your response clearly with headers. Be specific enough that a developer can implement the changes directly.`;
-
-          const analysisResponse = await anthropic.messages.create({
-            model: 'claude-sonnet-4-20250514',
-            max_tokens: 1000,
-            messages: [{ role: 'user', content: analysisPrompt }]
-          });
-
-          const recommendations = analysisResponse.content[0].text;
-
-          // Send email with recommendations
-          await sendChatbotRecommendations(session.clientName, conversationText, recommendations);
-
-          // Clean up session
-          chatbotSessions.delete(sessionId);
-
-          console.log(`✅ Auto-end complete for ${session.clientName}`);
-        } catch (err) {
-          console.error('Error in auto-end process:', err);
-        }
-      })();
-    }
-
     res.json({
       success: true,
       message: assistantMessage,
-      sessionId,
-      conversationEnded: shouldAutoEnd
+      sessionId
     });
 
   } catch (error) {

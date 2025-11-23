@@ -6731,13 +6731,70 @@
 
     const chatbotSessionId = 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     let chatbotOpen = false;
+    let chatbotHasMessages = false;  // Track if user has sent messages
+    let chatbotEndSent = false;      // Prevent duplicate end calls
+
+    // Send chatbot summary when closing or leaving page
+    async function sendChatbotEnd() {
+      if (!chatbotHasMessages || chatbotEndSent) return;
+      chatbotEndSent = true;
+
+      try {
+        // Use sendBeacon for reliability on page unload, fallback to fetch
+        const payload = JSON.stringify({
+          sessionId: chatbotSessionId,
+          clientName: currentUser?.business_name || 'Client'
+        });
+
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon('/api/chatbot/end', new Blob([payload], { type: 'application/json' }));
+        } else {
+          fetch('/api/chatbot/end', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload,
+            keepalive: true
+          });
+        }
+        console.log('Chatbot conversation summary sent');
+      } catch (e) {
+        console.error('Failed to send chatbot end:', e);
+      }
+    }
+
+    // Send summary when page is closed/navigated away
+    window.addEventListener('beforeunload', () => {
+      sendChatbotEnd();
+    });
+
+    // Also send on visibility change (tab switch/close on mobile)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden' && chatbotHasMessages) {
+        sendChatbotEnd();
+      }
+    });
 
     function toggleChatbot() {
       const chatWindow = document.getElementById('chatbot-window');
       const chatBubble = document.getElementById('chatbot-bubble');
-      chatbotOpen = !chatbotOpen;
 
       const logoImg = '<img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/68e5a3ac2cc261cd1cbe4769.png" alt="Feedback">';
+
+      // If closing the chatbot and there were messages, send the summary
+      if (chatbotOpen && chatbotHasMessages) {
+        sendChatbotEnd();
+        showToast('✅ Feedback submitted! Thank you.', 'success');
+        // Reset for next conversation
+        chatbotHasMessages = false;
+        chatbotEndSent = false;
+        document.getElementById('chatbot-messages').innerHTML = `
+          <div class="chat-message-bot">
+            <div>Hi! I'm here to help improve your AI receptionist. What would you like to see changed or improved?</div>
+          </div>
+        `;
+      }
+
+      chatbotOpen = !chatbotOpen;
 
       if (chatbotOpen) {
         chatWindow.style.display = 'flex';
@@ -6760,6 +6817,9 @@
       const input = document.getElementById('chatbot-input');
       const message = input.value.trim();
       if (!message) return;
+
+      // Mark that user has sent messages (for email on close)
+      chatbotHasMessages = true;
 
       const messagesContainer = document.getElementById('chatbot-messages');
 
@@ -6806,33 +6866,6 @@
           </div>
         `;
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-        // Check if conversation auto-ended (server detected closing message)
-        if (data.conversationEnded) {
-          // Show completion message after a short delay
-          setTimeout(() => {
-            messagesContainer.innerHTML += `
-              <div class="chat-message-bot">
-                <div style="background: rgba(0, 255, 255, 0.15); border: 1px solid rgba(0, 255, 255, 0.3);">
-                  ✅ Your feedback has been submitted! Our team will review it. Thank you!
-                </div>
-              </div>
-            `;
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-            // Auto-close chatbot after showing the success message
-            setTimeout(() => {
-              showToast('✅ Feedback submitted! Thank you.', 'success');
-              // Reset chat for next time
-              document.getElementById('chatbot-messages').innerHTML = `
-                <div class="chat-message-bot">
-                  <div>Hi! I'm here to help improve your AI receptionist. What would you like to see changed or improved?</div>
-                </div>
-              `;
-              toggleChatbot();
-            }, 2500);
-          }, 1000);
-        }
 
       } catch (error) {
         document.getElementById(typingId)?.remove();
