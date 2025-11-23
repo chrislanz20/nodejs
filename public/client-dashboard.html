@@ -5888,13 +5888,9 @@
     }
 
     function checkOnboarding() {
-      const neverShowAgain = localStorage.getItem('dashboard-tour-never-show');
-
-      if (!neverShowAgain && currentUser) {
-        setTimeout(() => {
-          showOnboarding();
-        }, 1500);
-      }
+      // Tour disabled - users now get help from the AI chatbot assistant instead
+      // The tour is still available via Settings > "Retake Dashboard Tour" if needed
+      return;
     }
 
     window.startTourManually = function() {
@@ -6830,13 +6826,13 @@
       // If closing the chatbot and there were messages, send the summary
       if (chatbotOpen && chatbotHasMessages) {
         sendChatbotEnd();
-        showToast('✅ Feedback submitted! Thank you.', 'success');
+        showToast('✅ Thanks for chatting! Your feedback has been saved.', 'success');
         // Reset for next conversation
         chatbotHasMessages = false;
         chatbotEndSent = false;
         document.getElementById('chatbot-messages').innerHTML = `
           <div class="chat-message-bot">
-            <div>Hi! I'm here to help improve your AI receptionist. What would you like to see changed or improved?</div>
+            <div>Hi! I'm here to help you with your dashboard. Ask me anything about your calls, leads, stats, or settings — or share feedback about your AI receptionist!</div>
           </div>
         `;
       }
@@ -6940,7 +6936,7 @@
     }
 
     async function endChatSession() {
-      if (confirm('Submit your feedback? Our team will review it and make improvements.')) {
+      if (confirm('Submit your conversation? Our team will review any feedback.')) {
         try {
           await fetch('/api/chatbot/end', {
             method: 'POST',
@@ -6951,17 +6947,17 @@
             })
           });
 
-          showToast('✅ Feedback submitted! Thank you.', 'success');
+          showToast('✅ Thanks for chatting! Your feedback has been saved.', 'success');
 
           // Reset chat
           document.getElementById('chatbot-messages').innerHTML = `
             <div class="chat-message-bot">
-              <div>Hi! I'm here to help improve your AI receptionist. What would you like to see changed or improved?</div>
+              <div>Hi! I'm here to help you with your dashboard. Ask me anything about your calls, leads, stats, or settings — or share feedback about your AI receptionist!</div>
             </div>
           `;
           toggleChatbot();
         } catch (error) {
-          showToast('Failed to submit feedback', 'error');
+          showToast('Failed to submit', 'error');
         }
       }
     }
@@ -7200,23 +7196,23 @@
   </style>
 
   <!-- Chat Bubble -->
-  <button id="chatbot-bubble" onclick="toggleChatbot()" title="Give Feedback">
-    <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/68e5a3ac2cc261cd1cbe4769.png" alt="Feedback" id="chatbot-logo-img">
+  <button id="chatbot-bubble" onclick="toggleChatbot()" title="Need Help?">
+    <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/68e5a3ac2cc261cd1cbe4769.png" alt="Help" id="chatbot-logo-img">
   </button>
 
   <!-- Chat Window -->
   <div id="chatbot-window">
     <div id="chatbot-header">
-      <h3>💡 Feedback Assistant</h3>
+      <h3>💬 Dashboard Help</h3>
       <button id="chatbot-close" onclick="toggleChatbot()">✕</button>
     </div>
     <div id="chatbot-messages">
       <div class="chat-message-bot">
-        <div>Hi! I'm here to help improve your AI receptionist. What would you like to see changed or improved?</div>
+        <div>Hi! I'm here to help you with your dashboard. Ask me anything about your calls, leads, stats, or settings — or share feedback about your AI receptionist!</div>
       </div>
     </div>
     <div id="chatbot-input-area">
-      <input type="text" id="chatbot-input" placeholder="Type your feedback..." onkeypress="handleChatKeypress(event)">
+      <input type="text" id="chatbot-input" placeholder="Ask a question or share feedback..." onkeypress="handleChatKeypress(event)">
       <button id="chatbot-send" onclick="sendChatMessage()">Send</button>
     </div>
   </div>
