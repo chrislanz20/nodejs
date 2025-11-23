@@ -3,258 +3,552 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Omelette Headquarters | Wakefield, Massachusetts</title>
+    <title>The Omelette Headquarters | Wakefield, Massachusetts</title>
     <meta
       name="description"
-      content="Omelette Headquarters in Wakefield, MA serves artfully crafted breakfast, brunch, and coffee in a sunlit café inspired by the perfect omelette."
+      content="The Omelette Headquarters is Wakefield's vintage railroad-inspired breakfast destination for omelettes, benedicts, waffles, and brunch comfort food."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@400;500;600&family=Nunito:wght@400;500;600;700&family=Oswald:wght@400;500;600&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/animations.css" />
+    <link rel="stylesheet" href="/css/responsive.css" />
   </head>
   <body>
-    <header class="hero" id="top">
-      <div class="hero__overlay"></div>
-      <div class="container hero__inner">
-        <nav class="nav" aria-label="Main">
-          <a class="nav__brand" href="#top">Omelette HQ</a>
-          <button class="nav__toggle" aria-expanded="false" aria-controls="primary-navigation">
-            <span class="nav__toggle-line"></span>
-            <span class="nav__toggle-line"></span>
-            <span class="nav__toggle-line"></span>
-            <span class="sr-only">Toggle navigation</span>
-          </button>
-          <ul class="nav__links" id="primary-navigation">
-            <li><a href="#about">Our Story</a></li>
-            <li><a href="#menu">Menu</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#events">Events</a></li>
-            <li><a href="#visit">Visit</a></li>
-          </ul>
-        </nav>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <header class="site-header" id="top">
+      <div class="hero" role="banner">
+        <div class="hero__background" aria-hidden="true"></div>
+        <div class="container hero__inner">
+          <nav class="nav" aria-label="Primary">
+            <a class="nav__brand" href="#top" aria-label="The Omelette Headquarters home">
+              <span class="nav__logo">🚂</span>
+              <span class="nav__brand-text">Omelette HQ</span>
+            </a>
+            <button
+              class="nav__toggle"
+              aria-expanded="false"
+              aria-controls="primary-navigation"
+              aria-label="Toggle navigation"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+            <ul class="nav__links" id="primary-navigation">
+              <li><a href="#about">About</a></li>
+              <li><a href="#menu">Menu</a></li>
+              <li><a href="#specials">Specials</a></li>
+              <li><a href="#gallery">Gallery</a></li>
+              <li><a href="#visit">Visit</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </nav>
 
-        <div class="hero__content">
-          <p class="eyebrow">Wakefield, Massachusetts</p>
-          <h1>Where Omelettes are an Art Form</h1>
-          <p>
-            Omelette Headquarters is a cheerful café devoted to one perfect dish. From locally sourced
-            eggs to inventive fillings, every plate is a canvas for comfort and creativity.
-          </p>
-          <div class="hero__cta">
-            <a class="btn btn--primary" href="#menu">Explore the Menu</a>
-            <a class="btn btn--ghost" href="#visit">Plan Your Visit</a>
+          <div class="hero__content fade-in">
+            <p class="hero__eyebrow">Wakefield's Legendary Breakfast Spot</p>
+            <h1>The Omelette Headquarters</h1>
+            <p class="hero__tagline">All aboard for omelettes, benedicts, waffles, and comfort food classics.</p>
+            <div class="hero__cta">
+              <a class="btn btn--primary" href="#menu">View Full Menu</a>
+              <a class="btn btn--secondary" href="#visit">Order Online</a>
+            </div>
           </div>
+
+          <button class="scroll-indicator" aria-label="Scroll to content">
+            <span></span>
+          </button>
         </div>
       </div>
     </header>
 
-    <main>
-      <section class="section" id="about">
-        <div class="container section__grid">
-          <div class="section__content">
-            <h2>Born from a Breakfast Obsession</h2>
+    <main id="main-content">
+      <section class="section section--cream about" id="about">
+        <div class="container about__grid">
+          <div class="about__content fade-in-section">
+            <p class="eyebrow">Our Story</p>
+            <h2>A Breakfast Destination with Character</h2>
             <p>
-              Omelette Headquarters began as a pop-up on Wakefield&rsquo;s lakefront farmer&rsquo;s market and
-              quickly became the town&rsquo;s favorite morning ritual. Founder and chef Dana Avery wanted a
-              place where guests could slow down, savor the moment, and experience eggs elevated beyond
-              expectations.
+              Step into The Omelette Headquarters and step back in time. Our family-owned diner combines classic American breakfast traditions
+              with nostalgic railroad charm. From our signature three-egg omelettes to made-from-scratch Benedicts, every dish is crafted with
+              care and served with a smile.
             </p>
             <p>
-              Today, our kitchen celebrates the craft of breakfast with seasonal ingredients, a zero-waste
-              mindset, and barista-crafted coffee drinks. Every omelette is folded to order, served with
-              toasted sourdough, and paired with playful sauces you won&rsquo;t find anywhere else.
+              Our walls tell stories of the golden age of rail travel, with vintage Pennsylvania Railroad memorabilia transporting you to a simpler
+              time. Whether you're a regular or first-time visitor, you're family here.
             </p>
+            <dl class="about__stats">
+              <div class="stats-card">
+                <dt aria-label="Years serving Wakefield">📅</dt>
+                <dd>
+                  <span class="stats-number">25+</span>
+                  <span class="stats-label">Years Serving Wakefield</span>
+                </dd>
+              </div>
+              <div class="stats-card">
+                <dt aria-label="Omelette varieties">🍳</dt>
+                <dd>
+                  <span class="stats-number">30+</span>
+                  <span class="stats-label">Omelette Varieties</span>
+                </dd>
+              </div>
+              <div class="stats-card">
+                <dt aria-label="Customer rating">⭐</dt>
+                <dd>
+                  <span class="stats-number">4.8/5</span>
+                  <span class="stats-label">Customer Rating</span>
+                </dd>
+              </div>
+              <div class="stats-card">
+                <dt aria-label="Nostalgic vibes">🚂</dt>
+                <dd>
+                  <span class="stats-number">100%</span>
+                  <span class="stats-label">Nostalgic Vibes</span>
+                </dd>
+              </div>
+            </dl>
           </div>
-          <article class="highlight-card" aria-label="House values">
-            <h3>Our Guiding Ingredients</h3>
-            <ul class="checklist">
-              <li>Farm eggs sourced within 50 miles of Wakefield</li>
-              <li>House-fermented hot sauces and pickled vegetables</li>
-              <li>Compost-first kitchen with reusable packaging</li>
-              <li>Warm, neighborhood hospitality every day</li>
-            </ul>
-          </article>
+          <div class="about__highlights fade-in-section">
+            <article class="highlight-card">
+              <h3 class="highlight-card__title">Vintage Railroad Atmosphere</h3>
+              <p class="highlight-card__text">We celebrate Wakefield's golden age of rail travel with immersive decor, warm lighting, and stories from the original conductors who inspired our name.</p>
+              <ul class="highlight-card__list">
+                <li><span class="highlight-card__icon" aria-hidden="true">🚉</span><span>Authentic Pennsylvania Railroad memorabilia curated by the family.</span></li>
+                <li><span class="highlight-card__icon" aria-hidden="true">🛤️</span><span>Custom train-track accents and signage throughout the dining room.</span></li>
+                <li><span class="highlight-card__icon" aria-hidden="true">🎶</span><span>Vintage playlists and conductor announcements that set the tone.</span></li>
+              </ul>
+            </article>
+            <article class="highlight-card">
+              <h3 class="highlight-card__title">Family-Owned Hospitality</h3>
+              <p class="highlight-card__text">Three generations welcome guests with the same genuine smiles and heaping plates that made us a Wakefield tradition.</p>
+              <ul class="highlight-card__list">
+                <li><span class="highlight-card__icon" aria-hidden="true">🤝</span><span>Friendly regulars and first-time riders are greeted by name.</span></li>
+                <li><span class="highlight-card__icon" aria-hidden="true">👨‍👩‍👧</span><span>Kid-approved menu options and roomy booths for every crew.</span></li>
+                <li><span class="highlight-card__icon" aria-hidden="true">☕</span><span>Bottomless coffee pours and comfort classics straight from the griddle.</span></li>
+              </ul>
+            </article>
+            <article class="highlight-card">
+              <h3 class="highlight-card__title">Diner Comforts You'll Love</h3>
+              <p class="highlight-card__text">From signature three-egg omelettes to scratch-made specials, every bite is prepared with care and served with plenty of nostalgic flair.</p>
+              <ul class="highlight-card__list">
+                <li><span class="highlight-card__icon" aria-hidden="true">🍳</span><span>30+ inventive omelette combinations plus build-your-own choices.</span></li>
+                <li><span class="highlight-card__icon" aria-hidden="true">🥞</span><span>Fluffy waffles, bennies, and seasonal specials on constant rotation.</span></li>
+                <li><span class="highlight-card__icon" aria-hidden="true">🚂</span><span>Weekend crowds line up early—arrive before departure to secure your seat!</span></li>
+              </ul>
+            </article>
+          </div>
         </div>
+        <div class="section-divider" role="presentation" aria-hidden="true"></div>
       </section>
 
-      <section class="section section--accent" id="menu">
+      <section class="section menu" id="menu">
         <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Signature Omelettes</p>
-            <h2>Crafted Classics & Bold Specials</h2>
-            <p>
-              From timeless comforts to daring flavor mashups, these omelettes showcase the flair and fun of
-              Omelette HQ. Seasonal specials rotate monthly.
-            </p>
+          <header class="section__header fade-in-section">
+            <p class="eyebrow">Signature Dishes</p>
+            <h2>Menu Highlights</h2>
+            <p>Explore our guest-favorite omelettes, benedicts, and breakfast comforts inspired by the original menu.</p>
+          </header>
+          <div class="menu__tabs menu-tabs" role="tablist" aria-label="Menu categories">
+            <button class="menu__tab menu-tab is-active" role="tab" aria-selected="true" aria-controls="tab-omelettes" id="tab-omelettes-button">
+              Omelettes
+            </button>
+            <button class="menu__tab menu-tab" role="tab" aria-selected="false" aria-controls="tab-benedicts" id="tab-benedicts-button">
+              Benedicts
+            </button>
+            <button class="menu__tab menu-tab" role="tab" aria-selected="false" aria-controls="tab-sandwiches" id="tab-sandwiches-button">
+              Sandwiches &amp; Wraps
+            </button>
+            <button class="menu__tab menu-tab" role="tab" aria-selected="false" aria-controls="tab-waffles" id="tab-waffles-button">
+              Waffles &amp; Pancakes
+            </button>
+            <button class="menu__tab menu-tab" role="tab" aria-selected="false" aria-controls="tab-beverages" id="tab-beverages-button">
+              Juices &amp; Beverages
+            </button>
+            <button class="menu__tab menu-tab" role="tab" aria-selected="false" aria-controls="tab-sides" id="tab-sides-button">
+              Side Orders
+            </button>
           </div>
-          <div class="card-grid">
-            <article class="card">
-              <h3>Lake Quannapowitt Classic</h3>
-              <p>Applewood bacon, smoked cheddar, slow-roasted tomatoes, scallion crème fraîche.</p>
-              <span class="pill">$14</span>
-            </article>
-            <article class="card">
-              <h3>Garden Sunrise</h3>
-              <p>Charred broccolini, lemon ricotta, basil pesto drizzle, toasted almond crunch.</p>
-              <span class="pill">Vegetarian</span>
-            </article>
-            <article class="card">
-              <h3>North Shore Heat</h3>
-              <p>Chorizo, cotija, caramelized onions, pickled fresnos, house pineapple fire sauce.</p>
-              <span class="pill pill--spicy">Spicy</span>
-            </article>
-            <article class="card">
-              <h3>Wakefield Weekender</h3>
-              <p>Lobster tail medallions, brown butter hollandaise, champagne chive pearls.</p>
-              <span class="pill">Saturday & Sunday Only</span>
-            </article>
-          </div>
-        </div>
-      </section>
 
-      <section class="section section--experience" id="experience">
-        <div class="container section__grid section__grid--reverse">
-          <article class="section__content">
-            <h2>The Omelette HQ Experience</h2>
-            <p>
-              Sunlight pours through our vaulted windows, jazz vinyl hums softly, and latte art swirls through
-              the air. Settle into our communal harvest table or claim a window seat overlooking the Lake
-              Quannapowitt trail.
-            </p>
-            <ul class="icon-list">
-              <li>
-                <span class="icon" aria-hidden="true">🥚</span>
-                <div>
-                  <h3>Egg Bar</h3>
-                  <p>Customize your omelette with chef-guided mix-ins and sauces for a bespoke breakfast.</p>
-                </div>
-              </li>
-              <li>
-                <span class="icon" aria-hidden="true">☕</span>
-                <div>
-                  <h3>Slow Coffee Bar</h3>
-                  <p>Single-origin pours, nitro cold brew, and seasonal mocktails crafted by our baristas.</p>
-                </div>
-              </li>
-              <li>
-                <span class="icon" aria-hidden="true">🎶</span>
-                <div>
-                  <h3>Weekend Vinyl Sessions</h3>
-                  <p>Local DJs spin mellow brunch sets every Saturday from 10 AM&ndash;1 PM.</p>
-                </div>
-              </li>
-            </ul>
-          </article>
-          <figure class="feature-card" aria-label="Interior photography">
-            <img
-              src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80"
-              alt="Sunlit café interior with breakfast counter"
-            />
-            <figcaption>Bright mornings inside Omelette Headquarters</figcaption>
-          </figure>
-        </div>
-      </section>
+          <div class="menu__panels">
+            <div class="menu__panel is-active" id="tab-omelettes" role="tabpanel" aria-labelledby="tab-omelettes-button">
+              <div class="menu__grid menu-grid">
+                <article class="menu-card" style="--index: 0">
+                  <h3 class="menu-card-title">Headquarter Omelette</h3>
+                  <p class="menu-card-description">Ham, onions, peppers, tomato, and American cheese served with toast and home fries.</p>
+                  <span class="menu-card-price">$12.99</span>
+                </article>
+                <article class="menu-card" style="--index: 1">
+                  <h3 class="menu-card-title">Ultimate Omelette</h3>
+                  <p class="menu-card-description">Bacon, sausage, ham, onions, peppers, mushrooms, and cheddar. A crew favorite.</p>
+                  <span class="menu-card-price">$13.49</span>
+                </article>
+                <article class="menu-card" style="--index: 2">
+                  <h3 class="menu-card-title">Buffalo Omelette</h3>
+                  <p class="menu-card-description">Chicken tenders tossed in buffalo sauce with blue cheese crumble and scallions.</p>
+                  <span class="menu-card-price">$12.49</span>
+                </article>
+                <article class="menu-card" style="--index: 3">
+                  <h3 class="menu-card-title">Deluxe Omelette</h3>
+                  <p class="menu-card-description">Spinach, tomato, feta, and olives topped with tzatziki for a Mediterranean ride.</p>
+                  <span class="menu-card-price">$11.99</span>
+                </article>
+                <article class="menu-card featured" style="--index: 4">
+                  <h3 class="menu-card-title">Build Your Own</h3>
+                  <p class="menu-card-description">Choose three fillings from fresh veggies, artisanal cheeses, and premium meats.</p>
+                  <span class="menu-card-price">Starting at $9.99</span>
+                </article>
+              </div>
+            </div>
 
-      <section class="section" id="events">
-        <div class="container">
-          <div class="section__header">
-            <p class="eyebrow">Wakefield Community</p>
-            <h2>Upcoming Happenings</h2>
-            <p>We love sharing breakfast culture with our neighbors. Save the date for these special moments.</p>
-          </div>
-          <div class="timeline">
-            <article class="timeline__item">
-              <h3>Egg Art Lab &middot; September 7</h3>
-              <p>Hands-on class exploring omelette folds, topping stylings, and plating wizardry.</p>
-            </article>
-            <article class="timeline__item">
-              <h3>Harvest Brunch &middot; October 12</h3>
-              <p>Five-course tasting menu featuring autumn ingredients from Middlesex County farms.</p>
-            </article>
-            <article class="timeline__item">
-              <h3>Lakefront Sunrise Run &middot; Every Friday</h3>
-              <p>Meet at 6 AM for a 3-mile jog followed by complimentary espresso shots.</p>
-            </article>
-          </div>
-        </div>
-      </section>
+            <div class="menu__panel" id="tab-benedicts" role="tabpanel" aria-labelledby="tab-benedicts-button">
+              <div class="menu__grid menu-grid">
+                <article class="menu-card" style="--index: 0">
+                  <h3 class="menu-card-title">Classic Eggs Benedict</h3>
+                  <p class="menu-card-description">Griddled English muffin, Canadian bacon, poached eggs, silky hollandaise.</p>
+                  <span class="menu-card-price">$11.99</span>
+                </article>
+                <article class="menu-card" style="--index: 1">
+                  <h3 class="menu-card-title">Irish Benedict</h3>
+                  <p class="menu-card-description">Corned beef hash, sautéed onions, and poached eggs smothered in hollandaise.</p>
+                  <span class="menu-card-price">$12.49</span>
+                </article>
+                <article class="menu-card" style="--index: 2">
+                  <h3 class="menu-card-title">Florentine Benedict</h3>
+                  <p class="menu-card-description">Sautéed spinach, tomato, and creamy feta with lemon-kissed hollandaise.</p>
+                  <span class="menu-card-price">$11.49</span>
+                </article>
+              </div>
+            </div>
 
-      <section class="section section--visit" id="visit">
-        <div class="container section__grid">
-          <div class="section__content">
-            <p class="eyebrow">Visit</p>
-            <h2>Come by the Headquarters</h2>
-            <p>
-              Find us steps from Wakefield&rsquo;s commuter rail stop. We welcome walk-ins and limited
-              reservations for parties of six or more. Outdoor patio seating is available spring through fall.
-            </p>
-            <div class="contact-details">
-              <div>
-                <h3>Location</h3>
-                <p>
-                  12 Main Street<br />
-                  Wakefield, MA 01880
-                </p>
+            <div class="menu__panel" id="tab-sandwiches" role="tabpanel" aria-labelledby="tab-sandwiches-button">
+              <div class="menu__grid menu-grid">
+                <article class="menu-card" style="--index: 0">
+                  <h3 class="menu-card-title">Breakfast BLT</h3>
+                  <p class="menu-card-description">Thick-cut bacon, fried egg, lettuce, tomato, and diner sauce on toasted sourdough.</p>
+                  <span class="menu-card-price">$10.49</span>
+                </article>
+                <article class="menu-card" style="--index: 1">
+                  <h3 class="menu-card-title">Railcar Wrap</h3>
+                  <p class="menu-card-description">Scrambled eggs, turkey sausage, peppers, onions, cheddar, and hash browns in a wrap.</p>
+                  <span class="menu-card-price">$10.99</span>
+                </article>
+                <article class="menu-card" style="--index: 2">
+                  <h3 class="menu-card-title">Headlight Burger</h3>
+                  <p class="menu-card-description">Angus patty, fried egg, smoked gouda, caramelized onions, and house aioli.</p>
+                  <span class="menu-card-price">$12.99</span>
+                </article>
               </div>
-              <div>
-                <h3>Hours</h3>
-                <p>Daily 7:00 AM &ndash; 3:00 PM<br />Brunch until 4:00 PM on weekends</p>
+            </div>
+
+            <div class="menu__panel" id="tab-waffles" role="tabpanel" aria-labelledby="tab-waffles-button">
+              <div class="menu__grid menu-grid">
+                <article class="menu-card" style="--index: 0">
+                  <h3 class="menu-card-title">Golden Malted Waffle</h3>
+                  <p class="menu-card-description">Freshly pressed waffle served with whipped butter, maple syrup, and powdered sugar.</p>
+                  <span class="menu-card-price">$8.99</span>
+                </article>
+                <article class="menu-card" style="--index: 1">
+                  <h3 class="menu-card-title">Strawberry Shortline</h3>
+                  <p class="menu-card-description">Buttermilk pancakes layered with macerated berries, vanilla cream, and gold dust.</p>
+                  <span class="menu-card-price">$10.49</span>
+                </article>
+                <article class="menu-card" style="--index: 2">
+                  <h3 class="menu-card-title">Banana Walnut Express</h3>
+                  <p class="menu-card-description">Caramelized bananas, candied walnuts, and bourbon maple syrup drizzle.</p>
+                  <span class="menu-card-price">$10.99</span>
+                </article>
               </div>
-              <div>
-                <h3>Contact</h3>
-                <p>
-                  <a href="tel:17815551234">(781) 555-1234</a><br />
-                  <a href="mailto:hello@omelettehq.com">hello@omelettehq.com</a>
-                </p>
+            </div>
+
+            <div class="menu__panel" id="tab-beverages" role="tabpanel" aria-labelledby="tab-beverages-button">
+              <div class="menu__grid menu-grid">
+                <article class="menu-card" style="--index: 0">
+                  <h3 class="menu-card-title">Fresh Pressed Orange Juice</h3>
+                  <p class="menu-card-description">Sunrise-sweet Valencia oranges juiced to order.</p>
+                  <span class="menu-card-price">$4.49</span>
+                </article>
+                <article class="menu-card" style="--index: 1">
+                  <h3 class="menu-card-title">Cold Brew Coffee</h3>
+                  <p class="menu-card-description">Steeped 18 hours, served over ice with optional vanilla cream.</p>
+                  <span class="menu-card-price">$4.99</span>
+                </article>
+                <article class="menu-card" style="--index: 2">
+                  <h3 class="menu-card-title">Sunrise Smoothie</h3>
+                  <p class="menu-card-description">Mango, pineapple, banana, and Greek yogurt blended to order.</p>
+                  <span class="menu-card-price">$5.99</span>
+                </article>
               </div>
-              <div>
-                <h3>Follow</h3>
-                <p>
-                  <a href="https://www.instagram.com" target="_blank" rel="noreferrer">Instagram</a>
-                  &middot;
-                  <a href="https://www.tiktok.com" target="_blank" rel="noreferrer">TikTok</a>
-                </p>
+            </div>
+
+            <div class="menu__panel" id="tab-sides" role="tabpanel" aria-labelledby="tab-sides-button">
+              <div class="menu__grid menu-grid">
+                <article class="menu-card" style="--index: 0">
+                  <h3 class="menu-card-title">Home Fries</h3>
+                  <p class="menu-card-description">Skillet-crisp potatoes seasoned with smoked paprika and herbs.</p>
+                  <span class="menu-card-price">$3.99</span>
+                </article>
+                <article class="menu-card" style="--index: 1">
+                  <h3 class="menu-card-title">Applewood Bacon</h3>
+                  <p class="menu-card-description">Thick-cut slices cooked to order.</p>
+                  <span class="menu-card-price">$4.49</span>
+                </article>
+                <article class="menu-card" style="--index: 2">
+                  <h3 class="menu-card-title">Seasonal Fruit Bowl</h3>
+                  <p class="menu-card-description">Fresh cut fruit sourced from local farms whenever possible.</p>
+                  <span class="menu-card-price">$5.49</span>
+                </article>
               </div>
             </div>
           </div>
-          <div class="map-card">
+
+          <div class="menu__actions fade-in-section">
+            <a class="btn btn--primary" href="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690521f6306550d7256caed1.jpeg" target="_blank" rel="noopener noreferrer">
+              Download Full Menu (PDF)
+            </a>
+            <details class="menu__accordion">
+              <summary>See All Options</summary>
+              <p>
+                Browse omelettes, benedicts, waffles, sandwiches, wraps, beverages, and sides crafted from the original Omelette Headquarters menu.
+                Ask about seasonal specialties and rotating chef's features inspired by our chalkboard board.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="section specials-section" id="specials">
+        <div class="container">
+          <div class="specials-layout fade-in-section">
+            <div class="specials-left">
+              <h2 class="specials-title">Today's Specials</h2>
+              <div class="specials-list" aria-label="Daily specials" role="list">
+                <div class="specials-item" role="listitem">
+                  <span class="specials-name">Huevos Rancheros</span>
+                  <span class="specials-price">Steak $16.49</span>
+                </div>
+                <div class="specials-item" role="listitem">
+                  <span class="specials-name">Homemade Soups</span>
+                  <span class="specials-price">Beef Stew · Chicken Noodle · Greek Lemon</span>
+                </div>
+                <div class="specials-item" role="listitem">
+                  <span class="specials-name">Natural Smoothies</span>
+                  <span class="specials-price">Strawberry Banana · Tropical Mango</span>
+                </div>
+                <div class="specials-item" role="listitem">
+                  <span class="specials-name">Greek Yogurt Parfait</span>
+                  <span class="specials-price">With granola & seasonal fruit</span>
+                </div>
+                <div class="specials-item" role="listitem">
+                  <span class="specials-name">Chef's Choice</span>
+                  <span class="specials-price">Ask your server for this week's feature</span>
+                </div>
+              </div>
+              <div class="specials-callout">Ask your conductor for allergen and seasonal updates.</div>
+            </div>
+            <div class="specials-right">
+              <img
+                class="chalkboard-photo lazy"
+                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                data-src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/69052282de82832f5f1663ec.jpeg"
+                alt="Handwritten chalkboard menu featuring daily specials"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="gallery-section" id="gallery">
+        <div class="gallery-header fade-in-section">
+          <p class="gallery-subtitle">Inside the Diner</p>
+          <h2 class="gallery-title">Gallery</h2>
+          <p class="gallery-description">Peek inside our cozy diner, chalkboard specials, and mouthwatering plates.</p>
+        </div>
+        <div class="gallery-grid fade-in-section">
+          <div class="gallery-item">
+            <img
+              class="lazy"
+              src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+              data-src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690522873db4b54e06052ded.jpeg"
+              alt="Pennsylvania Railroad vintage train wall art decoration"
+              loading="lazy"
+            />
+            <div class="gallery-caption">
+              <p class="gallery-caption-text">Signature Pennsylvania Railroad engine art</p>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <img
+              class="lazy"
+              src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+              data-src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690521f9edf4205fef9d5e59.jpeg"
+              alt="Omelette Headquarters dining room with blue wainscoting and wooden booths"
+              loading="lazy"
+            />
+            <div class="gallery-caption">
+              <p class="gallery-caption-text">Classic diner booths with train memorabilia</p>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <img
+              class="lazy"
+              src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+              data-src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/69052282de82832f5f1663ec.jpeg"
+              alt="Handwritten chalkboard menu featuring daily specials"
+              loading="lazy"
+            />
+            <div class="gallery-caption">
+              <p class="gallery-caption-text">Daily chalkboard specials</p>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <img
+              class="lazy"
+              src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+              data-src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/6905227e9faf0156034d16c8.jpeg"
+              alt="Vintage locomotive photograph in sepia tones"
+              loading="lazy"
+            />
+            <div class="gallery-caption">
+              <p class="gallery-caption-text">Vintage locomotive photography</p>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <img
+              class="lazy"
+              src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+              data-src="https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?auto=format&fit=crop&w=800&q=80"
+              alt="Three-egg omelette with toast and roasted potatoes"
+              loading="lazy"
+            />
+            <div class="gallery-caption">
+              <p class="gallery-caption-text">Made-to-order omelettes</p>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <img
+              class="lazy"
+              src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+              data-src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=800&q=80"
+              alt="Stack of pancakes topped with fresh berries"
+              loading="lazy"
+            />
+            <div class="gallery-caption">
+              <p class="gallery-caption-text">Stacks of fluffy pancakes</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section visit" id="visit">
+        <div class="container visit__grid fade-in-section">
+          <div class="visit__map" aria-hidden="true">
             <iframe
-              title="Map of Omelette Headquarters in Wakefield MA"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2939.217417979731!2d-71.07318192355152!3d42.50393917117971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e36f78d1de7d21%3A0xa795882b58c2c299!2sWakefield%2C%20MA!5e0!3m2!1sen!2sus!4v1720384050002!5m2!1sen!2sus"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2941.152051400456!2d-71.06939162257294!3d42.50494152818106!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e37718d77ec1a3%3A0x2bd0b35d1d734638!2s57%20Water%20St%2C%20Wakefield%2C%20MA%2001880!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus"
+              width="600"
+              height="450"
+              style="border:0"
               allowfullscreen=""
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
+              title="Map showing The Omelette Headquarters location"
             ></iframe>
+          </div>
+          <div class="visit__details" id="contact">
+            <p class="eyebrow">Hours &amp; Location</p>
+            <h2>Plan Your Visit</h2>
+            <address>
+              <p><strong>Address:</strong> 57 Water St, Wakefield, MA 01880</p>
+              <p><strong>Phone:</strong> <a href="tel:17812243989">781-224-3989</a></p>
+            </address>
+            <div class="hours-status">
+              <p class="current-status closed">Currently Closed</p>
+              <p class="next-open">Opens Friday at 6:00 AM</p>
+            </div>
+            <div class="hours-display">
+              <h3>Hours</h3>
+              <p class="hours-text">Friday – Sunday: <strong>6:00 AM – 2:00 PM</strong></p>
+              <p class="hours-note">Closed Monday – Thursday</p>
+            </div>
+            <div class="visit__actions">
+              <a class="btn btn--primary" href="tel:17812243989">Call Now</a>
+              <a class="btn btn--secondary" href="https://maps.google.com/?daddr=57+Water+St,+Wakefield,+MA+01880" target="_blank" rel="noopener">
+                Get Directions
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section cta" aria-label="Order call to action">
+        <div class="cta__background" aria-hidden="true"></div>
+        <div class="container cta__content fade-in-section">
+          <h2>Ready to Start Your Day Right?</h2>
+          <p>Join us for breakfast that feels like home. Order ahead or grab a booth and stay awhile.</p>
+          <div class="cta-buttons">
+            <a class="btn btn-cta-primary" href="#visit">Order Takeout</a>
+            <a class="btn btn-cta-secondary" href="#menu">View Full Menu</a>
+            <a class="btn btn-cta-tertiary" href="tel:17812243989">Call Us: 781-224-3989</a>
           </div>
         </div>
       </section>
     </main>
 
     <footer class="footer">
-      <div class="container footer__inner">
-        <p>© <span id="year"></span> Omelette Headquarters. Crafted with love in Wakefield, MA.</p>
-        <p>
-          Need catering? Email <a href="mailto:catering@omelettehq.com">catering@omelettehq.com</a> for custom
-          brunch spreads.
-        </p>
+      <div class="footer__divider" aria-hidden="true"></div>
+      <div class="container footer__grid">
+        <div class="footer__column">
+          <a class="footer__brand" href="#top">
+            <span class="footer__logo">🚂</span>
+            <span>The Omelette Headquarters</span>
+          </a>
+          <p>Wakefield's family-owned breakfast destination blending nostalgic diner comfort with vintage rail style.</p>
+        </div>
+        <div class="footer__column">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#visit">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer__column">
+          <h3>Visit</h3>
+          <p>57 Water St<br />Wakefield, MA 01880</p>
+          <p><a href="tel:17812243989">781-224-3989</a></p>
+          <p>Fri – Sun: 6:00 AM – 2:00 PM</p>
+        </div>
+        <div class="footer__column">
+          <h3>Connect</h3>
+          <ul class="footer__social">
+            <li><a href="https://www.facebook.com" target="_blank" rel="noopener">Facebook</a></li>
+            <li><a href="https://www.instagram.com" target="_blank" rel="noopener">Instagram</a></li>
+            <li><a href="mailto:hello@omelettehq.com">hello@omelettehq.com</a></li>
+            <li>
+              <form class="footer__form">
+                <label for="newsletter" class="sr-only">Email address</label>
+                <input type="email" id="newsletter" name="newsletter" placeholder="Join our newsletter" required />
+                <button type="submit">Subscribe</button>
+              </form>
+            </li>
+          </ul>
+        </div>
       </div>
+      <p class="footer__copy">© 2025 The Omelette Headquarters. All rights reserved.</p>
     </footer>
 
-    <script>
-      const navToggle = document.querySelector(".nav__toggle");
-      const navLinks = document.querySelector(".nav__links");
-
-      navToggle?.addEventListener("click", () => {
-        const expanded = navToggle.getAttribute("aria-expanded") === "true";
-        navToggle.setAttribute("aria-expanded", String(!expanded));
-        navLinks?.classList.toggle("nav__links--open");
-      });
-
-      document.getElementById("year").textContent = new Date().getFullYear();
-    </script>
+    <script src="/js/menu-tabs.js" defer></script>
+    <script src="/js/scroll-effects.js" defer></script>
+    <script src="/js/main.js" defer></script>
   </body>
 </html>
