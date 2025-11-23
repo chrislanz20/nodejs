@@ -1883,8 +1883,8 @@
         cursor: pointer !important;
         margin: 0 !important;
         accent-color: #00FFFF !important;
-        width: 16px !important;
-        height: 16px !important;
+        width: 14px !important;
+        height: 14px !important;
       }
 
       /* Leads tabs - horizontal scroll on mobile */
@@ -3509,18 +3509,15 @@
 
     async function loadDashboard() {
       try {
-        // Load categories
-        const catResponse = await fetch('/api/categories', {
-          credentials: 'include'
-        });
+        // Load categories and calls in PARALLEL for faster loading
+        const [catResponse, callsResponse] = await Promise.all([
+          fetch('/api/categories', { credentials: 'include' }),
+          fetch('/api/agent-summary', { credentials: 'include' })
+        ]);
+
         if (catResponse.ok) {
           categories = await catResponse.json();
         }
-
-        // Load all calls
-        const callsResponse = await fetch('/api/agent-summary', {
-          credentials: 'include'
-        });
 
         if (!callsResponse.ok) {
           if (callsResponse.status === 401 || callsResponse.status === 403) {
@@ -3539,14 +3536,12 @@
           currentUser.agent_ids.includes(call.agent_id)
         );
 
-        // Load team members
-        loadTeamMembers();
-
-        // Load activity log (now part of team section)
-        loadActivityLog();
-
-        // Load client leads
-        loadClientLeads();
+        // Load secondary data in PARALLEL (non-blocking)
+        Promise.all([
+          loadTeamMembers(),
+          loadActivityLog(),
+          loadClientLeads()
+        ]).catch(err => console.warn('Secondary data load error:', err));
 
         renderDashboard();
         checkOnboarding();

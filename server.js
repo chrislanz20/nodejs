@@ -2892,6 +2892,8 @@ app.post('/api/team/register', async (req, res) => {
 });
 
 // POST /api/team/forgot-password - Request password reset for team members OR business owners (public)
+// Rate limiting: prevent duplicate emails within 2 minutes
+const recentResetRequests = new Map();
 app.post('/api/team/forgot-password', async (req, res) => {
   try {
     const { email } = req.body;
@@ -2901,6 +2903,13 @@ app.post('/api/team/forgot-password', async (req, res) => {
     }
 
     const emailLower = email.toLowerCase();
+
+    // Check for recent reset request (within 2 minutes) - prevent duplicate emails
+    const lastRequest = recentResetRequests.get(emailLower);
+    if (lastRequest && Date.now() - lastRequest < 120000) {
+      console.log(`⏳ Rate limit: Reset already sent to ${emailLower} within last 2 minutes`);
+      return res.json({ success: true, message: 'If an account exists with this email, you will receive a reset link.' });
+    }
 
     // First, check team_members table
     const teamResult = await pool.query(`
@@ -2926,6 +2935,9 @@ app.post('/api/team/forgot-password', async (req, res) => {
         `Hi ${member.name},\n\nYou requested a password reset for your ${member.business_name} account.\n\nClick this link to reset your password (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\n${member.business_name}`
       );
 
+      // Mark this email as recently requested
+      recentResetRequests.set(emailLower, Date.now());
+
       return res.json({ success: true, message: 'If an account exists with this email, you will receive a reset link.' });
     }
 
@@ -2950,6 +2962,9 @@ app.post('/api/team/forgot-password', async (req, res) => {
       await sendGHLEmail(client.ghl_location_id, client.email, 'Reset Your Password',
         `Hi,\n\nYou requested a password reset for your ${client.business_name} account.\n\nClick this link to reset your password (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, please ignore this email.\n\nBest regards,\nSaveYa Tech`
       );
+
+      // Mark this email as recently requested
+      recentResetRequests.set(emailLower, Date.now());
 
       return res.json({ success: true, message: 'If an account exists with this email, you will receive a reset link.' });
     }

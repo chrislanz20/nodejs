@@ -547,8 +547,14 @@
     }
 
     // FORGOT PASSWORD
+    let forgotRequestInProgress = false;
     document.getElementById('forgot-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      // Prevent duplicate submissions
+      if (forgotRequestInProgress) return;
+      forgotRequestInProgress = true;
+
       const btn = document.getElementById('forgot-btn');
       const email = document.getElementById('forgot-email').value;
 
@@ -564,12 +570,14 @@
 
         const data = await response.json();
         showMessage('forgot-message', data.message || 'If an account exists, you will receive a reset link.', 'success');
+        // Keep button disabled on success to prevent re-sending
+        btn.textContent = 'Link Sent ✓';
       } catch (error) {
         showMessage('forgot-message', 'Network error. Please try again.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Send Reset Link';
+        forgotRequestInProgress = false;
       }
-
-      btn.disabled = false;
-      btn.textContent = 'Send Reset Link';
     });
 
     // RESET PASSWORD (from email link)
