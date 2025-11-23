@@ -3095,8 +3095,8 @@ async function sendGHLEmail(locationId, toEmail, subject, body) {
   try {
     const ghlApiKey = process.env.GHL_API_KEY;
     if (!ghlApiKey) {
-      console.log('GHL API key not configured, skipping email');
-      return;
+      console.log('❌ GHL API key not configured, skipping email');
+      return { success: false, error: 'GHL_API_KEY not configured' };
     }
 
     console.log(`📧 sendGHLEmail: Sending to ${toEmail} via location ${locationId}`);
@@ -3110,7 +3110,7 @@ async function sendGHLEmail(locationId, toEmail, subject, body) {
 
     if (!contactId) {
       console.error('❌ Could not find or create GHL contact for', toEmail);
-      return;
+      return { success: false, error: 'Failed to create GHL contact' };
     }
 
     console.log(`✅ Got GHL contact ID: ${contactId}`);
@@ -3135,11 +3135,15 @@ async function sendGHLEmail(locationId, toEmail, subject, body) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('❌ GHL email send failed:', errorText);
+      return { success: false, error: errorText };
     } else {
-      console.log(`✅ Email sent successfully to ${toEmail}`);
+      const responseData = await response.json();
+      console.log(`✅ Email sent successfully to ${toEmail}`, responseData);
+      return { success: true, data: responseData };
     }
   } catch (error) {
     console.error('❌ Error sending GHL email:', error);
+    return { success: false, error: error.message };
   }
 }
 
@@ -3152,6 +3156,40 @@ app.get('/api/debug-db', async (req, res) => {
     usingNonPooling: !!(process.env.POSTGRES_URL_NON_POOLING),
     nodeEnv: process.env.NODE_ENV,
   });
+});
+
+// DEBUG: Test email sending
+app.get('/api/test-email', async (req, res) => {
+  try {
+    const toEmail = req.query.email || 'chris@saveyatech.com';
+
+    // Get CourtLaw's location ID
+    const result = await pool.query(
+      "SELECT ghl_location_id FROM clients WHERE business_name = 'CourtLaw Injury Lawyers' LIMIT 1"
+    );
+
+    if (!result.rows[0]?.ghl_location_id) {
+      return res.json({ error: 'No location ID found', hasGHLKey: !!process.env.GHL_API_KEY });
+    }
+
+    const locationId = result.rows[0].ghl_location_id;
+    console.log(`📧 Test email to ${toEmail} using location ${locationId}`);
+
+    // Try to send test email
+    const emailResult = await sendGHLEmail(locationId, toEmail, 'Test Email from SaveYa Tech',
+      `This is a test email sent at ${new Date().toISOString()}\n\nIf you receive this, email sending is working!`
+    );
+
+    res.json({
+      emailResult,
+      message: `Test email to ${toEmail}`,
+      locationId,
+      hasGHLKey: !!process.env.GHL_API_KEY
+    });
+  } catch (error) {
+    console.error('Test email error:', error);
+    res.json({ error: error.message, hasGHLKey: !!process.env.GHL_API_KEY });
+  }
 });
 
 // ============ DATABASE MIGRATION ENDPOINT ============
