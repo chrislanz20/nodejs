@@ -4125,13 +4125,18 @@ RESPONSE STYLE - CRITICAL:
 FORMATTING - ALWAYS USE:
 - Use **bold** for important words, buttons, or section names
 - Use bullet points (•) when listing 2+ items
-- Break up info into short lines - never a wall of text
-- Put action items on their own line
+- ALWAYS use line breaks (hit enter) between different points
+- NEVER write a wall of text - split into separate lines
+- Put each step or bullet on its OWN LINE
+- Add a blank line between sections for readability
 - Example format:
   "To approve a lead:
+
    • Go to **Lead Tracker**
    • Find the lead in **Pending** tab
-   • Click the **green checkmark** ✓"
+   • Click the **green checkmark** ✓
+
+   That marks it as a real lead!"
 
 ===== COMPLETE APP KNOWLEDGE =====
 
@@ -4229,30 +4234,36 @@ If they mention problems with ${aiName} (wrong responses, bad behavior, missed i
 3. Say you'll pass it to the SaveYa team
 4. Don't try to fix it yourself - just collect the feedback
 
-EXAMPLE RESPONSES (notice the clean formatting):
+EXAMPLE RESPONSES (notice clean formatting with line breaks):
 
 User: "How do I approve leads?"
-Response: "To approve a lead:
+Response:
+"To approve a lead:
+
 • Go to **Lead Tracker** section
-• Click the **green checkmark** ✓ next to the lead
+• Click the **green checkmark** ✓
 
 That marks it as a real potential customer!"
 
 User: "How do I see what was said on a call?"
-Response: "Click any call in **Recent Calls** to see the full transcript.
+Response:
+"Click any call in **Recent Calls** to see the full transcript.
 
 You'll see exactly what the caller said and how ${aiName} responded."
 
 User: "Maria talks too fast"
-Response: "Thanks for that feedback about ${aiName}! I'll make sure our team sees this.
+Response:
+"Thanks for that feedback about ${aiName}!
 
-Was there a specific call where this happened?"
+I'll make sure our team sees this. Was there a specific call where this happened?"
 
 User: "How do I find old calls?"
-Response: "You can filter calls by:
-• **Date Range** dropdown (Last 7/30/90 days)
-• **Search box** (enter phone number)
-• **Category** dropdown (New Lead, Existing Client, etc.)"
+Response:
+"You can filter calls by:
+
+• **Date Range** dropdown
+• **Search box** (phone number)
+• **Category** dropdown"
 
 REMEMBER: Short. Clear. Helpful. **Well-formatted**. One answer at a time.`;
 
@@ -4311,30 +4322,20 @@ app.post('/api/chatbot/end', async (req, res) => {
       .map(m => `${m.role === 'user' ? 'Client' : 'Assistant'}: ${m.content}`)
       .join('\n\n');
 
-    const analysisPrompt = `You are an AI prompt engineering expert. Analyze this feedback conversation and generate SPECIFIC, ACTIONABLE recommendations for improving the AI receptionist's prompt.
+    const analysisPrompt = `Summarize this chatbot feedback conversation in 2-3 bullet points of what action I need to take. Be brief and direct.
 
-THE CURRENT AI RECEPTIONIST (${aiName}) PROMPT STRUCTURE:
-${aiPrompt}
-
-FEEDBACK CONVERSATION:
+CONVERSATION:
 ${conversationText}
 
-Generate a report with:
+Reply with ONLY a short bullet list like:
+• [Action 1]
+• [Action 2]
 
-1. FEEDBACK SUMMARY (2-3 sentences of what the client wants)
-
-2. SPECIFIC PROMPT MODIFICATIONS (be precise):
-   - What section of the prompt to modify
-   - The exact change to make
-   - Example of new/modified instruction
-
-3. PRIORITY LEVEL: High/Medium/Low
-
-Format your response clearly with headers. Be specific enough that a developer can implement the changes directly.`;
+No headers, no explanations - just the action items.`;
 
     const analysisResponse = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
+      max_tokens: 200,
       messages: [{
         role: 'user',
         content: analysisPrompt
@@ -4382,23 +4383,17 @@ async function sendChatbotRecommendations(clientName, conversation, recommendati
     const locationId = result.rows[0]?.ghl_location_id;
 
     if (locationId) {
-      const subject = `Chatbot Feedback Summary - ${clientName}`;
-      const body = `CHATBOT FEEDBACK SUMMARY
-═══════════════════════════════════════
-
-Client: ${clientName}
+      const subject = `Chatbot Feedback - ${clientName}`;
+      const body = `Client: ${clientName}
 Time: ${new Date().toLocaleString()}
 
-📝 CONVERSATION:
-────────────────────────────────────────
-${conversation}
-
-💡 AI RECOMMENDATIONS:
-────────────────────────────────────────
+ACTION NEEDED:
 ${recommendations}
 
-═══════════════════════════════════════
-This is an automated summary from the SaveYa Tech feedback chatbot.`;
+─────────────────────────
+FULL CONVERSATION:
+
+${conversation}`;
 
       await sendEmail('chris@saveyatech.com', subject, body);
       console.log('✅ Chatbot summary email sent to chris@saveyatech.com');
