@@ -326,7 +326,26 @@ async function initializeDatabase() {
       ALTER TABLE clients ADD COLUMN IF NOT EXISTS invitation_code_created_at TIMESTAMP
     `);
 
-    // Add password reset fields to team_members
+    // Create team_members table for client team management
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS team_members (
+        id SERIAL PRIMARY KEY,
+        client_id INTEGER REFERENCES clients(id) ON DELETE CASCADE,
+        email TEXT NOT NULL,
+        name TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'member',
+        password_hash TEXT NOT NULL,
+        active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        last_login TIMESTAMP,
+        reset_token TEXT,
+        reset_token_expires TIMESTAMP,
+        UNIQUE(client_id, email)
+      )
+    `);
+
+    // Add password reset fields to team_members (migration for existing tables)
     await client.query(`
       ALTER TABLE team_members ADD COLUMN IF NOT EXISTS reset_token TEXT
     `);
