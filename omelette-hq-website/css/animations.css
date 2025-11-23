@@ -1,0 +1,468 @@
+/* ============================================
+   THE OMELETTE HEADQUARTERS - ANIMATIONS
+   ============================================ */
+
+/* Fade In Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hero Animations */
+.fade-in {
+  animation: fadeInUp 1s ease-out;
+}
+
+.fade-in-delay-1 {
+  animation: fadeInUp 1s ease-out 0.3s backwards;
+}
+
+.fade-in-delay-2 {
+  animation: fadeInUp 1s ease-out 0.6s backwards;
+}
+
+.fade-in-delay-3 {
+  animation: fadeInUp 1s ease-out 0.9s backwards;
+}
+
+/* Scroll Arrow Animation */
+@keyframes scroll-bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0) translateX(-50%);
+  }
+  40% {
+    transform: translateY(10px) translateX(-50%);
+  }
+  60% {
+    transform: translateY(5px) translateX(-50%);
+  }
+}
+
+/* Pulse Animation for Status Indicator */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Button Pulse Animation */
+@keyframes button-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 140, 66, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 140, 66, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 140, 66, 0);
+  }
+}
+
+.btn-primary,
+.btn-secondary {
+  animation: button-pulse 2s infinite;
+}
+
+/* Fade In Section - Intersection Observer */
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Menu Card Stagger Animation */
+.menu-card {
+  opacity: 0;
+  animation: slideUp 0.6s ease-out forwards;
+  animation-delay: calc(var(--index) * 0.1s);
+}
+
+.menu-tab-content.active .menu-card {
+  opacity: 0;
+  animation: slideUp 0.6s ease-out forwards;
+  animation-delay: calc(var(--index) * 0.1s);
+}
+
+/* Gallery Item Animation */
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.gallery-item {
+  animation: zoomIn 0.5s ease-out;
+  animation-delay: calc(var(--index, 0) * 0.1s);
+  animation-fill-mode: backwards;
+}
+
+/* Lightbox Animations */
+@keyframes lightboxFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes lightboxImageZoom {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.lightbox.active {
+  animation: lightboxFadeIn 0.3s ease;
+}
+
+.lightbox.active .lightbox-image {
+  animation: lightboxImageZoom 0.4s ease;
+}
+
+/* Stat Item Count Up Effect */
+@keyframes countUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.stat-item.is-visible {
+  animation: countUp 0.6s ease-out;
+}
+
+.stat-item.is-visible:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.stat-item.is-visible:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.stat-item.is-visible:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.stat-item.is-visible:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+/* Chalkboard Item Animations */
+@keyframes chalkDraw {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.special-item {
+  animation: chalkDraw 0.8s ease-out;
+  animation-delay: calc(var(--index, 0) * 0.2s);
+  animation-fill-mode: backwards;
+}
+
+/* Navigation Slide Down */
+@keyframes navSlideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.navbar {
+  animation: navSlideDown 0.5s ease-out;
+}
+
+/* Mobile Menu Slide In */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.nav-links.mobile-active {
+  animation: slideInRight 0.3s ease-out;
+}
+
+/* Hover Effects */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.stat-item:hover .stat-icon {
+  animation: float 1s ease-in-out infinite;
+}
+
+/* Train Track Animation */
+@keyframes trainMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 120px 0;
+  }
+}
+
+.train-divider {
+  animation: trainMove 2s linear infinite;
+}
+
+/* Loading Animation for Images */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--gray-light) 0%,
+    var(--white) 50%,
+    var(--gray-light) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Scroll Progress Indicator */
+@keyframes progressBar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--burgundy-primary), var(--orange-primary));
+  transform-origin: left;
+  z-index: 9999;
+  animation: progressBar 1s ease-out;
+}
+
+/* CTA Button Special Effect */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--orange-primary),
+                0 0 10px var(--orange-primary);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--orange-primary),
+                0 0 30px var(--orange-primary),
+                0 0 40px var(--orange-primary);
+  }
+}
+
+.cta-section .btn-primary:hover {
+  animation: glow 1.5s ease-in-out infinite;
+}
+
+/* About Gallery Stagger */
+.about-gallery img {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.about-gallery img:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.about-gallery img:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.about-gallery img:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+.about.is-visible .about-gallery img {
+  animation-play-state: running;
+}
+
+/* Menu Tab Switch Animation */
+@keyframes tabContentSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.menu-tab-content.active {
+  animation: tabContentSlide 0.4s ease;
+}
+
+/* Footer Fade In */
+@keyframes footerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.footer.is-visible {
+  animation: footerFadeIn 0.8s ease-out;
+}
+
+/* Special Chalk Text Effect */
+@keyframes chalkWrite {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 100%;
+    opacity: 1;
+  }
+}
+
+.chalk-title {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: chalkWrite 1.5s steps(30) forwards;
+}
+
+/* Smooth Transitions for All Interactive Elements */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Image Lazy Load Fade In */
+img[loading="lazy"] {
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+}
+
+img[loading="lazy"].loaded {
+  opacity: 1;
+}
+
+/* Hover Lift Effect */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Stagger Children Animation */
+.stagger-children > * {
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
+
+/* Parallax Scroll Effect Classes */
+.parallax-slow {
+  transition: transform 0.5s cubic-bezier(0, 0, 0, 1);
+}
+
+.parallax-medium {
+  transition: transform 0.3s cubic-bezier(0, 0, 0, 1);
+}
+
+.parallax-fast {
+  transition: transform 0.1s cubic-bezier(0, 0, 0, 1);
+}
