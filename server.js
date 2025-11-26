@@ -292,196 +292,6 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// ============================================================
-// AGENT SUMMARY CACHE - Background refresh for fast dashboard loads
-// ============================================================
-let agentSummaryCache = null;
-let agentSummaryCacheTimestamp = null;
-let isRefreshingCache = false;
-
-/**
- * Fetch agent summary data and update cache
- * This runs in the background every 60 seconds to keep data fresh
- */
-async function refreshAgentSummaryCache() {
-  if (isRefreshingCache) {
-    console.log('⏳ Cache refresh already in progress, skipping...');
-    return;
-  }
-
-  isRefreshingCache = true;
-  const startTime = Date.now();
-  console.log('🔄 Background cache refresh starting...');
-
-  try {
-    // Fetch all agents
-    const agentsData = await retryWithBackoff(() => retellClient.agent.list());
-    const allAgents = agentsData.agents || agentsData || [];
-
-    await sleep(100);
-
-    // Fetch calls with pagination
-    let allCalls = [];
-    let paginationKey = undefined;
-    const pageSize = 1000;
-    let pageCount = 0;
-
-    while (pageCount < 50) {
-      if (pageCount > 0) {
-        await sleep(100);
-      }
-
-      try {
-        const params = { limit: pageSize };
-        if (paginationKey) {
-          params.pagination_key = paginationKey;
-        }
-
-        const data = await retryWithBackoff(() => retellClient.call.list(params));
-        const calls = Array.isArray(data) ? data : (data.calls || []);
-
-        pageCount++;
-
-        if (calls.length > 0) {
-          allCalls = allCalls.concat(calls);
-          const lastCall = calls[calls.length - 1];
-          paginationKey = lastCall.call_id;
-        } else {
-          break;
-        }
-      } catch (error) {
-        console.error(`❌ Cache refresh error on page ${pageCount + 1}:`, error.message);
-        break;
-      }
-    }
-
-    // Load categories from database
-    const categories = await readCategories();
-
-    // Group agents by name
-    const agentsByName = new Map();
-    allAgents.forEach(agent => {
-      const name = agent.agent_name || 'Unnamed Agent';
-      if (!agentsByName.has(name)) {
-        agentsByName.set(name, {
-          name: name,
-          agent_ids: [],
-          representative: agent
-        });
-      }
-      agentsByName.get(name).agent_ids.push(agent.agent_id);
-    });
-
-    // Create agent ID to name map
-    const agentIdToName = new Map();
-    allAgents
-      .sort((a, b) => (b.last_modification_timestamp || 0) - (a.last_modification_timestamp || 0))
-      .forEach(agent => {
-        if (!agentIdToName.has(agent.agent_id)) {
-          agentIdToName.set(agent.agent_id, agent.agent_name || 'Unnamed Agent');
-        }
-      });
-
-    // Calculate stats for each unique agent name
-    const agentSummaries = Array.from(agentsByName.values()).map(agentGroup => {
-      const agentCalls = allCalls.filter(call =>
-        agentGroup.agent_ids.includes(call.agent_id)
-      );
-
-      const totalCalls = agentCalls.length;
-      const totalDuration = agentCalls.reduce((sum, call) => {
-        return sum + (call.end_timestamp && call.start_timestamp
-          ? (call.end_timestamp - call.start_timestamp) / 1000 / 60
-          : 0);
-      }, 0);
-      const totalCost = agentCalls.reduce((sum, call) => {
-        return sum + ((call.call_cost?.combined_cost || 0) / 100);
-      }, 0);
-
-      return {
-        agent_name: agentGroup.name,
-        agent_ids: agentGroup.agent_ids,
-        version_count: agentGroup.agent_ids.length,
-        representative: agentGroup.representative,
-        total_calls: totalCalls,
-        total_duration_minutes: Math.round(totalDuration * 100) / 100,
-        total_cost: Math.round(totalCost * 100) / 100,
-        average_cost_per_call: totalCalls > 0 ? Math.round((totalCost / totalCalls) * 100) / 100 : 0,
-        calls: agentCalls.map(call => ({
-          call_id: call.call_id,
-          agent_id: call.agent_id,
-          from_number: call.from_number,
-          to_number: call.to_number,
-          start_timestamp: call.start_timestamp,
-          end_timestamp: call.end_timestamp,
-          duration_minutes: call.end_timestamp && call.start_timestamp
-            ? Math.round((call.end_timestamp - call.start_timestamp) / 1000 / 60 * 100) / 100
-            : 0,
-          cost: (call.call_cost?.combined_cost || 0) / 100
-        }))
-      };
-    });
-
-    // Build the response object
-    agentSummaryCache = {
-      agents: agentSummaries,
-      all_calls: allCalls.map(call => ({
-        call_id: call.call_id,
-        agent_id: call.agent_id,
-        agent_name: agentIdToName.get(call.agent_id) || 'Unknown Agent',
-        from_number: call.from_number,
-        to_number: call.to_number,
-        customer_number: call.customer_number,
-        start_timestamp: call.start_timestamp,
-        end_timestamp: call.end_timestamp,
-        duration_minutes: call.end_timestamp && call.start_timestamp
-          ? Math.round((call.end_timestamp - call.start_timestamp) / 1000 / 60 * 100) / 100
-          : 0,
-        cost: (call.call_cost?.combined_cost || 0) / 100,
-        call_analysis: call.call_analysis,
-        call_cost: call.call_cost,
-        call_status: call.call_status,
-        disconnection_reason: call.disconnection_reason,
-        category: categories[call.call_id]?.category || null,
-        reasoning: categories[call.call_id]?.reasoning || null,
-        manual: categories[call.call_id]?.manual || false,
-        auto: categories[call.call_id]?.auto || false
-      })),
-      total_calls: allCalls.length,
-      pages_fetched: pageCount
-    };
-
-    agentSummaryCacheTimestamp = Date.now();
-    const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-    console.log(`✅ Cache refreshed: ${allCalls.length} calls in ${elapsed}s`);
-
-  } catch (error) {
-    console.error('❌ Cache refresh failed:', error.message);
-  } finally {
-    isRefreshingCache = false;
-  }
-}
-
-/**
- * Start background cache refresh (every 60 seconds)
- */
-function startBackgroundCacheRefresh() {
-  console.log('🚀 Background cache refresh starting in 5 seconds...');
-
-  // Wait 5 seconds for database to be ready before first refresh
-  setTimeout(() => {
-    console.log('🔄 Starting initial cache refresh...');
-    refreshAgentSummaryCache();
-
-    // Then refresh every 60 seconds
-    setInterval(() => {
-      refreshAgentSummaryCache();
-    }, 60000);
-  }, 5000);
-}
-
-// ============================================================
-
 // Disable TLS certificate validation for PostgreSQL connections
 // This is needed for Supabase/Neon databases that use self-signed certificates
 if (process.env.POSTGRES_URL || process.env.POSTGRES_URL_NON_POOLING) {
@@ -879,49 +689,223 @@ app.get("/api/test-calls", async (req, res) => {
   }
 });
 
-// Get aggregated agent summary - uses background cache for fast loading
+// Get aggregated agent summary - fetches ALL data once and aggregates by agent name
 app.get("/api/agent-summary", async (req, res) => {
   try {
-    // If cache exists, return it immediately (fast path)
-    if (agentSummaryCache) {
-      const cacheAge = agentSummaryCacheTimestamp ? Math.round((Date.now() - agentSummaryCacheTimestamp) / 1000) : 0;
-      console.log(`⚡ Returning cached agent summary (${agentSummaryCache.total_calls} calls, ${cacheAge}s old)`);
-      return res.json(agentSummaryCache);
+    // Support incremental loading with since_timestamp parameter
+    const sinceTimestamp = req.query.since_timestamp ? parseInt(req.query.since_timestamp) : null;
+
+    if (sinceTimestamp) {
+      console.log(`Fetching agent summary (incremental since ${new Date(sinceTimestamp).toISOString()})...`);
+    } else {
+      console.log('Fetching agent summary (full load)...');
     }
 
-    // No cache yet - wait briefly then fetch directly
-    console.log('⏳ Cache not ready, waiting up to 15 seconds...');
+    // Fetch all agents
+    const agentsData = await retryWithBackoff(() => retellClient.agent.list());
+    const allAgents = agentsData.agents || agentsData || [];
+    console.log(`Fetched ${allAgents.length} total agent versions`);
 
-    const maxWait = 15000;
-    const checkInterval = 500;
-    let waited = 0;
+    // Add a small delay after fetching agents (100ms is sufficient with retryWithBackoff)
+    await sleep(100);
 
-    while (!agentSummaryCache && waited < maxWait) {
-      await new Promise(r => setTimeout(r, checkInterval));
-      waited += checkInterval;
+    // Fetch calls using SDK with pagination (optionally filtered by timestamp)
+    let allCalls = [];
+    let paginationKey = undefined;
+    const pageSize = 1000;  // Request max per page
+    let pageCount = 0;
+
+    if (sinceTimestamp) {
+      console.log('🔍 Fetching NEW calls only (incremental)...\n');
+    } else {
+      console.log('🔍 Fetching ALL calls with SDK pagination...\n');
     }
 
-    if (agentSummaryCache) {
-      console.log(`✅ Cache ready after ${waited}ms wait`);
-      return res.json(agentSummaryCache);
+    // Keep fetching until we run out of data
+    while (pageCount < 50) { // Safety limit: 50 pages = 50k calls max
+      if (pageCount > 0) {
+        await sleep(100); // Small delay between pages (retryWithBackoff handles rate limits)
+      }
+
+      console.log(`📄 Page ${pageCount + 1}...`);
+
+      try {
+        const params = { limit: pageSize };
+        if (paginationKey) {
+          params.pagination_key = paginationKey;
+        }
+
+        const data = await retryWithBackoff(() => retellClient.call.list(params));
+
+        // SDK returns array directly
+        const calls = Array.isArray(data) ? data : (data.calls || []);
+
+        console.log(`   Got ${calls.length} calls`);
+
+        pageCount++;
+
+        if (calls.length > 0) {
+          // If we're doing incremental fetch, filter out old calls
+          let filteredCalls = calls;
+          if (sinceTimestamp) {
+            filteredCalls = calls.filter(call => {
+              const callTimestamp = call.start_timestamp || call.end_timestamp;
+              return callTimestamp && callTimestamp > sinceTimestamp;
+            });
+
+            // If we got calls but none are new, we've reached the cutoff
+            if (filteredCalls.length === 0) {
+              console.log(`✓ Finished: Reached timestamp cutoff (${allCalls.length} new calls found)`);
+              break;
+            }
+          }
+
+          allCalls = allCalls.concat(filteredCalls);
+
+          // Use last call ID as pagination key for next request
+          const lastCall = calls[calls.length - 1];
+          paginationKey = lastCall.call_id;
+        } else {
+          // No calls returned - we're done
+          console.log(`✓ Finished: ${allCalls.length} total calls (got 0 calls on page ${pageCount})`);
+          break;
+        }
+      } catch (error) {
+        console.error(`Error fetching page ${pageCount + 1}:`, error.message);
+        console.error('Error details:', error);
+        break;
+      }
     }
 
-    // Cache still not ready - trigger a refresh and wait
-    console.log('⚠️ Cache timeout, triggering manual refresh...');
-    await refreshAgentSummaryCache();
+    console.log(`\n📈 FINAL TOTALS:`);
+    console.log(`Total calls fetched: ${allCalls.length}`);
+    console.log(`Total pages fetched: ${pageCount}`);
+    console.log(`Average calls per page: ${Math.round(allCalls.length / pageCount)}`);
 
-    if (agentSummaryCache) {
-      return res.json(agentSummaryCache);
-    }
+    // Load categories from database
+    console.log('\n📂 Loading categories from database...');
+    const categories = await readCategories();
+    console.log(`✅ Loaded ${Object.keys(categories).length} categories from database`);
 
-    // Last resort - return error
-    res.status(503).json({
-      error: "Dashboard is loading, please refresh in a few seconds",
-      details: "Initial data load in progress"
+    // Group agents by name
+    const agentsByName = new Map();
+    allAgents.forEach(agent => {
+      const name = agent.agent_name || 'Unnamed Agent';
+      if (!agentsByName.has(name)) {
+        agentsByName.set(name, {
+          name: name,
+          agent_ids: [],
+          representative: agent
+        });
+      }
+      agentsByName.get(name).agent_ids.push(agent.agent_id);
     });
 
+    console.log(`Grouped into ${agentsByName.size} unique agent names from ${allAgents.length} total versions`);
+
+    // DEBUG: Check for the specific agent ID that's causing issues
+    const targetAgentId = 'agent_8e50b96f7e7bb7ce7479219fcc';
+    const agentsWithTargetId = allAgents.filter(a => a.agent_id === targetAgentId);
+    console.log(`\n🔍 Found ${agentsWithTargetId.length} agent(s) with ID ${targetAgentId}:`);
+    agentsWithTargetId.forEach((agent, idx) => {
+      console.log(`  ${idx + 1}. Name: "${agent.agent_name}" | Last modified: ${agent.last_modification_timestamp}`);
+    });
+
+    // Create a map from agent_id to agent_name for easy lookup
+    // Use the MOST RECENTLY MODIFIED agent if there are duplicates
+    const agentIdToName = new Map();
+    allAgents
+      .sort((a, b) => (b.last_modification_timestamp || 0) - (a.last_modification_timestamp || 0))
+      .forEach(agent => {
+        if (!agentIdToName.has(agent.agent_id)) {
+          agentIdToName.set(agent.agent_id, agent.agent_name || 'Unnamed Agent');
+        }
+      });
+
+    // DEBUG: Log agent names to help identify which agents are being used
+    console.log('\n🔍 Agent ID to Name mapping (using most recent):');
+    const recentCalls = allCalls.slice(0, 5).sort((a, b) => (b.start_timestamp || 0) - (a.start_timestamp || 0));
+    recentCalls.forEach((call, idx) => {
+      const agentName = agentIdToName.get(call.agent_id) || 'Unknown';
+      console.log(`  Call ${idx + 1}: Agent="${agentName}" (ID: ${call.agent_id?.slice(0, 15)}...)`);
+    });
+
+    // Calculate stats for each unique agent name
+    const agentSummaries = Array.from(agentsByName.values()).map(agentGroup => {
+      // Find all calls for this agent (across all versions)
+      const agentCalls = allCalls.filter(call =>
+        agentGroup.agent_ids.includes(call.agent_id)
+      );
+
+      // Calculate stats
+      const totalCalls = agentCalls.length;
+      const totalDuration = agentCalls.reduce((sum, call) => {
+        return sum + (call.end_timestamp && call.start_timestamp
+          ? (call.end_timestamp - call.start_timestamp) / 1000 / 60
+          : 0);
+      }, 0);
+      const totalCost = agentCalls.reduce((sum, call) => {
+        // Retell API returns costs in cents, convert to dollars
+        return sum + ((call.call_cost?.combined_cost || 0) / 100);
+      }, 0);
+
+      return {
+        agent_name: agentGroup.name,
+        agent_ids: agentGroup.agent_ids,
+        version_count: agentGroup.agent_ids.length,
+        representative: agentGroup.representative,
+        total_calls: totalCalls,
+        total_duration_minutes: Math.round(totalDuration * 100) / 100,
+        total_cost: Math.round(totalCost * 100) / 100,
+        average_cost_per_call: totalCalls > 0 ? Math.round((totalCost / totalCalls) * 100) / 100 : 0,
+        calls: agentCalls.map(call => ({
+          // Only essential fields - exclude transcripts for performance
+          call_id: call.call_id,
+          agent_id: call.agent_id,
+          from_number: call.from_number,
+          to_number: call.to_number,
+          start_timestamp: call.start_timestamp,
+          end_timestamp: call.end_timestamp,
+          duration_minutes: call.end_timestamp && call.start_timestamp
+            ? Math.round((call.end_timestamp - call.start_timestamp) / 1000 / 60 * 100) / 100
+            : 0,
+          cost: (call.call_cost?.combined_cost || 0) / 100  // Convert cents to dollars
+        }))
+      };
+    });
+
+    res.json({
+      agents: agentSummaries,
+      all_calls: allCalls.map(call => ({
+        // Only include essential fields - exclude transcripts for performance (saves ~200MB)
+        call_id: call.call_id,
+        agent_id: call.agent_id,
+        agent_name: agentIdToName.get(call.agent_id) || 'Unknown Agent',
+        from_number: call.from_number,
+        to_number: call.to_number,
+        customer_number: call.customer_number,
+        start_timestamp: call.start_timestamp,
+        end_timestamp: call.end_timestamp,
+        duration_minutes: call.end_timestamp && call.start_timestamp
+          ? Math.round((call.end_timestamp - call.start_timestamp) / 1000 / 60 * 100) / 100
+          : 0,
+        cost: (call.call_cost?.combined_cost || 0) / 100,  // Convert cents to dollars
+        call_analysis: call.call_analysis,
+        call_cost: call.call_cost,
+        call_status: call.call_status,
+        disconnection_reason: call.disconnection_reason,
+        category: categories[call.call_id]?.category || null,  // Add category from database
+        reasoning: categories[call.call_id]?.reasoning || null,
+        manual: categories[call.call_id]?.manual || false,
+        auto: categories[call.call_id]?.auto || false
+        // transcript and transcript_object excluded - fetch separately when viewing call details
+      })),
+      total_calls: allCalls.length,
+      pages_fetched: pageCount
+    });
   } catch (error) {
     console.error("Error in agent-summary endpoint:", error.message);
+    console.error("Error details:", error);
     res.status(500).json({ error: "Failed to fetch agent summary", details: error.message });
   }
 });
@@ -4288,8 +4272,4 @@ ${conversation}`;
 
 // Railway will set PORT for us
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Proxy listening on ${PORT}`);
-  // Start background cache refresh for fast dashboard loads
-  startBackgroundCacheRefresh();
-});
+app.listen(PORT, () => console.log(`Proxy listening on ${PORT}`));
