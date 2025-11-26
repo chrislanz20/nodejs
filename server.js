@@ -1678,6 +1678,9 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
             incident_location: extractedData?.incident_location || null,
             case_type: extractedData?.case_type || null,
 
+            // Marketing attribution - how they heard about us
+            referral_source: extractedData?.referral_source || fullCall.extracted_data?.referral_source || fullCall.extracted_data?.heard_about || null,
+
             // Case-Specific Fields (extracted by AI based on conversation)
             // Rideshare
             rideshare_role: extractedData?.rideshare_role || null,
@@ -3672,6 +3675,43 @@ app.get('/api/leads/stats/:agentId', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Error fetching lead stats:', error);
     res.status(500).json({ error: 'Failed to fetch lead stats' });
+  }
+});
+
+// GET /api/leads/sources/:agentId - Get lead source breakdown for marketing analytics
+// NOTE: This MUST come before /api/leads/:agentId to avoid route matching issues
+app.get('/api/leads/sources/:agentId', authenticateToken, async (req, res) => {
+  try {
+    const { agentId } = req.params;
+
+    // Get breakdown of referral sources
+    const result = await pool.query(`
+      SELECT
+        COALESCE(NULLIF(referral_source, ''), 'Unknown') as source,
+        COUNT(*) as count
+      FROM leads
+      WHERE agent_id = $1
+      GROUP BY COALESCE(NULLIF(referral_source, ''), 'Unknown')
+      ORDER BY count DESC
+    `, [agentId]);
+
+    // Calculate total for percentages
+    const total = result.rows.reduce((sum, row) => sum + parseInt(row.count), 0);
+
+    // Format response with percentages
+    const sources = result.rows.map(row => ({
+      source: row.source,
+      count: parseInt(row.count),
+      percentage: total > 0 ? Math.round((parseInt(row.count) / total) * 100) : 0
+    }));
+
+    res.json({
+      total_leads: total,
+      sources: sources
+    });
+  } catch (error) {
+    console.error('Error fetching lead sources:', error);
+    res.status(500).json({ error: 'Failed to fetch lead sources' });
   }
 });
 

@@ -2816,6 +2816,15 @@
           <div class="chart-title">Category Distribution</div>
           <div id="category-distribution-chart" class="category-chart"></div>
         </div>
+
+        <div class="chart-card">
+          <div class="chart-title">Lead Sources
+            <span class="tooltip-icon" style="margin-left: 6px;">?
+              <span class="tooltip-text">Where your leads heard about you - helpful for tracking marketing ROI</span>
+            </span>
+          </div>
+          <div id="lead-sources-chart" class="category-chart"></div>
+        </div>
       </div>
 
       <!-- Lead Tracking Section -->
@@ -3591,6 +3600,7 @@
       // Render analytics charts
       renderCallsOverTimeChart();
       renderCategoryDistributionChart();
+      renderLeadSourcesChart();
 
       // Render calls table
       renderCallsTable(allCalls);
@@ -3730,6 +3740,88 @@
             </div>
           `;
         }).join('');
+    }
+
+    // Lead Sources Chart - fetches from API and renders breakdown
+    async function renderLeadSourcesChart() {
+      const chartContainer = document.getElementById('lead-sources-chart');
+
+      if (!clientAgentId) {
+        chartContainer.innerHTML = `
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center;">
+            <div style="font-size: 14px; color: #9ca3af;">Loading...</div>
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/leads/sources/${clientAgentId}`, {
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch lead sources');
+        }
+
+        const data = await response.json();
+
+        if (!data.sources || data.sources.length === 0 || data.total_leads === 0) {
+          chartContainer.innerHTML = `
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center;">
+              <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #6b7280; margin-bottom: 16px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+              </svg>
+              <div style="font-size: 14px; color: #9ca3af;">No lead source data yet</div>
+              <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">Data will appear as leads come in</div>
+            </div>
+          `;
+          return;
+        }
+
+        // Colors for different sources - cycle through if more than these
+        const sourceColors = [
+          '#10b981', // Green - Google
+          '#3b82f6', // Blue - Referral
+          '#f59e0b', // Yellow - TV
+          '#a855f7', // Purple - Social Media
+          '#ef4444', // Red - Radio
+          '#06b6d4', // Cyan - Billboard
+          '#ec4899', // Pink - Other
+          '#6b7280'  // Gray - Unknown
+        ];
+
+        // Render source bars
+        chartContainer.innerHTML = data.sources.map((source, index) => {
+          const color = sourceColors[index % sourceColors.length];
+          // Minimum 12% width to show the count
+          const widthPercent = Math.max(12, source.percentage);
+
+          return `
+            <div class="category-item">
+              <div class="category-left">
+                <div class="category-color" style="background: ${color};"></div>
+                <div class="category-name">${source.source}</div>
+              </div>
+              <div class="category-bar-bg">
+                <div class="category-bar-fill" style="width: ${widthPercent.toFixed(1)}%; background: linear-gradient(90deg, ${color}, ${color}cc);">
+                  <span class="category-count">${source.count}</span>
+                </div>
+              </div>
+              <div class="category-percentage">${source.percentage}%</div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error('Error loading lead sources:', error);
+        chartContainer.innerHTML = `
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center;">
+            <div style="font-size: 14px; color: #ef4444;">Failed to load data</div>
+          </div>
+        `;
+      }
     }
 
     function renderCallsTable(calls) {
