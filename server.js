@@ -249,11 +249,6 @@ app.get("/admin", authenticateAdminToken, (_req, res) => {
   res.sendFile(path.join(publicDir, "admin.html"));
 });
 
-// Root route - serve unified dashboard
-app.get('/', (req, res) => {
-  res.redirect('/dashboard.html');
-});
-
 // Now serve static files (styles.css, etc.)
 app.use(express.static(publicDir));
 
@@ -642,17 +637,6 @@ app.get("/api/calls", async (req, res) => {
   } catch (error) {
     console.error("Error fetching calls:", error.message);
     res.status(500).json({ error: "Failed to fetch calls" });
-  }
-});
-
-// Get specific call details
-app.get("/api/calls/:callId", async (req, res) => {
-  try {
-    const data = await retellClient.call.retrieve(req.params.callId);
-    res.json(data);
-  } catch (error) {
-    console.error("Error fetching call details:", error.message);
-    res.status(500).json({ error: "Failed to fetch call details" });
   }
 });
 
@@ -3735,25 +3719,6 @@ app.get('/api/calls/:callId', async (req, res) => {
   } catch (error) {
     console.error('Error fetching call details:', error);
     res.status(500).json({ error: 'Failed to fetch call details' });
-  }
-});
-
-// GET /api/agent-summary - Get summary stats for the authenticated agent
-app.get('/api/agent-summary', async (req, res) => {
-  try {
-    // Get all calls from Retell for the authenticated client's agent
-    // For now, return a simple success response - this will be populated with actual agent data
-    const response = await retellClient.call.list({ limit: 1000 });
-    const calls = Array.isArray(response) ? response : (response.calls || []);
-
-    res.json({
-      success: true,
-      total_calls: calls.length,
-      calls: calls
-    });
-  } catch (error) {
-    console.error('Error fetching agent summary:', error);
-    res.status(500).json({ error: 'Failed to fetch agent summary' });
   }
 });
 
