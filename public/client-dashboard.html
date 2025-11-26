@@ -491,7 +491,8 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      min-width: 110px;
+      min-width: 180px;
+      max-width: 180px;
     }
 
     .category-color {
@@ -506,6 +507,8 @@
       font-weight: 600;
       color: #e6edf3;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .category-bar-bg {
@@ -1522,7 +1525,8 @@
       }
 
       .category-left {
-        min-width: 90px;
+        min-width: 120px;
+        max-width: 120px;
         gap: 8px;
       }
 
@@ -1534,6 +1538,8 @@
 
       .category-name {
         font-size: 11px;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .category-bar-bg {
