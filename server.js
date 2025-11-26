@@ -889,16 +889,15 @@ app.get("/api/agent-summary", async (req, res) => {
       return res.json(agentSummaryCache);
     }
 
-    // No cache yet - this only happens on very first request after server start
-    // Wait for cache to be ready (with timeout)
-    console.log('⏳ Cache not ready, waiting for initial load...');
+    // No cache yet - wait briefly then fetch directly
+    console.log('⏳ Cache not ready, waiting up to 15 seconds...');
 
-    const maxWait = 30000; // 30 seconds max wait
-    const checkInterval = 500; // Check every 500ms
+    const maxWait = 15000;
+    const checkInterval = 500;
     let waited = 0;
 
     while (!agentSummaryCache && waited < maxWait) {
-      await sleep(checkInterval);
+      await new Promise(r => setTimeout(r, checkInterval));
       waited += checkInterval;
     }
 
@@ -907,8 +906,15 @@ app.get("/api/agent-summary", async (req, res) => {
       return res.json(agentSummaryCache);
     }
 
-    // Cache still not ready after timeout - return error
-    console.error('❌ Cache timeout - initial load taking too long');
+    // Cache still not ready - trigger a refresh and wait
+    console.log('⚠️ Cache timeout, triggering manual refresh...');
+    await refreshAgentSummaryCache();
+
+    if (agentSummaryCache) {
+      return res.json(agentSummaryCache);
+    }
+
+    // Last resort - return error
     res.status(503).json({
       error: "Dashboard is loading, please refresh in a few seconds",
       details: "Initial data load in progress"
