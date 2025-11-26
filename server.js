@@ -689,9 +689,21 @@ app.get("/api/test-calls", async (req, res) => {
   }
 });
 
+// Simple cache for agent summary (60 second TTL)
+let agentSummaryCache = null;
+let agentSummaryCacheTime = 0;
+const CACHE_TTL = 60000; // 60 seconds
+
 // Get aggregated agent summary - fetches ALL data once and aggregates by agent name
 app.get("/api/agent-summary", async (req, res) => {
   try {
+    // Check cache first - return cached data if less than 60 seconds old
+    if (agentSummaryCache && (Date.now() - agentSummaryCacheTime) < CACHE_TTL) {
+      const cacheAge = Math.round((Date.now() - agentSummaryCacheTime) / 1000);
+      console.log(`⚡ Returning cached agent summary (${cacheAge}s old)`);
+      return res.json(agentSummaryCache);
+    }
+
     // Support incremental loading with since_timestamp parameter
     const sinceTimestamp = req.query.since_timestamp ? parseInt(req.query.since_timestamp) : null;
 
@@ -874,7 +886,8 @@ app.get("/api/agent-summary", async (req, res) => {
       };
     });
 
-    res.json({
+    // Build response and cache it
+    const response = {
       agents: agentSummaries,
       all_calls: allCalls.map(call => ({
         // Only include essential fields - exclude transcripts for performance (saves ~200MB)
@@ -902,7 +915,14 @@ app.get("/api/agent-summary", async (req, res) => {
       })),
       total_calls: allCalls.length,
       pages_fetched: pageCount
-    });
+    };
+
+    // Cache the response for 60 seconds
+    agentSummaryCache = response;
+    agentSummaryCacheTime = Date.now();
+    console.log(`✅ Cached agent summary (${response.total_calls} calls)`);
+
+    res.json(response);
   } catch (error) {
     console.error("Error in agent-summary endpoint:", error.message);
     console.error("Error details:", error);
