@@ -3490,6 +3490,16 @@
 
         // Load data
         await loadDashboard();
+
+        // Auto-refresh every 2 minutes to keep data fresh
+        setInterval(async () => {
+          try {
+            console.log('🔄 Auto-refreshing dashboard...');
+            await loadDashboard();
+          } catch (err) {
+            console.warn('Auto-refresh failed:', err);
+          }
+        }, 120000); // 2 minutes
       } catch (error) {
         console.error('Auth check failed:', error);
         window.location.href = '/client-portal';
