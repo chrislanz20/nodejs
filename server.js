@@ -706,8 +706,8 @@ app.get("/api/agent-summary", async (req, res) => {
     const allAgents = agentsData.agents || agentsData || [];
     console.log(`Fetched ${allAgents.length} total agent versions`);
 
-    // Add a small delay after fetching agents
-    await sleep(500);
+    // Add a small delay after fetching agents (100ms is sufficient with retryWithBackoff)
+    await sleep(100);
 
     // Fetch calls using SDK with pagination (optionally filtered by timestamp)
     let allCalls = [];
@@ -724,7 +724,7 @@ app.get("/api/agent-summary", async (req, res) => {
     // Keep fetching until we run out of data
     while (pageCount < 50) { // Safety limit: 50 pages = 50k calls max
       if (pageCount > 0) {
-        await sleep(500); // Small delay to avoid rate limits
+        await sleep(100); // Small delay between pages (retryWithBackoff handles rate limits)
       }
 
       console.log(`📄 Page ${pageCount + 1}...`);
