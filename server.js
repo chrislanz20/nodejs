@@ -466,15 +466,18 @@ async function refreshAgentSummaryCache() {
  * Start background cache refresh (every 60 seconds)
  */
 function startBackgroundCacheRefresh() {
-  // Initial refresh
-  refreshAgentSummaryCache();
+  console.log('🚀 Background cache refresh starting in 5 seconds...');
 
-  // Refresh every 60 seconds
-  setInterval(() => {
+  // Wait 5 seconds for database to be ready before first refresh
+  setTimeout(() => {
+    console.log('🔄 Starting initial cache refresh...');
     refreshAgentSummaryCache();
-  }, 60000);
 
-  console.log('🚀 Background cache refresh started (60 second interval)');
+    // Then refresh every 60 seconds
+    setInterval(() => {
+      refreshAgentSummaryCache();
+    }, 60000);
+  }, 5000);
 }
 
 // ============================================================
