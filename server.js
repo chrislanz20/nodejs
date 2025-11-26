@@ -3431,7 +3431,7 @@ app.post('/api/admin/clients/:id/reset-password', authenticateAdminToken, async 
 // ============================================================================
 
 // GET /api/notification-recipients/:agentId - List all notification recipients for an agent
-app.get('/api/notification-recipients/:agentId', async (req, res) => {
+app.get('/api/notification-recipients/:agentId', authenticateToken, async (req, res) => {
   try {
     const { agentId } = req.params;
 
@@ -3459,7 +3459,7 @@ app.get('/api/notification-recipients/:agentId', async (req, res) => {
 });
 
 // POST /api/notification-recipients - Add a new notification recipient
-app.post('/api/notification-recipients', async (req, res) => {
+app.post('/api/notification-recipients', authenticateToken, async (req, res) => {
   try {
     const { agent_id, name, email, phone } = req.body;
 
@@ -3531,7 +3531,7 @@ app.post('/api/notification-recipients', async (req, res) => {
 });
 
 // PUT /api/notification-recipients/:id - Update a notification recipient
-app.put('/api/notification-recipients/:id', async (req, res) => {
+app.put('/api/notification-recipients/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, email, phone, active } = req.body;
@@ -3586,7 +3586,7 @@ app.put('/api/notification-recipients/:id', async (req, res) => {
 });
 
 // DELETE /api/notification-recipients/:id - Remove a notification recipient
-app.delete('/api/notification-recipients/:id', async (req, res) => {
+app.delete('/api/notification-recipients/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -3612,7 +3612,7 @@ app.delete('/api/notification-recipients/:id', async (req, res) => {
 });
 
 // PUT /api/notification-preferences/:recipientId - Update notification preferences
-app.put('/api/notification-preferences/:recipientId', async (req, res) => {
+app.put('/api/notification-preferences/:recipientId', authenticateToken, async (req, res) => {
   try {
     const { recipientId } = req.params;
     const {
@@ -3672,7 +3672,7 @@ app.put('/api/notification-preferences/:recipientId', async (req, res) => {
 
 // GET /api/leads/stats/:agentId - Get lead statistics for a specific client
 // NOTE: This MUST come before /api/leads/:agentId to avoid route matching issues
-app.get('/api/leads/stats/:agentId', async (req, res) => {
+app.get('/api/leads/stats/:agentId', authenticateToken, async (req, res) => {
   try {
     const { agentId } = req.params;
     const stats = await getLeadStats(agentId);
@@ -3724,7 +3724,7 @@ app.get('/api/calls/:callId', async (req, res) => {
 
 // GET /api/leads/:agentId - Get all leads for a specific client
 // NOTE: This MUST come after more specific routes like /api/leads/stats/:agentId
-app.get('/api/leads/:agentId', async (req, res) => {
+app.get('/api/leads/:agentId', authenticateToken, async (req, res) => {
   try {
     const { agentId } = req.params;
     const { status } = req.query; // Optional filter by status
@@ -3738,7 +3738,7 @@ app.get('/api/leads/:agentId', async (req, res) => {
 });
 
 // PUT /api/leads/:leadId/status - Update lead status manually
-app.put('/api/leads/:leadId/status', async (req, res) => {
+app.put('/api/leads/:leadId/status', authenticateToken, async (req, res) => {
   try {
     const { leadId } = req.params;
     const { status, notes, updated_by } = req.body;
@@ -3762,7 +3762,7 @@ app.put('/api/leads/:leadId/status', async (req, res) => {
 });
 
 // PUT /api/leads/:leadId/contact - Update lead contact information
-app.put('/api/leads/:leadId/contact', async (req, res) => {
+app.put('/api/leads/:leadId/contact', authenticateToken, async (req, res) => {
   try {
     const { leadId } = req.params;
     const { name, email, phone_number } = req.body;
@@ -3823,7 +3823,7 @@ app.put('/api/leads/:leadId/contact', async (req, res) => {
 });
 
 // DELETE /api/leads/:leadId - Delete a lead (admin only)
-app.delete('/api/leads/:leadId', async (req, res) => {
+app.delete('/api/leads/:leadId', authenticateAdminToken, async (req, res) => {
   try {
     const { leadId } = req.params;
 
