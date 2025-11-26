@@ -3746,7 +3746,7 @@
     async function renderLeadSourcesChart() {
       const chartContainer = document.getElementById('lead-sources-chart');
 
-      if (!clientAgentId) {
+      if (!currentUser || !currentUser.agent_ids || currentUser.agent_ids.length === 0) {
         chartContainer.innerHTML = `
           <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center;">
             <div style="font-size: 14px; color: #9ca3af;">Loading...</div>
@@ -3755,8 +3755,10 @@
         return;
       }
 
+      const agentId = currentUser.agent_ids[0];
+
       try {
-        const response = await fetch(`/api/leads/sources/${clientAgentId}`, {
+        const response = await fetch(`/api/leads/sources/${agentId}`, {
           credentials: 'include'
         });
 
