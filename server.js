@@ -1502,17 +1502,8 @@ app.get('/api/categories', async (_req, res) => {
 const processedWebhooks = new Set();
 const WEBHOOK_DEDUP_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 
-// DEBUG: Store last 20 webhook payloads for debugging
-const webhookDebugLog = [];
-const MAX_WEBHOOK_DEBUG = 20;
-
-// GET /api/webhook-debug - View recent webhook payloads for debugging
-app.get('/api/webhook-debug', (req, res) => {
-  res.json({
-    count: webhookDebugLog.length,
-    webhooks: webhookDebugLog
-  });
-});
+// Webhook debug logging for troubleshooting (stored in activity_log table only)
+// Debug endpoint removed for security - use database activity_log table instead
 
 // POST /webhook/retell-call-ended - Retell webhook for call completion
 app.post('/webhook/retell-call-ended', async (req, res) => {
@@ -1548,10 +1539,11 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
     console.log(`\n📞 Retell webhook: ${callId.substring(0, 25)}... (event: ${eventType || 'none'})`);
     console.log(`   Agent: ${agentId?.substring(0, 25)}...`);
 
-    // ONLY process call_ended events - ignore call_started and other events
-    // call_started has no transcript (call hasn't happened yet)
-    if (eventType && eventType !== 'call_ended' && eventType !== 'call_analyzed') {
-      console.log(`   ⏭️  Ignoring ${eventType} event (waiting for call_ended)`);
+    // ONLY process call_ended events - ignore ALL other events including call_analyzed
+    // This prevents duplicate notifications since Retell sends both call_ended AND call_analyzed
+    // The code already waits for transcript with retries, so we don't need call_analyzed
+    if (eventType !== 'call_ended') {
+      console.log(`   ⏭️  Ignoring ${eventType || 'unknown'} event (only processing call_ended)`);
       return res.status(204).send();
     }
 
