@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://unioncafelynn.com/sitemap.xml
