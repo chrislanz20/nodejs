@@ -2200,7 +2200,8 @@
         const response = await fetch('/api/admin/activity?limit=20');
         if (!response.ok) throw new Error('Failed to load activity');
 
-        const activities = await response.json();
+        const data = await response.json();
+        const activities = data.activities || [];
 
         if (activities.length === 0) {
           feedContainer.innerHTML = '<div style="text-align: center; color: var(--text-tertiary); padding: 40px;">No recent activity</div>';
@@ -2209,8 +2210,10 @@
 
         feedContainer.innerHTML = activities.map(activity => {
           const time = formatTimeAgo(new Date(activity.timestamp));
-          const icon = getActivityIcon(activity.type);
-          const color = getActivityColor(activity.type);
+          const typeKey = mapActivityType(activity.type);
+          const icon = getActivityIcon(typeKey);
+          const color = getActivityColor(typeKey);
+          const description = formatActivityDescription(activity);
 
           return `
             <div style="display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
@@ -2218,7 +2221,7 @@
                 ${icon}
               </div>
               <div style="flex: 1; min-width: 0;">
-                <div style="font-size: 13px; color: var(--text-primary); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${activity.description}</div>
+                <div style="font-size: 13px; color: var(--text-primary); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${description}</div>
                 <div style="font-size: 11px; color: var(--text-tertiary);">${time}</div>
               </div>
             </div>
@@ -2227,6 +2230,36 @@
       } catch (error) {
         console.error('Error loading activity:', error);
         feedContainer.innerHTML = '<div style="text-align: center; color: var(--danger); padding: 40px;">Failed to load activity</div>';
+      }
+    }
+
+    // Map API activity types to icon types
+    function mapActivityType(type) {
+      const typeMap = {
+        'admin_login': 'login',
+        'client_login': 'login',
+        'new_lead': 'lead',
+        'new_client': 'client',
+        'call': 'call'
+      };
+      return typeMap[type] || 'system';
+    }
+
+    // Format activity description from activity data
+    function formatActivityDescription(activity) {
+      switch (activity.type) {
+        case 'admin_login':
+          return `Admin ${activity.name || activity.email} logged in`;
+        case 'client_login':
+          return `${activity.name || 'Client'} logged in`;
+        case 'new_lead':
+          return `New lead: ${activity.name || 'Unknown'} (${activity.status || 'Pending'})`;
+        case 'new_client':
+          return `New client created: ${activity.name || activity.email}`;
+        case 'call':
+          return `Call from ${activity.phone || 'Unknown'}`;
+        default:
+          return activity.description || `${activity.type}: ${activity.name || 'Unknown'}`;
       }
     }
 
@@ -2284,35 +2317,33 @@
 
         const health = await response.json();
 
+        // Extract service statuses from nested structure
+        const dbUp = health.services?.database?.status === 'up';
+        const retellUp = health.services?.retell?.status === 'up';
+        const isHealthy = health.status === 'healthy' || (dbUp && retellUp);
+
         // Overall status
-        const isHealthy = health.database === 'connected' && health.retell === 'connected';
         indicator.style.background = isHealthy ? 'var(--success)' : 'var(--danger)';
         indicator.style.boxShadow = isHealthy ? '0 0 10px var(--success)' : '0 0 10px var(--danger)';
         status.textContent = isHealthy ? 'All Systems Operational' : 'Issues Detected';
         status.style.color = isHealthy ? 'var(--success)' : 'var(--danger)';
 
         // Database status
-        dbStatus.textContent = health.database === 'connected' ? 'Connected' : 'Disconnected';
-        dbStatus.style.color = health.database === 'connected' ? 'var(--success)' : 'var(--danger)';
+        const dbLatency = health.services?.database?.latency || '';
+        dbStatus.textContent = dbUp ? `Connected ${dbLatency ? '(' + dbLatency + ')' : ''}` : 'Disconnected';
+        dbStatus.style.color = dbUp ? 'var(--success)' : 'var(--danger)';
 
         // Retell API status
-        retellStatus.textContent = health.retell === 'connected' ? 'Connected' : 'Unavailable';
-        retellStatus.style.color = health.retell === 'connected' ? 'var(--success)' : 'var(--danger)';
+        const retellLatency = health.services?.retell?.latency || '';
+        retellStatus.textContent = retellUp ? `Connected ${retellLatency ? '(' + retellLatency + ')' : ''}` : 'Unavailable';
+        retellStatus.style.color = retellUp ? 'var(--success)' : 'var(--danger)';
 
-        // Active clients
-        activeClientsCount.textContent = health.activeClients || 0;
+        // Active clients - count from allClients if loaded
+        const activeCount = allClients ? allClients.filter(c => c.active).length : 0;
+        activeClientsCount.textContent = activeCount;
 
-        // Uptime
-        if (health.uptime) {
-          const hours = Math.floor(health.uptime / 3600);
-          const minutes = Math.floor((health.uptime % 3600) / 60);
-          if (hours > 24) {
-            const days = Math.floor(hours / 24);
-            uptimeDisplay.textContent = `${days}d ${hours % 24}h`;
-          } else {
-            uptimeDisplay.textContent = `${hours}h ${minutes}m`;
-          }
-        }
+        // Uptime - use string format from API
+        uptimeDisplay.textContent = health.uptime || '--';
       } catch (error) {
         console.error('Error loading system health:', error);
         indicator.style.background = 'var(--danger)';
