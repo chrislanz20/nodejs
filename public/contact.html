@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Melrose Diner | Call, Visit, or Order Online</title>
+  <meta name="description" content="Contact Melrose Diner in Melrose, MA for reservations, takeout, catering, or questions. Call (781) 662-5637, email, visit us, or order delivery online." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Raleway:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="site-header" id="site-header">
+    <div class="container header-content">
+      <a class="brand" href="/">
+        <span class="brand-mark" aria-hidden="true">MD</span>
+        <span class="brand-text">
+          <span class="brand-title">Melrose Diner</span>
+          <span class="brand-tagline">Where Generous Portions Meet the Freshest Ingredients</span>
+        </span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+      </button>
+      <nav class="primary-nav" id="primary-nav" aria-label="Primary">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/menu.html">Menu</a></li>
+          <li><a href="/about.html">About Us</a></li>
+          <li><a href="/catering.html">Catering</a></li>
+          <li><a href="/location.html">Location &amp; Hours</a></li>
+          <li class="highlight"><a href="/contact.html">Contact</a></li>
+          <li><a href="/order-online.html">Order Online</a></li>
+        </ul>
+      </nav>
+      <a class="header-phone" href="tel:17816625637" aria-label="Call Melrose Diner">
+        <span class="phone-icon" aria-hidden="true">📞</span>
+        (781) 662-5637
+      </a>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="hero hero--inner">
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
+        <p class="hero-eyebrow">We Can't Wait to Hear From You</p>
+        <h1>Contact Melrose Diner</h1>
+        <p class="hero-subheadline">Call for takeout, reservations, or catering. Reach out online for delivery or special requests.</p>
+        <div class="hero-cta-group">
+          <a class="btn btn-primary" href="tel:17816625637">Call (781) 662-5637</a>
+          <a class="btn btn-secondary" href="mailto:melrose.diner@yahoo.com">Email Us</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="contact-options">
+      <div class="container grid-two">
+        <div>
+          <h2 id="contact-options" class="section-title">Get in Touch</h2>
+          <div class="alert-box">
+            <h3>Call Us</h3>
+            <p class="badge">Open Daily • 6:00 AM – 2:00 PM</p>
+            <p><a class="btn btn-primary" href="tel:17816625637">Call (781) 662-5637</a></p>
+            <p>Perfect for takeout orders, reservations, catering questions, or immediate assistance.</p>
+          </div>
+          <div class="alert-box">
+            <h3>Order Online</h3>
+            <p>Choose your favorite delivery service:</p>
+            <div class="delivery-buttons">
+              <a class="delivery-btn" href="https://www.ubereats.com/" target="_blank" rel="noreferrer noopener">Uber Eats</a>
+              <a class="delivery-btn" href="https://www.grubhub.com/" target="_blank" rel="noreferrer noopener">Grubhub</a>
+              <a class="delivery-btn" href="https://www.doordash.com/" target="_blank" rel="noreferrer noopener">DoorDash</a>
+            </div>
+          </div>
+          <div class="alert-box">
+            <h3>Visit Us</h3>
+            <p>44 W Wyoming Ave<br />Melrose, MA 02176</p>
+            <p>Free parking • Outdoor seating • Family-friendly</p>
+            <a class="btn btn-secondary" href="https://www.google.com/maps/place/44+W+Wyoming+Ave,+Melrose,+MA+02176" target="_blank" rel="noreferrer noopener">Get Directions</a>
+          </div>
+        </div>
+        <div id="contact-form" class="form-card">
+          <h2 class="section-title">Send a Message</h2>
+          <p>We'll get back to you as soon as possible. For urgent requests, please call the diner directly.</p>
+          <form>
+            <div class="form-grid">
+              <div>
+                <label for="contact-name">Name</label>
+                <input id="contact-name" name="name" type="text" autocomplete="name" required />
+              </div>
+              <div>
+                <label for="contact-email">Email</label>
+                <input id="contact-email" name="email" type="email" autocomplete="email" required />
+              </div>
+              <div>
+                <label for="contact-phone">Phone</label>
+                <input id="contact-phone" name="phone" type="tel" autocomplete="tel" />
+              </div>
+              <div>
+                <label for="contact-subject">Subject</label>
+                <select id="contact-subject" name="subject">
+                  <option value="General Inquiry">General Inquiry</option>
+                  <option value="Catering Request">Catering Request</option>
+                  <option value="Feedback">Feedback</option>
+                </select>
+              </div>
+              <div class="full">
+                <label for="contact-message">Message</label>
+                <textarea id="contact-message" name="message" required></textarea>
+              </div>
+            </div>
+            <p><small>Note: This form is for inquiries only. For immediate assistance or to place an order, please call us.</small></p>
+            <button class="btn btn-primary" type="submit">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section" aria-labelledby="know-before">
+      <div class="container">
+        <h2 id="know-before" class="section-title">What to Know Before You Visit</h2>
+        <div class="card-grid">
+          <article class="menu-card"><h3>Payment Options</h3><p>We accept major credit cards and cash.</p></article>
+          <article class="menu-card"><h3>Reservations</h3><p>Call ahead for parties or to reserve a table during peak hours.</p></article>
+          <article class="menu-card"><h3>Accessibility</h3><p>Accessible entrance and seating available. Please call if you need assistance.</p></article>
+          <article class="menu-card"><h3>Catering</h3><p>Ask about custom menus for events up to 60 guests.</p></article>
+          <article class="menu-card"><h3>Delivery &amp; Pickup</h3><p>Delivery available via Uber Eats, Grubhub, DoorDash. Curbside pickup offered.</p></article>
+          <article class="menu-card"><h3>Outdoor Seating</h3><p>Enjoy our patio seating during warm weather months.</p></article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-column">
+        <h2 class="footer-heading">Quick Links</h2>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/menu.html">Menu</a></li>
+          <li><a href="/about.html">About Us</a></li>
+          <li><a href="/catering.html">Catering</a></li>
+          <li><a href="/location.html">Location &amp; Hours</a></li>
+          <li><a href="/contact.html">Contact</a></li>
+          <li><a href="/order-online.html">Order Online</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h2 class="footer-heading">Visit Us</h2>
+        <p>Melrose Diner<br />44 W Wyoming Ave<br />Melrose, MA 02176</p>
+        <p><strong>Phone:</strong> <a href="tel:17816625637">(781) 662-5637</a></p>
+        <p><strong>Email:</strong> <a href="mailto:melrose.diner@yahoo.com">melrose.diner@yahoo.com</a></p>
+        <p><strong>Hours:</strong> Daily 6:00 AM – 2:00 PM</p>
+      </div>
+      <div class="footer-column">
+        <h2 class="footer-heading">Services</h2>
+        <ul class="services-list">
+          <li>💳 Credit Cards Accepted</li>
+          <li>🍳 Breakfast &amp; Lunch Daily</li>
+          <li>📦 Takeout &amp; Curbside Pickup</li>
+          <li>🚚 Delivery via Uber Eats, Grubhub &amp; DoorDash</li>
+          <li>📞 Reservations Accepted</li>
+          <li>🎉 Catering Services</li>
+          <li>🚗 Free Parking</li>
+          <li>🌳 Outdoor Seating</li>
+          <li>🌱 Vegetarian Options</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-content">
+        <p>© <span data-current-year>2025</span> Melrose Diner. All rights reserved.</p>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <span aria-hidden="true">|</span>
+          <a href="#">Terms</a>
+        </div>
+        <div class="delivery-links">
+          <a href="https://www.ubereats.com/" target="_blank" rel="noreferrer noopener">Uber Eats</a>
+          <a href="https://www.grubhub.com/" target="_blank" rel="noreferrer noopener">Grubhub</a>
+          <a href="https://www.doordash.com/" target="_blank" rel="noreferrer noopener">DoorDash</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <a class="mobile-cta" href="tel:17816625637" aria-label="Call Melrose Diner">
+    <span aria-hidden="true">📞</span>
+    Call (781) 662-5637
+  </a>
+
+  <script src="/script.js" defer></script>
+</body>
+</html>
