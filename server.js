@@ -3831,6 +3831,69 @@ app.get('/api/admin/system-health', authenticateAdminToken, async (req, res) => 
   }
 });
 
+// GET /api/admin/client/:clientId/leads - Get leads for a specific client (admin preview)
+app.get('/api/admin/client/:clientId/leads', authenticateAdminToken, async (req, res) => {
+  try {
+    const { clientId } = req.params;
+
+    // Get the client to find their agent IDs
+    const clientResult = await pool.query(
+      'SELECT agent_ids FROM clients WHERE id = $1',
+      [clientId]
+    );
+
+    if (clientResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+
+    const agentIds = clientResult.rows[0].agent_ids || [];
+
+    if (agentIds.length === 0) {
+      return res.json({
+        leads: [],
+        stats: { total: 0, approved: 0, denied: 0, pending: 0 }
+      });
+    }
+
+    // Get leads for all agent IDs
+    const leadsResult = await pool.query(
+      `SELECT id, name, phone_number, email, status, first_call_date, created_at, case_type
+       FROM leads
+       WHERE agent_id = ANY($1)
+       ORDER BY first_call_date DESC
+       LIMIT 50`,
+      [agentIds]
+    );
+
+    // Get stats
+    const statsResult = await pool.query(
+      `SELECT
+         COUNT(*) as total,
+         COUNT(*) FILTER (WHERE status = 'Approved') as approved,
+         COUNT(*) FILTER (WHERE status = 'Denied') as denied,
+         COUNT(*) FILTER (WHERE status = 'Pending' OR status IS NULL) as pending
+       FROM leads
+       WHERE agent_id = ANY($1)`,
+      [agentIds]
+    );
+
+    const stats = statsResult.rows[0] || { total: 0, approved: 0, denied: 0, pending: 0 };
+
+    res.json({
+      leads: leadsResult.rows,
+      stats: {
+        total: parseInt(stats.total) || 0,
+        approved: parseInt(stats.approved) || 0,
+        denied: parseInt(stats.denied) || 0,
+        pending: parseInt(stats.pending) || 0
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching client leads:', error);
+    res.status(500).json({ error: 'Failed to fetch leads' });
+  }
+});
+
 // GET /api/admin/clients - List all clients (with optional pagination)
 app.get('/api/admin/clients', authenticateAdminToken, async (req, res) => {
   try {
