@@ -3607,6 +3607,230 @@ async function sendGHLEmail(locationId, toEmail, subject, body) {
 
 // ============ ADMIN ROUTES (for managing clients) ============
 
+// GET /api/admin/analytics - Aggregate analytics across all clients
+app.get('/api/admin/analytics', authenticateAdminToken, async (req, res) => {
+  try {
+    const days = parseInt(req.query.days) || 7;
+
+    // Get all clients with their agent IDs
+    const clientsResult = await pool.query(
+      'SELECT id, business_name, agent_ids, active FROM clients'
+    );
+    const clients = clientsResult.rows;
+
+    // Collect all agent IDs
+    const allAgentIds = [];
+    clients.forEach(client => {
+      if (client.agent_ids && Array.isArray(client.agent_ids)) {
+        allAgentIds.push(...client.agent_ids);
+      }
+    });
+
+    // Fetch calls from Retell for all agents (last N days)
+    const retell = new Retell({ apiKey: process.env.RETELL_API_KEY });
+    let allCalls = [];
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const startTimestamp = startDate.getTime();
+
+    for (const agentId of [...new Set(allAgentIds)]) {
+      try {
+        const calls = await retell.call.list({ agent_id: agentId, limit: 1000 });
+        if (calls && Array.isArray(calls)) {
+          const recentCalls = calls.filter(call => call.start_timestamp >= startTimestamp);
+          allCalls.push(...recentCalls.map(call => ({ ...call, agent_id: agentId })));
+        }
+      } catch (err) {
+        console.error(`Error fetching calls for agent ${agentId}:`, err.message);
+      }
+    }
+
+    // Get categories from database
+    const categoryResult = await pool.query('SELECT call_id, category FROM call_categories');
+    const categoryMap = {};
+    categoryResult.rows.forEach(row => {
+      categoryMap[row.call_id] = row.category;
+    });
+
+    // Calculate daily call volumes
+    const dailyCalls = {};
+    const categoryBreakdown = {};
+    let totalDuration = 0;
+    let totalCost = 0;
+
+    allCalls.forEach(call => {
+      // Daily aggregation
+      const date = new Date(call.start_timestamp).toISOString().split('T')[0];
+      dailyCalls[date] = (dailyCalls[date] || 0) + 1;
+
+      // Category aggregation
+      const category = categoryMap[call.call_id] || 'Uncategorized';
+      categoryBreakdown[category] = (categoryBreakdown[category] || 0) + 1;
+
+      // Duration and cost
+      if (call.end_timestamp && call.start_timestamp) {
+        totalDuration += (call.end_timestamp - call.start_timestamp) / 1000;
+      }
+      if (call.cost !== undefined) {
+        totalCost += call.cost;
+      }
+    });
+
+    // Get leads stats
+    const leadsResult = await pool.query(`
+      SELECT
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE status = 'Approved') as approved,
+        COUNT(*) FILTER (WHERE status = 'Denied') as denied,
+        COUNT(*) FILTER (WHERE status = 'Pending') as pending
+      FROM leads
+    `);
+    const leadsStats = leadsResult.rows[0] || { total: 0, approved: 0, denied: 0, pending: 0 };
+
+    // Format daily calls for chart (last N days)
+    const chartData = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+      chartData.push({
+        date: dateStr,
+        day: dayName,
+        calls: dailyCalls[dateStr] || 0
+      });
+    }
+
+    res.json({
+      success: true,
+      period: `Last ${days} days`,
+      summary: {
+        totalClients: clients.length,
+        activeClients: clients.filter(c => c.active).length,
+        totalCalls: allCalls.length,
+        totalDuration: Math.round(totalDuration),
+        avgCallDuration: allCalls.length > 0 ? Math.round(totalDuration / allCalls.length) : 0,
+        totalCost: totalCost.toFixed(2)
+      },
+      callsOverTime: chartData,
+      categoryBreakdown: Object.entries(categoryBreakdown)
+        .map(([category, count]) => ({ category, count, percentage: ((count / allCalls.length) * 100).toFixed(1) }))
+        .sort((a, b) => b.count - a.count),
+      leads: {
+        total: parseInt(leadsStats.total),
+        approved: parseInt(leadsStats.approved),
+        denied: parseInt(leadsStats.denied),
+        pending: parseInt(leadsStats.pending),
+        conversionRate: leadsStats.total > 0 ? ((leadsStats.approved / leadsStats.total) * 100).toFixed(1) : 0
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching admin analytics:', error);
+    res.status(500).json({ error: 'Failed to fetch analytics', details: error.message });
+  }
+});
+
+// GET /api/admin/activity - Recent activity log
+app.get('/api/admin/activity', authenticateAdminToken, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 50;
+
+    // Get recent client logins
+    const loginsResult = await pool.query(`
+      SELECT 'client_login' as type, business_name as name, email, last_login as timestamp
+      FROM clients
+      WHERE last_login IS NOT NULL
+      ORDER BY last_login DESC
+      LIMIT $1
+    `, [limit]);
+
+    // Get recent admin logins
+    const adminLoginsResult = await pool.query(`
+      SELECT 'admin_login' as type, name, email, last_login as timestamp
+      FROM admin_users
+      WHERE last_login IS NOT NULL
+      ORDER BY last_login DESC
+      LIMIT $1
+    `, [limit]);
+
+    // Get recent leads
+    const leadsResult = await pool.query(`
+      SELECT 'new_lead' as type, name, phone_number as phone, first_call_date as timestamp, status
+      FROM leads
+      ORDER BY first_call_date DESC
+      LIMIT $1
+    `, [limit]);
+
+    // Combine and sort by timestamp
+    const activities = [
+      ...loginsResult.rows,
+      ...adminLoginsResult.rows,
+      ...leadsResult.rows
+    ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+     .slice(0, limit);
+
+    res.json({ activities });
+  } catch (error) {
+    console.error('Error fetching activity log:', error);
+    res.status(500).json({ error: 'Failed to fetch activity log', details: error.message });
+  }
+});
+
+// GET /api/admin/system-health - System health check
+app.get('/api/admin/system-health', authenticateAdminToken, async (req, res) => {
+  try {
+    const health = {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      services: {}
+    };
+
+    // Check database
+    try {
+      const dbStart = Date.now();
+      await pool.query('SELECT 1');
+      health.services.database = {
+        status: 'up',
+        latency: Date.now() - dbStart + 'ms'
+      };
+    } catch (err) {
+      health.services.database = { status: 'down', error: err.message };
+      health.status = 'degraded';
+    }
+
+    // Check Retell API
+    try {
+      const retell = new Retell({ apiKey: process.env.RETELL_API_KEY });
+      const retellStart = Date.now();
+      await retell.agent.list();
+      health.services.retell = {
+        status: 'up',
+        latency: Date.now() - retellStart + 'ms'
+      };
+    } catch (err) {
+      health.services.retell = { status: 'down', error: err.message };
+      health.status = 'degraded';
+    }
+
+    // Memory usage
+    const used = process.memoryUsage();
+    health.memory = {
+      heapUsed: Math.round(used.heapUsed / 1024 / 1024) + 'MB',
+      heapTotal: Math.round(used.heapTotal / 1024 / 1024) + 'MB',
+      rss: Math.round(used.rss / 1024 / 1024) + 'MB'
+    };
+
+    // Uptime
+    health.uptime = Math.round(process.uptime()) + ' seconds';
+
+    res.json(health);
+  } catch (error) {
+    console.error('Error checking system health:', error);
+    res.status(500).json({ status: 'error', error: error.message });
+  }
+});
+
 // GET /api/admin/clients - List all clients (with optional pagination)
 app.get('/api/admin/clients', authenticateAdminToken, async (req, res) => {
   try {
