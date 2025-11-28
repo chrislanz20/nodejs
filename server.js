@@ -18,8 +18,40 @@ const { Resend } = require('resend');
 const { sendNotifications, findOrCreateGHLContact } = require('./lib/ghlNotifications');
 const { trackLead, updateLeadStatus, getLeadsByAgent, getLeadStats, getAllLeadStats } = require('./lib/leadTracking');
 const { getClientConfig } = require('./config/clients');
+const rateLimit = require('express-rate-limit');
+const validator = require('validator');
 
 const app = express();
+
+// ============ RATE LIMITERS ============
+
+// Strict rate limiter for login endpoints (5 attempts per 15 minutes)
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts
+  message: { error: 'Too many login attempts. Please try again in 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true // Only count failed attempts
+});
+
+// General API rate limiter (100 requests per minute)
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 100,
+  message: { error: 'Too many requests. Please slow down.' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+// Strict limiter for password reset requests (3 per hour)
+const passwordResetLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3,
+  message: { error: 'Too many password reset requests. Please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
 
 /**
  * Generate a secure invitation code (8 chars, uppercase alphanumeric)
@@ -479,6 +511,17 @@ INFORMATION COLLECTION (one at a time):
       )
     `);
 
+    // Add login attempt tracking columns to admin_users (security migration)
+    await client.query(`
+      ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS failed_login_attempts INTEGER DEFAULT 0
+    `);
+    await client.query(`
+      ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS locked_until TIMESTAMP
+    `);
+    await client.query(`
+      ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS last_failed_login TIMESTAMP
+    `);
+
     // Create notification_recipients table for notification team members
     await client.query(`
       CREATE TABLE IF NOT EXISTS notification_recipients (
@@ -518,7 +561,39 @@ INFORMATION COLLECTION (one at a time):
       )
     `);
 
-    console.log('✅ Database tables initialized');
+    // ============ PERFORMANCE INDEXES ============
+    // These improve query performance on frequently searched/filtered columns
+
+    // Clients table indexes
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_clients_email ON clients(email)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_clients_active ON clients(active)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_clients_created_at ON clients(created_at DESC)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_clients_business_name ON clients(business_name)`);
+
+    // Admin users table indexes
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_admin_users_email ON admin_users(email)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_admin_users_active ON admin_users(active)`);
+
+    // Team members table indexes
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_team_members_client_id ON team_members(client_id)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_team_members_email ON team_members(email)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_team_members_active ON team_members(active)`);
+
+    // Call categories table indexes
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_call_categories_category ON call_categories(category)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_call_categories_created_at ON call_categories(created_at DESC)`);
+
+    // Notification recipients indexes
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_notification_recipients_agent_id ON notification_recipients(agent_id)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_notification_recipients_active ON notification_recipients(active)`);
+
+    // Leads table indexes (if exists)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_leads_agent_id ON leads(agent_id)`).catch(() => {});
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_leads_phone_number ON leads(phone_number)`).catch(() => {});
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status)`).catch(() => {});
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(first_call_date DESC)`).catch(() => {});
+
+    console.log('✅ Database tables and indexes initialized');
     client.release();
   } catch (error) {
     console.error('❌ Database initialization error:', error);
@@ -2287,8 +2362,8 @@ async function logActivity(action, details = {}) {
 
 // ============ CLIENT PORTAL AUTH ROUTES ============
 
-// POST /api/auth/login - Client login
-app.post('/api/auth/login', async (req, res) => {
+// POST /api/auth/login - Client login (with rate limiting)
+app.post('/api/auth/login', loginLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -2424,8 +2499,8 @@ app.post('/api/auth/change-password', authenticateToken, async (req, res) => {
 
 // ============ ADMIN AUTHENTICATION ROUTES ============
 
-// POST /api/admin/auth/login - Admin login
-app.post('/api/admin/auth/login', async (req, res) => {
+// POST /api/admin/auth/login - Admin login (with rate limiting and account lockout)
+app.post('/api/admin/auth/login', loginLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -2433,9 +2508,14 @@ app.post('/api/admin/auth/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password required' });
     }
 
-    // Find admin in database
+    // Validate email format
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    // Find admin in database (include inactive to show proper error)
     const result = await pool.query(
-      'SELECT * FROM admin_users WHERE email = $1 AND active = TRUE',
+      'SELECT * FROM admin_users WHERE email = $1',
       [email.toLowerCase()]
     );
 
@@ -2445,15 +2525,57 @@ app.post('/api/admin/auth/login', async (req, res) => {
 
     const admin = result.rows[0];
 
+    // Check if account is deactivated
+    if (!admin.active) {
+      return res.status(401).json({ error: 'Account has been deactivated. Contact support.' });
+    }
+
+    // Check if account is locked
+    if (admin.locked_until && new Date(admin.locked_until) > new Date()) {
+      const minutesRemaining = Math.ceil((new Date(admin.locked_until) - new Date()) / 60000);
+      return res.status(423).json({
+        error: `Account temporarily locked. Try again in ${minutesRemaining} minute${minutesRemaining > 1 ? 's' : ''}.`,
+        locked_until: admin.locked_until
+      });
+    }
+
     // Verify password
     const validPassword = await bcrypt.compare(password, admin.password_hash);
     if (!validPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      // Track failed attempt
+      const newAttempts = (admin.failed_login_attempts || 0) + 1;
+      const lockAccount = newAttempts >= 5;
+
+      await pool.query(
+        `UPDATE admin_users SET
+          failed_login_attempts = $1,
+          last_failed_login = NOW(),
+          locked_until = $2
+        WHERE id = $3`,
+        [newAttempts, lockAccount ? new Date(Date.now() + 30 * 60 * 1000) : null, admin.id]
+      );
+
+      if (lockAccount) {
+        console.log(`⚠️ Admin account locked due to failed attempts: ${admin.email}`);
+        return res.status(423).json({
+          error: 'Account locked for 30 minutes due to too many failed attempts.',
+          locked_until: new Date(Date.now() + 30 * 60 * 1000)
+        });
+      }
+
+      return res.status(401).json({
+        error: 'Invalid credentials',
+        attempts_remaining: 5 - newAttempts
+      });
     }
 
-    // Update last login timestamp
+    // Successful login - reset failed attempts and update last login
     await pool.query(
-      'UPDATE admin_users SET last_login = NOW() WHERE id = $1',
+      `UPDATE admin_users SET
+        last_login = NOW(),
+        failed_login_attempts = 0,
+        locked_until = NULL
+      WHERE id = $1`,
       [admin.id]
     );
 
@@ -2478,7 +2600,7 @@ app.post('/api/admin/auth/login', async (req, res) => {
       sameSite: 'lax'
     });
 
-    console.log(`Admin logged in: ${admin.email}`);
+    console.log(`✅ Admin logged in: ${admin.email}`);
 
     res.json({
       success: true,
@@ -2490,7 +2612,7 @@ app.post('/api/admin/auth/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Admin login error:', error);
-    res.status(500).json({ error: 'Login failed' });
+    res.status(500).json({ error: 'Login failed. Please try again.' });
   }
 });
 
@@ -2549,6 +2671,245 @@ app.get('/api/admin/auth/me', authenticateAdminToken, (req, res) => {
     name: req.admin.name,
     role: req.admin.role
   });
+});
+
+// ============ ADMIN USER MANAGEMENT ROUTES ============
+
+// Middleware to require super_admin role
+function requireSuperAdmin(req, res, next) {
+  if (req.admin.role !== 'super_admin') {
+    return res.status(403).json({ error: 'Super admin access required' });
+  }
+  next();
+}
+
+// GET /api/admin/users - List all admin users (super_admin only)
+app.get('/api/admin/users', authenticateAdminToken, requireSuperAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id, email, name, role, active, created_at, last_login,
+             failed_login_attempts, locked_until
+      FROM admin_users
+      ORDER BY created_at DESC
+    `);
+
+    res.json({ admins: result.rows });
+  } catch (error) {
+    console.error('Error fetching admin users:', error);
+    res.status(500).json({ error: 'Failed to fetch admin users' });
+  }
+});
+
+// POST /api/admin/users - Create new admin user (super_admin only)
+app.post('/api/admin/users', authenticateAdminToken, requireSuperAdmin, async (req, res) => {
+  try {
+    const { email, password, name, role } = req.body;
+
+    // Validate required fields
+    if (!email || !password || !name) {
+      return res.status(400).json({ error: 'Email, password, and name are required' });
+    }
+
+    // Validate email format
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    // Validate password strength
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    // Validate role
+    const validRoles = ['super_admin', 'admin'];
+    const adminRole = role || 'admin';
+    if (!validRoles.includes(adminRole)) {
+      return res.status(400).json({ error: 'Invalid role. Must be super_admin or admin' });
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Insert admin user
+    const result = await pool.query(`
+      INSERT INTO admin_users (email, password_hash, name, role)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id, email, name, role, active, created_at
+    `, [email.toLowerCase().trim(), passwordHash, name.trim(), adminRole]);
+
+    console.log(`✅ New admin user created: ${email} (role: ${adminRole}) by ${req.admin.email}`);
+
+    res.json({
+      success: true,
+      admin: result.rows[0]
+    });
+  } catch (error) {
+    if (error.code === '23505') {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+    console.error('Error creating admin user:', error);
+    res.status(500).json({ error: 'Failed to create admin user', details: error.message });
+  }
+});
+
+// PUT /api/admin/users/:id - Update admin user (super_admin only)
+app.put('/api/admin/users/:id', authenticateAdminToken, requireSuperAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { email, password, name, role, active } = req.body;
+
+    // Validate ID
+    if (!validator.isInt(id)) {
+      return res.status(400).json({ error: 'Invalid admin ID' });
+    }
+
+    // Prevent self-deactivation
+    if (parseInt(id) === req.admin.id && active === false) {
+      return res.status(400).json({ error: 'Cannot deactivate your own account' });
+    }
+
+    const updates = [];
+    const values = [];
+    let paramIndex = 1;
+
+    if (email !== undefined) {
+      if (!validator.isEmail(email)) {
+        return res.status(400).json({ error: 'Invalid email format' });
+      }
+      updates.push(`email = $${paramIndex++}`);
+      values.push(email.toLowerCase().trim());
+    }
+
+    if (password) {
+      if (password.length < 8) {
+        return res.status(400).json({ error: 'Password must be at least 8 characters' });
+      }
+      const passwordHash = await bcrypt.hash(password, 10);
+      updates.push(`password_hash = $${paramIndex++}`);
+      values.push(passwordHash);
+    }
+
+    if (name !== undefined) {
+      updates.push(`name = $${paramIndex++}`);
+      values.push(name.trim());
+    }
+
+    if (role !== undefined) {
+      const validRoles = ['super_admin', 'admin'];
+      if (!validRoles.includes(role)) {
+        return res.status(400).json({ error: 'Invalid role' });
+      }
+      updates.push(`role = $${paramIndex++}`);
+      values.push(role);
+    }
+
+    if (active !== undefined) {
+      updates.push(`active = $${paramIndex++}`);
+      values.push(active);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
+    }
+
+    updates.push(`updated_at = NOW()`);
+    values.push(id);
+
+    const result = await pool.query(`
+      UPDATE admin_users
+      SET ${updates.join(', ')}
+      WHERE id = $${paramIndex}
+      RETURNING id, email, name, role, active, updated_at
+    `, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Admin user not found' });
+    }
+
+    console.log(`✅ Admin user updated: ${result.rows[0].email} by ${req.admin.email}`);
+
+    res.json({
+      success: true,
+      admin: result.rows[0]
+    });
+  } catch (error) {
+    if (error.code === '23505') {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+    console.error('Error updating admin user:', error);
+    res.status(500).json({ error: 'Failed to update admin user', details: error.message });
+  }
+});
+
+// DELETE /api/admin/users/:id - Deactivate admin user (super_admin only)
+app.delete('/api/admin/users/:id', authenticateAdminToken, requireSuperAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate ID
+    if (!validator.isInt(id)) {
+      return res.status(400).json({ error: 'Invalid admin ID' });
+    }
+
+    // Prevent self-deletion
+    if (parseInt(id) === req.admin.id) {
+      return res.status(400).json({ error: 'Cannot delete your own account' });
+    }
+
+    // Soft delete (deactivate) instead of hard delete
+    const result = await pool.query(`
+      UPDATE admin_users
+      SET active = FALSE, updated_at = NOW()
+      WHERE id = $1
+      RETURNING email, name
+    `, [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Admin user not found' });
+    }
+
+    console.log(`✅ Admin user deactivated: ${result.rows[0].email} by ${req.admin.email}`);
+
+    res.json({
+      success: true,
+      message: `Admin user ${result.rows[0].email} has been deactivated`
+    });
+  } catch (error) {
+    console.error('Error deactivating admin user:', error);
+    res.status(500).json({ error: 'Failed to deactivate admin user', details: error.message });
+  }
+});
+
+// POST /api/admin/users/:id/unlock - Unlock a locked admin account (super_admin only)
+app.post('/api/admin/users/:id/unlock', authenticateAdminToken, requireSuperAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!validator.isInt(id)) {
+      return res.status(400).json({ error: 'Invalid admin ID' });
+    }
+
+    const result = await pool.query(`
+      UPDATE admin_users
+      SET failed_login_attempts = 0, locked_until = NULL, updated_at = NOW()
+      WHERE id = $1
+      RETURNING email, name
+    `, [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Admin user not found' });
+    }
+
+    console.log(`✅ Admin account unlocked: ${result.rows[0].email} by ${req.admin.email}`);
+
+    res.json({
+      success: true,
+      message: `Account for ${result.rows[0].email} has been unlocked`
+    });
+  } catch (error) {
+    console.error('Error unlocking admin user:', error);
+    res.status(500).json({ error: 'Failed to unlock admin user', details: error.message });
+  }
 });
 
 // ============ TEAM MEMBER ROUTES ============
@@ -2732,8 +3093,8 @@ app.get('/api/activity', authenticateToken, async (req, res) => {
 
 // ============ TEAM MEMBER AUTH ROUTES ============
 
-// POST /api/team/auth/login - Team member login
-app.post('/api/team/auth/login', async (req, res) => {
+// POST /api/team/auth/login - Team member login (with rate limiting)
+app.post('/api/team/auth/login', loginLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -2935,7 +3296,7 @@ app.post('/api/team/register', async (req, res) => {
 // POST /api/team/forgot-password - Request password reset for team members OR business owners (public)
 // Rate limiting: prevent duplicate emails within 2 minutes
 const recentResetRequests = new Map();
-app.post('/api/team/forgot-password', async (req, res) => {
+app.post('/api/team/forgot-password', passwordResetLimiter, async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -3246,9 +3607,15 @@ async function sendGHLEmail(locationId, toEmail, subject, body) {
 
 // ============ ADMIN ROUTES (for managing clients) ============
 
-// GET /api/admin/clients - List all clients
+// GET /api/admin/clients - List all clients (with optional pagination)
 app.get('/api/admin/clients', authenticateAdminToken, async (req, res) => {
   try {
+    // Pagination parameters (optional - defaults to no pagination for backwards compatibility)
+    const page = parseInt(req.query.page) || 0;
+    const limit = parseInt(req.query.limit) || 0; // 0 means no limit
+    const search = req.query.search || '';
+    const status = req.query.status || 'all'; // 'all', 'active', 'inactive'
+
     // Check if last_login column exists first
     const columnCheck = await pool.query(`
       SELECT column_name
@@ -3257,20 +3624,56 @@ app.get('/api/admin/clients', authenticateAdminToken, async (req, res) => {
     `);
 
     const hasLastLogin = columnCheck.rows.length > 0;
+    const selectFields = hasLastLogin
+      ? 'id, email, business_name, agent_ids, created_at, active, last_login'
+      : 'id, email, business_name, agent_ids, created_at, active';
 
-    let result;
-    if (hasLastLogin) {
-      result = await pool.query(
-        'SELECT id, email, business_name, agent_ids, created_at, active, last_login FROM clients ORDER BY created_at DESC'
-      );
-    } else {
-      console.log('Note: last_login column not found, run /api/run-migration');
-      result = await pool.query(
-        'SELECT id, email, business_name, agent_ids, created_at, active FROM clients ORDER BY created_at DESC'
-      );
+    // Build query with filters
+    let query = `SELECT ${selectFields} FROM clients WHERE 1=1`;
+    const params = [];
+    let paramIndex = 1;
+
+    // Search filter (business name or email)
+    if (search) {
+      query += ` AND (LOWER(business_name) LIKE $${paramIndex} OR LOWER(email) LIKE $${paramIndex})`;
+      params.push(`%${search.toLowerCase()}%`);
+      paramIndex++;
     }
 
-    res.json({ clients: result.rows });
+    // Status filter
+    if (status === 'active') {
+      query += ` AND active = TRUE`;
+    } else if (status === 'inactive') {
+      query += ` AND active = FALSE`;
+    }
+
+    // Get total count for pagination
+    const countQuery = query.replace(`SELECT ${selectFields}`, 'SELECT COUNT(*)');
+    const countResult = await pool.query(countQuery, params);
+    const totalCount = parseInt(countResult.rows[0].count);
+
+    // Add ordering
+    query += ' ORDER BY created_at DESC';
+
+    // Add pagination if limit is specified
+    if (limit > 0) {
+      query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+      params.push(limit, page * limit);
+    }
+
+    const result = await pool.query(query, params);
+
+    // Response with pagination info
+    res.json({
+      clients: result.rows,
+      pagination: {
+        total: totalCount,
+        page: page,
+        limit: limit || totalCount,
+        totalPages: limit > 0 ? Math.ceil(totalCount / limit) : 1,
+        hasMore: limit > 0 && (page + 1) * limit < totalCount
+      }
+    });
   } catch (error) {
     console.error('Error fetching clients:', error);
     console.error('Error details:', error.stack);
@@ -3278,24 +3681,61 @@ app.get('/api/admin/clients', authenticateAdminToken, async (req, res) => {
   }
 });
 
-// POST /api/admin/clients - Create new client account
+// POST /api/admin/clients - Create new client account (with validation)
 app.post('/api/admin/clients', authenticateAdminToken, async (req, res) => {
   try {
     const { email, password, business_name, agent_ids } = req.body;
 
+    // Required fields check
     if (!email || !password || !business_name || !agent_ids) {
-      return res.status(400).json({ error: 'All fields required' });
+      return res.status(400).json({ error: 'All fields required: email, password, business_name, agent_ids' });
     }
+
+    // Email validation
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    // Password strength validation
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    // Business name validation
+    const trimmedName = business_name.trim();
+    if (trimmedName.length < 2 || trimmedName.length > 100) {
+      return res.status(400).json({ error: 'Business name must be 2-100 characters' });
+    }
+
+    // Agent IDs validation
+    if (!Array.isArray(agent_ids) || agent_ids.length === 0) {
+      return res.status(400).json({ error: 'At least one agent ID is required' });
+    }
+
+    // Validate each agent ID is a non-empty string
+    for (const agentId of agent_ids) {
+      if (typeof agentId !== 'string' || agentId.trim().length === 0) {
+        return res.status(400).json({ error: 'Invalid agent ID format' });
+      }
+    }
+
+    // Sanitize agent IDs (trim whitespace)
+    const cleanAgentIds = agent_ids.map(id => id.trim());
 
     // Hash password
     const password_hash = await bcrypt.hash(password, 10);
 
+    // Generate invitation code for team members
+    const invitationCode = generateInvitationCode();
+
     // Insert client
     const result = await pool.query(`
-      INSERT INTO clients (email, password_hash, business_name, agent_ids)
-      VALUES ($1, $2, $3, $4)
-      RETURNING id, email, business_name, agent_ids, created_at
-    `, [email.toLowerCase(), password_hash, business_name, agent_ids]);
+      INSERT INTO clients (email, password_hash, business_name, agent_ids, invitation_code, invitation_code_created_at)
+      VALUES ($1, $2, $3, $4, $5, NOW())
+      RETURNING id, email, business_name, agent_ids, created_at, invitation_code
+    `, [email.toLowerCase().trim(), password_hash, trimmedName, cleanAgentIds, invitationCode]);
+
+    console.log(`✅ New client created: ${trimmedName} (${email})`);
 
     res.json({
       success: true,
@@ -3306,37 +3746,70 @@ app.post('/api/admin/clients', authenticateAdminToken, async (req, res) => {
       return res.status(400).json({ error: 'Email already exists' });
     }
     console.error('Error creating client:', error);
-    res.status(500).json({ error: 'Failed to create client' });
+    res.status(500).json({ error: 'Failed to create client', details: error.message });
   }
 });
 
-// PUT /api/admin/clients/:id - Update client
+// PUT /api/admin/clients/:id - Update client (with validation)
 app.put('/api/admin/clients/:id', authenticateAdminToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { email, password, business_name, agent_ids, active } = req.body;
 
+    // Validate ID is a number
+    if (!validator.isInt(id)) {
+      return res.status(400).json({ error: 'Invalid client ID' });
+    }
+
     const updates = [];
     const values = [];
     let paramIndex = 1;
 
+    // Validate and process email if provided
     if (email !== undefined) {
+      if (!validator.isEmail(email)) {
+        return res.status(400).json({ error: 'Invalid email format' });
+      }
       updates.push(`email = $${paramIndex++}`);
-      values.push(email.toLowerCase());
+      values.push(email.toLowerCase().trim());
     }
+
+    // Validate and process password if provided
     if (password) {
+      if (password.length < 8) {
+        return res.status(400).json({ error: 'Password must be at least 8 characters' });
+      }
       const password_hash = await bcrypt.hash(password, 10);
       updates.push(`password_hash = $${paramIndex++}`);
       values.push(password_hash);
     }
+
+    // Validate and process business_name if provided
     if (business_name !== undefined) {
+      const trimmedName = business_name.trim();
+      if (trimmedName.length < 2 || trimmedName.length > 100) {
+        return res.status(400).json({ error: 'Business name must be 2-100 characters' });
+      }
       updates.push(`business_name = $${paramIndex++}`);
-      values.push(business_name);
+      values.push(trimmedName);
     }
+
+    // Validate and process agent_ids if provided
     if (agent_ids !== undefined) {
+      if (!Array.isArray(agent_ids) || agent_ids.length === 0) {
+        return res.status(400).json({ error: 'At least one agent ID is required' });
+      }
+      for (const agentId of agent_ids) {
+        if (typeof agentId !== 'string' || agentId.trim().length === 0) {
+          return res.status(400).json({ error: 'Invalid agent ID format' });
+        }
+      }
+      const cleanAgentIds = agent_ids.map(aid => aid.trim());
       updates.push(`agent_ids = $${paramIndex++}`);
-      values.push(agent_ids);
+      values.push(cleanAgentIds);
     }
+
+    // Process active status
     if (active !== undefined) {
       updates.push(`active = $${paramIndex++}`);
       values.push(active);
@@ -3360,13 +3833,18 @@ app.put('/api/admin/clients/:id', authenticateAdminToken, async (req, res) => {
       return res.status(404).json({ error: 'Client not found' });
     }
 
+    console.log(`✅ Client updated: ${result.rows[0].business_name} (ID: ${id})`);
+
     res.json({
       success: true,
       client: result.rows[0]
     });
   } catch (error) {
+    if (error.code === '23505') {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
     console.error('Error updating client:', error);
-    res.status(500).json({ error: 'Failed to update client' });
+    res.status(500).json({ error: 'Failed to update client', details: error.message });
   }
 });
 
@@ -3407,37 +3885,87 @@ app.delete('/api/admin/clients/:id', authenticateAdminToken, async (req, res) =>
   }
 });
 
-// POST /api/admin/clients/:id/reset-password - Reset client password
+// POST /api/admin/clients/:id/reset-password - Reset client password (sends via email)
 app.post('/api/admin/clients/:id/reset-password', authenticateAdminToken, async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Generate a temporary password (12 characters, alphanumeric)
-    const temporaryPassword = crypto.randomBytes(8).toString('base64').slice(0, 12).replace(/[^a-zA-Z0-9]/g, 'x');
+    // Validate ID
+    if (!validator.isInt(id)) {
+      return res.status(400).json({ error: 'Invalid client ID' });
+    }
+
+    // Get client info first
+    const clientResult = await pool.query(
+      'SELECT email, business_name FROM clients WHERE id = $1',
+      [id]
+    );
+
+    if (clientResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+
+    const client = clientResult.rows[0];
+
+    // Generate a secure temporary password (12 characters, alphanumeric + special)
+    const temporaryPassword = crypto.randomBytes(12).toString('base64').slice(0, 12);
 
     // Hash the temporary password
     const password_hash = await bcrypt.hash(temporaryPassword, 10);
 
     // Update client's password
-    const result = await pool.query(
-      'UPDATE clients SET password_hash = $1, updated_at = NOW() WHERE id = $2 RETURNING email',
+    await pool.query(
+      'UPDATE clients SET password_hash = $1, updated_at = NOW() WHERE id = $2',
       [password_hash, id]
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Client not found' });
+    // Send email with temporary password
+    const emailBody = `
+Hello,
+
+Your password for the SaveYa Tech dashboard has been reset by an administrator.
+
+Your temporary password is: ${temporaryPassword}
+
+Please log in and change your password immediately.
+
+Login URL: ${process.env.NODE_ENV === 'production' ? 'https://saveyatech.com' : 'http://localhost:3000'}
+
+If you did not request this reset, please contact support immediately.
+
+Best regards,
+SaveYa Tech Team
+    `.trim();
+
+    const emailResult = await sendEmail(
+      client.email,
+      'Your Password Has Been Reset - SaveYa Tech',
+      emailBody
+    );
+
+    console.log(`✅ Password reset for client ${client.email} (${client.business_name})`);
+
+    if (emailResult.success) {
+      res.json({
+        success: true,
+        message: `Password reset successfully. Temporary password sent to ${client.email}`,
+        email_sent: true
+      });
+    } else {
+      // Password was reset but email failed - log for admin to handle manually
+      console.error(`⚠️ Password reset but email failed for ${client.email}:`, emailResult.error);
+      res.json({
+        success: true,
+        message: 'Password reset but email delivery failed. Please contact the client directly.',
+        email_sent: false,
+        email_error: emailResult.error,
+        // Only return password if email failed (fallback)
+        temporary_password: temporaryPassword
+      });
     }
-
-    console.log(`Password reset for client ${result.rows[0].email}`);
-
-    res.json({
-      success: true,
-      temporary_password: temporaryPassword,
-      message: 'Password reset successfully'
-    });
   } catch (error) {
     console.error('Error resetting password:', error);
-    res.status(500).json({ error: 'Failed to reset password' });
+    res.status(500).json({ error: 'Failed to reset password', details: error.message });
   }
 });
 
