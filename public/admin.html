@@ -510,8 +510,8 @@
         grid-template-columns: 1fr !important;
       }
 
-      /* System health & activity row responsive */
-      div[style*="grid-template-columns: 300px 1fr"] {
+      /* System health, lead sources & activity row responsive */
+      div[style*="grid-template-columns: 280px 280px 1fr"] {
         grid-template-columns: 1fr !important;
       }
     }
@@ -932,8 +932,8 @@
       </div>
     </div>
 
-    <!-- System Health & Activity Row -->
-    <div style="display: grid; grid-template-columns: 300px 1fr; gap: 16px; margin-bottom: 24px;">
+    <!-- System Health, Lead Sources & Activity Row -->
+    <div style="display: grid; grid-template-columns: 280px 280px 1fr; gap: 16px; margin-bottom: 24px;">
       <!-- System Health -->
       <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 20px;">
         <h3 style="font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 16px;">System Health</h3>
@@ -967,6 +967,14 @@
             50% { opacity: 0.5; }
           }
         </style>
+      </div>
+
+      <!-- Lead Sources Widget -->
+      <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 20px;">
+        <h3 style="font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 16px;">Lead Sources</h3>
+        <div id="lead-sources-container" style="font-size: 12px;">
+          <div style="text-align: center; color: var(--text-tertiary); padding: 20px;">Loading...</div>
+        </div>
       </div>
 
       <!-- Recent Activity Feed -->
@@ -2470,6 +2478,55 @@
       }
     }
 
+    // Load lead sources widget
+    async function loadLeadSources() {
+      const container = document.getElementById('lead-sources-container');
+
+      try {
+        const response = await fetch('/api/admin/lead-sources');
+        if (!response.ok) throw new Error('Failed to load lead sources');
+
+        const data = await response.json();
+        const sources = data.sources || [];
+
+        if (sources.length === 0) {
+          container.innerHTML = '<div style="text-align: center; color: var(--text-tertiary); padding: 20px;">No lead sources yet</div>';
+          return;
+        }
+
+        // Color palette for bars
+        const colors = ['#00FFFF', '#4ade80', '#fbbf24', '#f87171', '#a78bfa', '#60a5fa'];
+
+        container.innerHTML = sources.slice(0, 5).map((source, idx) => {
+          const color = colors[idx % colors.length];
+          const barWidth = Math.min(parseFloat(source.percentage), 100);
+
+          return `
+            <div style="margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="color: var(--text-primary); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;" title="${source.source}">${source.source}</span>
+                <span style="color: var(--text-tertiary); font-size: 11px;">${source.count} (${source.percentage}%)</span>
+              </div>
+              <div style="height: 6px; background: var(--bg-primary); border-radius: 3px; overflow: hidden;">
+                <div style="height: 100%; width: ${barWidth}%; background: ${color}; border-radius: 3px; transition: width 0.3s ease;"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Add total footer
+        container.innerHTML += `
+          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between;">
+            <span style="color: var(--text-tertiary); font-size: 11px;">Total Leads</span>
+            <span style="color: var(--accent); font-weight: 600; font-size: 12px;">${data.total}</span>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Error loading lead sources:', error);
+        container.innerHTML = '<div style="text-align: center; color: var(--danger); padding: 20px;">Failed to load</div>';
+      }
+    }
+
     // Check if current admin is super_admin and show admin users link
     async function checkSuperAdmin() {
       try {
@@ -2495,10 +2552,12 @@
       loadAnalytics();
       loadActivity();
       loadSystemHealth();
+      loadLeadSources();
     }
 
     // Register new functions globally for SPA compatibility
     window.loadAnalytics = loadAnalytics;
+    window.loadLeadSources = loadLeadSources;
     window.renderCallsChart = renderCallsChart;
     window.renderCategoriesChart = renderCategoriesChart;
     window.loadActivity = loadActivity;

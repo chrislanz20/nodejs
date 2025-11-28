@@ -3831,6 +3831,38 @@ app.get('/api/admin/system-health', authenticateAdminToken, async (req, res) => 
   }
 });
 
+// GET /api/admin/lead-sources - Aggregate lead sources across all clients
+app.get('/api/admin/lead-sources', authenticateAdminToken, async (req, res) => {
+  try {
+    // Get lead sources breakdown
+    const sourcesResult = await pool.query(`
+      SELECT
+        COALESCE(NULLIF(TRIM(referral_source), ''), 'Not specified') as source,
+        COUNT(*) as count
+      FROM leads
+      GROUP BY COALESCE(NULLIF(TRIM(referral_source), ''), 'Not specified')
+      ORDER BY count DESC
+      LIMIT 10
+    `);
+
+    // Get total leads count
+    const totalResult = await pool.query('SELECT COUNT(*) as total FROM leads');
+    const total = parseInt(totalResult.rows[0]?.total) || 0;
+
+    // Calculate percentages
+    const sources = sourcesResult.rows.map(row => ({
+      source: row.source,
+      count: parseInt(row.count),
+      percentage: total > 0 ? ((parseInt(row.count) / total) * 100).toFixed(1) : '0.0'
+    }));
+
+    res.json({ sources, total });
+  } catch (error) {
+    console.error('Error fetching lead sources:', error);
+    res.status(500).json({ error: 'Failed to fetch lead sources' });
+  }
+});
+
 // GET /api/admin/client/:clientId/leads - Get leads for a specific client (admin preview)
 app.get('/api/admin/client/:clientId/leads', authenticateAdminToken, async (req, res) => {
   try {
