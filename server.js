@@ -3831,29 +3831,117 @@ app.get('/api/admin/system-health', authenticateAdminToken, async (req, res) => 
   }
 });
 
+// Smart normalization for lead sources - handles variations, typos, and similar terms
+function normalizeLeadSource(source) {
+  if (!source || typeof source !== 'string') return 'Unknown';
+
+  const s = source.toLowerCase().trim();
+
+  // Unknown/Not specified variations (including common typos)
+  if (!s || s.length === 0 ||
+      s.includes('not mentioned') || s.includes('not specified') || s.includes('unspecified') ||
+      s.includes('unknown') || s.includes('unknwon') || s.includes('unkown') || s.includes('unkmown') ||
+      s === 'n/a' || s === 'na' || s === 'none' || s === 'null' || s === 'undefined' ||
+      s.includes('did not') || s.includes('didn\'t') || s.includes('not provided') ||
+      s.includes('not disclosed') || s.includes('declined') || s.includes('refused')) {
+    return 'Unknown';
+  }
+
+  // Google variations
+  if (s.includes('google') || s.includes('googel') || s.includes('gogle')) {
+    if (s.includes('map')) return 'Google Maps';
+    if (s.includes('ad') || s.includes('ppc') || s.includes('paid')) return 'Google Ads';
+    return 'Google';
+  }
+
+  // TV variations
+  if (s.includes('tv') || s.includes('television') || s.includes('commercial') || s.includes('telemundo') ||
+      s.includes('univision') || s.includes('channel')) {
+    return 'TV';
+  }
+
+  // Radio variations
+  if (s.includes('radio') || s.includes('fm') || s.includes('am ') || s.match(/\d+\.\d+\s*(fm|am)/)) {
+    return 'Radio';
+  }
+
+  // Social media variations
+  if (s.includes('facebook') || s.includes('fb') || s.includes('instagram') || s.includes('insta') ||
+      s.includes('tiktok') || s.includes('tik tok') || s.includes('twitter') || s.includes('social media') ||
+      s.includes('youtube') || s.includes('linkedin')) {
+    if (s.includes('facebook') || s.includes('fb')) return 'Facebook';
+    if (s.includes('instagram') || s.includes('insta')) return 'Instagram';
+    if (s.includes('tiktok') || s.includes('tik tok')) return 'TikTok';
+    return 'Social Media';
+  }
+
+  // Referral variations
+  if (s.includes('referral') || s.includes('referred') || s.includes('friend') || s.includes('family') ||
+      s.includes('word of mouth') || s.includes('someone told') || s.includes('recommendation') ||
+      s.includes('coworker') || s.includes('colleague') || s.includes('neighbor')) {
+    return 'Referral';
+  }
+
+  // Billboard variations
+  if (s.includes('billboard') || s.includes('bill board') || s.includes('sign') || s.includes('bus stop') ||
+      s.includes('highway') || s.includes('outdoor')) {
+    return 'Billboard';
+  }
+
+  // Lawyer/Attorney referral
+  if (s.includes('attorney') || s.includes('lawyer') || s.includes('law firm') || s.includes('legal')) {
+    return 'Attorney Referral';
+  }
+
+  // Previous client / repeat
+  if (s.includes('previous') || s.includes('past client') || s.includes('used before') || s.includes('repeat')) {
+    return 'Previous Client';
+  }
+
+  // Internet/Website
+  if (s.includes('internet') || s.includes('website') || s.includes('web site') || s.includes('online') ||
+      s.includes('search') || s.includes('yelp') || s.includes('avvo')) {
+    return 'Internet Search';
+  }
+
+  // Return original with proper casing if no match
+  return source.trim();
+}
+
 // GET /api/admin/lead-sources - Aggregate lead sources across all clients
 app.get('/api/admin/lead-sources', authenticateAdminToken, async (req, res) => {
   try {
-    // Get lead sources breakdown
+    // Get raw referral sources from database
     const sourcesResult = await pool.query(`
-      SELECT
-        COALESCE(NULLIF(TRIM(referral_source), ''), 'Not specified') as source,
-        COUNT(*) as count
+      SELECT referral_source, COUNT(*) as count
       FROM leads
-      GROUP BY COALESCE(NULLIF(TRIM(referral_source), ''), 'Not specified')
+      GROUP BY referral_source
       ORDER BY count DESC
-      LIMIT 10
     `);
 
-    // Get total leads count
-    const totalResult = await pool.query('SELECT COUNT(*) as total FROM leads');
-    const total = parseInt(totalResult.rows[0]?.total) || 0;
+    // Normalize and consolidate sources using smart matching
+    const consolidatedMap = new Map();
+
+    sourcesResult.rows.forEach(row => {
+      const normalizedSource = normalizeLeadSource(row.referral_source);
+      const currentCount = consolidatedMap.get(normalizedSource) || 0;
+      consolidatedMap.set(normalizedSource, currentCount + parseInt(row.count));
+    });
+
+    // Convert to array, sort by count, and take top 10
+    const consolidatedSources = Array.from(consolidatedMap.entries())
+      .map(([source, count]) => ({ source, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    // Calculate total
+    const total = Array.from(consolidatedMap.values()).reduce((sum, count) => sum + count, 0);
 
     // Calculate percentages
-    const sources = sourcesResult.rows.map(row => ({
+    const sources = consolidatedSources.map(row => ({
       source: row.source,
-      count: parseInt(row.count),
-      percentage: total > 0 ? ((parseInt(row.count) / total) * 100).toFixed(1) : '0.0'
+      count: row.count,
+      percentage: total > 0 ? ((row.count / total) * 100).toFixed(1) : '0.0'
     }));
 
     res.json({ sources, total });
@@ -4551,25 +4639,37 @@ app.get('/api/leads/sources/:agentId', authenticateToken, async (req, res) => {
   try {
     const { agentId } = req.params;
 
-    // Get breakdown of referral sources
+    // Get raw referral sources from database
     const result = await pool.query(`
-      SELECT
-        COALESCE(NULLIF(referral_source, ''), 'Unknown') as source,
-        COUNT(*) as count
+      SELECT referral_source, COUNT(*) as count
       FROM leads
       WHERE agent_id = $1
-      GROUP BY COALESCE(NULLIF(referral_source, ''), 'Unknown')
+      GROUP BY referral_source
       ORDER BY count DESC
     `, [agentId]);
 
+    // Normalize and consolidate sources using smart matching
+    const consolidatedMap = new Map();
+
+    result.rows.forEach(row => {
+      const normalizedSource = normalizeLeadSource(row.referral_source);
+      const currentCount = consolidatedMap.get(normalizedSource) || 0;
+      consolidatedMap.set(normalizedSource, currentCount + parseInt(row.count));
+    });
+
+    // Convert to array and sort by count
+    const consolidatedSources = Array.from(consolidatedMap.entries())
+      .map(([source, count]) => ({ source, count }))
+      .sort((a, b) => b.count - a.count);
+
     // Calculate total for percentages
-    const total = result.rows.reduce((sum, row) => sum + parseInt(row.count), 0);
+    const total = consolidatedSources.reduce((sum, row) => sum + row.count, 0);
 
     // Format response with percentages
-    const sources = result.rows.map(row => ({
+    const sources = consolidatedSources.map(row => ({
       source: row.source,
-      count: parseInt(row.count),
-      percentage: total > 0 ? Math.round((parseInt(row.count) / total) * 100) : 0
+      count: row.count,
+      percentage: total > 0 ? Math.round((row.count / total) * 100) : 0
     }));
 
     res.json({
