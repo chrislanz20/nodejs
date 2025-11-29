@@ -398,6 +398,15 @@ async function initializeDatabase() {
       WHERE business_name = 'CourtLaw Injury Lawyers' AND ghl_location_id IS NULL
     `);
 
+    // Add CourtLaw Conversation Flow agent ID (migration for v2 agent)
+    // This ensures both single prompt and conversation flow calls show up in the dashboard
+    await client.query(`
+      UPDATE clients
+      SET agent_ids = array_append(agent_ids, 'agent_5aa697d50952f8834c76e6737e')
+      WHERE business_name ILIKE '%courtlaw%'
+        AND NOT ('agent_5aa697d50952f8834c76e6737e' = ANY(agent_ids))
+    `);
+
     // Add invitation code fields for team member self-registration
     await client.query(`
       ALTER TABLE clients ADD COLUMN IF NOT EXISTS invitation_code TEXT UNIQUE
