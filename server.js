@@ -4830,6 +4830,7 @@ app.get('/api/notification-recipients/:agentId', authenticateToken, async (req, 
 });
 
 // POST /api/notification-recipients - Add a new notification recipient
+// IMPORTANT: Adds recipient to ALL agent IDs for the user
 app.post('/api/notification-recipients', authenticateToken, async (req, res) => {
   try {
     const { agent_id, name, email, phone } = req.body;
@@ -4856,20 +4857,51 @@ app.post('/api/notification-recipients', authenticateToken, async (req, res) => 
       return res.status(500).json({ error: 'Failed to create/find GHL contact. Please try again.' });
     }
 
-    // Insert recipient into database
-    const recipientResult = await pool.query(`
-      INSERT INTO notification_recipients (agent_id, name, email, phone, ghl_contact_id)
-      VALUES ($1, $2, $3, $4, $5)
-      RETURNING *
-    `, [agent_id, name, email.toLowerCase(), phone || null, ghlContactId]);
+    // Get ALL agent IDs for this user
+    const userAgentIds = req.user.agent_ids || [agent_id];
+    let firstRecipient = null;
 
-    const recipient = recipientResult.rows[0];
+    // Add recipient to ALL agent IDs for proper sync
+    for (const agentId of userAgentIds) {
+      try {
+        // Check if this recipient already exists for this agent
+        const existingResult = await pool.query(
+          'SELECT id FROM notification_recipients WHERE email = $1 AND agent_id = $2',
+          [email.toLowerCase(), agentId]
+        );
 
-    // Create default notification preferences
-    await pool.query(`
-      INSERT INTO notification_preferences (recipient_id)
-      VALUES ($1)
-    `, [recipient.id]);
+        if (existingResult.rows.length > 0) {
+          console.log(`   ⏭️  Recipient ${email} already exists for agent ${agentId.substring(0, 15)}...`);
+          continue;
+        }
+
+        // Insert recipient into database for this agent
+        const recipientResult = await pool.query(`
+          INSERT INTO notification_recipients (agent_id, name, email, phone, ghl_contact_id)
+          VALUES ($1, $2, $3, $4, $5)
+          RETURNING *
+        `, [agentId, name, email.toLowerCase(), phone || null, ghlContactId]);
+
+        const recipient = recipientResult.rows[0];
+
+        // Create default notification preferences
+        await pool.query(`
+          INSERT INTO notification_preferences (recipient_id)
+          VALUES ($1)
+        `, [recipient.id]);
+
+        if (!firstRecipient) firstRecipient = recipient;
+        console.log(`   ✓ Added to agent ${agentId.substring(0, 15)}...`);
+      } catch (err) {
+        if (err.code !== '23505') { // Ignore unique violations (already exists)
+          console.error(`   ⚠️  Error adding to agent ${agentId}:`, err.message);
+        }
+      }
+    }
+
+    if (!firstRecipient) {
+      return res.status(400).json({ error: 'This email is already a notification recipient' });
+    }
 
     // Fetch the complete recipient with preferences
     const fullResult = await pool.query(`
@@ -4884,17 +4916,18 @@ app.post('/api/notification-recipients', authenticateToken, async (req, res) => 
       FROM notification_recipients nr
       LEFT JOIN notification_preferences np ON nr.id = np.recipient_id
       WHERE nr.id = $1
-    `, [recipient.id]);
+    `, [firstRecipient.id]);
 
-    console.log(`✅ Notification recipient added: ${name} (GHL Contact: ${ghlContactId})`);
+    console.log(`✅ Notification recipient added: ${name} to ${userAgentIds.length} agent(s)`);
 
     res.json({
       success: true,
-      recipient: fullResult.rows[0]
+      recipient: fullResult.rows[0],
+      synced_agents: userAgentIds.length
     });
   } catch (error) {
     if (error.code === '23505') { // Unique violation
-      return res.status(400).json({ error: 'This email is already a notification recipient for this agent' });
+      return res.status(400).json({ error: 'This email is already a notification recipient' });
     }
     console.error('Error adding notification recipient:', error);
     res.status(500).json({ error: 'Failed to add notification recipient' });
@@ -4957,24 +4990,37 @@ app.put('/api/notification-recipients/:id', authenticateToken, async (req, res) 
 });
 
 // DELETE /api/notification-recipients/:id - Remove a notification recipient
+// IMPORTANT: Removes recipient from ALL agent IDs for the user
 app.delete('/api/notification-recipients/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
 
-    const result = await pool.query(
-      'DELETE FROM notification_recipients WHERE id = $1 RETURNING *',
+    // First get the recipient's email
+    const recipientResult = await pool.query(
+      'SELECT email, name FROM notification_recipients WHERE id = $1',
       [id]
     );
 
-    if (result.rows.length === 0) {
+    if (recipientResult.rows.length === 0) {
       return res.status(404).json({ error: 'Recipient not found' });
     }
 
-    console.log(`🗑️ Notification recipient removed: ${result.rows[0].name}`);
+    const recipientEmail = recipientResult.rows[0].email;
+    const recipientName = recipientResult.rows[0].name;
+    const userAgentIds = req.user.agent_ids || [];
+
+    // Delete recipient from ALL agent IDs for this user
+    const result = await pool.query(
+      'DELETE FROM notification_recipients WHERE email = $1 AND agent_id = ANY($2) RETURNING *',
+      [recipientEmail, userAgentIds]
+    );
+
+    console.log(`🗑️ Notification recipient removed: ${recipientName} from ${result.rows.length} agent(s)`);
 
     res.json({
       success: true,
-      deleted: result.rows[0]
+      deleted: result.rows[0],
+      removed_from_agents: result.rows.length
     });
   } catch (error) {
     console.error('Error deleting notification recipient:', error);
@@ -4983,6 +5029,7 @@ app.delete('/api/notification-recipients/:id', authenticateToken, async (req, re
 });
 
 // PUT /api/notification-preferences/:recipientId - Update notification preferences
+// IMPORTANT: Syncs preferences across ALL agent IDs for the same email
 app.put('/api/notification-preferences/:recipientId', authenticateToken, async (req, res) => {
   try {
     const { recipientId } = req.params;
@@ -4995,6 +5042,32 @@ app.put('/api/notification-preferences/:recipientId', authenticateToken, async (
       other_email, other_sms
     } = req.body;
 
+    // Get the recipient's email and the user's agent_ids
+    const recipientResult = await pool.query(
+      'SELECT email FROM notification_recipients WHERE id = $1',
+      [recipientId]
+    );
+
+    if (recipientResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Recipient not found' });
+    }
+
+    const recipientEmail = recipientResult.rows[0].email;
+    const userAgentIds = req.user.agent_ids || [];
+
+    // Find ALL recipients with the same email across ALL user's agent IDs
+    const allRecipientsResult = await pool.query(`
+      SELECT id FROM notification_recipients
+      WHERE email = $1 AND agent_id = ANY($2)
+    `, [recipientEmail, userAgentIds]);
+
+    const recipientIds = allRecipientsResult.rows.map(r => r.id);
+
+    if (recipientIds.length === 0) {
+      return res.status(404).json({ error: 'No recipients found to update' });
+    }
+
+    // Update preferences for ALL matching recipients (syncs across all agent IDs)
     const result = await pool.query(`
       UPDATE notification_preferences
       SET
@@ -5011,7 +5084,7 @@ app.put('/api/notification-preferences/:recipientId', authenticateToken, async (
         other_email = COALESCE($11, other_email),
         other_sms = COALESCE($12, other_sms),
         updated_at = NOW()
-      WHERE recipient_id = $13
+      WHERE recipient_id = ANY($13)
       RETURNING *
     `, [
       new_lead_email, new_lead_sms,
@@ -5020,16 +5093,15 @@ app.put('/api/notification-preferences/:recipientId', authenticateToken, async (
       insurance_email, insurance_sms,
       medical_email, medical_sms,
       other_email, other_sms,
-      recipientId
+      recipientIds
     ]);
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Preferences not found for this recipient' });
-    }
+    console.log(`📋 Synced notification preferences for ${recipientEmail} across ${recipientIds.length} agent(s)`);
 
     res.json({
       success: true,
-      preferences: result.rows[0]
+      preferences: result.rows[0],
+      synced_count: result.rows.length
     });
   } catch (error) {
     console.error('Error updating notification preferences:', error);
