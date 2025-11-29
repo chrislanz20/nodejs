@@ -1756,14 +1756,48 @@ app.post('/webhook/retell-inbound', async (req, res) => {
       });
     }
 
-    console.log(`   ✅ Known caller: ${context.profile?.name || 'Name unknown'} (${context.totalCalls} previous calls)`);
+    console.log(`   ✅ Known caller: ${context.profile?.name || 'Name unknown'} (${context.totalCalls || 0} previous calls)`);
 
-    // Build dynamic variables for AI
+    // Build dynamic variables for AI with defensive null checks
     // These become available in the AI's prompt as {{variable_name}}
+    let fieldsToConfirmStr = '';
+    let fieldsToAskStr = '';
+    let associatedCasesStr = '';
+
+    try {
+      if (Array.isArray(context.fieldsToConfirm)) {
+        fieldsToConfirmStr = context.fieldsToConfirm
+          .filter(f => f && f.field && f.value)
+          .map(f => `${f.field}: ${f.value}`)
+          .join('; ');
+      }
+    } catch (e) {
+      console.warn('   ⚠️ Error building fields_to_confirm:', e.message);
+    }
+
+    try {
+      if (Array.isArray(context.fieldsToAsk)) {
+        fieldsToAskStr = context.fieldsToAsk.filter(Boolean).join(', ');
+      }
+    } catch (e) {
+      console.warn('   ⚠️ Error building fields_to_ask:', e.message);
+    }
+
+    try {
+      if (Array.isArray(context.cases)) {
+        associatedCasesStr = context.cases
+          .filter(c => c && c.caseName)
+          .map(c => c.caseName)
+          .join(', ');
+      }
+    } catch (e) {
+      console.warn('   ⚠️ Error building associated_cases:', e.message);
+    }
+
     const dynamicVariables = {
       // Basic recognition
       is_known_caller: 'true',
-      total_previous_calls: String(context.totalCalls),
+      total_previous_calls: String(context.totalCalls || 0),
       caller_type: context.callerType || 'unknown',
 
       // Context string for AI (natural language summary)
@@ -1776,12 +1810,12 @@ app.post('/webhook/retell-inbound', async (req, res) => {
       caller_organization: context.profile?.organization || '',
 
       // What to confirm vs ask (comma-separated for easy parsing)
-      fields_to_confirm: context.fieldsToConfirm?.map(f => `${f.field}: ${f.value}`).join('; ') || '',
-      fields_to_ask: context.fieldsToAsk?.join(', ') || '',
+      fields_to_confirm: fieldsToConfirmStr,
+      fields_to_ask: fieldsToAskStr || 'name, email, phone number',
 
       // Case info (for professional callers)
       has_associated_cases: context.hasAssociatedCases ? 'true' : 'false',
-      associated_cases: context.cases?.map(c => c.caseName).join(', ') || '',
+      associated_cases: associatedCasesStr,
 
       // Language preference
       preferred_language: context.profile?.preferredLanguage || 'english'
@@ -2250,28 +2284,38 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
 
               // MERGE caller profile into callData for notifications
               // This ensures email includes info we already had on file
-              if (caller.fields) {
-                // Only fill in missing fields - don't overwrite what was collected this call
-                if (!callData.name || callData.name === 'Unknown') {
-                  callData.name = caller.fields.name?.value || caller.name || callData.name;
-                }
-                if (!callData.email) {
-                  callData.email = caller.fields.email?.value || caller.email || null;
-                }
-                if (!callData.phone || callData.phone === phoneNumber) {
-                  callData.phone = caller.fields.callback_phone?.value || caller.callbackPhone || callData.phone;
-                }
-                // Add caller context for notification
-                callData.is_returning_caller = caller.totalCalls > 1;
-                callData.total_calls = caller.totalCalls;
-                callData.caller_id = caller.id;
+              try {
+                if (caller && typeof caller === 'object') {
+                  // Only fill in missing fields - don't overwrite what was collected this call
+                  if (caller.fields && typeof caller.fields === 'object') {
+                    if (!callData.name || callData.name === 'Unknown') {
+                      callData.name = caller.fields.name?.value || caller.name || callData.name;
+                    }
+                    if (!callData.email) {
+                      callData.email = caller.fields.email?.value || caller.email || null;
+                    }
+                    if (!callData.phone || callData.phone === phoneNumber) {
+                      callData.phone = caller.fields.callback_phone?.value || caller.callbackPhone || callData.phone;
+                    }
+                  }
 
-                // Include associated cases if any
-                if (caller.cases && caller.cases.length > 0) {
-                  callData.associated_cases = caller.cases.map(c => c.caseName || c.case_name).filter(Boolean);
-                }
+                  // Add caller context for notification (with safe defaults)
+                  callData.is_returning_caller = (caller.totalCalls || 0) > 1;
+                  callData.total_calls = caller.totalCalls || 1;
+                  callData.caller_id = caller.id || null;
 
-                console.log(`   📧 Merged caller profile into notification data`);
+                  // Include associated cases if any (with defensive check)
+                  if (Array.isArray(caller.cases) && caller.cases.length > 0) {
+                    callData.associated_cases = caller.cases
+                      .map(c => (c && (c.caseName || c.case_name)) || null)
+                      .filter(Boolean);
+                  }
+
+                  console.log(`   📧 Merged caller profile into notification data`);
+                }
+              } catch (mergeError) {
+                console.error(`   ⚠️  Error merging caller profile (non-fatal):`, mergeError.message);
+                // Continue with original callData - notification still goes out
               }
               }
             }
@@ -2280,8 +2324,27 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
             // Don't fail the whole request if CRM update fails
           }
 
-          // Send notifications
-          await sendNotifications(agentId, categoryResult.category, callData);
+          // Send notifications with error handling
+          try {
+            await sendNotifications(agentId, categoryResult.category, callData);
+            console.log(`   ✅ Notifications sent for ${categoryResult.category}`);
+          } catch (notifyError) {
+            console.error(`   ❌ NOTIFICATION FAILED for ${callId}:`, notifyError.message);
+            // Log to database for retry/alerting
+            try {
+              await pool.query(`
+                INSERT INTO activity_log (action, call_id, details, created_at)
+                VALUES ('notification_failed', $1, $2, NOW())
+              `, [callId, JSON.stringify({
+                error: notifyError.message,
+                category: categoryResult.category,
+                agentId: agentId,
+                callData: { name: callData.name, phone: callData.phone, email: callData.email }
+              })]);
+            } catch (logError) {
+              console.error(`   ❌ Failed to log notification error:`, logError.message);
+            }
+          }
         }
 
       // Respond with 204 after successful processing
