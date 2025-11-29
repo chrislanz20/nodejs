@@ -2296,6 +2296,32 @@ app.post('/api/send-notification-test', async (req, res) => {
   }
 });
 
+// GET /api/debug/callers - Debug endpoint to check caller CRM data
+app.get('/api/debug/callers', authenticateToken, async (req, res) => {
+  try {
+    const agentIds = req.user.agent_ids || [];
+
+    // Get all callers for user's agents
+    const result = await pool.query(`
+      SELECT c.*,
+        (SELECT COUNT(*) FROM call_interactions ci WHERE ci.caller_id = c.id) as interaction_count
+      FROM callers c
+      WHERE c.agent_id = ANY($1)
+      ORDER BY c.last_call_date DESC
+      LIMIT 50
+    `, [agentIds]);
+
+    res.json({
+      total_callers: result.rows.length,
+      agent_ids_checked: agentIds,
+      callers: result.rows
+    });
+  } catch (error) {
+    console.error('Error in debug callers:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // POST /api/notification-dry-run - Test who would receive notifications WITHOUT sending
 app.post('/api/notification-dry-run', authenticateToken, async (req, res) => {
   try {
