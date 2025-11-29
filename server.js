@@ -407,6 +407,72 @@ async function initializeDatabase() {
         AND NOT ('agent_5aa697d50952f8834c76e6737e' = ANY(agent_ids))
     `);
 
+    // Copy notification recipients from old CourtLaw agent to new Conversation Flow agent
+    // This ensures UI notification preferences are respected for the new agent
+    const OLD_COURTLAW_AGENT = 'agent_8e50b96f7e7bb7ce7479219fcc';
+    const NEW_COURTLAW_AGENT = 'agent_5aa697d50952f8834c76e6737e';
+
+    // Check if new agent already has recipients (skip if already done)
+    const existingRecipients = await client.query(
+      `SELECT COUNT(*) as count FROM notification_recipients WHERE agent_id = $1`,
+      [NEW_COURTLAW_AGENT]
+    );
+
+    if (parseInt(existingRecipients.rows[0].count) === 0) {
+      console.log('📋 Copying notification recipients to new CourtLaw agent...');
+
+      // Get existing recipients with their preferences from old agent
+      const oldRecipients = await client.query(`
+        SELECT
+          nr.name, nr.email, nr.phone, nr.ghl_contact_id, nr.active, nr.is_primary,
+          np.new_lead_email, np.new_lead_sms,
+          np.existing_client_email, np.existing_client_sms,
+          np.attorney_email, np.attorney_sms,
+          np.insurance_email, np.insurance_sms,
+          np.medical_email, np.medical_sms,
+          np.other_email, np.other_sms
+        FROM notification_recipients nr
+        LEFT JOIN notification_preferences np ON nr.id = np.recipient_id
+        WHERE nr.agent_id = $1
+      `, [OLD_COURTLAW_AGENT]);
+
+      for (const r of oldRecipients.rows) {
+        // Insert recipient for new agent
+        const insertResult = await client.query(`
+          INSERT INTO notification_recipients (agent_id, name, email, phone, ghl_contact_id, active, is_primary)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+          RETURNING id
+        `, [NEW_COURTLAW_AGENT, r.name, r.email, r.phone, r.ghl_contact_id, r.active, r.is_primary || false]);
+
+        const newRecipientId = insertResult.rows[0].id;
+
+        // Copy preferences (exact same settings from old agent)
+        await client.query(`
+          INSERT INTO notification_preferences (
+            recipient_id,
+            new_lead_email, new_lead_sms,
+            existing_client_email, existing_client_sms,
+            attorney_email, attorney_sms,
+            insurance_email, insurance_sms,
+            medical_email, medical_sms,
+            other_email, other_sms
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        `, [
+          newRecipientId,
+          r.new_lead_email || false, r.new_lead_sms || false,
+          r.existing_client_email || false, r.existing_client_sms || false,
+          r.attorney_email || false, r.attorney_sms || false,
+          r.insurance_email || false, r.insurance_sms || false,
+          r.medical_email || false, r.medical_sms || false,
+          r.other_email || false, r.other_sms || false
+        ]);
+
+        console.log(`   ✓ Copied ${r.name} to new agent`);
+      }
+
+      console.log('✅ Notification recipients copied to new CourtLaw agent');
+    }
+
     // Add invitation code fields for team member self-registration
     await client.query(`
       ALTER TABLE clients ADD COLUMN IF NOT EXISTS invitation_code TEXT UNIQUE
