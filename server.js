@@ -1954,23 +1954,33 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
           // ============ CALLER CRM INTEGRATION ============
           // Track caller profile and build their "file" over time
           try {
-            console.log(`   👤 Updating caller CRM...`);
+            // Skip CRM for "Other" calls that don't have meaningful info
+            // (short calls, hang-ups, no name/purpose - likely spam or wrong numbers)
+            const isWorthTracking = categoryResult.category !== 'Other' || (
+              durationSeconds >= 30 && // At least 30 seconds
+              (callData.name !== 'Unknown' || callData.email || callData.purpose)
+            );
 
-            // Get or create caller record
-            const caller = await callerCRM.getOrCreateCaller(phoneNumber, callId);
+            if (!isWorthTracking) {
+              console.log(`   ⏭️  Skipping CRM for short/empty "Other" call`);
+            } else {
+              console.log(`   👤 Updating caller CRM...`);
 
-            if (caller) {
-              // Update caller type based on category
-              const callerTypeMap = {
-                'New Lead': 'injured_party',
-                'Existing Client': 'injured_party',
-                'Attorney': 'attorney',
-                'Medical Professional': 'medical',
-                'Insurance': 'insurance',
-                'Other': 'other'
-              };
-              const callerType = callerTypeMap[categoryResult.category] || 'unknown';
-              await callerCRM.updateCallerType(caller.id, callerType);
+              // Get or create caller record
+              const caller = await callerCRM.getOrCreateCaller(phoneNumber, callId);
+
+              if (caller) {
+                // Update caller type based on category
+                const callerTypeMap = {
+                  'New Lead': 'injured_party',
+                  'Existing Client': 'injured_party',
+                  'Attorney': 'attorney',
+                  'Medical Professional': 'medical',
+                  'Insurance': 'insurance',
+                  'Other': 'other'
+                };
+                const callerType = callerTypeMap[categoryResult.category] || 'unknown';
+                await callerCRM.updateCallerType(caller.id, callerType);
 
               // Update caller fields from extracted data
               await callerCRM.updateCallerFromCallData(caller.id, {
@@ -2013,6 +2023,7 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
               });
 
               console.log(`   ✅ Caller CRM updated (ID: ${caller.id}, calls: ${caller.totalCalls})`);
+              }
             }
           } catch (error) {
             console.error(`   ⚠️  Caller CRM error:`, error.message);
