@@ -2301,10 +2301,28 @@ app.get('/api/debug/callers', authenticateToken, async (req, res) => {
   try {
     const agentIds = req.user.agent_ids || [];
 
+    // First ensure callers table exists (create if not)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS callers (
+        id SERIAL PRIMARY KEY,
+        phone_number VARCHAR(20) NOT NULL,
+        agent_id VARCHAR(255) NOT NULL,
+        caller_type VARCHAR(50) DEFAULT 'unknown',
+        organization VARCHAR(255),
+        preferred_language VARCHAR(20) DEFAULT 'english',
+        total_calls INTEGER DEFAULT 1,
+        first_call_date TIMESTAMP DEFAULT NOW(),
+        last_call_date TIMESTAMP DEFAULT NOW(),
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_callers_phone_agent ON callers(phone_number, agent_id)`);
+
     // Get all callers for user's agents
     const result = await pool.query(`
-      SELECT c.*,
-        (SELECT COUNT(*) FROM call_interactions ci WHERE ci.caller_id = c.id) as interaction_count
+      SELECT c.*
       FROM callers c
       WHERE c.agent_id = ANY($1)
       ORDER BY c.last_call_date DESC
@@ -5833,6 +5851,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
   console.log(`Proxy listening on ${PORT}`);
 
-  // Initialize Caller CRM tables
+  // Initialize Caller CRM with shared database pool
+  callerCRM.setPool(pool);
   await callerCRM.initializeCallerCRM();
 });
