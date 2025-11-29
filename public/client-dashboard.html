@@ -4584,6 +4584,112 @@
       }
     }
 
+    // Get the toggle button label based on current state
+    function getToggleLabel(recipient, type) {
+      const categoryKeys = ['new_lead', 'existing_client', 'attorney', 'insurance', 'medical', 'other'];
+      const suffix = type === 'email' ? '_email' : '_sms';
+
+      // For email: default is true (checked), so we check if any are explicitly false
+      // For SMS: default is false, so we check if any are explicitly true
+      let allEnabled = true;
+      let anyEnabled = false;
+
+      categoryKeys.forEach(key => {
+        const value = recipient[`${key}${suffix}`];
+        if (type === 'email') {
+          // Email defaults to true (enabled)
+          const isEnabled = value !== false;
+          if (!isEnabled) allEnabled = false;
+          if (isEnabled) anyEnabled = true;
+        } else {
+          // SMS defaults to false (disabled)
+          const isEnabled = value === true;
+          if (!isEnabled) allEnabled = false;
+          if (isEnabled) anyEnabled = true;
+        }
+      });
+
+      return allEnabled ? 'Deselect All' : 'Select All';
+    }
+
+    // Toggle all preferences for a recipient (email or sms)
+    async function toggleAllPreferences(recipientId, type) {
+      const categoryKeys = ['new_lead', 'existing_client', 'attorney', 'insurance', 'medical', 'other'];
+      const suffix = type === 'email' ? '_email' : '_sms';
+
+      // Find the recipient
+      const recipient = notificationRecipients.find(r => r.id === recipientId);
+      if (!recipient) {
+        console.error('Recipient not found:', recipientId);
+        return;
+      }
+
+      // Check if SMS is disabled for this recipient
+      if (type === 'sms' && !recipient.phone) {
+        showToast('SMS is disabled - no phone number configured', 'error');
+        return;
+      }
+
+      // Determine current state - are all boxes checked?
+      let allEnabled = true;
+      categoryKeys.forEach(key => {
+        const value = recipient[`${key}${suffix}`];
+        if (type === 'email') {
+          if (value === false) allEnabled = false;
+        } else {
+          if (value !== true) allEnabled = false;
+        }
+      });
+
+      // Toggle: if all enabled, disable all. If any disabled, enable all
+      const newValue = !allEnabled;
+
+      // Update button to show loading state
+      const btn = document.getElementById(`toggle-${type}-${recipientId}`);
+      const originalText = btn.textContent;
+      btn.textContent = 'Updating...';
+      btn.disabled = true;
+
+      console.log(`Toggle all ${type} for recipient ${recipientId}: ${allEnabled ? 'deselecting all' : 'selecting all'}`);
+
+      try {
+        // Update all categories
+        const updatePromises = categoryKeys.map(key => {
+          const field = `${key}${suffix}`;
+          return fetch(`/api/notification-preferences/${recipientId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ [field]: newValue })
+          }).then(res => {
+            if (!res.ok) throw new Error(`Failed to update ${field}`);
+            // Update local state
+            recipient[field] = newValue;
+            return res.json();
+          });
+        });
+
+        await Promise.all(updatePromises);
+
+        // Update the button text
+        btn.textContent = newValue ? 'Deselect All' : 'Select All';
+        btn.disabled = false;
+
+        // Re-render to update checkboxes
+        renderNotificationRecipients();
+
+        showToast(`${newValue ? 'Enabled' : 'Disabled'} all ${type.toUpperCase()} notifications`, 'success');
+        console.log(`Successfully toggled all ${type} to ${newValue}`);
+
+      } catch (error) {
+        console.error('Error toggling preferences:', error);
+        showToast(`Failed to update ${type} preferences`, 'error');
+        btn.textContent = originalText;
+        btn.disabled = false;
+        // Reload to reset state
+        loadNotificationRecipients();
+      }
+    }
+
     function renderNotificationRecipients() {
       const container = document.getElementById('notification-recipients-container');
 
@@ -4628,8 +4734,26 @@
                 <thead>
                   <tr style="border-bottom: 1px solid rgba(0, 255, 255, 0.2);">
                     <th style="text-align: left; padding: 8px 12px; color: #9ca3af; font-weight: 600; font-size: 11px; text-transform: uppercase;">Category</th>
-                    <th style="text-align: center; padding: 8px 12px; color: #9ca3af; font-weight: 600; font-size: 11px; text-transform: uppercase;">Email</th>
-                    <th style="text-align: center; padding: 8px 12px; color: #9ca3af; font-weight: 600; font-size: 11px; text-transform: uppercase;">SMS</th>
+                    <th style="text-align: center; padding: 8px 12px; color: #9ca3af; font-weight: 600; font-size: 11px; text-transform: uppercase;">
+                      <div>Email</div>
+                      <button
+                        id="toggle-email-${recipient.id}"
+                        onclick="toggleAllPreferences(${recipient.id}, 'email')"
+                        style="margin-top: 4px; padding: 2px 8px; background: transparent; color: #00FFFF; border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s;"
+                        onmouseover="this.style.background='rgba(0, 255, 255, 0.1)'"
+                        onmouseout="this.style.background='transparent'"
+                      >${getToggleLabel(recipient, 'email')}</button>
+                    </th>
+                    <th style="text-align: center; padding: 8px 12px; color: #9ca3af; font-weight: 600; font-size: 11px; text-transform: uppercase;">
+                      <div>SMS</div>
+                      <button
+                        id="toggle-sms-${recipient.id}"
+                        onclick="toggleAllPreferences(${recipient.id}, 'sms')"
+                        style="margin-top: 4px; padding: 2px 8px; background: transparent; color: ${recipient.phone ? '#00FFFF' : '#6b7280'}; border: 1px solid ${recipient.phone ? 'rgba(0, 255, 255, 0.3)' : 'rgba(107, 114, 128, 0.3)'}; border-radius: 4px; cursor: ${recipient.phone ? 'pointer' : 'not-allowed'}; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; opacity: ${recipient.phone ? '1' : '0.5'};"
+                        ${recipient.phone ? `onmouseover="this.style.background='rgba(0, 255, 255, 0.1)'" onmouseout="this.style.background='transparent'"` : ''}
+                        ${recipient.phone ? '' : 'disabled'}
+                      >${getToggleLabel(recipient, 'sms')}</button>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
