@@ -680,6 +680,12 @@ INFORMATION COLLECTION (one at a time):
 // Initialize database on startup
 initializeDatabase();
 
+// Initialize Caller CRM with shared database pool
+callerCRM.setPool(pool);
+callerCRM.initializeCallerCRM().catch(err => {
+  console.error('❌ Caller CRM initialization error:', err.message);
+});
+
 // Categories file path (keeping for backwards compatibility/fallback)
 const CATEGORIES_FILE = path.join(__dirname, 'categories.json');
 
@@ -5848,10 +5854,6 @@ ${conversation}`;
 
 // Railway will set PORT for us
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, async () => {
+app.listen(PORT, () => {
   console.log(`Proxy listening on ${PORT}`);
-
-  // Initialize Caller CRM with shared database pool
-  callerCRM.setPool(pool);
-  await callerCRM.initializeCallerCRM();
 });
