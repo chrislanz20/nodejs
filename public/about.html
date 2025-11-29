@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>About JS Cuts Barber Salon | Malden, MA Barber</title>
+    <meta
+      name="description"
+      content="Learn about Paul Jean Claude, Jr. and the JS Cuts Barber Salon team delivering top-notch customer service in a relaxing Malden environment."
+    />
+    <script>
+      tailwind = undefined;
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              charcoal: '#1f1f24',
+              mahogany: '#4a2f27',
+              ivory: '#f9f6f1',
+              accent: '#c18f59'
+            },
+            fontFamily: {
+              display: ['\"Playfair Display\"', 'serif'],
+              body: ['Inter', 'system-ui', 'sans-serif']
+            }
+          }
+        }
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="font-body bg-ivory text-slate-800">
+    <header class="sticky top-0 z-50 shadow-sm">
+      <div class="bg-mahogany text-ivory">
+        <div class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-2 text-xs sm:flex-row sm:items-center sm:justify-between">
+          <span>380 Salem Street, Malden, MA 02148</span>
+          <a class="font-semibold underline-offset-2 hover:underline" href="tel:17812672029">(781) 267-2029</a>
+        </div>
+      </div>
+      <div class="backdrop-blur bg-ivory/95">
+        <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
+          <a href="/" class="text-lg font-semibold tracking-wide text-charcoal">JS Cuts Barber Salon</a>
+          <button
+            class="inline-flex items-center justify-center rounded-md border border-charcoal/20 px-3 py-2 text-sm font-medium text-charcoal transition lg:hidden"
+            type="button"
+            aria-expanded="false"
+            aria-controls="primary-navigation"
+            data-mobile-toggle
+          >
+            <span class="sr-only">Toggle navigation</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <nav
+            id="primary-navigation"
+            class="hidden w-full flex-col items-start gap-4 text-sm lg:flex lg:w-auto lg:flex-row lg:items-center"
+          >
+            <a class="nav-link" href="/">Home</a>
+            <a class="nav-link" href="/services.html">Services</a>
+            <a class="nav-link" href="/about.html">About</a>
+            <a class="nav-link" href="/contact.html">Contact</a>
+            <a class="btn btn-primary w-full lg:w-auto" href="">Book Now</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="bg-charcoal py-16 text-ivory">
+        <div class="mx-auto grid max-w-6xl gap-10 px-4 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div class="space-y-5">
+            <p class="text-sm uppercase tracking-[0.2em] text-accent">Our Story</p>
+            <h1 class="font-display text-4xl">Rooted in Malden, Driven by Craft</h1>
+            <p class="text-ivory/80">
+              JS Cuts Barber Salon was built to make every guest feel at ease while receiving the highest caliber of grooming. Our
+              philosophy is simple: top-notch customer service in a relaxing environment, every single visit.
+            </p>
+            <a class="btn btn-outline" href="/services.html">Explore Services</a>
+          </div>
+          <div class="image-placeholder h-64 w-full">Salon interior placeholder</div>
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-6xl px-4 py-16">
+        <div class="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+          <aside class="rounded-2xl bg-white p-6 shadow-xl">
+            <div class="image-placeholder mb-4 h-56 w-full">Owner headshot placeholder</div>
+            <h2 class="font-display text-2xl text-charcoal">Paul Jean Claude, Jr.</h2>
+            <p class="mt-2 text-sm text-slate-700">
+              Owner &amp; Master Barber
+            </p>
+            <p class="mt-4 text-sm text-slate-700">
+              With many years in the barbering industry, Paul has cultivated an eye for detail and a reputation for genuine hospitality.
+              He leads JS Cuts with a commitment to precision, calm, and community.
+            </p>
+            <a class="btn btn-primary mt-6 w-full" href="">Book with Paul</a>
+          </aside>
+          <div class="space-y-8">
+            <article class="rounded-2xl bg-white p-8 shadow-xl">
+              <h2 class="font-display text-2xl text-charcoal">Rooted in Malden</h2>
+              <p class="mt-3 text-sm text-slate-700">
+                On July 7, 2025, JS Cuts Barber Salon welcomed Mayor Gary Christenson to our grand opening ceremony at 380 Salem
+                Street in Malden. The celebration underscored our commitment to delivering top-notch customer service in a
+                relaxing environment for every guest who walks through our doors.
+              </p>
+              <p class="mt-3 text-sm text-slate-700">
+                Owner Paul Jean Claude, Jr. brings many years of industry experience and a passion for barbering, hair cutting,
+                styling, beard trims, and straight-razor shaves. He is honored to serve the Malden community and invites you to
+                call <a class="font-semibold text-charcoal hover:underline" href="tel:17812672029">(781) 267-2029</a> for
+                availability or visit our booking platform for the latest schedule updates.
+              </p>
+              <figure class="grand-opening-figure mt-6">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690aa27291bfac46ec11e8c5.png"
+                  alt="Mayor Gary Christenson standing with owner Paul Jean Claude, Jr. at the JS Cuts Barber Salon grand opening"
+                  loading="lazy"
+                />
+                <figcaption class="mt-3 text-xs uppercase tracking-[0.18em] text-slate-500">
+                  Mayor Gary Christenson joined Paul Jean Claude, Jr. to celebrate the JS Cuts Barber Salon grand opening on July 7,
+                  2025.
+                </figcaption>
+              </figure>
+            </article>
+            <article class="rounded-2xl bg-white p-8 shadow-xl">
+              <h2 class="font-display text-2xl text-charcoal">Experience the JS Cuts Difference</h2>
+              <ul class="mt-4 space-y-3 text-sm text-slate-700">
+                <li><span class="font-semibold text-charcoal">Tailored Consultations:</span> Every appointment begins with a conversation about your goals.</li>
+                <li><span class="font-semibold text-charcoal">Relaxing Atmosphere:</span> Calming finishes, curated playlists, and thoughtful amenities.</li>
+                <li><span class="font-semibold text-charcoal">Trusted Expertise:</span> A team guided by Paul&rsquo;s passion for education, mentorship, and technical excellence.</li>
+              </ul>
+            </article>
+            <section class="rounded-2xl border border-dashed border-mahogany/40 bg-ivory p-8 text-center">
+              <h2 class="font-display text-2xl text-charcoal">Meet the Barbers</h2>
+              <p class="mt-3 text-sm text-slate-700">
+                Profiles coming soon. We are curating professional bios and photography for our talented team. Check back for updates.
+              </p>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-mahogany text-ivory">
+      <div class="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 md:flex-row md:justify-between">
+        <div class="space-y-3">
+          <h2 class="font-display text-2xl">JS Cuts Barber Salon</h2>
+          <p>380 Salem Street, Malden, MA 02148</p>
+          <p><a class="underline" href="tel:17812672029">(781) 267-2029</a></p>
+          <a class="btn btn-primary inline-flex" href="">Book Now</a>
+        </div>
+        <div class="max-w-md space-y-3 text-sm">
+          <p>
+            We deliver top-notch customer service in a relaxing environment. Stop by for precision grooming or connect with us on
+            social media to see the latest looks crafted for the Malden community.
+          </p>
+          <div class="flex gap-3">
+            <a class="social-link" href="">Instagram</a>
+            <a class="social-link" href="">Facebook</a>
+          </div>
+        </div>
+      </div>
+      <div class="bg-charcoal py-4 text-center text-xs text-ivory/70">
+        &copy; <span id="current-year"></span> JS Cuts Barber Salon. All rights reserved.
+      </div>
+    </footer>
+    <script src="/scripts.js"></script>
+  </body>
+</html>
