@@ -15,7 +15,7 @@ const COURTLAW_CONFIG = {
 
   // Mode: 'test' or 'production'
   // In test mode, notifications only go to test recipients
-  mode: 'test',
+  mode: 'production',
 
   // Email Recipients
   email_recipients: {
