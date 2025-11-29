@@ -18,6 +18,7 @@ const { Resend } = require('resend');
 const { sendNotifications, findOrCreateGHLContact } = require('./lib/ghlNotifications');
 const { trackLead, updateLeadStatus, getLeadsByAgent, getLeadStats, getAllLeadStats } = require('./lib/leadTracking');
 const { getClientConfig } = require('./config/clients');
+const callerCRM = require('./lib/callerCRM');
 const rateLimit = require('express-rate-limit');
 const validator = require('validator');
 
@@ -1593,6 +1594,128 @@ app.get('/api/categories', async (_req, res) => {
   }
 });
 
+// ============ CALLER CRM - DYNAMIC CONTEXT FOR AI ============
+// Retell calls this endpoint at call start to get caller context
+// This enables personalized, natural conversations
+
+/**
+ * POST /api/caller-context
+ * Called by Retell at the start of a call to get caller info
+ * Returns context the AI can use to personalize the conversation
+ */
+app.post('/api/caller-context', async (req, res) => {
+  try {
+    const { from_number, to_number, agent_id, call_id } = req.body;
+    const phoneNumber = from_number || req.body.phone_number;
+
+    if (!phoneNumber) {
+      return res.json({
+        is_known_caller: false,
+        caller_context: '',
+        fields_to_confirm: [],
+        fields_to_ask: ['name', 'email', 'callback_phone']
+      });
+    }
+
+    console.log(`📞 Caller context lookup: ${phoneNumber}`);
+
+    // Look up caller in CRM
+    const context = await callerCRM.getCallerContext(phoneNumber);
+
+    if (!context.isKnownCaller) {
+      console.log(`   👤 New caller - no previous record`);
+      return res.json({
+        is_known_caller: false,
+        caller_context: '',
+        fields_to_confirm: [],
+        fields_to_ask: ['name', 'email', 'callback_phone']
+      });
+    }
+
+    console.log(`   ✅ Known caller: ${context.profile?.name || 'Name unknown'} (${context.totalCalls} previous calls)`);
+
+    // Build response for Retell/AI
+    const response = {
+      is_known_caller: true,
+      caller_id: context.callerId,
+      caller_type: context.callerType,
+      total_previous_calls: context.totalCalls,
+
+      // Context string for AI to understand who's calling
+      caller_context: context.context,
+
+      // What the AI should CONFIRM (not re-ask)
+      fields_to_confirm: context.fieldsToConfirm,
+
+      // What the AI still needs to ASK
+      fields_to_ask: context.fieldsToAsk,
+
+      // Associated cases (for attorneys/medical calling about specific clients)
+      has_cases: context.hasAssociatedCases,
+      cases: context.cases?.map(c => ({
+        case_name: c.caseName,
+        relationship: c.relationship,
+        incident_date: c.incidentDate,
+        status: c.caseStatus
+      })) || [],
+
+      // Known profile fields (for AI reference)
+      known_name: context.profile?.name || null,
+      known_email: context.profile?.email || null,
+      known_phone: context.profile?.callbackPhone || null,
+      organization: context.profile?.organization || null,
+      preferred_language: context.profile?.preferredLanguage || 'english'
+    };
+
+    res.json(response);
+
+  } catch (error) {
+    console.error('❌ Caller context error:', error.message);
+    // Return empty context on error - call continues normally
+    res.json({
+      is_known_caller: false,
+      caller_context: '',
+      fields_to_confirm: [],
+      fields_to_ask: ['name', 'email', 'callback_phone']
+    });
+  }
+});
+
+/**
+ * GET /api/caller/:phone
+ * Look up a caller's full profile (for dashboard/admin use)
+ */
+app.get('/api/caller/:phone', authenticateToken, async (req, res) => {
+  try {
+    const phoneNumber = req.params.phone;
+    const profile = await callerCRM.lookupCaller(phoneNumber);
+
+    if (!profile) {
+      return res.status(404).json({ error: 'Caller not found' });
+    }
+
+    res.json(profile);
+  } catch (error) {
+    console.error('Error looking up caller:', error);
+    res.status(500).json({ error: 'Failed to look up caller' });
+  }
+});
+
+/**
+ * GET /api/caller/:callerId/history/:field
+ * Get the change history for a specific field
+ */
+app.get('/api/caller/:callerId/history/:field', authenticateToken, async (req, res) => {
+  try {
+    const { callerId, field } = req.params;
+    const history = await callerCRM.getFieldHistory(parseInt(callerId), field);
+    res.json({ field, history });
+  } catch (error) {
+    console.error('Error getting field history:', error);
+    res.status(500).json({ error: 'Failed to get field history' });
+  }
+});
+
 // In-memory deduplication cache for webhooks (prevents duplicate processing)
 const processedWebhooks = new Set();
 const WEBHOOK_DEDUP_TIMEOUT = 5 * 60 * 1000; // 5 minutes
@@ -1812,8 +1935,9 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
           };
 
           // Track lead
+          let leadTrackingResult = null;
           try {
-            const leadTrackingResult = await trackLead(callId, agentId, categoryResult.category, callData);
+            leadTrackingResult = await trackLead(callId, agentId, categoryResult.category, callData);
             if (leadTrackingResult) {
               if (leadTrackingResult.isNewLead) {
                 console.log(`   📝 New lead tracked: ${callData.name || phoneNumber}`);
@@ -1825,6 +1949,74 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
           } catch (error) {
             console.error(`   ⚠️  Lead tracking error:`, error.message);
             // Don't fail the whole request if lead tracking fails
+          }
+
+          // ============ CALLER CRM INTEGRATION ============
+          // Track caller profile and build their "file" over time
+          try {
+            console.log(`   👤 Updating caller CRM...`);
+
+            // Get or create caller record
+            const caller = await callerCRM.getOrCreateCaller(phoneNumber, callId);
+
+            if (caller) {
+              // Update caller type based on category
+              const callerTypeMap = {
+                'New Lead': 'injured_party',
+                'Existing Client': 'injured_party',
+                'Attorney': 'attorney',
+                'Medical Professional': 'medical',
+                'Insurance': 'insurance',
+                'Other': 'other'
+              };
+              const callerType = callerTypeMap[categoryResult.category] || 'unknown';
+              await callerCRM.updateCallerType(caller.id, callerType);
+
+              // Update caller fields from extracted data
+              await callerCRM.updateCallerFromCallData(caller.id, {
+                name: callData.name !== 'Unknown' ? callData.name : null,
+                email: callData.email,
+                callback_phone: callData.phone,
+                preferred_language: extractedData?.preferred_language
+              }, callId);
+
+              // If professional caller, save their organization
+              if (callData.who_representing) {
+                await callerCRM.updateCallerField(caller.id, 'organization', callData.who_representing, {
+                  sourceCallId: callId,
+                  sourceType: 'ai_extraction',
+                  confidence: 'stated'
+                });
+              }
+
+              // Link caller to lead if one was created
+              if (leadTrackingResult?.lead?.id) {
+                const relationship = callerType === 'injured_party' ? 'injured_party' : callerType;
+                await callerCRM.linkCallerToCase(caller.id, leadTrackingResult.lead.id, relationship, callId);
+              }
+
+              // Log the call interaction
+              await callerCRM.logCallInteraction({
+                callerId: caller.id,
+                callId: callId,
+                agentId: agentId,
+                phoneNumber: phoneNumber,
+                direction: 'inbound',
+                startTime: fullCall.start_timestamp ? new Date(fullCall.start_timestamp) : null,
+                endTime: fullCall.end_timestamp ? new Date(fullCall.end_timestamp) : null,
+                durationSeconds: durationSeconds,
+                category: categoryResult.category,
+                outcome: leadTrackingResult?.isNewLead ? 'lead_captured' : 'info_collected',
+                summary: extractedData?.call_summary || categoryResult.summary,
+                dataCollected: extractedData,
+                fieldsUpdated: Object.keys(extractedData || {}).filter(k => extractedData[k])
+              });
+
+              console.log(`   ✅ Caller CRM updated (ID: ${caller.id}, calls: ${caller.totalCalls})`);
+            }
+          } catch (error) {
+            console.error(`   ⚠️  Caller CRM error:`, error.message);
+            // Don't fail the whole request if CRM update fails
           }
 
           // Send notifications
@@ -5239,4 +5431,9 @@ ${conversation}`;
 
 // Railway will set PORT for us
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Proxy listening on ${PORT}`));
+app.listen(PORT, async () => {
+  console.log(`Proxy listening on ${PORT}`);
+
+  // Initialize Caller CRM tables
+  await callerCRM.initializeCallerCRM();
+});
