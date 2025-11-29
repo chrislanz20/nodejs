@@ -2296,6 +2296,78 @@ app.post('/api/send-notification-test', async (req, res) => {
   }
 });
 
+// POST /api/notification-dry-run - Test who would receive notifications WITHOUT sending
+app.post('/api/notification-dry-run', authenticateToken, async (req, res) => {
+  try {
+    const { category } = req.body;
+
+    if (!category) {
+      return res.status(400).json({ error: 'category is required (e.g., "New Lead", "Existing Client")' });
+    }
+
+    // Use the user's agent IDs
+    const agentIds = req.user.agent_ids || [];
+    if (agentIds.length === 0) {
+      return res.status(400).json({ error: 'No agent IDs found for user' });
+    }
+
+    // Map category name to database column prefix
+    const categoryMap = {
+      'New Lead': 'new_lead',
+      'Existing Client': 'existing_client',
+      'Attorney': 'attorney',
+      'Insurance': 'insurance',
+      'Medical': 'medical',
+      'Other': 'other'
+    };
+
+    const categoryPrefix = categoryMap[category] || 'other';
+    const results = {};
+
+    for (const agentId of agentIds) {
+      // Query exactly like the real notification system does
+      const dbResult = await pool.query(`
+        SELECT
+          nr.id, nr.name, nr.email, nr.phone, nr.ghl_contact_id, nr.active,
+          np.${categoryPrefix}_email as email_enabled,
+          np.${categoryPrefix}_sms as sms_enabled
+        FROM notification_recipients nr
+        LEFT JOIN notification_preferences np ON nr.id = np.recipient_id
+        WHERE nr.agent_id = $1 AND nr.active = true
+      `, [agentId]);
+
+      const allRecipients = dbResult.rows;
+      const emailRecipients = allRecipients.filter(r => r.email_enabled && r.email);
+      const smsRecipients = allRecipients.filter(r => r.sms_enabled && r.ghl_contact_id && r.phone);
+
+      results[agentId] = {
+        total_recipients: allRecipients.length,
+        source: allRecipients.length > 0 ? 'database' : 'FALLBACK (hardcoded config)',
+        would_receive_email: emailRecipients.map(r => ({ name: r.name, email: r.email })),
+        would_receive_sms: smsRecipients.map(r => ({ name: r.name, phone: r.phone })),
+        all_recipients_with_settings: allRecipients.map(r => ({
+          name: r.name,
+          email: r.email,
+          email_enabled: r.email_enabled,
+          sms_enabled: r.sms_enabled
+        }))
+      };
+    }
+
+    res.json({
+      success: true,
+      category: category,
+      dry_run: true,
+      message: 'This shows who WOULD receive notifications - nothing was sent',
+      results
+    });
+
+  } catch (error) {
+    console.error('Error in notification dry-run:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // POST /api/categorize-call - Categorize a single call
 app.post('/api/categorize-call', async (req, res) => {
   try {
