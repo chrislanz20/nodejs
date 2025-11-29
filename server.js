@@ -2247,6 +2247,32 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
               });
 
               console.log(`   ✅ Caller CRM updated (ID: ${caller.id}, calls: ${caller.totalCalls})`);
+
+              // MERGE caller profile into callData for notifications
+              // This ensures email includes info we already had on file
+              if (caller.fields) {
+                // Only fill in missing fields - don't overwrite what was collected this call
+                if (!callData.name || callData.name === 'Unknown') {
+                  callData.name = caller.fields.name?.value || caller.name || callData.name;
+                }
+                if (!callData.email) {
+                  callData.email = caller.fields.email?.value || caller.email || null;
+                }
+                if (!callData.phone || callData.phone === phoneNumber) {
+                  callData.phone = caller.fields.callback_phone?.value || caller.callbackPhone || callData.phone;
+                }
+                // Add caller context for notification
+                callData.is_returning_caller = caller.totalCalls > 1;
+                callData.total_calls = caller.totalCalls;
+                callData.caller_id = caller.id;
+
+                // Include associated cases if any
+                if (caller.cases && caller.cases.length > 0) {
+                  callData.associated_cases = caller.cases.map(c => c.caseName || c.case_name).filter(Boolean);
+                }
+
+                console.log(`   📧 Merged caller profile into notification data`);
+              }
               }
             }
           } catch (error) {
