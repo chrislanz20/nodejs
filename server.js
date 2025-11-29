@@ -2383,6 +2383,28 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
                     callData.associated_cases = caller.cases
                       .map(c => (c && (c.caseName || c.case_name)) || null)
                       .filter(Boolean);
+
+                    // ALSO merge case details from caller's linked cases (fallback if lead doesn't have them)
+                    // This handles returning callers where claim_num was collected on a previous call
+                    const mostRecentCase = caller.cases[0]; // Cases are sorted by date DESC
+                    if (mostRecentCase) {
+                      if (!callData.claim_num && !callData.claim_number && mostRecentCase.claimNum) {
+                        callData.claim_num = mostRecentCase.claimNum;
+                        console.log(`   📋 Merged claim_num from linked case: ${mostRecentCase.claimNum}`);
+                      }
+                      if (!callData.case_type && mostRecentCase.caseType) {
+                        callData.case_type = mostRecentCase.caseType;
+                      }
+                      if (!callData.incident_date && mostRecentCase.incidentDate) {
+                        callData.incident_date = mostRecentCase.incidentDate;
+                      }
+                      if (!callData.incident_location && mostRecentCase.incidentLocation) {
+                        callData.incident_location = mostRecentCase.incidentLocation;
+                      }
+                      if (!callData.incident_description && mostRecentCase.incidentDescription) {
+                        callData.incident_description = mostRecentCase.incidentDescription;
+                      }
+                    }
                   }
 
                   console.log(`   📧 Merged caller profile into notification data`);
