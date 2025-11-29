@@ -1735,6 +1735,12 @@ app.post('/webhook/retell-inbound', async (req, res) => {
     // Look up caller in CRM - scoped to this agent for security
     const context = await callerCRM.getCallerContext(from_number, agent_id);
 
+    // Also look up organization (for professional callers)
+    const orgContext = await callerCRM.getOrganizationContext(from_number, agent_id);
+    if (orgContext.hasOrganization) {
+      console.log(`   🏢 Known organization: ${orgContext.organizationName} (${orgContext.organizationCallCount} calls)`);
+    }
+
     if (!context.isKnownCaller) {
       console.log(`   👤 New caller - no previous record`);
       return res.json({
@@ -1746,11 +1752,17 @@ app.post('/webhook/retell-inbound', async (req, res) => {
             caller_email: '',
             caller_phone: from_number,
             fields_to_confirm: '',
-            fields_to_ask: 'name, email, callback phone number'
+            fields_to_ask: 'name, email, callback phone number',
+            // Organization variables (may be recognized even if caller isn't)
+            has_organization: orgContext.hasOrganization ? 'true' : 'false',
+            organization_name: orgContext.organizationName || '',
+            organization_type: orgContext.organizationType || '',
+            organization_call_count: String(orgContext.organizationCallCount || 0)
           },
           metadata: {
             caller_id: null,
-            lookup_status: 'new_caller'
+            lookup_status: 'new_caller',
+            organization_id: orgContext.organizationId || null
           }
         }
       });
@@ -1817,6 +1829,12 @@ app.post('/webhook/retell-inbound', async (req, res) => {
       has_associated_cases: context.hasAssociatedCases ? 'true' : 'false',
       associated_cases: associatedCasesStr,
 
+      // Organization recognition (for attorneys, medical, insurance)
+      has_organization: orgContext.hasOrganization ? 'true' : 'false',
+      organization_name: orgContext.organizationName || '',
+      organization_type: orgContext.organizationType || '',
+      organization_call_count: String(orgContext.organizationCallCount || 0),
+
       // Language preference
       preferred_language: context.profile?.preferredLanguage || 'english'
     };
@@ -1826,7 +1844,9 @@ app.post('/webhook/retell-inbound', async (req, res) => {
       caller_id: context.callerId,
       lookup_status: 'found',
       total_calls: context.totalCalls,
-      caller_type: context.callerType
+      caller_type: context.callerType,
+      organization_id: orgContext.organizationId || null,
+      organization_name: orgContext.organizationName || null
     };
 
     // Log to database for debugging
@@ -2277,13 +2297,40 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
                 preferred_language: extractedData?.preferred_language
               }, callId);
 
-              // If professional caller, save their organization
-              if (callData.who_representing) {
-                await callerCRM.updateCallerField(caller.id, 'organization', callData.who_representing, {
-                  sourceCallId: callId,
-                  sourceType: 'ai_extraction',
-                  confidence: 'stated'
-                });
+              // If professional caller, create/link organization
+              const professionalCategories = ['Attorney', 'Medical Professional', 'Insurance'];
+              if (professionalCategories.includes(categoryResult.category)) {
+                const orgName = callData.who_representing || callData.representing_who || extractedData?.organization_name;
+
+                if (orgName) {
+                  // Save org name to caller field (for backwards compat)
+                  await callerCRM.updateCallerField(caller.id, 'organization', orgName, {
+                    sourceCallId: callId,
+                    sourceType: 'ai_extraction',
+                    confidence: 'stated'
+                  });
+
+                  // Create/get organization and link caller to it
+                  try {
+                    const orgType = callerCRM.callerTypeToOrgType(categoryResult.category);
+                    const org = await callerCRM.getOrCreateOrganization({
+                      name: orgName,
+                      type: orgType,
+                      phoneNumber: phoneNumber,
+                      contactName: callData.name !== 'Unknown' ? callData.name : null
+                    }, agentId);
+
+                    if (org) {
+                      await callerCRM.linkCallerToOrganization(caller.id, org.id);
+                      console.log(`   🏢 ${org.isNew ? 'Created' : 'Updated'} organization: ${org.name}`);
+                    }
+                  } catch (orgError) {
+                    console.warn(`   ⚠️ Error creating/linking organization:`, orgError.message);
+                    // Non-fatal - continue processing
+                  }
+                } else {
+                  console.log(`   ℹ️ Professional caller but no organization name provided`);
+                }
               }
 
               // Link caller to lead if one was created
