@@ -1829,6 +1829,24 @@ app.post('/webhook/retell-inbound', async (req, res) => {
       caller_type: context.callerType
     };
 
+    // Log to database for debugging
+    try {
+      await pool.query(`
+        INSERT INTO activity_log (action, call_id, details, created_at)
+        VALUES ('inbound_webhook', $1, $2, NOW())
+      `, [null, JSON.stringify({
+        phone: from_number,
+        agent_id: agent_id,
+        is_known: context.isKnownCaller,
+        caller_name: dynamicVariables.caller_name || null,
+        fields_to_confirm: dynamicVariables.fields_to_confirm || null
+      })]);
+    } catch (logError) {
+      console.warn('   ⚠️ Failed to log inbound webhook:', logError.message);
+    }
+
+    console.log(`   📤 Sending to Retell: is_known=${dynamicVariables.is_known_caller}, fields_to_confirm="${dynamicVariables.fields_to_confirm}"`);
+
     res.json({
       call_inbound: {
         dynamic_variables: dynamicVariables,
@@ -1838,6 +1856,17 @@ app.post('/webhook/retell-inbound', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Inbound webhook error:', error.message);
+
+    // Log error to database
+    try {
+      await pool.query(`
+        INSERT INTO activity_log (action, call_id, details, created_at)
+        VALUES ('inbound_webhook_error', NULL, $1, NOW())
+      `, [JSON.stringify({ error: error.message, stack: error.stack })]);
+    } catch (logError) {
+      // Ignore logging errors
+    }
+
     // Return empty dynamic_variables on error - call continues normally
     res.json({
       call_inbound: {
@@ -2387,6 +2416,109 @@ app.post('/api/send-notification-test', async (req, res) => {
     res.status(500).json({
       success: false,
       error: error.message
+    });
+  }
+});
+
+// POST /api/test-caller-recognition - Test the full caller recognition flow
+// Simulates what happens when a call comes in
+app.post('/api/test-caller-recognition', authenticateToken, async (req, res) => {
+  try {
+    const { phone_number, agent_id } = req.body;
+
+    if (!phone_number || !agent_id) {
+      return res.status(400).json({
+        error: 'phone_number and agent_id are required'
+      });
+    }
+
+    console.log(`\n🧪 TEST: Caller recognition for ${phone_number}`);
+
+    // Step 1: Look up caller in CRM
+    const context = await callerCRM.getCallerContext(phone_number, agent_id);
+
+    // Step 2: Build the exact variables that would be sent to Retell
+    let dynamicVariables;
+    let status;
+
+    if (!context || !context.isKnownCaller) {
+      status = 'new_caller';
+      dynamicVariables = {
+        is_known_caller: 'false',
+        caller_context: 'This is a new caller with no previous record.',
+        caller_name: '',
+        caller_email: '',
+        caller_phone: phone_number,
+        fields_to_confirm: '',
+        fields_to_ask: 'name, email, callback phone number'
+      };
+    } else {
+      status = 'known_caller';
+
+      // Build fields safely
+      let fieldsToConfirmStr = '';
+      let fieldsToAskStr = '';
+      let associatedCasesStr = '';
+
+      try {
+        if (Array.isArray(context.fieldsToConfirm)) {
+          fieldsToConfirmStr = context.fieldsToConfirm
+            .filter(f => f && f.field && f.value)
+            .map(f => `${f.field}: ${f.value}`)
+            .join('; ');
+        }
+        if (Array.isArray(context.fieldsToAsk)) {
+          fieldsToAskStr = context.fieldsToAsk.filter(Boolean).join(', ');
+        }
+        if (Array.isArray(context.cases)) {
+          associatedCasesStr = context.cases
+            .filter(c => c && c.caseName)
+            .map(c => c.caseName)
+            .join(', ');
+        }
+      } catch (e) {
+        console.warn('Error building test variables:', e.message);
+      }
+
+      dynamicVariables = {
+        is_known_caller: 'true',
+        total_previous_calls: String(context.totalCalls || 0),
+        caller_type: context.callerType || 'unknown',
+        caller_context: context.context || '',
+        caller_name: context.profile?.name || '',
+        caller_email: context.profile?.email || '',
+        caller_phone: context.profile?.callbackPhone || phone_number,
+        caller_organization: context.profile?.organization || '',
+        fields_to_confirm: fieldsToConfirmStr,
+        fields_to_ask: fieldsToAskStr || 'name, email, phone number',
+        has_associated_cases: context.hasAssociatedCases ? 'true' : 'false',
+        associated_cases: associatedCasesStr,
+        preferred_language: context.profile?.preferredLanguage || 'english'
+      };
+    }
+
+    res.json({
+      success: true,
+      status: status,
+      phone_number: phone_number,
+      agent_id: agent_id,
+      what_retell_receives: {
+        call_inbound: {
+          dynamic_variables: dynamicVariables
+        }
+      },
+      raw_context: context,
+      explanation: status === 'known_caller'
+        ? `Maria would see: "${dynamicVariables.caller_context}" and confirm: "${dynamicVariables.fields_to_confirm}"`
+        : 'Maria would ask for all information (new caller)'
+    });
+
+  } catch (error) {
+    console.error('Error testing caller recognition:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 });
