@@ -1796,11 +1796,9 @@ app.post('/webhook/retell-inbound', async (req, res) => {
     }
 
     try {
-      if (Array.isArray(context.cases)) {
-        associatedCasesStr = context.cases
-          .filter(c => c && c.caseName)
-          .map(c => c.caseName)
-          .join(', ');
+      if (Array.isArray(context.cases) && context.cases.length > 0) {
+        // Use enhanced formatter for richer case context
+        associatedCasesStr = callerCRM.formatCasesForAI(context.cases);
       }
     } catch (e) {
       console.warn('   ⚠️ Error building associated_cases:', e.message);
@@ -2358,7 +2356,7 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
 
               console.log(`   ✅ Caller CRM updated (ID: ${caller.id}, calls: ${caller.totalCalls})`);
 
-              // MERGE caller profile into callData for notifications
+              // MERGE caller profile AND lead data into callData for notifications
               // This ensures email includes info we already had on file
               try {
                 if (caller && typeof caller === 'object') {
@@ -2388,6 +2386,56 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
                   }
 
                   console.log(`   📧 Merged caller profile into notification data`);
+                }
+
+                // MERGE case details from the lead record (if available)
+                // This ensures notification includes case_type, incident_date, etc. from database
+                if (leadTrackingResult?.lead) {
+                  const lead = leadTrackingResult.lead;
+
+                  // Fill in missing case details from lead record
+                  if (!callData.case_type && lead.case_type) {
+                    callData.case_type = lead.case_type;
+                  }
+                  if (!callData.incident_date && lead.incident_date) {
+                    callData.incident_date = lead.incident_date;
+                  }
+                  if (!callData.incident_location && lead.incident_location) {
+                    callData.incident_location = lead.incident_location;
+                  }
+                  if (!callData.incident_description && lead.incident_description) {
+                    callData.incident_description = lead.incident_description;
+                  }
+                  if (!callData.claim_num && !callData.claim_number && lead.claim_num) {
+                    callData.claim_num = lead.claim_num;
+                  }
+
+                  // Merge case_specific_data fields (injuries, fault, etc.)
+                  if (lead.case_specific_data) {
+                    try {
+                      const caseData = typeof lead.case_specific_data === 'string'
+                        ? JSON.parse(lead.case_specific_data)
+                        : lead.case_specific_data;
+
+                      // Merge each case-specific field if not already present
+                      const caseFields = [
+                        'injuries_sustained', 'fault_determination', 'doctor_visit',
+                        'police_report_filed', 'other_party_insured', 'vehicle_type',
+                        'rideshare_service', 'rideshare_role', 'construction_site_type',
+                        'property_type', 'fall_cause', 'workplace_type', 'work_injury_type'
+                      ];
+
+                      for (const field of caseFields) {
+                        if (!callData[field] && caseData[field]) {
+                          callData[field] = caseData[field];
+                        }
+                      }
+                    } catch (parseError) {
+                      console.warn(`   ⚠️  Could not parse case_specific_data:`, parseError.message);
+                    }
+                  }
+
+                  console.log(`   📋 Merged lead data into notification (Lead ID: ${lead.id})`);
                 }
               } catch (mergeError) {
                 console.error(`   ⚠️  Error merging caller profile (non-fatal):`, mergeError.message);
