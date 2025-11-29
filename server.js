@@ -1599,9 +1599,153 @@ app.get('/api/categories', async (_req, res) => {
 // This enables personalized, natural conversations
 
 /**
- * POST /api/caller-context
- * Called by Retell at the start of a call to get caller info
- * Returns context the AI can use to personalize the conversation
+ * POST /webhook/retell-inbound
+ * Retell's INBOUND WEBHOOK - called when a call comes in BEFORE it starts
+ * Returns dynamic_variables that get injected into the AI's context
+ *
+ * Request format from Retell:
+ * {
+ *   "event": "call_inbound",
+ *   "call_inbound": {
+ *     "agent_id": "agent_xxx",
+ *     "from_number": "+1234567890",
+ *     "to_number": "+0987654321"
+ *   }
+ * }
+ *
+ * Response format for Retell:
+ * {
+ *   "call_inbound": {
+ *     "dynamic_variables": { ... },
+ *     "metadata": { ... }
+ *   }
+ * }
+ */
+app.post('/webhook/retell-inbound', async (req, res) => {
+  try {
+    const { event, call_inbound } = req.body;
+
+    // Validate this is an inbound call event
+    if (event !== 'call_inbound' || !call_inbound) {
+      console.log('⚠️ Inbound webhook: Not a call_inbound event');
+      return res.json({}); // Empty response = use default agent
+    }
+
+    const { from_number, to_number, agent_id } = call_inbound;
+
+    if (!from_number) {
+      console.log('⚠️ Inbound webhook: No from_number');
+      return res.json({
+        call_inbound: {
+          dynamic_variables: {
+            is_known_caller: 'false',
+            caller_context: '',
+            caller_name: '',
+            caller_email: '',
+            fields_to_confirm: '',
+            fields_to_ask: 'name, email, phone number'
+          }
+        }
+      });
+    }
+
+    console.log(`📞 Inbound webhook: ${from_number} → ${to_number}`);
+
+    // Look up caller in CRM
+    const context = await callerCRM.getCallerContext(from_number);
+
+    if (!context.isKnownCaller) {
+      console.log(`   👤 New caller - no previous record`);
+      return res.json({
+        call_inbound: {
+          dynamic_variables: {
+            is_known_caller: 'false',
+            caller_context: 'This is a new caller with no previous record.',
+            caller_name: '',
+            caller_email: '',
+            caller_phone: from_number,
+            fields_to_confirm: '',
+            fields_to_ask: 'name, email, callback phone number'
+          },
+          metadata: {
+            caller_id: null,
+            lookup_status: 'new_caller'
+          }
+        }
+      });
+    }
+
+    console.log(`   ✅ Known caller: ${context.profile?.name || 'Name unknown'} (${context.totalCalls} previous calls)`);
+
+    // Build dynamic variables for AI
+    // These become available in the AI's prompt as {{variable_name}}
+    const dynamicVariables = {
+      // Basic recognition
+      is_known_caller: 'true',
+      total_previous_calls: String(context.totalCalls),
+      caller_type: context.callerType || 'unknown',
+
+      // Context string for AI (natural language summary)
+      caller_context: context.context || '',
+
+      // Known fields (AI can confirm these instead of asking)
+      caller_name: context.profile?.name || '',
+      caller_email: context.profile?.email || '',
+      caller_phone: context.profile?.callbackPhone || from_number,
+      caller_organization: context.profile?.organization || '',
+
+      // What to confirm vs ask (comma-separated for easy parsing)
+      fields_to_confirm: context.fieldsToConfirm?.map(f => `${f.field}: ${f.value}`).join('; ') || '',
+      fields_to_ask: context.fieldsToAsk?.join(', ') || '',
+
+      // Case info (for professional callers)
+      has_associated_cases: context.hasAssociatedCases ? 'true' : 'false',
+      associated_cases: context.cases?.map(c => c.caseName).join(', ') || '',
+
+      // Language preference
+      preferred_language: context.profile?.preferredLanguage || 'english'
+    };
+
+    // Build metadata (stored with call, available in webhooks)
+    const metadata = {
+      caller_id: context.callerId,
+      lookup_status: 'found',
+      total_calls: context.totalCalls,
+      caller_type: context.callerType
+    };
+
+    res.json({
+      call_inbound: {
+        dynamic_variables: dynamicVariables,
+        metadata: metadata
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Inbound webhook error:', error.message);
+    // Return empty dynamic_variables on error - call continues normally
+    res.json({
+      call_inbound: {
+        dynamic_variables: {
+          is_known_caller: 'false',
+          caller_context: '',
+          caller_name: '',
+          caller_email: '',
+          fields_to_confirm: '',
+          fields_to_ask: 'name, email, phone number'
+        },
+        metadata: {
+          lookup_status: 'error',
+          error: error.message
+        }
+      }
+    });
+  }
+});
+
+/**
+ * POST /api/caller-context (legacy/internal use)
+ * Internal endpoint for testing caller lookup
  */
 app.post('/api/caller-context', async (req, res) => {
   try {
@@ -1640,17 +1784,9 @@ app.post('/api/caller-context', async (req, res) => {
       caller_id: context.callerId,
       caller_type: context.callerType,
       total_previous_calls: context.totalCalls,
-
-      // Context string for AI to understand who's calling
       caller_context: context.context,
-
-      // What the AI should CONFIRM (not re-ask)
       fields_to_confirm: context.fieldsToConfirm,
-
-      // What the AI still needs to ASK
       fields_to_ask: context.fieldsToAsk,
-
-      // Associated cases (for attorneys/medical calling about specific clients)
       has_cases: context.hasAssociatedCases,
       cases: context.cases?.map(c => ({
         case_name: c.caseName,
@@ -1658,8 +1794,6 @@ app.post('/api/caller-context', async (req, res) => {
         incident_date: c.incidentDate,
         status: c.caseStatus
       })) || [],
-
-      // Known profile fields (for AI reference)
       known_name: context.profile?.name || null,
       known_email: context.profile?.email || null,
       known_phone: context.profile?.callbackPhone || null,
@@ -1671,7 +1805,6 @@ app.post('/api/caller-context', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Caller context error:', error.message);
-    // Return empty context on error - call continues normally
     res.json({
       is_known_caller: false,
       caller_context: '',
