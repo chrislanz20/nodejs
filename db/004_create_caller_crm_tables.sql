@@ -5,12 +5,15 @@
 -- ============================================
 
 -- ============================================
--- CALLERS (main identity table - one per phone)
+-- CALLERS (main identity table - one per phone PER AGENT)
+-- CRITICAL: Scoped by agent_id for security/privacy isolation
+-- Each business has their own isolated caller profiles
 -- ============================================
 CREATE TABLE IF NOT EXISTS callers (
   id SERIAL PRIMARY KEY,
   phone_number VARCHAR(20) NOT NULL,
-  caller_type VARCHAR(50) DEFAULT 'unknown',  -- 'injured_party', 'attorney', 'medical', 'insurance', 'other', 'unknown'
+  agent_id VARCHAR(255) NOT NULL,              -- REQUIRED: Scopes caller to specific business
+  caller_type VARCHAR(50) DEFAULT 'unknown',   -- 'injured_party', 'attorney', 'medical', 'insurance', 'other', 'unknown'
   organization VARCHAR(255),                   -- For professionals: law firm, hospital name, etc.
   preferred_language VARCHAR(20) DEFAULT 'english',
   total_calls INTEGER DEFAULT 1,
@@ -21,9 +24,11 @@ CREATE TABLE IF NOT EXISTS callers (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Allow multiple callers per phone (family members)
-CREATE UNIQUE INDEX IF NOT EXISTS idx_callers_phone_unique ON callers(phone_number) WHERE is_active = TRUE;
-CREATE INDEX IF NOT EXISTS idx_callers_phone ON callers(phone_number);
+-- Unique constraint: one caller per phone number PER AGENT
+-- Same phone can exist as different callers for different businesses
+CREATE UNIQUE INDEX IF NOT EXISTS idx_callers_phone_agent_unique ON callers(phone_number, agent_id) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_callers_phone_agent ON callers(phone_number, agent_id);
+CREATE INDEX IF NOT EXISTS idx_callers_agent ON callers(agent_id);
 CREATE INDEX IF NOT EXISTS idx_callers_type ON callers(caller_type);
 
 -- ============================================

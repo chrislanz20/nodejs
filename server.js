@@ -1649,10 +1649,10 @@ app.post('/webhook/retell-inbound', async (req, res) => {
       });
     }
 
-    console.log(`📞 Inbound webhook: ${from_number} → ${to_number}`);
+    console.log(`📞 Inbound webhook: ${from_number} → ${to_number} (agent: ${agent_id})`);
 
-    // Look up caller in CRM
-    const context = await callerCRM.getCallerContext(from_number);
+    // Look up caller in CRM - scoped to this agent for security
+    const context = await callerCRM.getCallerContext(from_number, agent_id);
 
     if (!context.isKnownCaller) {
       console.log(`   👤 New caller - no previous record`);
@@ -1752,19 +1752,20 @@ app.post('/api/caller-context', async (req, res) => {
     const { from_number, to_number, agent_id, call_id } = req.body;
     const phoneNumber = from_number || req.body.phone_number;
 
-    if (!phoneNumber) {
+    if (!phoneNumber || !agent_id) {
       return res.json({
         is_known_caller: false,
         caller_context: '',
         fields_to_confirm: [],
-        fields_to_ask: ['name', 'email', 'callback_phone']
+        fields_to_ask: ['name', 'email', 'callback_phone'],
+        error: !agent_id ? 'agent_id required for security' : null
       });
     }
 
-    console.log(`📞 Caller context lookup: ${phoneNumber}`);
+    console.log(`📞 Caller context lookup: ${phoneNumber} (agent: ${agent_id})`);
 
-    // Look up caller in CRM
-    const context = await callerCRM.getCallerContext(phoneNumber);
+    // Look up caller in CRM - scoped to this agent for security
+    const context = await callerCRM.getCallerContext(phoneNumber, agent_id);
 
     if (!context.isKnownCaller) {
       console.log(`   👤 New caller - no previous record`);
@@ -1817,11 +1818,18 @@ app.post('/api/caller-context', async (req, res) => {
 /**
  * GET /api/caller/:phone
  * Look up a caller's full profile (for dashboard/admin use)
+ * Requires agent_id query parameter for security isolation
  */
 app.get('/api/caller/:phone', authenticateToken, async (req, res) => {
   try {
     const phoneNumber = req.params.phone;
-    const profile = await callerCRM.lookupCaller(phoneNumber);
+    const agentId = req.query.agent_id;
+
+    if (!agentId) {
+      return res.status(400).json({ error: 'agent_id query parameter required for security' });
+    }
+
+    const profile = await callerCRM.lookupCaller(phoneNumber, agentId);
 
     if (!profile) {
       return res.status(404).json({ error: 'Caller not found' });
@@ -2096,11 +2104,13 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
 
             if (!isWorthTracking) {
               console.log(`   ⏭️  Skipping CRM for short/empty "Other" call`);
+            } else if (!agentId) {
+              console.log(`   ⏭️  Skipping CRM - no agent_id available`);
             } else {
-              console.log(`   👤 Updating caller CRM...`);
+              console.log(`   👤 Updating caller CRM for agent ${agentId}...`);
 
-              // Get or create caller record
-              const caller = await callerCRM.getOrCreateCaller(phoneNumber, callId);
+              // Get or create caller record - SCOPED TO THIS AGENT
+              const caller = await callerCRM.getOrCreateCaller(phoneNumber, agentId, callId);
 
               if (caller) {
                 // Update caller type based on category
