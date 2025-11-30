@@ -1834,7 +1834,10 @@ app.post('/webhook/retell-inbound', async (req, res) => {
       organization_call_count: String(orgContext.organizationCallCount || 0),
 
       // Language preference
-      preferred_language: context.profile?.preferredLanguage || 'english'
+      preferred_language: context.profile?.preferredLanguage || 'english',
+
+      // Case-specific info (for existing clients)
+      caller_claim_num: context.profile?.claimNum || ''
     };
 
     // Build metadata (stored with call, available in webhooks)
@@ -2292,7 +2295,8 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
                 name: callData.name !== 'Unknown' ? callData.name : null,
                 email: callData.email,
                 callback_phone: callData.phone,
-                preferred_language: extractedData?.preferred_language
+                preferred_language: extractedData?.preferred_language,
+                claim_num: extractedData?.claim_number || callData.claim_num || callData.claim_number
               }, callId);
 
               // If professional caller, create/link organization
@@ -2377,6 +2381,12 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
                   callData.is_returning_caller = (caller.totalCalls || 0) > 1;
                   callData.total_calls = caller.totalCalls || 1;
                   callData.caller_id = caller.id || null;
+
+                  // Merge claim_num from caller profile (stored in caller_details)
+                  if (!callData.claim_num && !callData.claim_number && caller.claimNum) {
+                    callData.claim_num = caller.claimNum;
+                    console.log(`   📋 Merged claim_num from caller profile: ${caller.claimNum}`);
+                  }
 
                   // Include associated cases if any (with defensive check)
                   if (Array.isArray(caller.cases) && caller.cases.length > 0) {
