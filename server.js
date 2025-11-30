@@ -16,7 +16,7 @@ const crypto = require('crypto');
 const compression = require('compression');
 const { Resend } = require('resend');
 const { sendNotifications, findOrCreateGHLContact } = require('./lib/ghlNotifications');
-const { trackLead, updateLeadStatus, getLeadsByAgent, getLeadStats, getAllLeadStats } = require('./lib/leadTracking');
+const { trackLead, updateLeadStatus, getLeadsByAgent, getLeadStats, getAllLeadStats, searchCaseByName } = require('./lib/leadTracking');
 const { getClientConfig } = require('./config/clients');
 const callerCRM = require('./lib/callerCRM');
 const rateLimit = require('express-rate-limit');
@@ -2255,6 +2255,47 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
           } catch (error) {
             console.error(`   ⚠️  Lead tracking error:`, error.message);
             // Don't fail the whole request if lead tracking fails
+          }
+
+          // ============ CASE LOOKUP FOR PROFESSIONAL CALLERS ============
+          // When attorneys/medical/insurance mention a client name, try to look up case details
+          try {
+            const professionalCategories = ['Attorney', 'Medical Professional', 'Insurance'];
+            const clientNameMentioned = callData.case_name || callData.client_name;
+
+            if (professionalCategories.includes(categoryResult.category) && clientNameMentioned && agentId) {
+              console.log(`   🔍 Professional caller mentioned client: "${clientNameMentioned}" - searching for matching case...`);
+
+              const matchedCase = await searchCaseByName(clientNameMentioned, agentId);
+
+              if (matchedCase) {
+                // Merge matched case details into callData for notification
+                callData.matched_case = matchedCase;
+                callData.matched_case_name = matchedCase.matched_name;
+                callData.matched_case_id = matchedCase.lead_id;
+
+                // Auto-fill case details if not already in callData
+                if (!callData.claim_num && !callData.claim_number && matchedCase.claim_num) {
+                  callData.claim_num = matchedCase.claim_num;
+                  console.log(`   📋 Auto-filled claim number: ${matchedCase.claim_num}`);
+                }
+                if (!callData.case_type && matchedCase.case_type) {
+                  callData.matched_case_type = matchedCase.case_type;
+                }
+                if (!callData.incident_date && matchedCase.incident_date) {
+                  callData.matched_incident_date = matchedCase.incident_date;
+                }
+                if (matchedCase.phone_number) {
+                  callData.client_phone = matchedCase.phone_number;
+                }
+                if (matchedCase.email) {
+                  callData.client_email = matchedCase.email;
+                }
+              }
+            }
+          } catch (error) {
+            console.error(`   ⚠️  Case lookup error:`, error.message);
+            // Non-fatal - continue without matched case
           }
 
           // ============ CALLER CRM INTEGRATION ============
