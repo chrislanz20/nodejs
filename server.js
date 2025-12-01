@@ -127,12 +127,27 @@ function extractNameFromCall(callData) {
   // Generic terms to filter out
   const genericTerms = /^(the user|unknown|caller|client|agent|representative|user|n\/a|none|test)$/i;
 
-  // Helper to check if a name is valid (not generic)
+  // Staff/attorney names that should NEVER be extracted as caller names
+  // These are CourtLaw employees, not callers
+  const staffNames = [
+    'karim arzadi', 'karim', 'arzadi', 'kareem arzadi', 'kareem',
+    'yuly', 'michael labrada', 'labrada', 'maggie', 'cruz'
+  ];
+
+  // Helper to check if name matches a staff member
+  const isStaffName = (name) => {
+    if (!name) return false;
+    const lowerName = name.toLowerCase().trim();
+    return staffNames.some(staff => lowerName === staff || lowerName.includes(staff));
+  };
+
+  // Helper to check if a name is valid (not generic and not staff)
   const isValidName = (name) => {
     if (!name || typeof name !== 'string') return false;
     const cleaned = name.trim();
     if (cleaned.length < 2) return false;
     if (genericTerms.test(cleaned)) return false;
+    if (isStaffName(cleaned)) return false;  // Filter out staff names
     return true;
   };
 
@@ -1387,6 +1402,14 @@ async function categorizeTranscript(transcript, phoneNumber = null) {
   }
 
   const prompt = `You are analyzing a phone call transcript for CourtLaw, a personal injury law firm's AI receptionist.
+
+IMPORTANT - STAFF NAMES (NEVER extract these as caller/client names):
+- Karim Arzadi (head lawyer, also spelled "Kareem")
+- Yuly
+- Michael Labrada
+- Maggie
+- Cruz
+If a caller ASKS FOR these people, they are asking for CourtLaw staff, not identifying themselves as that person.
 
 CRITICAL PRIORITY: Identifying NEW LEADS (potential new clients) is the MOST IMPORTANT task. Missing a new client inquiry would be a critical business failure.
 
