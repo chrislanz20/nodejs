@@ -2272,7 +2272,7 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
           // ============ CASE LOOKUP FOR PROFESSIONAL CALLERS ============
           // When attorneys/medical/insurance mention a client name, try to look up case details
           try {
-            const professionalCategories = ['Attorney', 'Medical Professional', 'Insurance'];
+            const professionalCategories = ['Attorney', 'Medical', 'Insurance'];
             const clientNameMentioned = callData.case_name || callData.client_name;
 
             if (professionalCategories.includes(categoryResult.category) && clientNameMentioned && agentId) {
@@ -2332,11 +2332,12 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
 
               if (caller) {
                 // Update caller type based on category
+                // Categories match validCategories: 'New Lead', 'Existing Client', 'Attorney', 'Insurance', 'Medical', 'Other'
                 const callerTypeMap = {
                   'New Lead': 'injured_party',
                   'Existing Client': 'injured_party',
                   'Attorney': 'attorney',
-                  'Medical Professional': 'medical',
+                  'Medical': 'medical',
                   'Insurance': 'insurance',
                   'Other': 'other'
                 };
@@ -2362,7 +2363,7 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
               });
 
               // If professional caller, create/link organization
-              const professionalCategories = ['Attorney', 'Medical Professional', 'Insurance'];
+              const professionalCategories = ['Attorney', 'Medical', 'Insurance'];
               if (professionalCategories.includes(categoryResult.category)) {
                 const orgName = callData.who_representing || callData.representing_who || extractedData?.organization_name;
 
