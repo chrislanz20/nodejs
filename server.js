@@ -2344,13 +2344,22 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
                 await callerCRM.updateCallerType(caller.id, callerType);
 
               // Update caller fields from extracted data
-              await callerCRM.updateCallerFromCallData(caller.id, {
+              const callerUpdateData = {
                 name: callData.name !== 'Unknown' ? callData.name : null,
                 email: callData.email,
                 callback_phone: callData.phone,
                 preferred_language: extractedData?.preferred_language,
                 claim_num: extractedData?.claim_number || callData.claim_num || callData.claim_number
-              }, callId);
+              };
+              await callerCRM.updateCallerFromCallData(caller.id, callerUpdateData, callId);
+
+              // Sync updated info to linked leads (so claim_num, email, etc. stay in sync)
+              await callerCRM.syncCallerToLinkedLeads(caller.id, {
+                claim_num: callerUpdateData.claim_num,
+                email: callerUpdateData.email,
+                name: callerUpdateData.name,
+                phone: callerUpdateData.callback_phone
+              });
 
               // If professional caller, create/link organization
               const professionalCategories = ['Attorney', 'Medical Professional', 'Insurance'];
