@@ -1833,6 +1833,12 @@ app.post('/webhook/retell-inbound', async (req, res) => {
       organization_type: orgContext.organizationType || '',
       organization_call_count: String(orgContext.organizationCallCount || 0),
 
+      // Known contacts at this organization (for matching after they identify themselves)
+      // Format: "John Smith (Partner), Sarah Jones (Paralegal)" - names only for LLM context
+      known_contacts: orgContext.knownContacts?.length > 0
+        ? orgContext.knownContacts.map(c => c.role ? `${c.name} (${c.role})` : c.name).join(', ')
+        : '',
+
       // Language preference
       preferred_language: context.profile?.preferredLanguage || 'english',
 
@@ -2366,6 +2372,25 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
                     if (org) {
                       await callerCRM.linkCallerToOrganization(caller.id, org.id);
                       console.log(`   🏢 ${org.isNew ? 'Created' : 'Updated'} organization: ${org.name}`);
+
+                      // Create/update organization contact for this individual caller
+                      if (callData.name && callData.name !== 'Unknown') {
+                        try {
+                          const contact = await callerCRM.getOrCreateOrganizationContact(org.id, {
+                            name: callData.name,
+                            email: callData.email,
+                            phone: callData.phone,
+                            fax: extractedData?.fax || null,
+                            role: extractedData?.role || extractedData?.title || null,
+                            preferredLanguage: extractedData?.preferred_language || 'english'
+                          });
+                          if (contact) {
+                            console.log(`   📇 ${contact.isNew ? 'Created' : 'Updated'} org contact: ${contact.name} (${contact.totalCalls} calls)`);
+                          }
+                        } catch (contactErr) {
+                          console.warn(`   ⚠️ Error creating org contact:`, contactErr.message);
+                        }
+                      }
                     }
                   } catch (orgError) {
                     console.warn(`   ⚠️ Error creating/linking organization:`, orgError.message);
