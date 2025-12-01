@@ -1822,7 +1822,7 @@ app.post('/webhook/retell-inbound', async (req, res) => {
 
       // What to confirm vs ask (comma-separated for easy parsing)
       fields_to_confirm: fieldsToConfirmStr,
-      fields_to_ask: fieldsToAskStr || 'name, email, phone number',
+      fields_to_ask: fieldsToAskStr || '',
 
       // Case info (for professional callers)
       has_associated_cases: context.hasAssociatedCases ? 'true' : 'false',
@@ -2697,7 +2697,7 @@ app.post('/api/test-caller-recognition', authenticateToken, async (req, res) => 
         caller_phone: context.profile?.callbackPhone || phone_number,
         caller_organization: context.profile?.organization || '',
         fields_to_confirm: fieldsToConfirmStr,
-        fields_to_ask: fieldsToAskStr || 'name, email, phone number',
+        fields_to_ask: fieldsToAskStr || '',
         has_associated_cases: context.hasAssociatedCases ? 'true' : 'false',
         associated_cases: associatedCasesStr,
         preferred_language: context.profile?.preferredLanguage || 'english'
