@@ -1834,9 +1834,9 @@ app.post('/webhook/retell-inbound', async (req, res) => {
       organization_call_count: String(orgContext.organizationCallCount || 0),
 
       // Known contacts at this organization (for matching after they identify themselves)
-      // Format: "John Smith (Partner), Sarah Jones (Paralegal)" - names only for LLM context
+      // Format: "John Smith, Sarah Jones" - names only for LLM context
       known_contacts: orgContext.knownContacts?.length > 0
-        ? orgContext.knownContacts.map(c => c.role ? `${c.name} (${c.role})` : c.name).join(', ')
+        ? orgContext.knownContacts.map(c => c.name).join(', ')
         : '',
 
       // Language preference
@@ -2381,7 +2381,6 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
                             email: callData.email,
                             phone: callData.phone,
                             fax: extractedData?.fax || null,
-                            role: extractedData?.role || extractedData?.title || null,
                             preferredLanguage: extractedData?.preferred_language || 'english'
                           });
                           if (contact) {
