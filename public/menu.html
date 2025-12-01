@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Menu | Kennedy's Cafe Stoneham - Acai Bowls & Viral Lattes</title>
+    <meta
+      name="description"
+      content="Explore Kennedy's Cafe menu: viral Ice Latte Buckets, specialty iced lattes, acai bowls, smoothies, breakfast sandwiches, baked goods, coffee classics, and catering."
+    />
+    <link rel="canonical" href="https://www.thekennedyscafe.com/menu" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              turquoise: '#7AAAC5',
+              navy: '#353F44',
+              mist: '#ACBCCA'
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif']
+            }
+          }
+        }
+      };
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8WDLwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="bg-white font-sans text-navy">
+    <a href="#main" class="skip-link">Skip to content</a>
+    <header class="site-header">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 lg:px-6">
+        <a href="index.html" class="flex items-center gap-3 text-lg font-semibold transition-all hover:opacity-80">
+          <img
+            src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75cc095b9c3bfecfa29f.jpg"
+            alt="Kennedy's Cafe logo"
+            class="h-12 w-12 rounded-full object-cover shadow-xl"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='https://via.placeholder.com/64?text=KC';"
+          />
+          <span class="sr-only">Kennedy's Cafe</span>
+        </a>
+        <button
+          class="inline-flex items-center justify-center rounded-full bg-turquoise/20 p-2 text-2xl text-navy transition-all hover:bg-turquoise/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-turquoise lg:hidden"
+          aria-expanded="false"
+          aria-controls="mobileNav"
+          id="navToggle"
+        >
+          <span class="sr-only">Toggle navigation</span>
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <nav class="hidden items-center gap-6 lg:flex" aria-label="Primary">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="menu.html" class="nav-link active" aria-current="page">Menu</a>
+          <a href="about.html" class="nav-link">About</a>
+          <a href="order.html" class="nav-link">Order Online</a>
+          <a href="contact.html" class="nav-link">Contact</a>
+          <a href="order.html" class="inline-flex items-center rounded-full bg-turquoise px-6 py-2 text-sm font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-turquoise/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-turquoise">Order Now</a>
+        </nav>
+      </div>
+      <nav id="mobileNav" class="mobile-nav" aria-label="Mobile"></nav>
+    </header>
+
+    <main id="main">
+      <section class="relative overflow-hidden bg-navy py-20 text-white">
+        <div class="absolute inset-0 opacity-20" aria-hidden="true">
+          <img
+            src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b760a6e306f2acd5d8186.jpg"
+            alt=""
+            class="h-full w-full object-cover"
+            loading="lazy"
+            onerror="this.onerror=null;this.remove();"
+          />
+        </div>
+        <div class="relative mx-auto flex max-w-5xl flex-col gap-4 px-6 text-center lg:px-8">
+          <p class="text-sm uppercase tracking-[0.35em] text-white/70">Our Menu</p>
+          <h1 class="text-4xl font-extrabold sm:text-5xl">Handcrafted daily with premium ingredients</h1>
+          <p class="text-lg text-white/80">
+            Viral specialties, Instagram-famous drinks, artisan breakfasts, and nourishing bowls created fresh by Lisa Kennedy and her team every morning.
+          </p>
+          <div class="mt-6 flex flex-wrap items-center justify-center gap-4">
+            <a href="#viral" class="chip">🔥 Viral Specialties</a>
+            <a href="#lattes" class="chip">☕ Specialty Iced Lattes</a>
+            <a href="#bowls" class="chip">🥣 Bowls &amp; Smoothies</a>
+            <a href="#baked" class="chip">🍩 Baked Goods</a>
+            <a href="#breakfast" class="chip">🥪 Breakfast Sandwiches</a>
+            <a href="#coffee" class="chip">☕ Coffee Classics</a>
+            <a href="#catering" class="chip">🎉 Catering</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="viral" class="bg-white py-20">
+        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:px-8">
+          <div class="max-w-3xl">
+            <p class="section-eyebrow">Viral Signatures</p>
+            <h2 class="section-title">🔥 Ice Latte Buckets &amp; Seasonal Hits</h2>
+            <p class="section-copy">
+              The oversized iced lattes that made Kennedy's Cafe famous. Shareable, customizable, and always camera-ready.
+            </p>
+          </div>
+          <div class="grid gap-8 lg:grid-cols-2">
+            <article class="menu-card">
+              <div class="menu-media">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b760a6e306f2acd5d8186.jpg"
+                  alt="Kennedy's Cafe Ice Latte Bucket with whipped cream and straw"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://via.placeholder.com/540x360?text=Ice+Latte+Bucket';"
+                />
+              </div>
+              <div class="space-y-4">
+                <div class="flex flex-wrap items-center gap-3">
+                  <h3 class="menu-title">Ice Latte Bucket</h3>
+                  <span class="badge">32oz Viral Sensation</span>
+                </div>
+                <p class="menu-copy">
+                  The legendary oversized iced latte served in a reusable bucket. Choose classic or ask about current specialty flavors. Perfect for sharing, study sessions, and viral content.
+                </p>
+                <ul class="menu-list">
+                  <li>Original Ice Latte Bucket</li>
+                  <li>Specialty Flavor Buckets (rotating)</li>
+                  <li>Includes domed lid, straw, and signature presentation</li>
+                </ul>
+              </div>
+            </article>
+            <article class="menu-card">
+              <div class="menu-media">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b754e7b2dc55f1834048d.jpg"
+                  alt="Pumpkin pie bucket latte with whipped cream from Kennedy's Cafe"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://via.placeholder.com/540x360?text=Pumpkin+Bucket';"
+                />
+              </div>
+              <div class="space-y-4">
+                <div class="flex flex-wrap items-center gap-3">
+                  <h3 class="menu-title">Pumpkin Pie Bucket</h3>
+                  <span class="badge badge-secondary">Seasonal Favorite</span>
+                </div>
+                <p class="menu-copy">
+                  Fall's biggest flex. Real pumpkin, warm spices, fluffy whipped cream, and seasonal garnish. Available for a limited time only while supplies last.
+                </p>
+                <p class="text-sm text-navy/70">Ask about current seasonal buckets and limited drops.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="lattes" class="bg-mist/30 py-20">
+        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:px-8">
+          <div class="max-w-3xl">
+            <p class="section-eyebrow">Signature Drinks</p>
+            <h2 class="section-title">☕ Specialty Iced Lattes</h2>
+            <p class="section-copy">
+              Creative, dessert-inspired lattes blended with premium espresso, silky milk, and our signature fluffy foam.
+            </p>
+          </div>
+          <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <article class="drink-card">
+              <img
+                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b7592bbb4c80f7024d53c.jpg"
+                alt="Fluffy Spartan iced latte with thick cold foam"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://via.placeholder.com/360x360?text=Fluffy+Spartan';"
+              />
+              <h3>Fluffy Spartan Iced Latte</h3>
+              <p>Velvety cold foam crowns this bold iced latte &mdash; a hometown favorite celebrating Stoneham pride.</p>
+            </article>
+            <article class="drink-card">
+              <img
+                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75636fadaa54cd567e8b.jpg"
+                alt="Cinno-Honey Bear iced latte with cinnamon and honey"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://via.placeholder.com/360x360?text=Cinno+Honey+Bear';"
+              />
+              <h3>Cinno-Honey Bear</h3>
+              <p>Cinnamon warmth, honey sweetness, and silky espresso in perfect balance.</p>
+            </article>
+            <article class="drink-card">
+              <img
+                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b755e6e306f323f5d68d0.jpg"
+                alt="Tiramisu iced latte with whipped topping"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://via.placeholder.com/360x360?text=Tiramisu+Latte';"
+              />
+              <h3>Tiramisu Iced Latte</h3>
+              <p>Italian dessert in drink form &mdash; mascarpone notes, espresso, cocoa dusting.</p>
+              <span class="tag">Customer Favorite</span>
+            </article>
+            <article class="drink-card">
+              <img
+                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b74ced79eed06658b4308.jpg"
+                alt="Cookie butter iced latte"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://via.placeholder.com/360x360?text=Cookie+Butter';"
+              />
+              <h3>Cookie Butter Latte</h3>
+              <p>Rich cookie butter blended with espresso for a craveable indulgence.</p>
+            </article>
+            <article class="drink-card">
+              <img
+                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75587b2dc51ff73406f8.jpg"
+                alt="Fluffy caramel banana iced latte"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://via.placeholder.com/360x360?text=Caramel+Banana';"
+              />
+              <h3>Fluffy Caramel Banana</h3>
+              <p>Banana sweetness, caramel ribbons, and our signature fluffy topping.</p>
+            </article>
+            <article class="drink-card">
+              <img
+                src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b74f46e306fc6465d59ef.jpg"
+                alt="Tiramisu iced latte alternative angle"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://via.placeholder.com/360x360?text=Twix+Latte';"
+              />
+              <h3>Twix, Nutella &amp; More</h3>
+              <p>Ask about rotating candy bar lattes including Twix, Nutella, Salted Caramel, and more limited drops.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="bowls" class="bg-white py-20">
+        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:px-8">
+          <div class="max-w-3xl">
+            <p class="section-eyebrow">Power Bowls &amp; Smoothies</p>
+            <h2 class="section-title">🥣 Acai Bowls &amp; 🥤 Smoothies</h2>
+            <p class="section-copy">Colorful, nutrient-packed creations made with organic acai and premium produce.</p>
+          </div>
+          <div class="grid gap-10 lg:grid-cols-2">
+            <article class="menu-card">
+              <div class="menu-media">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b74fcbbb4c8861a24bfd7.jpg"
+                  alt="Acai bowl with strawberries banana and granola"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://via.placeholder.com/540x360?text=Acai+Bowl';"
+                />
+              </div>
+              <div class="space-y-4">
+                <h3 class="menu-title">Acai Bowls &mdash; $13.75+</h3>
+                <p class="menu-copy">Organic acai blended smooth and topped generously with fresh fruit and house-toasted granola.</p>
+                <ul class="menu-list">
+                  <li><strong>Original</strong>: Strawberries, banana, granola, honey drizzle</li>
+                  <li><strong>Peanut Butter</strong>: Original base plus all-natural peanut butter</li>
+                  <li><strong>Dubai Bowl</strong> (ask availability): Pistachios, date honey, luxury toppings</li>
+                </ul>
+                <p class="text-sm text-navy/70">High in antioxidants, vitamins, and energy-boosting nutrients.</p>
+              </div>
+            </article>
+            <article class="menu-card">
+              <div class="menu-media">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b886e6e306f7bcc60af40.jpg"
+                  alt="Array of Kennedy's Cafe smoothies with fresh fruit garnishes"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://via.placeholder.com/540x360?text=Smoothies';"
+                />
+              </div>
+              <div class="space-y-4">
+                <h3 class="menu-title">Smoothies &mdash; $10.00</h3>
+                <p class="menu-copy">Blended to order with real fruit, premium nut butters, and creamy yogurts.</p>
+                <ul class="menu-list">
+                  <li><strong>Green Monster</strong>: Banana, kale, almond butter, vanilla yogurt, almond milk</li>
+                  <li><strong>Strawberry Sunrise</strong>: Strawberries, banana, vanilla yogurt, apple juice</li>
+                  <li><strong>Start Up</strong>: Banana, peanut butter, cacao, espresso, vanilla yogurt, almond milk</li>
+                  <li><strong>Acai Dream</strong>: Acai berries, mixed berries, banana, apple juice</li>
+                  <li><strong>Peanut Butter Bliss</strong>: Chocolate almond milk, peanut butter, banana, vanilla yogurt</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="baked" class="bg-mist/30 py-20">
+        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:px-8">
+          <div class="max-w-3xl">
+            <p class="section-eyebrow">Sweet Starts</p>
+            <h2 class="section-title">🍩 Baked Goods &amp; Pastries</h2>
+            <p class="section-copy">Fresh-baked pastries, croissants, and donuts that sell out daily.</p>
+          </div>
+          <div class="grid gap-8 md:grid-cols-2">
+            <article class="menu-card">
+              <div class="menu-media">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75896e306f01dd5d6efd.jpg"
+                  alt="Dubai chocolate donuts with pistachio topping"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://via.placeholder.com/540x360?text=Dubai+Donuts';"
+                />
+              </div>
+              <div class="space-y-4">
+                <h3 class="menu-title">Dubai Chocolate Donuts</h3>
+                <p class="menu-copy">Decadent donuts inspired by Dubai's luxury dessert trend, topped with rich chocolate and pistachios.</p>
+                <span class="tag">Trending</span>
+              </div>
+            </article>
+            <article class="menu-card">
+              <div class="menu-media">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b750f6e306f194e5d5c77.jpg"
+                  alt="Assorted donuts from Kennedy's Cafe"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://via.placeholder.com/540x360?text=Donuts';"
+                />
+              </div>
+              <div class="space-y-4">
+                <h3 class="menu-title">Fresh Donuts &amp; Pastries</h3>
+                <p class="menu-copy">Glazed, Boston cream, chocolate frosted, jelly filled, and seasonal favorites. Donut holes (honey dip) from $0.50.</p>
+                <ul class="menu-list">
+                  <li>Chocolate Croissant &mdash; $5.25</li>
+                  <li>Muffins &mdash; $3.50+ (Blueberry, Chocolate Chip, Pistachio)</li>
+                  <li>Cheese Danish, Figure 8 Danish, Cinnamon &amp; Raspberry Twists</li>
+                  <li>Bagels &mdash; $3.00 | Bagel with Cream Cheese &mdash; $4.00</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="breakfast" class="bg-white py-20">
+        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:px-8">
+          <div class="max-w-3xl">
+            <p class="section-eyebrow">Breakfast All Day</p>
+            <h2 class="section-title">🥪 Breakfast Sandwiches &amp; Burritos</h2>
+            <p class="section-copy">Build yours on croissant, bagel, English muffin, or gluten-free bread (add $1.50).</p>
+          </div>
+          <div class="grid gap-8 lg:grid-cols-2">
+            <article class="menu-card">
+              <div class="menu-media">
+                <img
+                  src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75af7b2dc520653415e8.jpg"
+                  alt="Gluten-free breakfast sandwich with egg and cheese"
+                  loading="lazy"
+                  onerror="this.onerror=null;this.src='https://via.placeholder.com/540x360?text=Breakfast+Sandwich';"
+                />
+                <span class="badge badge-tertiary">Gluten-Free Available</span>
+              </div>
+              <div class="space-y-4">
+                <h3 class="menu-title">Classics &mdash; $8.00</h3>
+                <p class="menu-copy">Made-to-order with farm-fresh eggs and melty cheese.</p>
+                <ul class="menu-list">
+                  <li>Bacon, Egg &amp; Cheese</li>
+                  <li>Sausage, Egg &amp; Cheese</li>
+                  <li>Ham, Egg &amp; Cheese</li>
+                </ul>
+                <p class="text-sm text-navy/70">"Croissants are large, buttery, and fresh made." &mdash; Local review</p>
+              </div>
+            </article>
+            <article class="menu-card">
+              <div class="space-y-6">
+                <div>
+                  <h3 class="menu-title">Premium Favorites</h3>
+                  <ul class="menu-list">
+                    <li>Steak, Egg &amp; Cheese &mdash; $9.00</li>
+                    <li>Linguica, Egg &amp; Cheese &mdash; $9.25</li>
+                    <li>Breakfast Burrito &mdash; $9.25</li>
+                  </ul>
+                </div>
+                <div class="rounded-3xl bg-mist/40 p-6">
+                  <h4 class="font-semibold text-navy">🌾 Gluten-Free Bread</h4>
+                  <p class="mt-2 text-sm text-navy/75">
+                    Certified gluten-free bread available for all sandwiches. Prepared in a shared kitchen &mdash; please inform us of severe allergies so we can take extra care.
+                  </p>
+                </div>
+                <p class="text-sm text-navy/70">Add crispy hash browns or pastries to complete your breakfast.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="coffee" class="bg-mist/30 py-20">
+        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:px-8">
+          <div class="max-w-3xl">
+            <p class="section-eyebrow">Cafe Classics</p>
+            <h2 class="section-title">☕ Coffee &amp; Espresso</h2>
+            <p class="section-copy">Crafted with locally roasted beans and milk options for every preference.</p>
+          </div>
+          <div class="grid gap-8 md:grid-cols-2">
+            <article class="menu-card">
+              <h3 class="menu-title">Hot Favorites</h3>
+              <ul class="menu-list">
+                <li>Fresh Brewed Coffee &mdash; S / M / L</li>
+                <li>Espresso &mdash; Single / Double</li>
+                <li>Americano</li>
+                <li>Latte</li>
+                <li>Cappuccino</li>
+                <li>Hot Chocolate (Joe to Go &mdash; $21.99)</li>
+                <li>Premium Tea Selection</li>
+              </ul>
+            </article>
+            <article class="menu-card">
+              <h3 class="menu-title">Iced Favorites</h3>
+              <ul class="menu-list">
+                <li>Iced Coffee</li>
+                <li>Cold Brew (24-hour steep)</li>
+                <li>Iced Latte</li>
+                <li>Iced Americano</li>
+                <li>Flavor shots, milk alternatives, and sweetness customization available</li>
+              </ul>
+              <p class="text-sm text-navy/70">Milk options: whole, skim, almond, oat. Sweeteners: cane sugar, honey, zero-calorie.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="catering" class="bg-white py-20">
+        <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 lg:px-8">
+          <div class="max-w-3xl">
+            <p class="section-eyebrow">Meetings &amp; Events</p>
+            <h2 class="section-title">🎉 Catering &amp; Bulk Orders</h2>
+            <p class="section-copy">Fuel your team or celebration with Kennedy's favorites. Call (781) 438-4004 for custom requests.</p>
+          </div>
+          <div class="grid gap-8 md:grid-cols-2">
+            <article class="menu-card">
+              <h3 class="menu-title">Joe to Go</h3>
+              <ul class="menu-list">
+                <li>Coffee to Go Box &mdash; $19.99 (serves 10-12)</li>
+                <li>Hot Chocolate to Go &mdash; $21.99</li>
+                <li>Iced Coffee to Go &mdash; $22.99</li>
+                <li>Single Serve Cups &mdash; $12.99</li>
+                <li>House Coffee Bags &mdash; $8.99</li>
+              </ul>
+            </article>
+            <article class="menu-card">
+              <h3 class="menu-title">Platters &amp; Packages</h3>
+              <ul class="menu-list">
+                <li>Donut and pastry platters</li>
+                <li>Breakfast sandwich trays</li>
+                <li>Acai bowl bar (by request)</li>
+                <li>Custom packages for offices and celebrations</li>
+              </ul>
+              <a
+                href="tel:17814384004"
+                class="inline-flex items-center gap-2 text-sm font-semibold text-navy transition-all hover:text-turquoise"
+              >
+                Call to plan catering
+                <i class="fa-solid fa-phone"></i>
+              </a>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="mx-auto grid max-w-6xl gap-12 px-6 py-16 lg:grid-cols-4 lg:px-8">
+        <div class="space-y-4">
+          <img
+            src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/690b75cc095b9c3bfecfa29f.jpg"
+            alt="Kennedy's Cafe logo"
+            class="h-14 w-14 rounded-full object-cover shadow-xl"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='https://via.placeholder.com/56?text=KC';"
+          />
+          <p class="text-sm text-white/80">
+            Kennedy's Cafe<br />362 Main St, Suite 1<br />Stoneham, MA 02180<br />Phone: <a href="tel:17814384004" class="underline">(781) 438-4004</a>
+          </p>
+          <p class="text-xs text-white/60">Family-owned by Lisa Kennedy. Proud Stoneham Chamber of Commerce member.</p>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold uppercase tracking-widest text-white">Hours</h3>
+          <ul class="mt-4 space-y-2 text-sm text-white/80">
+            <li>Mon-Sat: 6:00 AM - 3:00 PM</li>
+            <li>Sun: 7:00 AM - 1:00 PM</li>
+            <li>Pickup: 6:00 AM - 3:00 PM daily</li>
+            <li>Delivery: 6:30 AM - 2:30 PM daily</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold uppercase tracking-widest text-white">Quick Links</h3>
+          <ul class="mt-4 space-y-2 text-sm text-white/80">
+            <li><a href="menu.html" class="footer-link">Menu</a></li>
+            <li><a href="order.html" class="footer-link">Order Online</a></li>
+            <li><a href="about.html" class="footer-link">About</a></li>
+            <li><a href="contact.html" class="footer-link">Contact</a></li>
+            <li><a href="order.html#catering" class="footer-link">Catering</a></li>
+          </ul>
+        </div>
+        <div class="space-y-4">
+          <h3 class="text-sm font-semibold uppercase tracking-widest text-white">Stay Connected</h3>
+          <div class="flex items-center gap-4 text-xl text-white">
+            <a href="https://www.instagram.com/kennedyscafestoneham" target="_blank" rel="noreferrer" aria-label="Instagram" class="transition-all hover:text-turquoise"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook" class="transition-all hover:text-turquoise"><i class="fa-brands fa-facebook"></i></a>
+            <a href="https://www.tiktok.com" target="_blank" rel="noreferrer" aria-label="TikTok" class="transition-all hover:text-turquoise"><i class="fa-brands fa-tiktok"></i></a>
+          </div>
+          <a href="order.html" class="inline-flex items-center rounded-full bg-turquoise px-5 py-2 text-sm font-semibold text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-turquoise/90">Order Now</a>
+          <p class="text-xs text-white/60">© <span id="year"></span> Kennedy's Cafe. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <a href="order.html" class="order-fab" aria-label="Order now">
+      <i class="fa-solid fa-mug-saucer"></i>
+      <span>Order Now</span>
+    </a>
+
+    <script src="scripts.js"></script>
+  </body>
+</html>
