@@ -1703,6 +1703,7 @@ app.get('/api/categories', async (_req, res) => {
  * }
  */
 app.post('/webhook/retell-inbound', async (req, res) => {
+  const startTime = Date.now();
   try {
     const { event, call_inbound } = req.body;
 
@@ -1730,7 +1731,7 @@ app.post('/webhook/retell-inbound', async (req, res) => {
       });
     }
 
-    console.log(`📞 Inbound webhook: ${from_number} → ${to_number} (agent: ${agent_id})`);
+    console.log(`📞 Inbound webhook [START]: ${from_number} → ${to_number} (agent: ${agent_id})`);
 
     // Look up caller in CRM - scoped to this agent for security
     const context = await callerCRM.getCallerContext(from_number, agent_id);
@@ -1872,17 +1873,22 @@ app.post('/webhook/retell-inbound', async (req, res) => {
       console.warn('   ⚠️ Failed to log inbound webhook:', logError.message);
     }
 
-    console.log(`   📤 Sending to Retell: is_known=${dynamicVariables.is_known_caller}, fields_to_confirm="${dynamicVariables.fields_to_confirm}"`);
+    const elapsedMs = Date.now() - startTime;
+    console.log(`   📤 Sending to Retell [${elapsedMs}ms]: is_known=${dynamicVariables.is_known_caller}, name="${dynamicVariables.caller_name}"`);
 
     res.json({
       call_inbound: {
         dynamic_variables: dynamicVariables,
-        metadata: metadata
+        metadata: {
+          ...metadata,
+          response_time_ms: elapsedMs
+        }
       }
     });
 
   } catch (error) {
-    console.error('❌ Inbound webhook error:', error.message);
+    const elapsedMs = Date.now() - startTime;
+    console.error(`❌ Inbound webhook error [${elapsedMs}ms]:`, error.message);
 
     // Log error to database
     try {
