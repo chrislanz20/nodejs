@@ -5746,12 +5746,12 @@
         // Combine leads from all agents
         const allLeads = leadsResults.flatMap(result => result.leads || []);
 
-        // Combine stats from all agents
+        // Combine stats from all agents (parse as integers to avoid string concatenation)
         const stats = statsResults.reduce((acc, stat) => ({
-          total_leads: (acc.total_leads || 0) + (stat.total_leads || 0),
-          approved: (acc.approved || 0) + (stat.approved || 0),
-          denied: (acc.denied || 0) + (stat.denied || 0),
-          pending: (acc.pending || 0) + (stat.pending || 0),
+          total_leads: (parseInt(acc.total_leads) || 0) + (parseInt(stat.total_leads) || 0),
+          approved: (parseInt(acc.approved) || 0) + (parseInt(stat.approved) || 0),
+          denied: (parseInt(acc.denied) || 0) + (parseInt(stat.denied) || 0),
+          pending: (parseInt(acc.pending) || 0) + (parseInt(stat.pending) || 0),
           conversion_rate: 0 // Will calculate below
         }), {});
 
