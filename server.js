@@ -5896,6 +5896,67 @@ app.put('/api/leads/:leadId/contact', authenticateToken, async (req, res) => {
   }
 });
 
+// POST /api/admin/leads - Create a lead manually (admin only)
+app.post('/api/admin/leads', authenticateAdminToken, async (req, res) => {
+  try {
+    const {
+      call_id, agent_id, phone_number, name, email,
+      incident_description, incident_date, incident_location,
+      category, status, case_type, referral_source
+    } = req.body;
+
+    if (!agent_id || !phone_number) {
+      return res.status(400).json({ error: 'agent_id and phone_number are required' });
+    }
+
+    // Check if lead already exists
+    const existing = await pool.query(
+      'SELECT * FROM leads WHERE phone_number = $1 AND agent_id = $2',
+      [phone_number, agent_id]
+    );
+
+    if (existing.rows.length > 0) {
+      return res.status(409).json({
+        error: 'Lead already exists',
+        existing_lead: existing.rows[0]
+      });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO leads (
+        call_id, agent_id, phone_number, name, email,
+        incident_description, incident_date, incident_location,
+        category, status, case_type, referral_source
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      RETURNING *`,
+      [
+        call_id || null,
+        agent_id,
+        phone_number,
+        name || null,
+        email || null,
+        incident_description || null,
+        incident_date || null,
+        incident_location || null,
+        category || 'New Lead',
+        status || 'Pending',
+        case_type || null,
+        referral_source || null
+      ]
+    );
+
+    console.log(`✅ Lead created manually: ${name || phone_number}`);
+    res.json({
+      success: true,
+      message: 'Lead created successfully',
+      lead: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error creating lead:', error);
+    res.status(500).json({ error: error.message || 'Failed to create lead' });
+  }
+});
+
 // DELETE /api/leads/:leadId - Delete a lead (admin only)
 app.delete('/api/leads/:leadId', authenticateAdminToken, async (req, res) => {
   try {

@@ -37,10 +37,10 @@ async function addAndrea() {
         'call_3a13f203dc5f35c39f05d390409',
         'agent_5aa697d50952f8834c76e6737e', // NEW agent ID
         '+16094500409',
-        'Andrea (Marjan Reed)',
-        null,
-        'Two separate car accidents: one in May 2022 and another in September 2024. Sustained injuries to upper shoulder, middle section, and lower back in both incidents.',
-        '2024-09-01', // September 2024 (most recent)
+        'Marjan Reed',
+        'margianreidfashion@gmail.com',
+        'Two separate car accidents: one in May 2022 and another in September 2024. Sustained injuries to upper shoulder, middle section, and lower back in both incidents. Other drivers were at fault in both cases.',
+        '2022-05-21', // May 2022 (first incident, as shown in dashboard)
         'New Jersey',
         'New Lead',
         'Pending',
