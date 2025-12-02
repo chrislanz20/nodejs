@@ -3771,18 +3771,32 @@
         return;
       }
 
-      const agentId = currentUser.agent_ids[0];
+      // Fetch sources from ALL agent IDs
+      const agentIds = currentUser.agent_ids;
 
       try {
-        const response = await fetch(`/api/leads/sources/${agentId}`, {
-          credentials: 'include'
+        const sourcesPromises = agentIds.map(id =>
+          fetch(`/api/leads/sources/${id}`, { credentials: 'include' }).then(r => r.json())
+        );
+        const sourcesResults = await Promise.all(sourcesPromises);
+
+        // Combine sources from all agents
+        const combinedSources = {};
+        let totalLeads = 0;
+        sourcesResults.forEach(result => {
+          totalLeads += result.total_leads || 0;
+          (result.sources || []).forEach(src => {
+            if (!combinedSources[src.source]) {
+              combinedSources[src.source] = 0;
+            }
+            combinedSources[src.source] += src.count;
+          });
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch lead sources');
-        }
-
-        const data = await response.json();
+        const data = {
+          total_leads: totalLeads,
+          sources: Object.entries(combinedSources).map(([source, count]) => ({ source, count }))
+        };
 
         if (!data.sources || data.sources.length === 0 || data.total_leads === 0) {
           chartContainer.innerHTML = `
@@ -5713,21 +5727,34 @@
           return;
         }
 
-        const agentId = currentUser.agent_ids[0]; // Use first agent ID
+        // Fetch leads and stats from ALL agent IDs
+        const agentIds = currentUser.agent_ids;
 
-        // Fetch leads and stats
-        const [leadsRes, statsRes] = await Promise.all([
-          fetch(`/api/leads/${agentId}`),
-          fetch(`/api/leads/stats/${agentId}`)
+        // Fetch leads from all agents in parallel
+        const leadsPromises = agentIds.map(id => fetch(`/api/leads/${id}`).then(r => r.json()));
+        const statsPromises = agentIds.map(id => fetch(`/api/leads/stats/${id}`).then(r => r.json()));
+
+        const [leadsResults, statsResults] = await Promise.all([
+          Promise.all(leadsPromises),
+          Promise.all(statsPromises)
         ]);
 
-        if (!leadsRes.ok || !statsRes.ok) {
-          throw new Error('Failed to fetch leads data');
-        }
+        // Combine leads from all agents
+        const allLeads = leadsResults.flatMap(result => result.leads || []);
 
-        const leadsData = await leadsRes.json();
-        const stats = await statsRes.json();
-        const allLeads = leadsData.leads || [];
+        // Combine stats from all agents
+        const stats = statsResults.reduce((acc, stat) => ({
+          total_leads: (acc.total_leads || 0) + (stat.total_leads || 0),
+          approved: (acc.approved || 0) + (stat.approved || 0),
+          denied: (acc.denied || 0) + (stat.denied || 0),
+          pending: (acc.pending || 0) + (stat.pending || 0),
+          conversion_rate: 0 // Will calculate below
+        }), {});
+
+        // Calculate combined conversion rate
+        if (stats.total_leads > 0) {
+          stats.conversion_rate = ((stats.approved / stats.total_leads) * 100).toFixed(1);
+        }
 
         // Store leads globally for detail modal
         allLeadsData = allLeads;
@@ -6492,12 +6519,11 @@
         return;
       }
 
-      const agentId = currentUser.agent_ids[0];
-
-      fetch(`/api/leads/${agentId}?status=Approved`)
-        .then(res => res.json())
-        .then(data => {
-          const leads = data.leads || [];
+      // Fetch from ALL agent IDs
+      const agentIds = currentUser.agent_ids;
+      Promise.all(agentIds.map(id => fetch(`/api/leads/${id}?status=Approved`).then(r => r.json())))
+        .then(results => {
+          const leads = results.flatMap(data => data.leads || []);
           if (leads.length === 0) {
             showToast('No approved leads to export', 'error');
             return;
