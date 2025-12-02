@@ -3795,7 +3795,11 @@
 
         const data = {
           total_leads: totalLeads,
-          sources: Object.entries(combinedSources).map(([source, count]) => ({ source, count }))
+          sources: Object.entries(combinedSources).map(([source, count]) => ({
+            source,
+            count,
+            percentage: totalLeads > 0 ? ((count / totalLeads) * 100).toFixed(1) : 0
+          }))
         };
 
         if (!data.sources || data.sources.length === 0 || data.total_leads === 0) {
