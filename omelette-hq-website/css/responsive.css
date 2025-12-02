@@ -1,0 +1,749 @@
+/* ============================================
+   THE OMELETTE HEADQUARTERS - RESPONSIVE STYLES
+   Mobile-First Approach
+   ============================================ */
+
+/* ============================================
+   MOBILE STYLES (Base - up to 640px)
+   ============================================ */
+
+/* Mobile Navigation */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    height: 100vh;
+    width: 250px;
+    flex-direction: column;
+    background: var(--navy-primary);
+    padding: 5rem 2rem 2rem;
+    gap: 1rem;
+    transition: right 0.3s ease;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+  }
+
+  .nav-links.active {
+    right: 0;
+  }
+
+  .nav-links li {
+    width: 100%;
+  }
+
+  .nav-links a {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  /* Hamburger Animation */
+  .hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+
+  .hamburger.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+  }
+
+  /* Hero Section */
+  .hero {
+    background-attachment: scroll; /* Better performance on mobile */
+    min-height: 100svh; /* Safe viewport height for mobile */
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-tagline {
+    font-size: 1.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+
+  .hero-ctas {
+    flex-direction: column;
+    width: 100%;
+    padding: 0 1rem;
+  }
+
+  .hero-ctas .btn {
+    width: 100%;
+  }
+
+  .scroll-indicator {
+    bottom: 1rem;
+  }
+
+  /* About Section */
+  .about {
+    padding: var(--spacing-lg) 0;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .about-content {
+    padding-right: 0;
+  }
+
+  .about-text {
+    font-size: 1rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .about-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .about-gallery img {
+    height: 200px;
+  }
+
+  .about-gallery img:first-child {
+    grid-column: 1;
+    height: 250px;
+  }
+
+  /* Menu Section */
+  .menu {
+    padding: var(--spacing-lg) 0;
+  }
+
+  .menu-tabs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .menu-tab {
+    width: 100%;
+    text-align: center;
+  }
+
+  .menu-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .menu-card {
+    padding: 1rem;
+  }
+
+  .menu-item-name {
+    font-size: 1.125rem;
+  }
+
+  .menu-item-description {
+    font-size: 0.875rem;
+  }
+
+  /* Chalkboard Specials */
+  .chalkboard-specials {
+    padding: var(--spacing-lg) 0;
+  }
+
+  .chalkboard-bg {
+    padding: var(--spacing-md);
+  }
+
+  .chalk-title {
+    font-size: 2rem;
+  }
+
+  .specials-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .chalk-heading {
+    font-size: 1.5rem;
+  }
+
+  .chalk-text {
+    font-size: 1.125rem;
+  }
+
+  /* Gallery */
+  .gallery {
+    padding: var(--spacing-lg) 0;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .gallery-item {
+    height: 250px;
+  }
+
+  /* Lightbox Mobile */
+  .lightbox-image {
+    max-width: 95%;
+    max-height: 80%;
+  }
+
+  .lightbox-close {
+    top: 1rem;
+    right: 1rem;
+    font-size: 2rem;
+  }
+
+  .lightbox-prev,
+  .lightbox-next {
+    font-size: 2rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .lightbox-prev {
+    left: 0.5rem;
+  }
+
+  .lightbox-next {
+    right: 0.5rem;
+  }
+
+  .lightbox-caption {
+    font-size: 1rem;
+    bottom: 1rem;
+    padding: 0 1rem;
+  }
+
+  /* Location Section */
+  .location {
+    padding: var(--spacing-lg) 0;
+  }
+
+  .location-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .location-map iframe {
+    height: 300px;
+  }
+
+  .info-card {
+    padding: 1.5rem;
+  }
+
+  .info-title {
+    font-size: 1.25rem;
+  }
+
+  .info-text {
+    font-size: 1rem;
+  }
+
+  .phone-link {
+    font-size: 1.25rem;
+  }
+
+  .hours-row {
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: center;
+  }
+
+  /* CTA Section */
+  .cta-section {
+    padding: var(--spacing-lg) 0;
+    background-attachment: scroll;
+  }
+
+  .cta-title {
+    font-size: 2rem;
+  }
+
+  .cta-subtitle {
+    font-size: 1.125rem;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    width: 100%;
+    padding: 0 1rem;
+  }
+
+  .cta-buttons .btn {
+    width: 100%;
+  }
+
+  .btn-large {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  /* Footer */
+  .footer {
+    padding: var(--spacing-md) 0 var(--spacing-sm);
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+    text-align: center;
+  }
+
+  .footer-title {
+    font-size: 1.25rem;
+  }
+
+  .social-links {
+    justify-content: center;
+  }
+
+  .footer-links,
+  .footer-info {
+    text-align: center;
+  }
+
+  .footer-bottom {
+    font-size: 0.875rem;
+  }
+}
+
+/* ============================================
+   SMALL DEVICES (sm - 640px and up)
+   ============================================ */
+
+@media (min-width: 640px) {
+  .container {
+    padding: 0 2rem;
+  }
+
+  .hero-ctas {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .hero-ctas .btn {
+    width: auto;
+  }
+
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ============================================
+   MEDIUM DEVICES (md - 768px and up)
+   ============================================ */
+
+@media (min-width: 768px) {
+  /* Show desktop nav */
+  .hamburger {
+    display: none;
+  }
+
+  .nav-links {
+    position: static;
+    flex-direction: row;
+    height: auto;
+    width: auto;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  /* Hero */
+  .hero-title {
+    font-size: 4rem;
+  }
+
+  .hero-tagline {
+    font-size: 2rem;
+  }
+
+  /* About */
+  .about-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .about-gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Menu */
+  .menu-tabs {
+    flex-direction: row;
+  }
+
+  .menu-tab {
+    width: auto;
+  }
+
+  /* Chalkboard */
+  .specials-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Gallery */
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Location */
+  .location-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .location-map iframe {
+    height: 400px;
+  }
+
+  /* Footer */
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    text-align: left;
+  }
+
+  .social-links {
+    justify-content: flex-start;
+  }
+}
+
+/* ============================================
+   LARGE DEVICES (lg - 1024px and up)
+   ============================================ */
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 3rem;
+  }
+
+  /* Hero */
+  .hero-title {
+    font-size: 5rem;
+  }
+
+  /* Menu */
+  .menu-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .menu-tabs {
+    gap: 1.5rem;
+  }
+
+  /* Chalkboard */
+  .specials-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Gallery */
+  .gallery-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Footer */
+  .footer-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* CTA */
+  .cta-buttons {
+    flex-direction: row;
+  }
+
+  .cta-buttons .btn {
+    width: auto;
+  }
+}
+
+/* ============================================
+   EXTRA LARGE DEVICES (xl - 1280px and up)
+   ============================================ */
+
+@media (min-width: 1280px) {
+  .container {
+    padding: 0 4rem;
+  }
+
+  .hero-title {
+    font-size: 6rem;
+  }
+
+  .section-title {
+    font-size: 4rem;
+  }
+
+  .menu-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+}
+
+/* ============================================
+   TABLET LANDSCAPE (landscape orientation)
+   ============================================ */
+
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .hero {
+    min-height: 100vh;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+  }
+
+  .about-grid {
+    gap: var(--spacing-md);
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .navbar,
+  .hamburger,
+  .scroll-indicator,
+  .hero-ctas,
+  .cta-section,
+  .lightbox,
+  .social-links {
+    display: none !important;
+  }
+
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000;
+  }
+
+  .hero {
+    background: none;
+    min-height: auto;
+    page-break-after: always;
+  }
+
+  .hero-overlay {
+    display: none;
+  }
+
+  .hero-content {
+    color: #000;
+  }
+
+  .section-title {
+    page-break-after: avoid;
+  }
+
+  .menu-card,
+  .gallery-item,
+  .info-card {
+    page-break-inside: avoid;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+
+  a[href^="tel:"]::after {
+    content: " (" attr(href) ")";
+  }
+}
+
+/* ============================================
+   HIGH CONTRAST MODE
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  :root {
+    --gray-text: #000000;
+    --orange-primary: #FF6600;
+    --burgundy-primary: #990033;
+  }
+
+  .btn {
+    border: 2px solid currentColor;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+}
+
+/* ============================================
+   DARK MODE (if device prefers)
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  /* Note: The restaurant theme is intentionally light/warm
+     but we can adjust some elements for better readability */
+
+  .menu {
+    background: #1a1a1a;
+  }
+
+  .menu-card {
+    background: #2a2a2a;
+    color: #ffffff;
+  }
+
+  .gallery {
+    background: #1a1a1a;
+  }
+}
+
+/* ============================================
+   TOUCH DEVICE OPTIMIZATIONS
+   ============================================ */
+
+@media (hover: none) and (pointer: coarse) {
+  /* Increase tap targets for touch devices */
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .nav-links a {
+    padding: 1rem;
+  }
+
+  .menu-tab {
+    padding: 1.125rem 1.75rem;
+  }
+
+  /* Remove hover effects on touch devices */
+  .gallery-overlay {
+    opacity: 1;
+  }
+
+  .gallery-item img {
+    transform: none;
+  }
+
+  /* Larger touch targets for gallery */
+  .gallery-item {
+    min-height: 200px;
+  }
+}
+
+/* ============================================
+   SMALL HEIGHT DEVICES (landscape phones)
+   ============================================ */
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .hero {
+    min-height: auto;
+    padding: 8rem 0 4rem;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-tagline {
+    font-size: 1.25rem;
+  }
+
+  .scroll-indicator {
+    display: none;
+  }
+
+  .navbar {
+    padding: 0.5rem 0;
+  }
+}
+
+/* ============================================
+   VERY SMALL DEVICES (< 375px)
+   ============================================ */
+
+@media (max-width: 374px) {
+  html {
+    font-size: 14px;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+    letter-spacing: 2px;
+  }
+
+  .nav-logo .logo-text {
+    font-size: 1rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .menu-card {
+    padding: 0.75rem;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* ============================================
+   LOADING STATE (for images)
+   ============================================ */
+
+img:not([src]) {
+  background: var(--gray-light);
+  min-height: 200px;
+}
+
+img[loading="lazy"]:not(.loaded) {
+  background: linear-gradient(
+    90deg,
+    var(--gray-light) 0%,
+    var(--white) 50%,
+    var(--gray-light) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* ============================================
+   SAFE AREAS (for notched devices)
+   ============================================ */
+
+@supports (padding: max(0px)) {
+  .navbar {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  .hero-content {
+    padding-left: max(var(--spacing-md), env(safe-area-inset-left));
+    padding-right: max(var(--spacing-md), env(safe-area-inset-right));
+  }
+
+  .footer {
+    padding-bottom: max(var(--spacing-sm), env(safe-area-inset-bottom));
+  }
+}
