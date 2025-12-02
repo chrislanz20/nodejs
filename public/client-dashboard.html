@@ -5743,8 +5743,9 @@
           Promise.all(statsPromises)
         ]);
 
-        // Combine leads from all agents
-        const allLeads = leadsResults.flatMap(result => result.leads || []);
+        // Combine leads from all agents and sort by date (newest first)
+        const allLeads = leadsResults.flatMap(result => result.leads || [])
+          .sort((a, b) => new Date(b.first_call_date) - new Date(a.first_call_date));
 
         // Combine stats from all agents (parse as integers to avoid string concatenation)
         const stats = statsResults.reduce((acc, stat) => ({
