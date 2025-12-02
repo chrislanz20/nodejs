@@ -1744,6 +1744,7 @@ app.post('/webhook/retell-inbound', async (req, res) => {
         call_inbound: {
           dynamic_variables: {
             is_known_caller: 'false',
+            caller_type: '',
             caller_context: '',
             caller_name: '',
             caller_email: '',
@@ -1771,17 +1772,24 @@ app.post('/webhook/retell-inbound', async (req, res) => {
         call_inbound: {
           dynamic_variables: {
             is_known_caller: 'false',
+            caller_type: '',
             caller_context: 'This is a new caller with no previous record.',
             caller_name: '',
             caller_email: '',
             caller_phone: from_number,
             fields_to_confirm: '',
             fields_to_ask: 'name, email, callback phone number',
+            preferred_language: 'english',
             // Organization variables (may be recognized even if caller isn't)
             has_organization: orgContext.hasOrganization ? 'true' : 'false',
             organization_name: orgContext.organizationName || '',
             organization_type: orgContext.organizationType || '',
-            organization_call_count: String(orgContext.organizationCallCount || 0)
+            organization_call_count: String(orgContext.organizationCallCount || 0),
+            // Case-related (empty for new callers)
+            has_associated_cases: 'false',
+            associated_cases: '',
+            known_contacts: '',
+            caller_claim_num: ''
           },
           metadata: {
             caller_id: null,
