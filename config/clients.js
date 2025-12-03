@@ -2,8 +2,9 @@
 // Each client is keyed by their Retell Agent ID
 
 // CourtLaw Agent IDs
-const COURTLAW_SINGLE_PROMPT_AGENT = 'agent_8e50b96f7e7bb7ce7479219fcc';  // Original single prompt agent
-const COURTLAW_CONVERSATION_FLOW_AGENT = 'agent_5aa697d50952f8834c76e6737e';  // New Conversation Flow agent
+const COURTLAW_SINGLE_PROMPT_AGENT = 'agent_8e50b96f7e7bb7ce7479219fcc';  // Original single prompt agent (legacy)
+const COURTLAW_CONVERSATION_FLOW_AGENT = 'agent_5aa697d50952f8834c76e6737e';  // Conversation Flow agent (legacy)
+const COURTLAW_NEW_AGENT = 'agent_f2bc1ab69af57533174f607ab8';  // New production agent (current)
 
 // Shared CourtLaw configuration (used by both agents)
 const COURTLAW_CONFIG = {
@@ -59,11 +60,14 @@ const COURTLAW_CONFIG = {
 };
 
 const CLIENT_CONFIGS = {
-  // CourtLaw - Single Prompt Agent (original - keeping for history)
+  // CourtLaw - Single Prompt Agent (legacy - keeping for history)
   [COURTLAW_SINGLE_PROMPT_AGENT]: COURTLAW_CONFIG,
 
-  // CourtLaw - Conversation Flow Agent (new - production)
-  [COURTLAW_CONVERSATION_FLOW_AGENT]: COURTLAW_CONFIG
+  // CourtLaw - Conversation Flow Agent (legacy - keeping for history)
+  [COURTLAW_CONVERSATION_FLOW_AGENT]: COURTLAW_CONFIG,
+
+  // CourtLaw - New Production Agent (current)
+  [COURTLAW_NEW_AGENT]: COURTLAW_CONFIG
 
   // Future clients can be added here:
   // 'agent_ANOTHER_CLIENT_ID': { ... }
@@ -144,5 +148,6 @@ module.exports = {
   // Export agent ID constants for use in queries
   COURTLAW_SINGLE_PROMPT_AGENT,
   COURTLAW_CONVERSATION_FLOW_AGENT,
-  COURTLAW_AGENT_IDS: [COURTLAW_SINGLE_PROMPT_AGENT, COURTLAW_CONVERSATION_FLOW_AGENT]
+  COURTLAW_NEW_AGENT,
+  COURTLAW_AGENT_IDS: [COURTLAW_SINGLE_PROMPT_AGENT, COURTLAW_CONVERSATION_FLOW_AGENT, COURTLAW_NEW_AGENT]
 };
