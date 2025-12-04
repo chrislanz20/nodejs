@@ -2412,254 +2412,62 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
           }
 
           // ============ CALLER CRM INTEGRATION ============
-          // Track caller profile and build their "file" over time
+          // DISABLED - causing issues with shared phone numbers mixing data between callers
+          // TODO: Re-enable when we have better caller identity verification
+          console.log(`   ⏸️  Caller CRM DISABLED`);
+
+          // MERGE case details from the lead record (if available)
+          // This ensures notification includes case_type, incident_date, etc. from database
           try {
-            // Skip CRM for "Other" calls that don't have meaningful info
-            // (short calls, hang-ups, no name/purpose - likely spam or wrong numbers)
-            const isWorthTracking = categoryResult.category !== 'Other' || (
-              durationSeconds >= 30 && // At least 30 seconds
-              (callData.name !== 'Unknown' || callData.email || callData.purpose)
-            );
+            if (leadTrackingResult?.lead) {
+              const lead = leadTrackingResult.lead;
 
-            if (!isWorthTracking) {
-              console.log(`   ⏭️  Skipping CRM for short/empty "Other" call`);
-            } else if (!agentId) {
-              console.log(`   ⏭️  Skipping CRM - no agent_id available`);
-            } else {
-              console.log(`   👤 Updating caller CRM for agent ${agentId}...`);
+              // Fill in missing case details from lead record
+              if (!callData.case_type && lead.case_type) {
+                callData.case_type = lead.case_type;
+              }
+              if (!callData.incident_date && lead.incident_date) {
+                callData.incident_date = lead.incident_date;
+              }
+              if (!callData.incident_location && lead.incident_location) {
+                callData.incident_location = lead.incident_location;
+              }
+              if (!callData.incident_description && lead.incident_description) {
+                callData.incident_description = lead.incident_description;
+              }
+              if (!callData.claim_num && !callData.claim_number && lead.claim_num) {
+                callData.claim_num = lead.claim_num;
+              }
 
-              // Get or create caller record - SCOPED TO THIS AGENT
-              const caller = await callerCRM.getOrCreateCaller(phoneNumber, agentId, callId);
+              // Merge case_specific_data fields (injuries, fault, etc.)
+              if (lead.case_specific_data) {
+                try {
+                  const caseData = typeof lead.case_specific_data === 'string'
+                    ? JSON.parse(lead.case_specific_data)
+                    : lead.case_specific_data;
 
-              if (caller) {
-                // Update caller type based on category
-                // Categories match validCategories: 'New Lead', 'Existing Client', 'Attorney', 'Insurance', 'Medical', 'Other'
-                const callerTypeMap = {
-                  'New Lead': 'injured_party',
-                  'Existing Client': 'injured_party',
-                  'Attorney': 'attorney',
-                  'Medical': 'medical',
-                  'Insurance': 'insurance',
-                  'Other': 'other'
-                };
-                const callerType = callerTypeMap[categoryResult.category] || 'unknown';
-                await callerCRM.updateCallerType(caller.id, callerType);
+                  // Merge each case-specific field if not already present
+                  const caseFields = [
+                    'injuries_sustained', 'fault_determination', 'doctor_visit',
+                    'police_report_filed', 'other_party_insured', 'vehicle_type',
+                    'rideshare_service', 'rideshare_role', 'construction_site_type',
+                    'property_type', 'fall_cause', 'workplace_type', 'work_injury_type'
+                  ];
 
-              // Update caller fields from extracted data
-              const callerUpdateData = {
-                name: callData.name !== 'Unknown' ? callData.name : null,
-                email: callData.email,
-                callback_phone: callData.phone,
-                preferred_language: extractedData?.preferred_language,
-                claim_num: extractedData?.claim_number || callData.claim_num || callData.claim_number
-              };
-              await callerCRM.updateCallerFromCallData(caller.id, callerUpdateData, callId);
-
-              // Sync updated info to linked leads (so claim_num, email, etc. stay in sync)
-              await callerCRM.syncCallerToLinkedLeads(caller.id, {
-                claim_num: callerUpdateData.claim_num,
-                email: callerUpdateData.email,
-                name: callerUpdateData.name,
-                phone: callerUpdateData.callback_phone
-              });
-
-              // If professional caller, create/link organization
-              const professionalCategories = ['Attorney', 'Medical', 'Insurance'];
-              if (professionalCategories.includes(categoryResult.category)) {
-                const orgName = callData.who_representing || callData.representing_who || extractedData?.organization_name;
-
-                if (orgName) {
-                  // Save org name to caller field (for backwards compat)
-                  await callerCRM.updateCallerField(caller.id, 'organization', orgName, {
-                    sourceCallId: callId,
-                    sourceType: 'ai_extraction',
-                    confidence: 'stated'
-                  });
-
-                  // Create/get organization and link caller to it
-                  try {
-                    const orgType = callerCRM.callerTypeToOrgType(categoryResult.category);
-                    const org = await callerCRM.getOrCreateOrganization({
-                      name: orgName,
-                      type: orgType,
-                      phoneNumber: phoneNumber,
-                      contactName: callData.name !== 'Unknown' ? callData.name : null
-                    }, agentId);
-
-                    if (org) {
-                      await callerCRM.linkCallerToOrganization(caller.id, org.id);
-                      console.log(`   🏢 ${org.isNew ? 'Created' : 'Updated'} organization: ${org.name}`);
-
-                      // Create/update organization contact for this individual caller
-                      if (callData.name && callData.name !== 'Unknown') {
-                        try {
-                          const contact = await callerCRM.getOrCreateOrganizationContact(org.id, {
-                            name: callData.name,
-                            email: callData.email,
-                            phone: callData.phone,
-                            fax: extractedData?.fax || null,
-                            preferredLanguage: extractedData?.preferred_language || 'english'
-                          });
-                          if (contact) {
-                            console.log(`   📇 ${contact.isNew ? 'Created' : 'Updated'} org contact: ${contact.name} (${contact.totalCalls} calls)`);
-                          }
-                        } catch (contactErr) {
-                          console.warn(`   ⚠️ Error creating org contact:`, contactErr.message);
-                        }
-                      }
+                  for (const field of caseFields) {
+                    if (!callData[field] && caseData[field]) {
+                      callData[field] = caseData[field];
                     }
-                  } catch (orgError) {
-                    console.warn(`   ⚠️ Error creating/linking organization:`, orgError.message);
-                    // Non-fatal - continue processing
                   }
-                } else {
-                  console.log(`   ℹ️ Professional caller but no organization name provided`);
+                } catch (parseError) {
+                  console.warn(`   ⚠️  Could not parse case_specific_data:`, parseError.message);
                 }
               }
 
-              // Link caller to lead if one was created
-              if (leadTrackingResult?.lead?.id) {
-                const relationship = callerType === 'injured_party' ? 'injured_party' : callerType;
-                await callerCRM.linkCallerToCase(caller.id, leadTrackingResult.lead.id, relationship, callId);
-              }
-
-              // Log the call interaction
-              await callerCRM.logCallInteraction({
-                callerId: caller.id,
-                callId: callId,
-                agentId: agentId,
-                phoneNumber: phoneNumber,
-                direction: 'inbound',
-                startTime: fullCall.start_timestamp ? new Date(fullCall.start_timestamp) : null,
-                endTime: fullCall.end_timestamp ? new Date(fullCall.end_timestamp) : null,
-                durationSeconds: durationSeconds,
-                category: categoryResult.category,
-                outcome: leadTrackingResult?.isNewLead ? 'lead_captured' : 'info_collected',
-                summary: extractedData?.call_summary || categoryResult.summary,
-                dataCollected: extractedData,
-                fieldsUpdated: Object.keys(extractedData || {}).filter(k => extractedData[k])
-              });
-
-              console.log(`   ✅ Caller CRM updated (ID: ${caller.id}, calls: ${caller.totalCalls})`);
-
-              // MERGE caller profile AND lead data into callData for notifications
-              // This ensures email includes info we already had on file
-              try {
-                if (caller && typeof caller === 'object') {
-                  // Only fill in missing fields - don't overwrite what was collected this call
-                  if (caller.fields && typeof caller.fields === 'object') {
-                    if (!callData.name || callData.name === 'Unknown') {
-                      callData.name = caller.fields.name?.value || caller.name || callData.name;
-                    }
-                    if (!callData.email) {
-                      callData.email = caller.fields.email?.value || caller.email || null;
-                    }
-                    if (!callData.phone || callData.phone === phoneNumber) {
-                      callData.phone = caller.fields.callback_phone?.value || caller.callbackPhone || callData.phone;
-                    }
-                  }
-
-                  // Add caller context for notification (with safe defaults)
-                  callData.is_returning_caller = (caller.totalCalls || 0) > 1;
-                  callData.total_calls = caller.totalCalls || 1;
-                  callData.caller_id = caller.id || null;
-
-                  // Merge claim_num from caller profile (stored in caller_details)
-                  if (!callData.claim_num && !callData.claim_number && caller.claimNum) {
-                    callData.claim_num = caller.claimNum;
-                    console.log(`   📋 Merged claim_num from caller profile: ${caller.claimNum}`);
-                  }
-
-                  // Include associated cases if any (with defensive check)
-                  if (Array.isArray(caller.cases) && caller.cases.length > 0) {
-                    callData.associated_cases = caller.cases
-                      .map(c => (c && (c.caseName || c.case_name)) || null)
-                      .filter(Boolean);
-
-                    // ALSO merge case details from caller's linked cases (fallback if lead doesn't have them)
-                    // This handles returning callers where claim_num was collected on a previous call
-                    const mostRecentCase = caller.cases[0]; // Cases are sorted by date DESC
-                    if (mostRecentCase) {
-                      if (!callData.claim_num && !callData.claim_number && mostRecentCase.claimNum) {
-                        callData.claim_num = mostRecentCase.claimNum;
-                        console.log(`   📋 Merged claim_num from linked case: ${mostRecentCase.claimNum}`);
-                      }
-                      if (!callData.case_type && mostRecentCase.caseType) {
-                        callData.case_type = mostRecentCase.caseType;
-                      }
-                      if (!callData.incident_date && mostRecentCase.incidentDate) {
-                        callData.incident_date = mostRecentCase.incidentDate;
-                      }
-                      if (!callData.incident_location && mostRecentCase.incidentLocation) {
-                        callData.incident_location = mostRecentCase.incidentLocation;
-                      }
-                      if (!callData.incident_description && mostRecentCase.incidentDescription) {
-                        callData.incident_description = mostRecentCase.incidentDescription;
-                      }
-                    }
-                  }
-
-                  console.log(`   📧 Merged caller profile into notification data`);
-                }
-
-                // MERGE case details from the lead record (if available)
-                // This ensures notification includes case_type, incident_date, etc. from database
-                if (leadTrackingResult?.lead) {
-                  const lead = leadTrackingResult.lead;
-
-                  // Fill in missing case details from lead record
-                  if (!callData.case_type && lead.case_type) {
-                    callData.case_type = lead.case_type;
-                  }
-                  if (!callData.incident_date && lead.incident_date) {
-                    callData.incident_date = lead.incident_date;
-                  }
-                  if (!callData.incident_location && lead.incident_location) {
-                    callData.incident_location = lead.incident_location;
-                  }
-                  if (!callData.incident_description && lead.incident_description) {
-                    callData.incident_description = lead.incident_description;
-                  }
-                  if (!callData.claim_num && !callData.claim_number && lead.claim_num) {
-                    callData.claim_num = lead.claim_num;
-                  }
-
-                  // Merge case_specific_data fields (injuries, fault, etc.)
-                  if (lead.case_specific_data) {
-                    try {
-                      const caseData = typeof lead.case_specific_data === 'string'
-                        ? JSON.parse(lead.case_specific_data)
-                        : lead.case_specific_data;
-
-                      // Merge each case-specific field if not already present
-                      const caseFields = [
-                        'injuries_sustained', 'fault_determination', 'doctor_visit',
-                        'police_report_filed', 'other_party_insured', 'vehicle_type',
-                        'rideshare_service', 'rideshare_role', 'construction_site_type',
-                        'property_type', 'fall_cause', 'workplace_type', 'work_injury_type'
-                      ];
-
-                      for (const field of caseFields) {
-                        if (!callData[field] && caseData[field]) {
-                          callData[field] = caseData[field];
-                        }
-                      }
-                    } catch (parseError) {
-                      console.warn(`   ⚠️  Could not parse case_specific_data:`, parseError.message);
-                    }
-                  }
-
-                  console.log(`   📋 Merged lead data into notification (Lead ID: ${lead.id})`);
-                }
-              } catch (mergeError) {
-                console.error(`   ⚠️  Error merging caller profile (non-fatal):`, mergeError.message);
-                // Continue with original callData - notification still goes out
-              }
-              }
+              console.log(`   📋 Merged lead data into notification (Lead ID: ${lead.id})`);
             }
-          } catch (error) {
-            console.error(`   ⚠️  Caller CRM error:`, error.message);
-            // Don't fail the whole request if CRM update fails
+          } catch (mergeError) {
+            console.error(`   ⚠️  Error merging lead data (non-fatal):`, mergeError.message);
           }
 
           // Send notifications with error handling
