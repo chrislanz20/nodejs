@@ -2370,105 +2370,21 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
             // Don't fail the whole request if lead tracking fails
           }
 
-          // ============ CASE LOOKUP FOR PROFESSIONAL CALLERS ============
-          // When attorneys/medical/insurance mention a client name, try to look up case details
-          try {
-            const professionalCategories = ['Attorney', 'Medical', 'Insurance'];
-            const clientNameMentioned = callData.case_name || callData.client_name;
-
-            if (professionalCategories.includes(categoryResult.category) && clientNameMentioned && agentId) {
-              console.log(`   🔍 Professional caller mentioned client: "${clientNameMentioned}" - searching for matching case...`);
-
-              const matchedCase = await searchCaseByName(clientNameMentioned, agentId);
-
-              if (matchedCase) {
-                // Merge matched case details into callData for notification
-                callData.matched_case = matchedCase;
-                callData.matched_case_name = matchedCase.matched_name;
-                callData.matched_case_id = matchedCase.lead_id;
-
-                // Auto-fill case details if not already in callData
-                if (!callData.claim_num && !callData.claim_number && matchedCase.claim_num) {
-                  callData.claim_num = matchedCase.claim_num;
-                  console.log(`   📋 Auto-filled claim number: ${matchedCase.claim_num}`);
-                }
-                if (!callData.case_type && matchedCase.case_type) {
-                  callData.matched_case_type = matchedCase.case_type;
-                }
-                if (!callData.incident_date && matchedCase.incident_date) {
-                  callData.matched_incident_date = matchedCase.incident_date;
-                }
-                if (matchedCase.phone_number) {
-                  callData.client_phone = matchedCase.phone_number;
-                }
-                if (matchedCase.email) {
-                  callData.client_email = matchedCase.email;
-                }
-              }
-            }
-          } catch (error) {
-            console.error(`   ⚠️  Case lookup error:`, error.message);
-            // Non-fatal - continue without matched case
-          }
-
-          // ============ CALLER CRM INTEGRATION ============
-          // DISABLED - causing issues with shared phone numbers mixing data between callers
-          // TODO: Re-enable when we have better caller identity verification
-          console.log(`   ⏸️  Caller CRM DISABLED`);
-
-          // MERGE case details from the lead record (if available)
-          // This ensures notification includes case_type, incident_date, etc. from database
-          try {
-            if (leadTrackingResult?.lead) {
-              const lead = leadTrackingResult.lead;
-
-              // Fill in missing case details from lead record
-              if (!callData.case_type && lead.case_type) {
-                callData.case_type = lead.case_type;
-              }
-              if (!callData.incident_date && lead.incident_date) {
-                callData.incident_date = lead.incident_date;
-              }
-              if (!callData.incident_location && lead.incident_location) {
-                callData.incident_location = lead.incident_location;
-              }
-              if (!callData.incident_description && lead.incident_description) {
-                callData.incident_description = lead.incident_description;
-              }
-              if (!callData.claim_num && !callData.claim_number && lead.claim_num) {
-                callData.claim_num = lead.claim_num;
-              }
-
-              // Merge case_specific_data fields (injuries, fault, etc.)
-              if (lead.case_specific_data) {
-                try {
-                  const caseData = typeof lead.case_specific_data === 'string'
-                    ? JSON.parse(lead.case_specific_data)
-                    : lead.case_specific_data;
-
-                  // Merge each case-specific field if not already present
-                  const caseFields = [
-                    'injuries_sustained', 'fault_determination', 'doctor_visit',
-                    'police_report_filed', 'other_party_insured', 'vehicle_type',
-                    'rideshare_service', 'rideshare_role', 'construction_site_type',
-                    'property_type', 'fall_cause', 'workplace_type', 'work_injury_type'
-                  ];
-
-                  for (const field of caseFields) {
-                    if (!callData[field] && caseData[field]) {
-                      callData[field] = caseData[field];
-                    }
-                  }
-                } catch (parseError) {
-                  console.warn(`   ⚠️  Could not parse case_specific_data:`, parseError.message);
-                }
-              }
-
-              console.log(`   📋 Merged lead data into notification (Lead ID: ${lead.id})`);
-            }
-          } catch (mergeError) {
-            console.error(`   ⚠️  Error merging lead data (non-fatal):`, mergeError.message);
-          }
+          // ============ DATABASE LOOKUPS DISABLED ============
+          // DISABLED 2025-12-08: All database lookups commented out to prevent
+          // leaking old client data into new calls. We now rely ONLY on data
+          // extracted from the current transcript.
+          //
+          // Previously this section contained:
+          // 1. CASE LOOKUP FOR PROFESSIONAL CALLERS - searched DB by client name
+          // 2. CALLER CRM INTEGRATION - looked up caller by phone number
+          // 3. MERGE lead record data - auto-filled from past lead records
+          //
+          // All notification data now comes exclusively from:
+          // - extractAllCallData() AI extraction from current transcript
+          // - Retell's extracted_data from the call
+          // - The current call's phone number and metadata
+          console.log(`   ⏸️  Database lookups DISABLED - using transcript data only`);
 
           // Send notifications with error handling
           try {
