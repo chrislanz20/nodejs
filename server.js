@@ -1672,7 +1672,7 @@ REASONING: Caller explicitly identified as "medical provider" from a healthcare 
 
   try {
     const message = await anthropic.messages.create({
-      model: 'claude-opus-4-5-20250514',  // Claude Opus 4.5 - maximum accuracy for categorization
+      model: 'claude-opus-4-5-20251101',  // Claude Opus 4.5 - maximum accuracy for categorization
       max_tokens: 2000,  // Increased for deep reasoning and confidence scoring
       messages: [{
         role: 'user',
