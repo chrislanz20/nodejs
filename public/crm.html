@@ -394,26 +394,66 @@
       border-color: #ef4444;
     }
 
-    /* Phone list styles for organizations */
+    /* Phone list styles for organizations - compact view */
     .phone-list-cell {
-      min-width: 180px;
+      min-width: 160px;
+      position: relative;
     }
-    .phone-list {
+    .phone-summary {
       display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
+      align-items: center;
+      gap: 6px;
+    }
+    .phone-primary {
+      color: #60a5fa;
+      font-size: 13px;
+      font-family: 'SF Mono', monospace;
+    }
+    .phone-count-badge {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .phone-count-badge:hover {
+      background: rgba(59, 130, 246, 0.3);
+    }
+    .phone-list-expanded {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #1a1f2e;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 8px;
+      z-index: 100;
+      min-width: 200px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .phone-list-expanded.show {
+      display: block;
+    }
+    .phone-list-expanded .phone-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      border-radius: 4px;
       margin-bottom: 4px;
     }
-    .phone-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(59, 130, 246, 0.1);
-      border: 1px solid rgba(59, 130, 246, 0.2);
-      border-radius: 4px;
-      padding: 2px 6px;
-      font-size: 12px;
+    .phone-list-expanded .phone-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .phone-list-expanded .phone-item:last-child {
+      margin-bottom: 0;
+    }
+    .phone-item-number {
       color: #60a5fa;
+      font-size: 13px;
+      font-family: 'SF Mono', monospace;
     }
     .phone-remove-btn {
       background: none;
@@ -422,24 +462,34 @@
       cursor: pointer;
       font-size: 14px;
       line-height: 1;
-      padding: 0 2px;
+      padding: 2px 4px;
       opacity: 0.6;
+      border-radius: 3px;
     }
     .phone-remove-btn:hover {
       opacity: 1;
+      background: rgba(239, 68, 68, 0.15);
     }
     .phone-add-btn {
       background: rgba(34, 197, 94, 0.1);
       border: 1px solid rgba(34, 197, 94, 0.3);
       color: #4ade80;
       border-radius: 4px;
-      padding: 2px 8px;
+      padding: 3px 8px;
       font-size: 11px;
       cursor: pointer;
       transition: all 0.2s;
+      margin-top: 6px;
+      width: 100%;
     }
     .phone-add-btn:hover {
       background: rgba(34, 197, 94, 0.2);
+    }
+    .phone-add-btn-inline {
+      margin-left: 6px;
+      margin-top: 0;
+      width: auto;
+      padding: 2px 6px;
     }
 
     /* Editable dropdown style */
@@ -849,6 +899,27 @@
       font-size: 15px;
       color: #e6edf3;
       font-weight: 500;
+    }
+
+    /* Phone numbers list in org detail */
+    .org-detail-phones-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .org-detail-phones-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .org-detail-phone-tag {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #60a5fa;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: 'SF Mono', monospace;
     }
 
     .org-detail-section {
@@ -1478,10 +1549,42 @@
     function renderOrganizationsTable(data) {
       return data.map(org => {
         const phones = org.phone_numbers || [];
-        const phoneDisplay = phones.length > 0
-          ? phones.map((p, i) => `<span class="phone-item">${formatPhone(p)}<button class="phone-remove-btn" onclick="removeOrgPhone(${org.id}, '${escapeHtml(p)}', event)">×</button></span>`).join('')
-          : '<span class="empty-field">--</span>';
         const orgType = org.type || 'other';
+
+        // Compact phone display: show first phone + badge if more
+        let phoneHtml = '';
+        if (phones.length === 0) {
+          phoneHtml = `
+            <span class="empty-field">--</span>
+            <button class="phone-add-btn phone-add-btn-inline" onclick="addOrgPhone(${org.id}, event)">+ Add</button>
+          `;
+        } else if (phones.length === 1) {
+          phoneHtml = `
+            <div class="phone-summary">
+              <span class="phone-primary">${formatPhone(phones[0])}</span>
+              <button class="phone-remove-btn" onclick="removeOrgPhone(${org.id}, '${escapeHtml(phones[0])}', event)" title="Remove">×</button>
+              <button class="phone-add-btn phone-add-btn-inline" onclick="addOrgPhone(${org.id}, event)">+</button>
+            </div>
+          `;
+        } else {
+          // Multiple phones - show first + expandable badge
+          phoneHtml = `
+            <div class="phone-summary">
+              <span class="phone-primary">${formatPhone(phones[0])}</span>
+              <span class="phone-count-badge" onclick="togglePhoneList(${org.id}, event)">+${phones.length - 1} more</span>
+            </div>
+            <div class="phone-list-expanded" id="phone-list-${org.id}">
+              ${phones.map(p => `
+                <div class="phone-item">
+                  <span class="phone-item-number">${formatPhone(p)}</span>
+                  <button class="phone-remove-btn" onclick="removeOrgPhone(${org.id}, '${escapeHtml(p)}', event)" title="Remove">×</button>
+                </div>
+              `).join('')}
+              <button class="phone-add-btn" onclick="addOrgPhone(${org.id}, event)">+ Add Phone</button>
+            </div>
+          `;
+        }
+
         return `
           <tr>
             <td>
@@ -1489,10 +1592,7 @@
               <button class="org-edit-name-btn" onclick="editOrgName(${org.id}, event)" title="Edit name">✎</button>
             </td>
             <td><span class="crm-type-badge editable-type ${orgType}" data-type="${orgType}" onclick="editOrgType(${org.id}, this, event)">${formatOrgType(orgType)}</span></td>
-            <td class="phone-list-cell">
-              <div class="phone-list">${phoneDisplay}</div>
-              <button class="phone-add-btn" onclick="addOrgPhone(${org.id}, event)">+ Add</button>
-            </td>
+            <td class="phone-list-cell">${phoneHtml}</td>
             <td>${org.contact_count || 0}</td>
             <td>${org.total_calls || 0}</td>
             <td><button class="crm-delete-btn" onclick="confirmDeleteOrg(${org.id}, '${escapeHtml(org.name)}', ${org.contact_count || 0})">Delete</button></td>
@@ -1641,6 +1741,26 @@
         showToast('Failed to remove phone', 'error');
       }
     }
+
+    // Toggle expandable phone list
+    function togglePhoneList(orgId, event) {
+      event.stopPropagation();
+      const list = document.getElementById(`phone-list-${orgId}`);
+      if (list) {
+        list.classList.toggle('show');
+      }
+      // Close other open lists
+      document.querySelectorAll('.phone-list-expanded.show').forEach(el => {
+        if (el.id !== `phone-list-${orgId}`) el.classList.remove('show');
+      });
+    }
+
+    // Close phone lists when clicking outside
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.phone-list-expanded.show').forEach(el => {
+        el.classList.remove('show');
+      });
+    });
 
     // Language dropdown editor for clients
     function editLanguage(callerId, el) {
@@ -2121,11 +2241,16 @@
       typeBadge.textContent = formatOrgType(data.type);
       typeBadge.className = `crm-type-badge ${data.type || 'other'}`;
 
-      // Info section
+      // Info section - combine all phone numbers into one list
+      const allPhones = [data.primaryPhone, ...(data.additionalPhones || [])].filter(Boolean);
+      const phonesDisplay = allPhones.length > 0
+        ? allPhones.map(p => `<span class="org-detail-phone-tag">${formatPhone(p)}</span>`).join('')
+        : '<span class="empty-field">No phone numbers</span>';
+
       document.getElementById('org-detail-info').innerHTML = `
-        <div class="org-detail-info-item">
-          <span class="org-detail-info-label">Primary Phone</span>
-          <span class="org-detail-info-value">${formatPhone(data.primaryPhone) || '--'}</span>
+        <div class="org-detail-info-item org-detail-phones-row">
+          <span class="org-detail-info-label">Phone Numbers</span>
+          <div class="org-detail-phones-list">${phonesDisplay}</div>
         </div>
         <div class="org-detail-info-item">
           <span class="org-detail-info-label">Total Calls</span>
