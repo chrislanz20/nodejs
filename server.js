@@ -5499,17 +5499,17 @@ app.put('/api/notification-preferences/:recipientId', authenticateToken, async (
 // GET /api/crm/stats - Get counts for CRM dashboard
 app.get('/api/crm/stats', authenticateToken, async (req, res) => {
   try {
-    const agentId = req.user.agent_id;
+    const agentIds = req.user.agent_ids || [];
 
     const [orgs, contacts, clients, leads] = await Promise.all([
-      pool.query('SELECT COUNT(*) FROM organizations WHERE agent_id = $1', [agentId]),
+      pool.query('SELECT COUNT(*) FROM organizations WHERE agent_id = ANY($1)', [agentIds]),
       pool.query(`
         SELECT COUNT(*) FROM organization_contacts oc
         JOIN organizations o ON oc.organization_id = o.id
-        WHERE o.agent_id = $1
-      `, [agentId]),
-      pool.query("SELECT COUNT(*) FROM callers WHERE agent_id = $1 AND caller_type = 'existing_client'", [agentId]),
-      pool.query("SELECT COUNT(*) FROM callers WHERE agent_id = $1 AND caller_type = 'new_lead'", [agentId])
+        WHERE o.agent_id = ANY($1)
+      `, [agentIds]),
+      pool.query("SELECT COUNT(*) FROM callers WHERE agent_id = ANY($1) AND caller_type = 'existing_client'", [agentIds]),
+      pool.query("SELECT COUNT(*) FROM callers WHERE agent_id = ANY($1) AND caller_type = 'new_lead'", [agentIds])
     ]);
 
     res.json({
@@ -5527,7 +5527,7 @@ app.get('/api/crm/stats', authenticateToken, async (req, res) => {
 // GET /api/crm/organizations - List all organizations
 app.get('/api/crm/organizations', authenticateToken, async (req, res) => {
   try {
-    const agentId = req.user.agent_id;
+    const agentIds = req.user.agent_ids || [];
 
     const result = await pool.query(`
       SELECT
@@ -5540,10 +5540,10 @@ app.get('/api/crm/organizations', authenticateToken, async (req, res) => {
         COUNT(oc.id) as contact_count
       FROM organizations o
       LEFT JOIN organization_contacts oc ON o.id = oc.organization_id
-      WHERE o.agent_id = $1
+      WHERE o.agent_id = ANY($1)
       GROUP BY o.id
       ORDER BY o.name ASC
-    `, [agentId]);
+    `, [agentIds]);
 
     res.json({ organizations: result.rows });
   } catch (error) {
@@ -5555,7 +5555,7 @@ app.get('/api/crm/organizations', authenticateToken, async (req, res) => {
 // PUT /api/crm/organizations/:id - Update organization
 app.put('/api/crm/organizations/:id', authenticateToken, async (req, res) => {
   try {
-    const agentId = req.user.agent_id;
+    const agentIds = req.user.agent_ids || [];
     const { id } = req.params;
     const { name, type, primary_phone } = req.body;
 
@@ -5565,9 +5565,9 @@ app.put('/api/crm/organizations/:id', authenticateToken, async (req, res) => {
           type = COALESCE($2, type),
           primary_phone = COALESCE($3, primary_phone),
           updated_at = NOW()
-      WHERE id = $4 AND agent_id = $5
+      WHERE id = $4 AND agent_id = ANY($5)
       RETURNING *
-    `, [name, type, primary_phone, id, agentId]);
+    `, [name, type, primary_phone, id, agentIds]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Organization not found' });
@@ -5583,7 +5583,7 @@ app.put('/api/crm/organizations/:id', authenticateToken, async (req, res) => {
 // DELETE /api/crm/organizations/:id - Delete organization
 app.delete('/api/crm/organizations/:id', authenticateToken, async (req, res) => {
   try {
-    const agentId = req.user.agent_id;
+    const agentIds = req.user.agent_ids || [];
     const { id } = req.params;
     const { deleteContacts } = req.query; // 'true' to cascade delete contacts
 
@@ -5603,8 +5603,8 @@ app.delete('/api/crm/organizations/:id', authenticateToken, async (req, res) => 
     }
 
     const result = await pool.query(
-      'DELETE FROM organizations WHERE id = $1 AND agent_id = $2 RETURNING id',
-      [id, agentId]
+      'DELETE FROM organizations WHERE id = $1 AND agent_id = ANY($2) RETURNING id',
+      [id, agentIds]
     );
 
     if (result.rows.length === 0) {
@@ -5621,7 +5621,7 @@ app.delete('/api/crm/organizations/:id', authenticateToken, async (req, res) => 
 // GET /api/crm/contacts - List all organization contacts
 app.get('/api/crm/contacts', authenticateToken, async (req, res) => {
   try {
-    const agentId = req.user.agent_id;
+    const agentIds = req.user.agent_ids || [];
 
     const result = await pool.query(`
       SELECT
@@ -5636,9 +5636,9 @@ app.get('/api/crm/contacts', authenticateToken, async (req, res) => {
         o.type as organization_type
       FROM organization_contacts oc
       LEFT JOIN organizations o ON oc.organization_id = o.id
-      WHERE o.agent_id = $1 OR oc.organization_id IS NULL
+      WHERE o.agent_id = ANY($1) OR oc.organization_id IS NULL
       ORDER BY oc.name ASC
-    `, [agentId]);
+    `, [agentIds]);
 
     res.json({ contacts: result.rows });
   } catch (error) {
@@ -5700,11 +5700,11 @@ app.delete('/api/crm/contacts/:id', authenticateToken, async (req, res) => {
 // GET /api/crm/callers - List all callers (clients and leads) with their details
 app.get('/api/crm/callers', authenticateToken, async (req, res) => {
   try {
-    const agentId = req.user.agent_id;
+    const agentIds = req.user.agent_ids || [];
     const { type } = req.query; // 'existing_client', 'new_lead', or omit for all
 
-    let whereClause = 'WHERE c.agent_id = $1';
-    const params = [agentId];
+    let whereClause = 'WHERE c.agent_id = ANY($1)';
+    const params = [agentIds];
 
     if (type) {
       whereClause += ' AND c.caller_type = $2';
@@ -5744,7 +5744,7 @@ app.get('/api/crm/callers', authenticateToken, async (req, res) => {
 // PUT /api/crm/callers/:id - Update caller
 app.put('/api/crm/callers/:id', authenticateToken, async (req, res) => {
   try {
-    const agentId = req.user.agent_id;
+    const agentIds = req.user.agent_ids || [];
     const { id } = req.params;
     const { preferred_language, caller_type } = req.body;
 
@@ -5753,9 +5753,9 @@ app.put('/api/crm/callers/:id', authenticateToken, async (req, res) => {
       SET preferred_language = COALESCE($1, preferred_language),
           caller_type = COALESCE($2, caller_type),
           updated_at = NOW()
-      WHERE id = $3 AND agent_id = $4
+      WHERE id = $3 AND agent_id = ANY($4)
       RETURNING *
-    `, [preferred_language, caller_type, id, agentId]);
+    `, [preferred_language, caller_type, id, agentIds]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Caller not found' });
@@ -5771,14 +5771,14 @@ app.put('/api/crm/callers/:id', authenticateToken, async (req, res) => {
 // PUT /api/crm/callers/:id/field - Update a single caller field (for inline editing)
 app.put('/api/crm/callers/:id/field', authenticateToken, async (req, res) => {
   try {
-    const agentId = req.user.agent_id;
+    const agentIds = req.user.agent_ids || [];
     const { id } = req.params;
     const { field_name, field_value } = req.body;
 
     // Verify caller belongs to this agent
     const callerCheck = await pool.query(
-      'SELECT id FROM callers WHERE id = $1 AND agent_id = $2',
-      [id, agentId]
+      'SELECT id FROM callers WHERE id = $1 AND agent_id = ANY($2)',
+      [id, agentIds]
     );
 
     if (callerCheck.rows.length === 0) {
@@ -5808,8 +5808,17 @@ app.put('/api/crm/callers/:id/field', authenticateToken, async (req, res) => {
 // DELETE /api/crm/callers/:id - Delete caller and all their details
 app.delete('/api/crm/callers/:id', authenticateToken, async (req, res) => {
   try {
-    const agentId = req.user.agent_id;
+    const agentIds = req.user.agent_ids || [];
     const { id } = req.params;
+
+    // Verify caller belongs to this agent first
+    const callerCheck = await pool.query(
+      'SELECT id FROM callers WHERE id = $1 AND agent_id = ANY($2)',
+      [id, agentIds]
+    );
+    if (callerCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Caller not found' });
+    }
 
     // Delete caller details first (foreign key)
     await pool.query('DELETE FROM caller_details WHERE caller_id = $1', [id]);
@@ -5821,14 +5830,7 @@ app.delete('/api/crm/callers/:id', authenticateToken, async (req, res) => {
     await pool.query('DELETE FROM caller_notes WHERE caller_id = $1', [id]);
 
     // Delete the caller
-    const result = await pool.query(
-      'DELETE FROM callers WHERE id = $1 AND agent_id = $2 RETURNING id',
-      [id, agentId]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Caller not found' });
-    }
+    await pool.query('DELETE FROM callers WHERE id = $1', [id]);
 
     res.json({ success: true });
   } catch (error) {
