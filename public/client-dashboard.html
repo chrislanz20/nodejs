@@ -2813,7 +2813,7 @@
       </div>
     </div>
     <div class="menu-container">
-      <button class="hamburger-btn" onclick="toggleMenu()">
+      <button class="hamburger-btn" onclick="toggleMenu(event)">
         <span></span>
         <span></span>
         <span></span>
@@ -4609,7 +4609,8 @@
     }
 
     // Hamburger Menu Functions
-    function toggleMenu() {
+    function toggleMenu(event) {
+      if (event) event.stopPropagation();
       const dropdown = document.getElementById('menu-dropdown');
       const hamburger = document.querySelector('.hamburger-btn');
       const isOpen = dropdown.classList.contains('show');
@@ -4626,8 +4627,9 @@
     // Close menu when clicking outside
     document.addEventListener('click', function(e) {
       const menuContainer = document.querySelector('.menu-container');
-      if (menuContainer && !menuContainer.contains(e.target)) {
-        document.getElementById('menu-dropdown')?.classList.remove('show');
+      const dropdown = document.getElementById('menu-dropdown');
+      if (menuContainer && dropdown && dropdown.classList.contains('show') && !menuContainer.contains(e.target)) {
+        dropdown.classList.remove('show');
         document.querySelector('.hamburger-btn')?.classList.remove('open');
       }
     });

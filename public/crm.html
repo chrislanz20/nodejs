@@ -594,7 +594,7 @@
       </div>
     </div>
     <div class="menu-container">
-      <button class="hamburger-btn" onclick="toggleMenu()">
+      <button class="hamburger-btn" onclick="toggleMenu(event)">
         <span></span>
         <span></span>
         <span></span>
@@ -793,7 +793,8 @@
     }
 
     // Menu toggle
-    function toggleMenu() {
+    function toggleMenu(event) {
+      if (event) event.stopPropagation();
       const menu = document.getElementById('menu-dropdown');
       menu.classList.toggle('show');
     }
@@ -802,7 +803,7 @@
     document.addEventListener('click', (e) => {
       const menu = document.getElementById('menu-dropdown');
       const btn = document.querySelector('.hamburger-btn');
-      if (!menu.contains(e.target) && !btn.contains(e.target)) {
+      if (menu && menu.classList.contains('show') && !menu.contains(e.target) && !btn.contains(e.target)) {
         menu.classList.remove('show');
       }
     });
