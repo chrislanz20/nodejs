@@ -539,6 +539,200 @@
       opacity: 0.5;
     }
 
+    /* Organization Detail Modal */
+    .org-detail-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      z-index: 1000;
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+
+    .org-detail-content {
+      background: #161b22;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 900px;
+      max-height: calc(100vh - 80px);
+      overflow-y: auto;
+    }
+
+    .org-detail-header {
+      padding: 24px 28px;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      position: sticky;
+      top: 0;
+      background: #161b22;
+      z-index: 10;
+    }
+
+    .org-detail-title {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .org-detail-title h2 {
+      color: #00FFFF;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .org-detail-close {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #9ca3af;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .org-detail-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .org-detail-body {
+      padding: 28px;
+    }
+
+    .org-detail-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+      padding: 20px;
+      background: rgba(0, 255, 255, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(0, 255, 255, 0.1);
+    }
+
+    .org-detail-info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .org-detail-info-label {
+      font-size: 11px;
+      color: #7d8590;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .org-detail-info-value {
+      font-size: 15px;
+      color: #e6edf3;
+      font-weight: 500;
+    }
+
+    .org-detail-section {
+      margin-bottom: 28px;
+    }
+
+    .org-detail-section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #00FFFF;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .org-detail-section-count {
+      background: rgba(0, 255, 255, 0.15);
+      color: #00FFFF;
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+
+    .org-detail-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(22, 27, 34, 0.5);
+      border: 1px solid rgba(0, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .org-detail-table th {
+      text-align: left;
+      padding: 12px 16px;
+      background: rgba(0, 255, 255, 0.05);
+      color: #00FFFF;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+    }
+
+    .org-detail-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+      color: #e6edf3;
+    }
+
+    .org-detail-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .org-detail-table tbody tr:hover {
+      background: rgba(0, 255, 255, 0.03);
+    }
+
+    .org-detail-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #7d8590;
+      font-style: italic;
+    }
+
+    .org-name-clickable {
+      cursor: pointer;
+      color: #00FFFF;
+      transition: all 0.2s;
+    }
+
+    .org-name-clickable:hover {
+      text-decoration: underline;
+    }
+
+    .link-client-btn {
+      padding: 6px 12px;
+      background: rgba(0, 255, 255, 0.1);
+      color: #00FFFF;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .link-client-btn:hover {
+      background: rgba(0, 255, 255, 0.2);
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .header {
@@ -768,6 +962,75 @@
     </div>
   </div>
 
+  <!-- Organization Detail Modal -->
+  <div id="org-detail-modal" class="org-detail-modal" style="display: none;" onclick="closeOrgDetailModal(event)">
+    <div class="org-detail-content" onclick="event.stopPropagation()">
+      <div class="org-detail-header">
+        <div class="org-detail-title">
+          <h2 id="org-detail-name">Organization Name</h2>
+          <span id="org-detail-type" class="crm-type-badge"></span>
+        </div>
+        <button class="org-detail-close" onclick="closeOrgDetailModal()">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="org-detail-body">
+        <div class="org-detail-info" id="org-detail-info">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Contacts Section -->
+        <div class="org-detail-section">
+          <div class="org-detail-section-title">
+            Contacts from this Organization
+            <span class="org-detail-section-count" id="org-contacts-count">0</span>
+          </div>
+          <div id="org-contacts-content">
+            <table class="org-detail-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Calls</th>
+                </tr>
+              </thead>
+              <tbody id="org-contacts-body">
+                <tr><td colspan="4" class="org-detail-empty">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Linked Clients Section -->
+        <div class="org-detail-section">
+          <div class="org-detail-section-title">
+            Court Law Clients They've Called About
+            <span class="org-detail-section-count" id="org-clients-count">0</span>
+          </div>
+          <div id="org-clients-content">
+            <table class="org-detail-table">
+              <thead>
+                <tr>
+                  <th>Client Name</th>
+                  <th>Phone</th>
+                  <th>Contact Who Called</th>
+                  <th>Times Called</th>
+                  <th>Last Contact</th>
+                </tr>
+              </thead>
+              <tbody id="org-clients-body">
+                <tr><td colspan="5" class="org-detail-empty">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     let currentUser = null;
 
@@ -928,7 +1191,7 @@
     function renderOrganizationsTable(data) {
       return data.map(org => `
         <tr>
-          <td><span class="editable" onclick="editOrgField(${org.id}, 'name', this)">${org.name || '<span class="empty-field">--</span>'}</span></td>
+          <td><span class="org-name-clickable" onclick="openOrgDetail(${org.id})">${org.name || '<span class="empty-field">--</span>'}</span></td>
           <td><span class="crm-type-badge ${org.type || 'other'}">${formatOrgType(org.type)}</span></td>
           <td><span class="editable" onclick="editOrgField(${org.id}, 'primary_phone', this)">${org.primary_phone || '<span class="empty-field">--</span>'}</span></td>
           <td>${org.contact_count || 0}</td>
@@ -1173,6 +1436,119 @@
     }
     function formatDate(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '--'; }
     function escapeHtml(s) { return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;') : ''; }
+
+    // Organization Detail View
+    let currentOrgDetail = null;
+
+    async function openOrgDetail(orgId) {
+      const modal = document.getElementById('org-detail-modal');
+      modal.style.display = 'flex';
+
+      // Reset content
+      document.getElementById('org-detail-name').textContent = 'Loading...';
+      document.getElementById('org-detail-type').textContent = '';
+      document.getElementById('org-detail-type').className = 'crm-type-badge';
+      document.getElementById('org-detail-info').innerHTML = '';
+      document.getElementById('org-contacts-body').innerHTML = '<tr><td colspan="4" class="org-detail-empty">Loading...</td></tr>';
+      document.getElementById('org-clients-body').innerHTML = '<tr><td colspan="5" class="org-detail-empty">Loading...</td></tr>';
+      document.getElementById('org-contacts-count').textContent = '0';
+      document.getElementById('org-clients-count').textContent = '0';
+
+      try {
+        const res = await fetch(`/api/crm/organizations/${orgId}/details`, {
+          credentials: 'include'
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to load organization details');
+        }
+
+        const data = await res.json();
+        currentOrgDetail = data;
+        renderOrgDetail(data);
+      } catch (error) {
+        console.error('Error loading org details:', error);
+        document.getElementById('org-detail-name').textContent = 'Error loading details';
+        showToast('Failed to load organization details', 'error');
+      }
+    }
+
+    function renderOrgDetail(data) {
+      // Header
+      document.getElementById('org-detail-name').textContent = data.name || 'Unknown';
+      const typeBadge = document.getElementById('org-detail-type');
+      typeBadge.textContent = formatOrgType(data.type);
+      typeBadge.className = `crm-type-badge ${data.type || 'other'}`;
+
+      // Info section
+      document.getElementById('org-detail-info').innerHTML = `
+        <div class="org-detail-info-item">
+          <span class="org-detail-info-label">Primary Phone</span>
+          <span class="org-detail-info-value">${formatPhone(data.primaryPhone) || '--'}</span>
+        </div>
+        <div class="org-detail-info-item">
+          <span class="org-detail-info-label">Total Calls</span>
+          <span class="org-detail-info-value">${data.totalCalls || 0}</span>
+        </div>
+        <div class="org-detail-info-item">
+          <span class="org-detail-info-label">First Contact</span>
+          <span class="org-detail-info-value">${formatDate(data.firstCallDate)}</span>
+        </div>
+        <div class="org-detail-info-item">
+          <span class="org-detail-info-label">Last Contact</span>
+          <span class="org-detail-info-value">${formatDate(data.lastCallDate)}</span>
+        </div>
+      `;
+
+      // Contacts section
+      const contacts = data.contacts || [];
+      document.getElementById('org-contacts-count').textContent = contacts.length;
+
+      if (contacts.length === 0) {
+        document.getElementById('org-contacts-body').innerHTML = '<tr><td colspan="4" class="org-detail-empty">No contacts from this organization yet</td></tr>';
+      } else {
+        document.getElementById('org-contacts-body').innerHTML = contacts.map(c => `
+          <tr>
+            <td>${escapeHtml(c.name) || '--'}</td>
+            <td>${escapeHtml(c.email) || '<span class="empty-field">--</span>'}</td>
+            <td>${formatPhone(c.directPhone) || '<span class="empty-field">--</span>'}</td>
+            <td>${c.totalCalls || 0}</td>
+          </tr>
+        `).join('');
+      }
+
+      // Linked clients section
+      const clients = data.linkedClients || [];
+      document.getElementById('org-clients-count').textContent = clients.length;
+
+      if (clients.length === 0) {
+        document.getElementById('org-clients-body').innerHTML = '<tr><td colspan="5" class="org-detail-empty">No Court Law clients linked to this organization yet</td></tr>';
+      } else {
+        document.getElementById('org-clients-body').innerHTML = clients.map(c => `
+          <tr>
+            <td>${escapeHtml(c.clientName) || 'Unknown'}</td>
+            <td>${formatPhone(c.clientPhone) || '--'}</td>
+            <td>${escapeHtml(c.contactName) || 'Unknown contact'}</td>
+            <td>${c.associationCalls || 1}</td>
+            <td>${formatDate(c.lastAssociationDate)}</td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    function closeOrgDetailModal(event) {
+      if (event && event.target !== event.currentTarget) return;
+      document.getElementById('org-detail-modal').style.display = 'none';
+      currentOrgDetail = null;
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeOrgDetailModal();
+        closeCRMDeleteModal();
+      }
+    });
 
     // Init
     async function init() {

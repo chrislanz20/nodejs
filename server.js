@@ -5691,6 +5691,87 @@ app.delete('/api/crm/organizations/:id', authenticateToken, async (req, res) => 
   }
 });
 
+// GET /api/crm/organizations/:id/details - Get organization with contacts and linked clients
+app.get('/api/crm/organizations/:id/details', authenticateToken, async (req, res) => {
+  try {
+    const agentIds = req.user.agent_ids || [];
+    const { id } = req.params;
+
+    // Get full organization details using callerCRM function
+    const details = await callerCRM.getOrganizationDetails(parseInt(id), agentIds[0]);
+
+    if (!details) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    res.json(details);
+  } catch (error) {
+    console.error('Error fetching organization details:', error);
+    res.status(500).json({ error: 'Failed to fetch organization details' });
+  }
+});
+
+// POST /api/crm/organizations/:id/link-client - Link a client to an organization contact
+app.post('/api/crm/organizations/:id/link-client', authenticateToken, async (req, res) => {
+  try {
+    const agentIds = req.user.agent_ids || [];
+    const { id } = req.params;
+    const { contactId, clientCallerId, clientName, relationshipType } = req.body;
+
+    if (!contactId || !clientCallerId) {
+      return res.status(400).json({ error: 'contactId and clientCallerId required' });
+    }
+
+    // Verify the organization belongs to this user
+    const orgCheck = await pool.query(
+      'SELECT id FROM organizations WHERE id = $1 AND agent_id = ANY($2)',
+      [id, agentIds]
+    );
+
+    if (orgCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    // Create the association
+    const association = await callerCRM.trackContactClientAssociation(
+      contactId,
+      clientCallerId,
+      {
+        organizationId: parseInt(id),
+        clientName,
+        relationshipType: relationshipType || 'called_about'
+      }
+    );
+
+    if (!association) {
+      return res.status(500).json({ error: 'Failed to create association' });
+    }
+
+    res.json({ success: true, association });
+  } catch (error) {
+    console.error('Error linking client to organization:', error);
+    res.status(500).json({ error: 'Failed to link client' });
+  }
+});
+
+// GET /api/crm/clients/search - Search clients by name (for linking)
+app.get('/api/crm/clients/search', authenticateToken, async (req, res) => {
+  try {
+    const agentIds = req.user.agent_ids || [];
+    const { q } = req.query;
+
+    if (!q || q.length < 2) {
+      return res.json({ clients: [] });
+    }
+
+    const clients = await callerCRM.findClientsByName(q, agentIds[0]);
+    res.json({ clients });
+  } catch (error) {
+    console.error('Error searching clients:', error);
+    res.status(500).json({ error: 'Failed to search clients' });
+  }
+});
+
 // GET /api/crm/contacts - List all organization contacts
 app.get('/api/crm/contacts', authenticateToken, async (req, res) => {
   try {
