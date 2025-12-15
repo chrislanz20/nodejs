@@ -488,6 +488,121 @@
       color: #60a5fa;
     }
 
+    /* Merge toolbar and checkbox styles */
+    .merge-toolbar {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .merge-toolbar #merge-count {
+      color: #60a5fa;
+      font-weight: 500;
+    }
+    .merge-btn {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      border-radius: 6px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .merge-btn:hover {
+      background: rgba(34, 197, 94, 0.3);
+    }
+    .merge-cancel-btn {
+      background: transparent;
+      color: #94a3b8;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 6px;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .merge-cancel-btn:hover {
+      color: #f8fafc;
+      border-color: rgba(148, 163, 184, 0.5);
+    }
+    .checkbox-col {
+      width: 40px;
+      text-align: center;
+    }
+    .contact-checkbox {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+    tr.selected-for-merge {
+      background: rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* Merge dialog */
+    .merge-dialog-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .merge-dialog {
+      background: #1a1f2e;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 500px;
+      width: 90%;
+    }
+    .merge-dialog h3 {
+      margin: 0 0 16px 0;
+      color: #f8fafc;
+    }
+    .merge-dialog p {
+      color: #94a3b8;
+      margin-bottom: 16px;
+    }
+    .merge-contact-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px 0;
+    }
+    .merge-contact-list li {
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    .merge-contact-list li:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .merge-contact-list li.target-contact {
+      border-color: #4ade80;
+      background: rgba(34, 197, 94, 0.1);
+    }
+    .merge-contact-list li input[type="radio"] {
+      accent-color: #4ade80;
+    }
+    .merge-dialog-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
     .crm-type-badge {
       display: inline-block;
       padding: 5px 12px;
@@ -983,10 +1098,16 @@
 
     <!-- Contacts Tab -->
     <div id="crm-tab-contacts" class="crm-tab-content" style="display: none;">
+      <div class="merge-toolbar" id="merge-toolbar" style="display: none;">
+        <span id="merge-count">0 selected</span>
+        <button class="merge-btn" onclick="openMergeDialog()">Merge Selected</button>
+        <button class="merge-cancel-btn" onclick="clearContactSelection()">Cancel</button>
+      </div>
       <div class="table-wrapper">
         <table class="crm-table">
           <thead>
             <tr>
+              <th class="checkbox-col"><input type="checkbox" id="select-all-contacts" onchange="toggleAllContacts(this.checked)"></th>
               <th>Name</th>
               <th>Organization</th>
               <th>Email</th>
@@ -996,7 +1117,7 @@
             </tr>
           </thead>
           <tbody id="crm-contacts-body">
-            <tr><td colspan="6" class="empty-state">Loading contacts...</td></tr>
+            <tr><td colspan="7" class="empty-state">Loading contacts...</td></tr>
           </tbody>
         </table>
       </div>
@@ -1311,7 +1432,8 @@
 
     function renderContactsTable(data) {
       return data.map(c => `
-        <tr>
+        <tr data-contact-id="${c.id}" data-contact-name="${escapeHtml(c.name || '')}">
+          <td class="checkbox-col"><input type="checkbox" class="contact-checkbox" data-id="${c.id}" onchange="updateContactSelection()"></td>
           <td><span class="editable" onclick="editContactField(${c.id}, 'name', this)">${c.name || '<span class="empty-field">--</span>'}</span></td>
           <td>${c.organization_name || '<span class="empty-field">Unassociated</span>'}</td>
           <td><span class="editable" onclick="editContactField(${c.id}, 'email', this)">${c.email || '<span class="empty-field">--</span>'}</span></td>
@@ -1581,6 +1703,147 @@
         }
       } catch (e) {
         showToast('Failed to update name', 'error');
+      }
+    }
+
+    // Contact merge functionality
+    let selectedContacts = [];
+
+    function updateContactSelection() {
+      const checkboxes = document.querySelectorAll('.contact-checkbox:checked');
+      selectedContacts = Array.from(checkboxes).map(cb => ({
+        id: parseInt(cb.dataset.id),
+        name: cb.closest('tr').dataset.contactName
+      }));
+
+      // Update row styling
+      document.querySelectorAll('#crm-contacts-body tr').forEach(row => {
+        row.classList.remove('selected-for-merge');
+      });
+      checkboxes.forEach(cb => {
+        cb.closest('tr').classList.add('selected-for-merge');
+      });
+
+      // Show/hide merge toolbar
+      const toolbar = document.getElementById('merge-toolbar');
+      if (selectedContacts.length >= 2) {
+        toolbar.style.display = 'flex';
+        document.getElementById('merge-count').textContent = `${selectedContacts.length} selected`;
+      } else {
+        toolbar.style.display = 'none';
+      }
+
+      // Update select-all checkbox
+      const allCheckboxes = document.querySelectorAll('.contact-checkbox');
+      const selectAll = document.getElementById('select-all-contacts');
+      selectAll.checked = allCheckboxes.length > 0 && checkboxes.length === allCheckboxes.length;
+      selectAll.indeterminate = checkboxes.length > 0 && checkboxes.length < allCheckboxes.length;
+    }
+
+    function toggleAllContacts(checked) {
+      document.querySelectorAll('.contact-checkbox').forEach(cb => {
+        cb.checked = checked;
+      });
+      updateContactSelection();
+    }
+
+    function clearContactSelection() {
+      document.querySelectorAll('.contact-checkbox').forEach(cb => {
+        cb.checked = false;
+      });
+      document.getElementById('select-all-contacts').checked = false;
+      updateContactSelection();
+    }
+
+    function openMergeDialog() {
+      if (selectedContacts.length < 2) return;
+
+      // Find the contact with the longest name (likely most complete)
+      const sortedByNameLength = [...selectedContacts].sort((a, b) =>
+        (b.name || '').length - (a.name || '').length
+      );
+      const suggestedTarget = sortedByNameLength[0].id;
+
+      const html = `
+        <div class="merge-dialog-overlay" onclick="closeMergeDialog(event)">
+          <div class="merge-dialog" onclick="event.stopPropagation()">
+            <h3>Merge Contacts</h3>
+            <p>Select which contact to keep (others will be merged into it):</p>
+            <ul class="merge-contact-list">
+              ${selectedContacts.map(c => `
+                <li onclick="selectMergeTarget(${c.id})" class="${c.id === suggestedTarget ? 'target-contact' : ''}">
+                  <input type="radio" name="merge-target" value="${c.id}" ${c.id === suggestedTarget ? 'checked' : ''}>
+                  <span>${escapeHtml(c.name || 'Unknown')}</span>
+                  ${c.id === suggestedTarget ? '<span style="color: #4ade80; font-size: 11px;">(Recommended)</span>' : ''}
+                </li>
+              `).join('')}
+            </ul>
+            <div class="merge-dialog-buttons">
+              <button class="merge-cancel-btn" onclick="closeMergeDialog()">Cancel</button>
+              <button class="merge-btn" onclick="executeMerge()">Merge Contacts</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.body.insertAdjacentHTML('beforeend', html);
+    }
+
+    function selectMergeTarget(id) {
+      document.querySelectorAll('.merge-contact-list li').forEach(li => {
+        li.classList.remove('target-contact');
+      });
+      const radio = document.querySelector(`input[name="merge-target"][value="${id}"]`);
+      if (radio) {
+        radio.checked = true;
+        radio.closest('li').classList.add('target-contact');
+      }
+    }
+
+    function closeMergeDialog(event) {
+      if (event && event.target !== event.currentTarget) return;
+      const overlay = document.querySelector('.merge-dialog-overlay');
+      if (overlay) overlay.remove();
+    }
+
+    async function executeMerge() {
+      const targetRadio = document.querySelector('input[name="merge-target"]:checked');
+      if (!targetRadio) {
+        showToast('Please select a contact to keep', 'error');
+        return;
+      }
+
+      const targetId = parseInt(targetRadio.value);
+      const sourceIds = selectedContacts.filter(c => c.id !== targetId).map(c => c.id);
+
+      if (sourceIds.length === 0) {
+        showToast('Need at least 2 contacts to merge', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/crm/contacts/merge', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            targetContactId: targetId,
+            sourceContactIds: sourceIds
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showToast(`Merged ${sourceIds.length + 1} contacts successfully`);
+          closeMergeDialog();
+          clearContactSelection();
+          // Refresh contacts list
+          loadCRMData();
+        } else {
+          showToast(data.error || 'Failed to merge contacts', 'error');
+        }
+      } catch (e) {
+        showToast('Failed to merge contacts', 'error');
       }
     }
 

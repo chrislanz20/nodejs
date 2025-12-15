@@ -5993,6 +5993,116 @@ app.delete('/api/crm/contacts/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// POST /api/crm/contacts/merge - Merge multiple contacts into one
+app.post('/api/crm/contacts/merge', authenticateToken, async (req, res) => {
+  try {
+    const agentIds = req.user.agent_ids || [];
+    const { targetContactId, sourceContactIds } = req.body;
+
+    if (!targetContactId || !sourceContactIds || !Array.isArray(sourceContactIds) || sourceContactIds.length === 0) {
+      return res.status(400).json({ error: 'targetContactId and sourceContactIds array required' });
+    }
+
+    // Verify all contacts exist and belong to orgs owned by this user
+    const allIds = [targetContactId, ...sourceContactIds];
+    const contactCheck = await pool.query(`
+      SELECT oc.id, oc.name, oc.organization_id
+      FROM organization_contacts oc
+      JOIN organizations o ON oc.organization_id = o.id
+      WHERE oc.id = ANY($1) AND o.agent_id = ANY($2)
+    `, [allIds, agentIds]);
+
+    if (contactCheck.rows.length !== allIds.length) {
+      return res.status(404).json({ error: 'One or more contacts not found or unauthorized' });
+    }
+
+    // Begin transaction
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // Move all contact_client_associations from source contacts to target
+      await client.query(`
+        UPDATE contact_client_associations
+        SET contact_id = $1
+        WHERE contact_id = ANY($2)
+      `, [targetContactId, sourceContactIds]);
+
+      // Sum up total_calls from source contacts and add to target
+      const callsResult = await client.query(`
+        SELECT COALESCE(SUM(total_calls), 0) as total
+        FROM organization_contacts
+        WHERE id = ANY($1)
+      `, [sourceContactIds]);
+      const additionalCalls = parseInt(callsResult.rows[0].total) || 0;
+
+      if (additionalCalls > 0) {
+        await client.query(`
+          UPDATE organization_contacts
+          SET total_calls = total_calls + $1
+          WHERE id = $2
+        `, [additionalCalls, targetContactId]);
+      }
+
+      // Merge email/phone from source contacts if target doesn't have them
+      const targetContact = contactCheck.rows.find(c => c.id === targetContactId);
+      for (const sourceId of sourceContactIds) {
+        const source = await client.query(
+          'SELECT email, direct_phone FROM organization_contacts WHERE id = $1',
+          [sourceId]
+        );
+        if (source.rows.length > 0) {
+          const s = source.rows[0];
+          // Only merge if target is missing the field
+          if (s.email) {
+            await client.query(`
+              UPDATE organization_contacts
+              SET email = COALESCE(email, $1)
+              WHERE id = $2
+            `, [s.email, targetContactId]);
+          }
+          if (s.direct_phone) {
+            await client.query(`
+              UPDATE organization_contacts
+              SET direct_phone = COALESCE(direct_phone, $1)
+              WHERE id = $2
+            `, [s.direct_phone, targetContactId]);
+          }
+        }
+      }
+
+      // Delete source contacts
+      await client.query('DELETE FROM organization_contacts WHERE id = ANY($1)', [sourceContactIds]);
+
+      await client.query('COMMIT');
+
+      // Get updated target contact
+      const updatedResult = await pool.query(`
+        SELECT oc.*, o.name as organization_name
+        FROM organization_contacts oc
+        LEFT JOIN organizations o ON oc.organization_id = o.id
+        WHERE oc.id = $1
+      `, [targetContactId]);
+
+      res.json({
+        success: true,
+        mergedContact: updatedResult.rows[0],
+        deletedIds: sourceContactIds
+      });
+
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+
+  } catch (error) {
+    console.error('Error merging contacts:', error);
+    res.status(500).json({ error: 'Failed to merge contacts' });
+  }
+});
+
 // GET /api/crm/callers - List all callers (clients and leads) with their details
 app.get('/api/crm/callers', authenticateToken, async (req, res) => {
   try {
