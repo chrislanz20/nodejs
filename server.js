@@ -287,6 +287,13 @@ app.get("/client-dashboard", (_req, res) => {
   res.sendFile(path.join(publicDir, "client-dashboard.html"));
 });
 
+app.get("/crm", (_req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.sendFile(path.join(publicDir, "crm.html"));
+});
+
 // Admin portal login page (public)
 app.get("/admin-portal", (_req, res) => {
   res.sendFile(path.join(publicDir, "admin-portal.html"));

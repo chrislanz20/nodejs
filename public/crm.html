@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caller Database (CRM)</title>
+
+  <link rel="icon" type="image/png" href="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/68e5a3ac2cc261cd1cbe4769.png">
+  <link rel="apple-touch-icon" href="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/68e5a3ac2cc261cd1cbe4769.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0d1117">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: rgba(13, 17, 23, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+      padding: 20px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-left img {
+      height: 40px;
+      width: auto;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #00FFFF;
+    }
+
+    .header-subtitle {
+      font-size: 12px;
+      color: #7d8590;
+      margin-top: 2px;
+    }
+
+    /* Hamburger Menu */
+    .menu-container {
+      position: relative;
+    }
+
+    .hamburger-btn {
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .hamburger-btn:hover {
+      background: rgba(0, 255, 255, 0.15);
+      border-color: rgba(0, 255, 255, 0.5);
+    }
+
+    .hamburger-btn span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: #00FFFF;
+      border-radius: 1px;
+    }
+
+    .menu-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: #161b22;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 12px;
+      min-width: 180px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      display: none;
+      overflow: hidden;
+      z-index: 1000;
+    }
+
+    .menu-dropdown.show {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      color: #e6edf3;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .menu-item:last-child {
+      border-bottom: none;
+    }
+
+    .menu-item:hover {
+      background: rgba(0, 255, 255, 0.08);
+      color: #00FFFF;
+    }
+
+    .menu-item.active {
+      background: rgba(0, 255, 255, 0.1);
+      color: #00FFFF;
+    }
+
+    .menu-item svg {
+      width: 18px;
+      height: 18px;
+      opacity: 0.7;
+    }
+
+    .menu-item:hover svg {
+      opacity: 1;
+    }
+
+    .menu-item.danger {
+      color: #ff6b6b;
+    }
+
+    .menu-item.danger:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+
+    /* Stats Row */
+    .crm-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .crm-stats-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .crm-stat {
+      font-size: 13px;
+      color: #7d8590;
+      background: rgba(0, 255, 255, 0.08);
+      padding: 8px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+    }
+
+    .crm-stat span {
+      color: #00FFFF;
+      font-weight: 600;
+    }
+
+    .refresh-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: rgba(0, 255, 255, 0.1);
+      color: #00FFFF;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .refresh-btn:hover {
+      background: rgba(0, 255, 255, 0.15);
+      border-color: rgba(0, 255, 255, 0.5);
+    }
+
+    .refresh-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Tabs */
+    .crm-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid rgba(0, 255, 255, 0.15);
+      overflow-x: auto;
+    }
+
+    .crm-tab {
+      padding: 14px 24px;
+      background: transparent;
+      color: #7d8590;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      margin-bottom: -2px;
+      white-space: nowrap;
+    }
+
+    .crm-tab:hover {
+      color: #00FFFF;
+      background: rgba(0, 255, 255, 0.05);
+    }
+
+    .crm-tab.active {
+      color: #00FFFF;
+      border-bottom-color: #00FFFF;
+    }
+
+    /* Search */
+    .search-container {
+      margin-bottom: 24px;
+      max-width: 400px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      background: rgba(13, 17, 23, 0.6);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 10px;
+      color: #e6edf3;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: rgba(0, 255, 255, 0.6);
+      box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1);
+    }
+
+    .search-wrapper {
+      position: relative;
+    }
+
+    .search-wrapper svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: #6b7280;
+    }
+
+    /* Table Styles */
+    .table-wrapper {
+      background: rgba(22, 27, 34, 0.5);
+      border: 1px solid rgba(0, 255, 255, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .crm-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .crm-table th {
+      text-align: left;
+      padding: 14px 18px;
+      background: rgba(0, 255, 255, 0.05);
+      color: #00FFFF;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+    }
+
+    .crm-table td {
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+      color: #e6edf3;
+    }
+
+    .crm-table tbody tr:hover {
+      background: rgba(0, 255, 255, 0.03);
+    }
+
+    .crm-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .crm-table .editable {
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      margin: -8px -12px;
+    }
+
+    .crm-table .editable:hover {
+      background: rgba(0, 255, 255, 0.1);
+      outline: 1px dashed rgba(0, 255, 255, 0.4);
+    }
+
+    .crm-table .editable input {
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      border-radius: 4px;
+      padding: 6px 10px;
+      color: #e6edf3;
+      font-size: 14px;
+      width: 100%;
+      outline: none;
+    }
+
+    .crm-table .editable input:focus {
+      border-color: #00FFFF;
+      box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.2);
+    }
+
+    .crm-table .first-name-only {
+      background: rgba(255, 200, 0, 0.15);
+      border: 1px solid rgba(255, 200, 0, 0.3);
+      border-radius: 4px;
+      padding: 8px 12px;
+      margin: -8px -12px;
+    }
+
+    .crm-table .empty-field {
+      color: #555;
+      font-style: italic;
+    }
+
+    .crm-delete-btn {
+      padding: 8px 14px;
+      background: rgba(239, 68, 68, 0.1);
+      color: #ff6b6b;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .crm-delete-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+    }
+
+    .crm-type-badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .crm-type-badge.insurance {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .crm-type-badge.law_firm {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    .crm-type-badge.medical_office {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .crm-type-badge.other {
+      background: rgba(156, 163, 175, 0.15);
+      color: #9ca3af;
+      border: 1px solid rgba(156, 163, 175, 0.3);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: #161b22;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 28px;
+      max-width: 450px;
+      width: 90%;
+    }
+
+    .modal-content h3 {
+      color: #ff6b6b;
+      margin-bottom: 16px;
+      font-size: 18px;
+    }
+
+    .modal-content p {
+      color: #9ca3af;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .modal-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+    }
+
+    .modal-btn:last-child {
+      margin-bottom: 0;
+    }
+
+    .modal-btn.danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ff6b6b;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .modal-btn.danger:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    .modal-btn.secondary {
+      background: rgba(100, 100, 100, 0.15);
+      color: #9ca3af;
+      border: 1px solid rgba(100, 100, 100, 0.4);
+    }
+
+    .modal-btn.secondary:hover {
+      background: rgba(100, 100, 100, 0.25);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 14px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 2000;
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast.success {
+      background: rgba(34, 197, 94, 0.9);
+      color: white;
+    }
+
+    .toast.error {
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #7d8590;
+    }
+
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header {
+        padding: 16px 20px;
+      }
+
+      .header h1 {
+        font-size: 20px;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      .crm-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .crm-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .crm-tab {
+        padding: 12px 18px;
+        font-size: 13px;
+      }
+
+      .crm-table th,
+      .crm-table td {
+        padding: 12px;
+        font-size: 13px;
+      }
+
+      .table-wrapper {
+        overflow-x: auto;
+      }
+
+      .crm-table {
+        min-width: 700px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <img src="https://storage.googleapis.com/msgsndr/lneM3M1j3P5i0JYeNK18/media/68bcea80938a4e0fd2da0e79.png" alt="Logo">
+      <div>
+        <h1>Caller Database</h1>
+        <div class="header-subtitle" id="business-name">Loading...</div>
+      </div>
+    </div>
+    <div class="menu-container">
+      <button class="hamburger-btn" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="menu-dropdown" id="menu-dropdown">
+        <a href="/client-dashboard" class="menu-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+          Dashboard
+        </a>
+        <a href="/crm" class="menu-item active">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+          CRM
+        </a>
+        <a href="#" class="menu-item" onclick="openSettings(); return false;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          Settings
+        </a>
+        <a href="#" class="menu-item danger" onclick="logout(); return false;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          Logout
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Header with stats -->
+    <div class="crm-header">
+      <div class="crm-stats-row">
+        <span class="crm-stat"><span id="crm-org-count">--</span> Organizations</span>
+        <span class="crm-stat"><span id="crm-contact-count">--</span> Contacts</span>
+        <span class="crm-stat"><span id="crm-client-count">--</span> Clients</span>
+        <span class="crm-stat"><span id="crm-lead-count">--</span> Leads</span>
+      </div>
+      <button class="refresh-btn" onclick="loadCRMData()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+        Refresh
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="crm-tabs">
+      <button class="crm-tab active" data-tab="organizations" onclick="switchCRMTab('organizations')">
+        Organizations
+      </button>
+      <button class="crm-tab" data-tab="contacts" onclick="switchCRMTab('contacts')">
+        Contacts
+      </button>
+      <button class="crm-tab" data-tab="clients" onclick="switchCRMTab('clients')">
+        Clients
+      </button>
+      <button class="crm-tab" data-tab="leads" onclick="switchCRMTab('leads')">
+        Leads
+      </button>
+    </div>
+
+    <!-- Search -->
+    <div class="search-container">
+      <div class="search-wrapper">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input type="text" class="search-input" id="crm-search-input" placeholder="Search by name, phone, email..." oninput="handleCRMSearch(this.value)">
+      </div>
+    </div>
+
+    <!-- Organizations Tab -->
+    <div id="crm-tab-organizations" class="crm-tab-content">
+      <div class="table-wrapper">
+        <table class="crm-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Phone</th>
+              <th>Contacts</th>
+              <th>Calls</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="crm-organizations-body">
+            <tr><td colspan="6" class="empty-state">Loading organizations...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Contacts Tab -->
+    <div id="crm-tab-contacts" class="crm-tab-content" style="display: none;">
+      <div class="table-wrapper">
+        <table class="crm-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Organization</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Calls</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="crm-contacts-body">
+            <tr><td colspan="6" class="empty-state">Loading contacts...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Clients Tab -->
+    <div id="crm-tab-clients" class="crm-tab-content" style="display: none;">
+      <div class="table-wrapper">
+        <table class="crm-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Language</th>
+              <th>Calls</th>
+              <th>Last Call</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="crm-clients-body">
+            <tr><td colspan="7" class="empty-state">Loading clients...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Leads Tab -->
+    <div id="crm-tab-leads" class="crm-tab-content" style="display: none;">
+      <div class="table-wrapper">
+        <table class="crm-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Claim #</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="crm-leads-body">
+            <tr><td colspan="6" class="empty-state">Loading leads...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div id="crm-delete-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h3>Confirm Delete</h3>
+      <p id="crm-delete-message"></p>
+      <div id="crm-delete-options"></div>
+      <button class="modal-btn secondary" onclick="closeCRMDeleteModal()">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    // Check auth
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/client-portal';
+    }
+
+    // Load user info
+    async function loadUserInfo() {
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('business-name').textContent = data.business_name || data.email;
+        } else {
+          window.location.href = '/client-portal';
+        }
+      } catch (error) {
+        console.error('Auth error:', error);
+      }
+    }
+
+    // Menu toggle
+    function toggleMenu() {
+      const menu = document.getElementById('menu-dropdown');
+      menu.classList.toggle('show');
+    }
+
+    // Close menu on outside click
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('menu-dropdown');
+      const btn = document.querySelector('.hamburger-btn');
+      if (!menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.classList.remove('show');
+      }
+    });
+
+    function openSettings() {
+      window.location.href = '/client-dashboard#settings';
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = '/client-portal';
+    }
+
+    // Toast
+    function showToast(message, type = 'success') {
+      const existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // CRM Data
+    let crmData = {
+      organizations: [],
+      contacts: [],
+      clients: [],
+      leads: []
+    };
+    let crmSearchTerm = '';
+    let currentCRMTab = 'organizations';
+
+    async function loadCRMData() {
+      try {
+        const statsRes = await fetch('/api/crm/stats', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (statsRes.ok) {
+          const stats = await statsRes.json();
+          document.getElementById('crm-org-count').textContent = stats.organizations;
+          document.getElementById('crm-contact-count').textContent = stats.contacts;
+          document.getElementById('crm-client-count').textContent = stats.clients;
+          document.getElementById('crm-lead-count').textContent = stats.leads;
+        }
+
+        const [orgsRes, contactsRes, clientsRes, leadsRes] = await Promise.all([
+          fetch('/api/crm/organizations', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/crm/contacts', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/crm/callers?type=existing_client', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/crm/callers?type=new_lead', { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
+
+        if (orgsRes.ok) crmData.organizations = (await orgsRes.json()).organizations;
+        if (contactsRes.ok) crmData.contacts = (await contactsRes.json()).contacts;
+        if (clientsRes.ok) crmData.clients = (await clientsRes.json()).callers;
+        if (leadsRes.ok) crmData.leads = (await leadsRes.json()).callers;
+
+        renderCRMTable(currentCRMTab);
+      } catch (error) {
+        console.error('Error loading CRM data:', error);
+      }
+    }
+
+    function switchCRMTab(tab) {
+      currentCRMTab = tab;
+      document.querySelectorAll('.crm-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tab);
+      });
+      document.querySelectorAll('.crm-tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      document.getElementById(`crm-tab-${tab}`).style.display = 'block';
+      renderCRMTable(tab);
+    }
+
+    function handleCRMSearch(term) {
+      crmSearchTerm = term.toLowerCase();
+      renderCRMTable(currentCRMTab);
+    }
+
+    function renderCRMTable(tab) {
+      const tbody = document.getElementById(`crm-${tab}-body`);
+      if (!tbody) return;
+
+      let data = crmData[tab] || [];
+
+      if (crmSearchTerm) {
+        data = data.filter(item => {
+          const searchable = Object.values(item).join(' ').toLowerCase();
+          return searchable.includes(crmSearchTerm);
+        });
+      }
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-state">No ${tab} found</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      switch (tab) {
+        case 'organizations': html = renderOrganizationsTable(data); break;
+        case 'contacts': html = renderContactsTable(data); break;
+        case 'clients': html = renderClientsTable(data); break;
+        case 'leads': html = renderLeadsTable(data); break;
+      }
+      tbody.innerHTML = html;
+    }
+
+    function renderOrganizationsTable(data) {
+      return data.map(org => `
+        <tr>
+          <td><span class="editable" onclick="editOrgField(${org.id}, 'name', this)">${org.name || '<span class="empty-field">--</span>'}</span></td>
+          <td><span class="crm-type-badge ${org.type || 'other'}">${formatOrgType(org.type)}</span></td>
+          <td><span class="editable" onclick="editOrgField(${org.id}, 'primary_phone', this)">${org.primary_phone || '<span class="empty-field">--</span>'}</span></td>
+          <td>${org.contact_count || 0}</td>
+          <td>${org.total_calls || 0}</td>
+          <td><button class="crm-delete-btn" onclick="confirmDeleteOrg(${org.id}, '${escapeHtml(org.name)}', ${org.contact_count || 0})">Delete</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderContactsTable(data) {
+      return data.map(c => `
+        <tr>
+          <td><span class="editable" onclick="editContactField(${c.id}, 'name', this)">${c.name || '<span class="empty-field">--</span>'}</span></td>
+          <td>${c.organization_name || '<span class="empty-field">Unassociated</span>'}</td>
+          <td><span class="editable" onclick="editContactField(${c.id}, 'email', this)">${c.email || '<span class="empty-field">--</span>'}</span></td>
+          <td><span class="editable" onclick="editContactField(${c.id}, 'direct_phone', this)">${c.direct_phone || '<span class="empty-field">--</span>'}</span></td>
+          <td>${c.total_calls || 0}</td>
+          <td><button class="crm-delete-btn" onclick="confirmDeleteContact(${c.id}, '${escapeHtml(c.name)}')">Delete</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderClientsTable(data) {
+      return data.map(c => {
+        const isFirstNameOnly = c.name && !c.name.includes(' ');
+        const nameClass = isFirstNameOnly ? 'editable first-name-only' : 'editable';
+        const nameTitle = isFirstNameOnly ? 'title="Missing last name"' : '';
+        return `
+          <tr>
+            <td><span class="${nameClass}" ${nameTitle} onclick="editCallerField(${c.id}, 'name', this)">${c.name || '<span class="empty-field">--</span>'}</span></td>
+            <td>${formatPhone(c.phone_number)}</td>
+            <td><span class="editable" onclick="editCallerField(${c.id}, 'email', this)">${c.email || '<span class="empty-field">--</span>'}</span></td>
+            <td>${c.preferred_language || 'english'}</td>
+            <td>${c.total_calls || 0}</td>
+            <td>${c.last_call ? formatDate(c.last_call) : '--'}</td>
+            <td><button class="crm-delete-btn" onclick="confirmDeleteCaller(${c.id}, '${escapeHtml(c.name)}')">Delete</button></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderLeadsTable(data) {
+      return data.map(l => `
+        <tr>
+          <td><span class="editable" onclick="editCallerField(${l.id}, 'name', this)">${l.name || '<span class="empty-field">--</span>'}</span></td>
+          <td>${formatPhone(l.phone_number)}</td>
+          <td><span class="editable" onclick="editCallerField(${l.id}, 'email', this)">${l.email || '<span class="empty-field">--</span>'}</span></td>
+          <td>${l.claim_number || '<span class="empty-field">--</span>'}</td>
+          <td>${formatDate(l.created_at)}</td>
+          <td><button class="crm-delete-btn" onclick="confirmDeleteCaller(${l.id}, '${escapeHtml(l.name)}')">Delete</button></td>
+        </tr>
+      `).join('');
+    }
+
+    // Inline editing
+    function editOrgField(id, field, el) {
+      if (el.querySelector('input')) return;
+      const val = el.textContent.trim() === '--' ? '' : el.textContent.trim();
+      el.innerHTML = `<input type="text" value="${escapeHtml(val)}" />`;
+      const input = el.querySelector('input');
+      input.focus();
+      input.select();
+      input.onblur = () => saveOrgField(id, field, input.value, el, val);
+      input.onkeydown = (e) => {
+        if (e.key === 'Enter') saveOrgField(id, field, input.value, el, val);
+        if (e.key === 'Escape') el.innerHTML = val || '<span class="empty-field">--</span>';
+      };
+    }
+
+    async function saveOrgField(id, field, value, el, oldVal) {
+      if (value === oldVal) { el.innerHTML = value || '<span class="empty-field">--</span>'; return; }
+      try {
+        const res = await fetch(`/api/crm/organizations/${id}`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ [field]: value })
+        });
+        if (res.ok) {
+          el.innerHTML = value || '<span class="empty-field">--</span>';
+          showToast('Updated');
+          const org = crmData.organizations.find(o => o.id === id);
+          if (org) org[field] = value;
+        } else {
+          el.innerHTML = oldVal || '<span class="empty-field">--</span>';
+          showToast('Failed to update', 'error');
+        }
+      } catch (e) {
+        el.innerHTML = oldVal || '<span class="empty-field">--</span>';
+        showToast('Failed to update', 'error');
+      }
+    }
+
+    function editContactField(id, field, el) {
+      if (el.querySelector('input')) return;
+      const val = el.textContent.trim() === '--' ? '' : el.textContent.trim();
+      el.innerHTML = `<input type="text" value="${escapeHtml(val)}" />`;
+      const input = el.querySelector('input');
+      input.focus();
+      input.select();
+      input.onblur = () => saveContactField(id, field, input.value, el, val);
+      input.onkeydown = (e) => {
+        if (e.key === 'Enter') saveContactField(id, field, input.value, el, val);
+        if (e.key === 'Escape') el.innerHTML = val || '<span class="empty-field">--</span>';
+      };
+    }
+
+    async function saveContactField(id, field, value, el, oldVal) {
+      if (value === oldVal) { el.innerHTML = value || '<span class="empty-field">--</span>'; return; }
+      try {
+        const res = await fetch(`/api/crm/contacts/${id}`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ [field]: value })
+        });
+        if (res.ok) {
+          el.innerHTML = value || '<span class="empty-field">--</span>';
+          showToast('Updated');
+        } else {
+          el.innerHTML = oldVal || '<span class="empty-field">--</span>';
+          showToast('Failed to update', 'error');
+        }
+      } catch (e) {
+        el.innerHTML = oldVal || '<span class="empty-field">--</span>';
+        showToast('Failed to update', 'error');
+      }
+    }
+
+    function editCallerField(id, field, el) {
+      if (el.querySelector('input')) return;
+      const val = el.textContent.trim() === '--' ? '' : el.textContent.trim();
+      el.innerHTML = `<input type="text" value="${escapeHtml(val)}" />`;
+      const input = el.querySelector('input');
+      input.focus();
+      input.select();
+      input.onblur = () => saveCallerField(id, field, input.value, el, val);
+      input.onkeydown = (e) => {
+        if (e.key === 'Enter') saveCallerField(id, field, input.value, el, val);
+        if (e.key === 'Escape') el.innerHTML = val || '<span class="empty-field">--</span>';
+      };
+    }
+
+    async function saveCallerField(id, field, value, el, oldVal) {
+      if (value === oldVal) { el.innerHTML = value || '<span class="empty-field">--</span>'; return; }
+      try {
+        const res = await fetch(`/api/crm/callers/${id}/field`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ field_name: field, field_value: value })
+        });
+        if (res.ok) {
+          el.innerHTML = value || '<span class="empty-field">--</span>';
+          if (field === 'name' && value.includes(' ')) el.classList.remove('first-name-only');
+          showToast('Updated');
+        } else {
+          el.innerHTML = oldVal || '<span class="empty-field">--</span>';
+          showToast('Failed to update', 'error');
+        }
+      } catch (e) {
+        el.innerHTML = oldVal || '<span class="empty-field">--</span>';
+        showToast('Failed to update', 'error');
+      }
+    }
+
+    // Delete functions
+    let pendingDelete = null;
+
+    function confirmDeleteOrg(id, name, contactCount) {
+      pendingDelete = { type: 'org', id, contactCount };
+      document.getElementById('crm-delete-message').textContent = `Delete "${name}"?`;
+      const opts = document.getElementById('crm-delete-options');
+      if (contactCount > 0) {
+        opts.innerHTML = `
+          <button class="modal-btn danger" onclick="executeDeleteOrg(true)">Delete org + ${contactCount} contacts</button>
+          <button class="modal-btn secondary" onclick="executeDeleteOrg(false)">Delete org only</button>
+        `;
+      } else {
+        opts.innerHTML = `<button class="modal-btn danger" onclick="executeDeleteOrg(false)">Delete</button>`;
+      }
+      document.getElementById('crm-delete-modal').style.display = 'flex';
+    }
+
+    async function executeDeleteOrg(deleteContacts) {
+      try {
+        const res = await fetch(`/api/crm/organizations/${pendingDelete.id}?deleteContacts=${deleteContacts}`, {
+          method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) { showToast('Deleted'); closeCRMDeleteModal(); loadCRMData(); }
+        else showToast('Failed', 'error');
+      } catch (e) { showToast('Failed', 'error'); }
+    }
+
+    function confirmDeleteContact(id, name) {
+      pendingDelete = { type: 'contact', id };
+      document.getElementById('crm-delete-message').textContent = `Delete contact "${name}"?`;
+      document.getElementById('crm-delete-options').innerHTML = `<button class="modal-btn danger" onclick="executeDeleteContact()">Delete</button>`;
+      document.getElementById('crm-delete-modal').style.display = 'flex';
+    }
+
+    async function executeDeleteContact() {
+      try {
+        const res = await fetch(`/api/crm/contacts/${pendingDelete.id}`, {
+          method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) { showToast('Deleted'); closeCRMDeleteModal(); loadCRMData(); }
+        else showToast('Failed', 'error');
+      } catch (e) { showToast('Failed', 'error'); }
+    }
+
+    function confirmDeleteCaller(id, name) {
+      pendingDelete = { type: 'caller', id };
+      document.getElementById('crm-delete-message').textContent = `Delete "${name || 'this caller'}"? All data will be removed.`;
+      document.getElementById('crm-delete-options').innerHTML = `<button class="modal-btn danger" onclick="executeDeleteCaller()">Delete</button>`;
+      document.getElementById('crm-delete-modal').style.display = 'flex';
+    }
+
+    async function executeDeleteCaller() {
+      try {
+        const res = await fetch(`/api/crm/callers/${pendingDelete.id}`, {
+          method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) { showToast('Deleted'); closeCRMDeleteModal(); loadCRMData(); }
+        else showToast('Failed', 'error');
+      } catch (e) { showToast('Failed', 'error'); }
+    }
+
+    function closeCRMDeleteModal() {
+      document.getElementById('crm-delete-modal').style.display = 'none';
+      pendingDelete = null;
+    }
+
+    // Helpers
+    function formatOrgType(t) { return t ? t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Other'; }
+    function formatPhone(p) {
+      if (!p) return '--';
+      const c = p.replace(/\D/g, '');
+      if (c.length === 10) return `(${c.slice(0,3)}) ${c.slice(3,6)}-${c.slice(6)}`;
+      if (c.length === 11 && c[0] === '1') return `(${c.slice(1,4)}) ${c.slice(4,7)}-${c.slice(7)}`;
+      return p;
+    }
+    function formatDate(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '--'; }
+    function escapeHtml(s) { return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;') : ''; }
+
+    // Init
+    loadUserInfo();
+    loadCRMData();
+  </script>
+</body>
+</html>
