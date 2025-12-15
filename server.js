@@ -6176,31 +6176,82 @@ app.get('/api/crm/callers', authenticateToken, async (req, res) => {
       whereClause += " AND c.caller_type IN ('existing_client', 'new_lead')";
     }
 
+    // Query callers with their details
+    // Claim numbers come from two sources:
+    // 1. caller_details (if client provided it directly)
+    // 2. contact_client_associations (if a professional caller mentioned it)
     const result = await pool.query(`
+      WITH caller_data AS (
+        SELECT
+          c.id,
+          c.phone_number,
+          c.caller_type,
+          c.preferred_language,
+          c.total_calls,
+          c.created_at,
+          MAX(CASE WHEN cd.field_name = 'name' THEN cd.field_value END) as name,
+          MAX(CASE WHEN cd.field_name = 'email' THEN cd.field_value END) as email,
+          MAX(CASE WHEN cd.field_name = 'callback_phone' THEN cd.field_value END) as callback_phone,
+          MAX(CASE WHEN cd.field_name = 'claim_number' THEN cd.field_value END) as direct_claim_number,
+          MAX(ci.call_start) as last_call
+        FROM callers c
+        LEFT JOIN caller_details cd ON c.id = cd.caller_id AND cd.valid_until IS NULL
+        LEFT JOIN call_interactions ci ON c.id = ci.caller_id
+        ${whereClause}
+        GROUP BY c.id
+      )
       SELECT
-        c.id,
-        c.phone_number,
-        c.caller_type,
-        c.preferred_language,
-        c.total_calls,
-        c.created_at,
-        MAX(CASE WHEN cd.field_name = 'name' THEN cd.field_value END) as name,
-        MAX(CASE WHEN cd.field_name = 'email' THEN cd.field_value END) as email,
-        MAX(CASE WHEN cd.field_name = 'callback_phone' THEN cd.field_value END) as callback_phone,
-        MAX(CASE WHEN cd.field_name = 'claim_number' THEN cd.field_value END) as claim_number,
-        MAX(ci.call_start) as last_call
-      FROM callers c
-      LEFT JOIN caller_details cd ON c.id = cd.caller_id AND cd.valid_until IS NULL
-      LEFT JOIN call_interactions ci ON c.id = ci.caller_id
-      ${whereClause}
-      GROUP BY c.id
-      ORDER BY c.created_at DESC
+        cd.*,
+        COALESCE(cd.direct_claim_number, cca.claim_number) as claim_number
+      FROM caller_data cd
+      LEFT JOIN LATERAL (
+        SELECT claim_number
+        FROM contact_client_associations
+        WHERE claim_number IS NOT NULL
+          AND claim_number != ''
+          AND LOWER(client_name) = LOWER(cd.name)
+        ORDER BY created_at DESC
+        LIMIT 1
+      ) cca ON cd.direct_claim_number IS NULL AND cd.name IS NOT NULL
+      ORDER BY cd.created_at DESC
     `, params);
 
     res.json({ callers: result.rows });
   } catch (error) {
     console.error('Error fetching callers:', error);
     res.status(500).json({ error: 'Failed to fetch callers' });
+  }
+});
+
+// GET /api/crm/known-clients - Get all known CourtLaw clients (from professional caller mentions)
+// These are verified clients that insurance/attorneys have called about
+app.get('/api/crm/known-clients', authenticateToken, async (req, res) => {
+  try {
+    const agentIds = req.user.agent_ids || [];
+
+    const result = await pool.query(`
+      SELECT DISTINCT ON (cca.client_name)
+        cca.id,
+        cca.client_name as name,
+        cca.claim_number,
+        cca.notes,
+        cca.mention_count,
+        cca.created_at,
+        cca.updated_at,
+        o.name as mentioned_by_org,
+        o.type as org_type,
+        oc.name as mentioned_by_contact
+      FROM contact_client_associations cca
+      JOIN organization_contacts oc ON cca.organization_contact_id = oc.id
+      JOIN organizations o ON oc.organization_id = o.id
+      WHERE o.agent_id = ANY($1)
+      ORDER BY cca.client_name, cca.created_at DESC
+    `, [agentIds]);
+
+    res.json({ clients: result.rows });
+  } catch (error) {
+    console.error('Error fetching known clients:', error);
+    res.status(500).json({ error: 'Failed to fetch known clients' });
   }
 });
 

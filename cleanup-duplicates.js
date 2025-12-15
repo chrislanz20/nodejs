@@ -1,4 +1,6 @@
-// Clean up duplicate organizations and remaining data issues
+// Clean up duplicate client records in contact_client_associations
+// Strategy: Keep record with claim number, use best name spelling, delete duplicates
+
 require('dotenv').config();
 const { Pool } = require('pg');
 
@@ -7,177 +9,108 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-const COURTLAW_AGENT_ID = 'agent_8e50b96f7e7bb7ce7479219fcc';
+// Duplicates to merge (manually verified)
+const mergeActions = [
+  // Group 1: Desiree Vega (exact duplicates, neither has claim)
+  { keep: 30, delete: [82], reason: 'Exact duplicate' },
 
-// Organization merges: [wrong name] -> [correct name]
-const ORG_MERGES = [
-  { from: 'Gyco', to: 'Geico' },
-  { from: 'the the law', to: 'the law' },
-  { from: 'Impressive', to: 'progressive' },
-  { from: 'Boldberg Miller and Rubin', to: 'Goldberg, Miller, and Reuben' },
+  // Group 2: Hameda Siddiqui (exact duplicates)
+  { keep: 2, delete: [36], reason: 'Exact duplicate' },
+
+  // Group 3: Italia Brown / Italia Brown Carpenter - DIFFERENT claim numbers
+  // These might be different cases or same person with two claims - SKIP
+
+  // Group 4: James Car/Carr (typo, no claims)
+  { keep: 14, delete: [13, 79, 9, 59], newName: 'James Carr', reason: 'Typo + duplicates' },
+
+  // Group 5: Jessica Ronnie (exact duplicates)
+  { keep: 78, delete: [80], reason: 'Exact duplicate' },
+
+  // Group 6: Jim Smith (exact duplicates)
+  { keep: 51, delete: [48], reason: 'Exact duplicate' },
+
+  // Group 7: John Smith (exact duplicates)
+  { keep: 53, delete: [49], reason: 'Exact duplicate' },
+
+  // Group 8: Maria Rodriguez - keep one with claim number
+  { keep: 55, delete: [64], reason: 'Keep record with claim number' },
+
+  // Group 9: Williams / Rochelle Williams - keep full name with claim
+  { keep: 63, delete: [74], reason: 'Keep full name with claim number' }
 ];
 
-// Organizations to delete (bad/garbled names with 0 contacts)
-const ORGS_TO_DELETE = [
-  'Burlington ASC',
-  'Diagnostic Emergency Center',
-  'Dycho',
-  'Esurance',
-  'ExamWorks',
-  'Hanover Insurance',
-  'Millennium Medical Billing',
-  'Surgical surgical center',
-  'Total Care Fiscal Therapy Center',
-  'Union County Surgery Center',
-];
-
-// Caller 181 - remove since no usable data (garbled transcript)
-const CALLERS_TO_DELETE = [181];
-
-async function cleanup() {
-  console.log('\n🧹 Cleaning up duplicate organizations and bad data...\n');
+async function cleanupDuplicates(dryRun = true) {
+  console.log('='.repeat(80));
+  console.log('CLEANUP DUPLICATE CLIENT RECORDS');
+  console.log(dryRun ? '(DRY RUN - no changes)' : '(LIVE RUN - changes will be saved)');
+  console.log('='.repeat(80));
 
   try {
-    // Step 1: Merge duplicate organizations
-    console.log('Step 1: Merging duplicate organizations...');
+    let deleted = 0;
+    let updated = 0;
 
-    for (const merge of ORG_MERGES) {
-      // Find the source org
-      const fromOrg = await pool.query(
-        'SELECT id FROM organizations WHERE name = $1 AND agent_id = $2',
-        [merge.from, COURTLAW_AGENT_ID]
+    for (const action of mergeActions) {
+      console.log('\n' + action.reason + ':');
+
+      const keepRecord = await pool.query(
+        'SELECT id, client_name, claim_number FROM contact_client_associations WHERE id = $1',
+        [action.keep]
       );
-
-      if (fromOrg.rows.length === 0) {
-        console.log(`   ⚠️ "${merge.from}" not found, skipping`);
-        continue;
+      if (keepRecord.rows.length > 0) {
+        const k = keepRecord.rows[0];
+        console.log('  KEEP: ID ' + k.id + ' - "' + k.client_name + '"' + (k.claim_number ? ' [Claim: ' + k.claim_number + ']' : ''));
       }
 
-      // Find the target org
-      const toOrg = await pool.query(
-        'SELECT id FROM organizations WHERE name = $1 AND agent_id = $2',
-        [merge.to, COURTLAW_AGENT_ID]
-      );
-
-      if (toOrg.rows.length === 0) {
-        // Just rename the org
-        await pool.query(
-          'UPDATE organizations SET name = $1 WHERE id = $2',
-          [merge.to, fromOrg.rows[0].id]
+      for (const delId of action.delete) {
+        const delRecord = await pool.query(
+          'SELECT id, client_name, claim_number FROM contact_client_associations WHERE id = $1',
+          [delId]
         );
-        console.log(`   📝 Renamed "${merge.from}" to "${merge.to}"`);
-      } else {
-        // Move contacts from source to target, then delete source
-        await pool.query(
-          'UPDATE organization_contacts SET organization_id = $1 WHERE organization_id = $2',
-          [toOrg.rows[0].id, fromOrg.rows[0].id]
-        );
-        await pool.query('DELETE FROM organizations WHERE id = $1', [fromOrg.rows[0].id]);
-        console.log(`   🔀 Merged "${merge.from}" into "${merge.to}"`);
-      }
-    }
-
-    // Step 2: Delete empty/bad organizations
-    console.log('\nStep 2: Deleting empty/bad organizations...');
-
-    for (const orgName of ORGS_TO_DELETE) {
-      const org = await pool.query(
-        'SELECT id FROM organizations WHERE name = $1 AND agent_id = $2',
-        [orgName, COURTLAW_AGENT_ID]
-      );
-
-      if (org.rows.length > 0) {
-        // Check if it has contacts
-        const contacts = await pool.query(
-          'SELECT COUNT(*) FROM organization_contacts WHERE organization_id = $1',
-          [org.rows[0].id]
-        );
-
-        if (parseInt(contacts.rows[0].count) === 0) {
-          await pool.query('DELETE FROM organizations WHERE id = $1', [org.rows[0].id]);
-          console.log(`   🗑️ Deleted empty org: "${orgName}"`);
-        } else {
-          console.log(`   ⚠️ "${orgName}" has contacts, keeping`);
+        if (delRecord.rows.length > 0) {
+          const d = delRecord.rows[0];
+          console.log('  DELETE: ID ' + d.id + ' - "' + d.client_name + '"' + (d.claim_number ? ' [Claim: ' + d.claim_number + ']' : ''));
         }
       }
-    }
 
-    // Step 3: Delete callers with no usable data
-    console.log('\nStep 3: Removing callers with no usable data...');
+      if (!dryRun) {
+        if (action.newName) {
+          await pool.query(
+            'UPDATE contact_client_associations SET client_name = $1, updated_at = NOW() WHERE id = $2',
+            [action.newName, action.keep]
+          );
+          console.log('  -> Updated name to "' + action.newName + '"');
+          updated++;
+        }
 
-    for (const callerId of CALLERS_TO_DELETE) {
-      await pool.query('DELETE FROM caller_details WHERE caller_id = $1', [callerId]);
-      await pool.query('DELETE FROM callers WHERE id = $1', [callerId]);
-      console.log(`   🗑️ Deleted caller ${callerId} (no usable data)`);
-    }
-
-    // Step 4: Fix organization name casing/typos
-    console.log('\nStep 4: Fixing organization name casing...');
-
-    const nameFixes = [
-      { from: 'progressive', to: 'Progressive' },
-      { from: 'farmers', to: 'Farmers' },
-      { from: 'the law', to: 'The Law Firm' },
-      { from: 'all medical', to: 'All Medical' },
-      { from: 'your medical', to: 'Your Medical' },
-    ];
-
-    for (const fix of nameFixes) {
-      const result = await pool.query(
-        'UPDATE organizations SET name = $1 WHERE name = $2 AND agent_id = $3',
-        [fix.to, fix.from, COURTLAW_AGENT_ID]
-      );
-      if (result.rowCount > 0) {
-        console.log(`   📝 "${fix.from}" → "${fix.to}"`);
+        for (const delId of action.delete) {
+          await pool.query('DELETE FROM contact_client_associations WHERE id = $1', [delId]);
+          deleted++;
+        }
+        console.log('  -> Deleted ' + action.delete.length + ' duplicate(s)');
       }
     }
 
-    // Final counts
-    console.log('\n' + '='.repeat(50));
-
-    const orgs = await pool.query(
-      'SELECT COUNT(*) FROM organizations WHERE agent_id = $1',
-      [COURTLAW_AGENT_ID]
-    );
-    const contacts = await pool.query(`
-      SELECT COUNT(*) FROM organization_contacts oc
-      JOIN organizations o ON oc.organization_id = o.id
-      WHERE o.agent_id = $1
-    `, [COURTLAW_AGENT_ID]);
-    const callers = await pool.query(
-      'SELECT COUNT(*) FROM callers WHERE agent_id = $1',
-      [COURTLAW_AGENT_ID]
-    );
-    const existingClients = await pool.query(
-      "SELECT COUNT(*) FROM callers WHERE agent_id = $1 AND caller_type = 'existing_client'",
-      [COURTLAW_AGENT_ID]
-    );
-    const newLeads = await pool.query(
-      "SELECT COUNT(*) FROM callers WHERE agent_id = $1 AND caller_type = 'new_lead'",
-      [COURTLAW_AGENT_ID]
-    );
-
-    console.log('📊 FINAL DATA COUNTS:');
-    console.log(`   Organizations: ${orgs.rows[0].count}`);
-    console.log(`   Org Contacts: ${contacts.rows[0].count}`);
-    console.log(`   Existing Clients: ${existingClients.rows[0].count}`);
-    console.log(`   New Leads: ${newLeads.rows[0].count}`);
-    console.log('='.repeat(50));
+    console.log('\n' + '='.repeat(80));
+    console.log('SUMMARY');
+    console.log('='.repeat(80));
+    console.log('Actions defined: ' + mergeActions.length);
+    if (dryRun) {
+      const totalDelete = mergeActions.reduce((sum, a) => sum + a.delete.length, 0);
+      console.log('Records that would be deleted: ' + totalDelete);
+      console.log('\nThis was a DRY RUN. To apply changes, run with:');
+      console.log('   node cleanup-duplicates.js --apply');
+    } else {
+      console.log('Records deleted: ' + deleted);
+      console.log('Records updated: ' + updated);
+      console.log('Cleanup complete!');
+    }
 
   } catch (error) {
-    console.error('❌ Error:', error.message);
-    throw error;
+    console.error('Error:', error);
   } finally {
     await pool.end();
   }
 }
 
-cleanup()
-  .then(() => {
-    console.log('\n✅ Cleanup complete!');
-    process.exit(0);
-  })
-  .catch(error => {
-    console.error('💥 Cleanup failed:', error);
-    process.exit(1);
-  });
+const dryRun = !process.argv.includes('--apply');
+cleanupDuplicates(dryRun);

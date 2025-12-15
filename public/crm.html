@@ -1251,24 +1251,23 @@
       </div>
     </div>
 
-    <!-- Clients Tab -->
+    <!-- Clients Tab - Known CourtLaw clients (from professional caller mentions) -->
     <div id="crm-tab-clients" class="crm-tab-content" style="display: none;">
       <div class="table-wrapper">
         <table class="crm-table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Phone</th>
+              <th>Client Name</th>
               <th>Claim #</th>
-              <th>Email</th>
-              <th>Language</th>
-              <th>Calls</th>
-              <th>Last Call</th>
+              <th>Mentioned By</th>
+              <th>Type</th>
+              <th>Contact</th>
+              <th>Times</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody id="crm-clients-body">
-            <tr><td colspan="8" class="empty-state">Loading clients...</td></tr>
+            <tr><td colspan="7" class="empty-state">Loading clients...</td></tr>
           </tbody>
         </table>
       </div>
@@ -1486,13 +1485,13 @@
         const [orgsRes, contactsRes, clientsRes, leadsRes] = await Promise.all([
           fetch('/api/crm/organizations', { credentials: 'include' }),
           fetch('/api/crm/contacts', { credentials: 'include' }),
-          fetch('/api/crm/callers?type=existing_client', { credentials: 'include' }),
+          fetch('/api/crm/known-clients', { credentials: 'include' }),  // Known CourtLaw clients (from professional caller mentions)
           fetch('/api/crm/callers?type=new_lead', { credentials: 'include' })
         ]);
 
         if (orgsRes.ok) crmData.organizations = (await orgsRes.json()).organizations;
         if (contactsRes.ok) crmData.contacts = (await contactsRes.json()).contacts;
-        if (clientsRes.ok) crmData.clients = (await clientsRes.json()).callers;
+        if (clientsRes.ok) crmData.clients = (await clientsRes.json()).clients;  // Note: .clients not .callers
         if (leadsRes.ok) crmData.leads = (await leadsRes.json()).callers;
 
         renderCRMTable(currentCRMTab);
@@ -1616,24 +1615,32 @@
     }
 
     function renderClientsTable(data) {
+      // Render known CourtLaw clients (from professional caller mentions)
       return data.map(c => {
         const isFirstNameOnly = c.name && !c.name.includes(' ');
-        const nameClass = isFirstNameOnly ? 'editable first-name-only' : 'editable';
+        const nameClass = isFirstNameOnly ? 'first-name-only' : '';
         const nameTitle = isFirstNameOnly ? 'title="Missing last name"' : '';
-        const lang = c.preferred_language || 'english';
+        const orgType = c.org_type ? c.org_type.replace('_', ' ') : '--';
         return `
           <tr>
-            <td><span class="${nameClass}" ${nameTitle} onclick="editCallerField(${c.id}, 'name', this)">${c.name || '<span class="empty-field">--</span>'}</span></td>
-            <td>${formatPhone(c.phone_number)}</td>
-            <td><span class="editable" onclick="editCallerField(${c.id}, 'claim_number', this)">${c.claim_number || '<span class="empty-field">--</span>'}</span></td>
-            <td><span class="editable" onclick="editCallerField(${c.id}, 'email', this)">${c.email || '<span class="empty-field">--</span>'}</span></td>
-            <td><span class="editable-dropdown" onclick="editLanguage(${c.id}, this)">${lang}</span></td>
-            <td>${c.total_calls || 0}</td>
-            <td>${c.last_call ? formatDate(c.last_call) : '--'}</td>
-            <td><button class="crm-delete-btn" onclick="confirmDeleteCaller(${c.id}, '${escapeHtml(c.name)}')">Delete</button></td>
+            <td><span class="${nameClass}" ${nameTitle}>${c.name || '<span class="empty-field">--</span>'}</span></td>
+            <td><span class="claim-number">${c.claim_number || '<span class="empty-field">--</span>'}</span></td>
+            <td>${c.mentioned_by_org || '<span class="empty-field">--</span>'}</td>
+            <td><span class="org-type-badge ${c.org_type || 'other'}">${orgType}</span></td>
+            <td>${c.mentioned_by_contact || '<span class="empty-field">--</span>'}</td>
+            <td>${c.mention_count || 1}</td>
+            <td><button class="crm-view-btn" onclick="viewClientDetails(${c.id})">View</button></td>
           </tr>
         `;
       }).join('');
+    }
+
+    function viewClientDetails(id) {
+      // Find the client in the data
+      const client = crmData.clients.find(c => c.id === id);
+      if (!client) return;
+
+      alert('Client: ' + client.name + '\\nClaim #: ' + (client.claim_number || 'N/A') + '\\nMentioned by: ' + client.mentioned_by_org + ' (' + client.mentioned_by_contact + ')');
     }
 
     function renderLeadsTable(data) {
