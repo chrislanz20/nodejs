@@ -916,6 +916,63 @@
       font-style: italic;
     }
 
+    /* Recent calls list */
+    .recent-calls-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .recent-call-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.2s;
+    }
+    .recent-call-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    .recent-call-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .recent-call-contact {
+      color: #f8fafc;
+      font-weight: 500;
+    }
+    .recent-call-date {
+      color: #64748b;
+      font-size: 12px;
+    }
+    .recent-call-link {
+      color: #60a5fa;
+      text-decoration: none;
+      font-size: 13px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: rgba(59, 130, 246, 0.1);
+      transition: all 0.2s;
+    }
+    .recent-call-link:hover {
+      background: rgba(59, 130, 246, 0.2);
+    }
+    .view-all-calls-link {
+      display: block;
+      margin-top: 12px;
+      color: #60a5fa;
+      text-decoration: none;
+      font-size: 13px;
+      text-align: center;
+    }
+    .view-all-calls-link:hover {
+      text-decoration: underline;
+    }
+
     .org-name-clickable {
       cursor: pointer;
       color: #00FFFF;
@@ -1241,6 +1298,20 @@
                 <tr><td colspan="5" class="org-detail-empty">Loading...</td></tr>
               </tbody>
             </table>
+          </div>
+        </div>
+
+        <!-- Recent Calls Section -->
+        <div class="org-detail-section">
+          <div class="org-detail-section-title">
+            Recent Calls
+            <span class="org-detail-section-count" id="org-calls-count">0</span>
+          </div>
+          <div id="org-calls-content">
+            <div class="recent-calls-list" id="org-recent-calls">
+              <div class="org-detail-empty">Loading...</div>
+            </div>
+            <a href="#" id="org-view-all-calls" class="view-all-calls-link" style="display: none;">View all calls on Dashboard →</a>
           </div>
         </div>
       </div>
@@ -2013,21 +2084,29 @@
       document.getElementById('org-detail-info').innerHTML = '';
       document.getElementById('org-contacts-body').innerHTML = '<tr><td colspan="4" class="org-detail-empty">Loading...</td></tr>';
       document.getElementById('org-clients-body').innerHTML = '<tr><td colspan="5" class="org-detail-empty">Loading...</td></tr>';
+      document.getElementById('org-recent-calls').innerHTML = '<div class="org-detail-empty">Loading...</div>';
       document.getElementById('org-contacts-count').textContent = '0';
       document.getElementById('org-clients-count').textContent = '0';
+      document.getElementById('org-calls-count').textContent = '0';
+      document.getElementById('org-view-all-calls').style.display = 'none';
 
       try {
-        const res = await fetch(`/api/crm/organizations/${orgId}/details`, {
-          credentials: 'include'
-        });
+        // Fetch org details and recent calls in parallel
+        const [detailsRes, callsRes] = await Promise.all([
+          fetch(`/api/crm/organizations/${orgId}/details`, { credentials: 'include' }),
+          fetch(`/api/crm/organizations/${orgId}/calls?limit=5`, { credentials: 'include' })
+        ]);
 
-        if (!res.ok) {
+        if (!detailsRes.ok) {
           throw new Error('Failed to load organization details');
         }
 
-        const data = await res.json();
+        const data = await detailsRes.json();
+        const callsData = callsRes.ok ? await callsRes.json() : { calls: [] };
+
         currentOrgDetail = data;
         renderOrgDetail(data);
+        renderOrgRecentCalls(callsData.calls || [], orgId);
       } catch (error) {
         console.error('Error loading org details:', error);
         document.getElementById('org-detail-name').textContent = 'Error loading details';
@@ -2095,6 +2174,47 @@
             <td>${formatDate(c.lastAssociationDate)}</td>
           </tr>
         `).join('');
+      }
+    }
+
+    function renderOrgRecentCalls(calls, orgId) {
+      document.getElementById('org-calls-count').textContent = calls.length;
+
+      if (calls.length === 0) {
+        document.getElementById('org-recent-calls').innerHTML = '<div class="org-detail-empty">No recent calls from this organization</div>';
+        document.getElementById('org-view-all-calls').style.display = 'none';
+        return;
+      }
+
+      const callsHtml = calls.map(call => {
+        const callDate = new Date(call.callStart);
+        const formattedDate = callDate.toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
+        return `
+          <div class="recent-call-item">
+            <div class="recent-call-info">
+              <span class="recent-call-contact">${escapeHtml(call.contactName)}</span>
+              <span class="recent-call-date">${formattedDate} • ${formatPhone(call.callerPhone)}</span>
+            </div>
+            <a href="/client-dashboard?call=${call.callId}" class="recent-call-link">View Call →</a>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('org-recent-calls').innerHTML = callsHtml;
+
+      // Show "View all" link if there might be more calls
+      const viewAllLink = document.getElementById('org-view-all-calls');
+      if (calls.length >= 5) {
+        viewAllLink.href = `/client-dashboard?org=${orgId}`;
+        viewAllLink.style.display = 'block';
+      } else {
+        viewAllLink.style.display = 'none';
       }
     }
 

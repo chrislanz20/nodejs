@@ -5914,6 +5914,63 @@ app.get('/api/crm/clients/search', authenticateToken, async (req, res) => {
   }
 });
 
+// GET /api/crm/organizations/:id/calls - Get recent calls for an organization
+app.get('/api/crm/organizations/:id/calls', authenticateToken, async (req, res) => {
+  try {
+    const agentIds = req.user.agent_ids || [];
+    const { id } = req.params;
+    const limit = parseInt(req.query.limit) || 5;
+
+    // Verify organization belongs to this user
+    const orgCheck = await pool.query(
+      'SELECT id, primary_phone, additional_phones FROM organizations WHERE id = $1 AND agent_id = ANY($2)',
+      [id, agentIds]
+    );
+
+    if (orgCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    const org = orgCheck.rows[0];
+    const orgPhones = [org.primary_phone, ...(org.additional_phones || [])].filter(Boolean);
+
+    if (orgPhones.length === 0) {
+      return res.json({ calls: [] });
+    }
+
+    // Get recent calls from this organization's phone numbers
+    const result = await pool.query(`
+      SELECT
+        ci.id,
+        ci.call_id,
+        ci.call_start,
+        ci.call_end,
+        ci.caller_phone,
+        oc.name as contact_name
+      FROM call_interactions ci
+      LEFT JOIN organization_contacts oc ON ci.caller_id = oc.id
+      WHERE ci.agent_id = ANY($1)
+        AND ci.caller_phone = ANY($2)
+      ORDER BY ci.call_start DESC
+      LIMIT $3
+    `, [agentIds, orgPhones, limit]);
+
+    const calls = result.rows.map(call => ({
+      id: call.id,
+      callId: call.call_id,
+      callStart: call.call_start,
+      callEnd: call.call_end,
+      callerPhone: call.caller_phone,
+      contactName: call.contact_name || 'Unknown Contact'
+    }));
+
+    res.json({ calls });
+  } catch (error) {
+    console.error('Error fetching organization calls:', error);
+    res.status(500).json({ error: 'Failed to fetch calls' });
+  }
+});
+
 // GET /api/crm/contacts - List all organization contacts
 app.get('/api/crm/contacts', authenticateToken, async (req, res) => {
   try {
