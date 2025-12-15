@@ -5486,6 +5486,351 @@ app.put('/api/notification-preferences/:recipientId', authenticateToken, async (
 });
 
 // ============================================================================
+// CRM ENDPOINTS - Caller Recognition Database Management
+// ============================================================================
+
+// GET /api/crm/stats - Get counts for CRM dashboard
+app.get('/api/crm/stats', authenticateToken, async (req, res) => {
+  try {
+    const agentId = req.user.agent_id;
+
+    const [orgs, contacts, clients, leads] = await Promise.all([
+      pool.query('SELECT COUNT(*) FROM organizations WHERE agent_id = $1', [agentId]),
+      pool.query(`
+        SELECT COUNT(*) FROM organization_contacts oc
+        JOIN organizations o ON oc.organization_id = o.id
+        WHERE o.agent_id = $1
+      `, [agentId]),
+      pool.query("SELECT COUNT(*) FROM callers WHERE agent_id = $1 AND caller_type = 'existing_client'", [agentId]),
+      pool.query("SELECT COUNT(*) FROM callers WHERE agent_id = $1 AND caller_type = 'new_lead'", [agentId])
+    ]);
+
+    res.json({
+      organizations: parseInt(orgs.rows[0].count),
+      contacts: parseInt(contacts.rows[0].count),
+      clients: parseInt(clients.rows[0].count),
+      leads: parseInt(leads.rows[0].count)
+    });
+  } catch (error) {
+    console.error('Error fetching CRM stats:', error);
+    res.status(500).json({ error: 'Failed to fetch CRM stats' });
+  }
+});
+
+// GET /api/crm/organizations - List all organizations
+app.get('/api/crm/organizations', authenticateToken, async (req, res) => {
+  try {
+    const agentId = req.user.agent_id;
+
+    const result = await pool.query(`
+      SELECT
+        o.id,
+        o.name,
+        o.type,
+        o.primary_phone,
+        o.total_calls,
+        o.created_at,
+        COUNT(oc.id) as contact_count
+      FROM organizations o
+      LEFT JOIN organization_contacts oc ON o.id = oc.organization_id
+      WHERE o.agent_id = $1
+      GROUP BY o.id
+      ORDER BY o.name ASC
+    `, [agentId]);
+
+    res.json({ organizations: result.rows });
+  } catch (error) {
+    console.error('Error fetching organizations:', error);
+    res.status(500).json({ error: 'Failed to fetch organizations' });
+  }
+});
+
+// PUT /api/crm/organizations/:id - Update organization
+app.put('/api/crm/organizations/:id', authenticateToken, async (req, res) => {
+  try {
+    const agentId = req.user.agent_id;
+    const { id } = req.params;
+    const { name, type, primary_phone } = req.body;
+
+    const result = await pool.query(`
+      UPDATE organizations
+      SET name = COALESCE($1, name),
+          type = COALESCE($2, type),
+          primary_phone = COALESCE($3, primary_phone),
+          updated_at = NOW()
+      WHERE id = $4 AND agent_id = $5
+      RETURNING *
+    `, [name, type, primary_phone, id, agentId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    res.json({ organization: result.rows[0] });
+  } catch (error) {
+    console.error('Error updating organization:', error);
+    res.status(500).json({ error: 'Failed to update organization' });
+  }
+});
+
+// DELETE /api/crm/organizations/:id - Delete organization
+app.delete('/api/crm/organizations/:id', authenticateToken, async (req, res) => {
+  try {
+    const agentId = req.user.agent_id;
+    const { id } = req.params;
+    const { deleteContacts } = req.query; // 'true' to cascade delete contacts
+
+    // Check if org has contacts
+    const contactCheck = await pool.query(
+      'SELECT COUNT(*) FROM organization_contacts WHERE organization_id = $1',
+      [id]
+    );
+    const contactCount = parseInt(contactCheck.rows[0].count);
+
+    if (deleteContacts === 'true' && contactCount > 0) {
+      // Cascade delete contacts first
+      await pool.query('DELETE FROM organization_contacts WHERE organization_id = $1', [id]);
+    } else if (deleteContacts !== 'true' && contactCount > 0) {
+      // Orphan contacts (set organization_id to null)
+      await pool.query('UPDATE organization_contacts SET organization_id = NULL WHERE organization_id = $1', [id]);
+    }
+
+    const result = await pool.query(
+      'DELETE FROM organizations WHERE id = $1 AND agent_id = $2 RETURNING id',
+      [id, agentId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    res.json({ success: true, deletedContacts: deleteContacts === 'true' ? contactCount : 0 });
+  } catch (error) {
+    console.error('Error deleting organization:', error);
+    res.status(500).json({ error: 'Failed to delete organization' });
+  }
+});
+
+// GET /api/crm/contacts - List all organization contacts
+app.get('/api/crm/contacts', authenticateToken, async (req, res) => {
+  try {
+    const agentId = req.user.agent_id;
+
+    const result = await pool.query(`
+      SELECT
+        oc.id,
+        oc.name,
+        oc.email,
+        oc.direct_phone,
+        oc.fax,
+        oc.total_calls,
+        oc.organization_id,
+        o.name as organization_name,
+        o.type as organization_type
+      FROM organization_contacts oc
+      LEFT JOIN organizations o ON oc.organization_id = o.id
+      WHERE o.agent_id = $1 OR oc.organization_id IS NULL
+      ORDER BY oc.name ASC
+    `, [agentId]);
+
+    res.json({ contacts: result.rows });
+  } catch (error) {
+    console.error('Error fetching contacts:', error);
+    res.status(500).json({ error: 'Failed to fetch contacts' });
+  }
+});
+
+// PUT /api/crm/contacts/:id - Update contact
+app.put('/api/crm/contacts/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, direct_phone, fax, organization_id } = req.body;
+
+    const result = await pool.query(`
+      UPDATE organization_contacts
+      SET name = COALESCE($1, name),
+          email = COALESCE($2, email),
+          direct_phone = COALESCE($3, direct_phone),
+          fax = COALESCE($4, fax),
+          organization_id = COALESCE($5, organization_id),
+          updated_at = NOW()
+      WHERE id = $6
+      RETURNING *
+    `, [name, email, direct_phone, fax, organization_id, id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Contact not found' });
+    }
+
+    res.json({ contact: result.rows[0] });
+  } catch (error) {
+    console.error('Error updating contact:', error);
+    res.status(500).json({ error: 'Failed to update contact' });
+  }
+});
+
+// DELETE /api/crm/contacts/:id - Delete contact
+app.delete('/api/crm/contacts/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query(
+      'DELETE FROM organization_contacts WHERE id = $1 RETURNING id',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Contact not found' });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting contact:', error);
+    res.status(500).json({ error: 'Failed to delete contact' });
+  }
+});
+
+// GET /api/crm/callers - List all callers (clients and leads) with their details
+app.get('/api/crm/callers', authenticateToken, async (req, res) => {
+  try {
+    const agentId = req.user.agent_id;
+    const { type } = req.query; // 'existing_client', 'new_lead', or omit for all
+
+    let whereClause = 'WHERE c.agent_id = $1';
+    const params = [agentId];
+
+    if (type) {
+      whereClause += ' AND c.caller_type = $2';
+      params.push(type);
+    } else {
+      whereClause += " AND c.caller_type IN ('existing_client', 'new_lead')";
+    }
+
+    const result = await pool.query(`
+      SELECT
+        c.id,
+        c.phone_number,
+        c.caller_type,
+        c.preferred_language,
+        c.total_calls,
+        c.created_at,
+        MAX(CASE WHEN cd.field_name = 'name' THEN cd.field_value END) as name,
+        MAX(CASE WHEN cd.field_name = 'email' THEN cd.field_value END) as email,
+        MAX(CASE WHEN cd.field_name = 'callback_phone' THEN cd.field_value END) as callback_phone,
+        MAX(CASE WHEN cd.field_name = 'claim_number' THEN cd.field_value END) as claim_number,
+        MAX(ci.start_time) as last_call
+      FROM callers c
+      LEFT JOIN caller_details cd ON c.id = cd.caller_id AND cd.valid_until IS NULL
+      LEFT JOIN call_interactions ci ON c.id = ci.caller_id
+      ${whereClause}
+      GROUP BY c.id
+      ORDER BY c.created_at DESC
+    `, params);
+
+    res.json({ callers: result.rows });
+  } catch (error) {
+    console.error('Error fetching callers:', error);
+    res.status(500).json({ error: 'Failed to fetch callers' });
+  }
+});
+
+// PUT /api/crm/callers/:id - Update caller
+app.put('/api/crm/callers/:id', authenticateToken, async (req, res) => {
+  try {
+    const agentId = req.user.agent_id;
+    const { id } = req.params;
+    const { preferred_language, caller_type } = req.body;
+
+    const result = await pool.query(`
+      UPDATE callers
+      SET preferred_language = COALESCE($1, preferred_language),
+          caller_type = COALESCE($2, caller_type),
+          updated_at = NOW()
+      WHERE id = $3 AND agent_id = $4
+      RETURNING *
+    `, [preferred_language, caller_type, id, agentId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Caller not found' });
+    }
+
+    res.json({ caller: result.rows[0] });
+  } catch (error) {
+    console.error('Error updating caller:', error);
+    res.status(500).json({ error: 'Failed to update caller' });
+  }
+});
+
+// PUT /api/crm/callers/:id/field - Update a single caller field (for inline editing)
+app.put('/api/crm/callers/:id/field', authenticateToken, async (req, res) => {
+  try {
+    const agentId = req.user.agent_id;
+    const { id } = req.params;
+    const { field_name, field_value } = req.body;
+
+    // Verify caller belongs to this agent
+    const callerCheck = await pool.query(
+      'SELECT id FROM callers WHERE id = $1 AND agent_id = $2',
+      [id, agentId]
+    );
+
+    if (callerCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Caller not found' });
+    }
+
+    // Expire old value
+    await pool.query(`
+      UPDATE caller_details
+      SET valid_until = NOW()
+      WHERE caller_id = $1 AND field_name = $2 AND valid_until IS NULL
+    `, [id, field_name]);
+
+    // Insert new value
+    await pool.query(`
+      INSERT INTO caller_details (caller_id, field_name, field_value, source_type, confidence, valid_from)
+      VALUES ($1, $2, $3, 'manual_edit', 'stated', NOW())
+    `, [id, field_name, field_value]);
+
+    res.json({ success: true, field_name, field_value });
+  } catch (error) {
+    console.error('Error updating caller field:', error);
+    res.status(500).json({ error: 'Failed to update caller field' });
+  }
+});
+
+// DELETE /api/crm/callers/:id - Delete caller and all their details
+app.delete('/api/crm/callers/:id', authenticateToken, async (req, res) => {
+  try {
+    const agentId = req.user.agent_id;
+    const { id } = req.params;
+
+    // Delete caller details first (foreign key)
+    await pool.query('DELETE FROM caller_details WHERE caller_id = $1', [id]);
+
+    // Delete call interactions
+    await pool.query('DELETE FROM call_interactions WHERE caller_id = $1', [id]);
+
+    // Delete caller notes
+    await pool.query('DELETE FROM caller_notes WHERE caller_id = $1', [id]);
+
+    // Delete the caller
+    const result = await pool.query(
+      'DELETE FROM callers WHERE id = $1 AND agent_id = $2 RETURNING id',
+      [id, agentId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Caller not found' });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting caller:', error);
+    res.status(500).json({ error: 'Failed to delete caller' });
+  }
+});
+
+// ============================================================================
 // LEAD TRACKING ENDPOINTS
 // ============================================================================
 

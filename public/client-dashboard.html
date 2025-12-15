@@ -2262,6 +2262,229 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* CRM Section Styles */
+    .crm-stats-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .crm-stat {
+      font-size: 13px;
+      color: #7d8590;
+      background: rgba(0, 255, 255, 0.08);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+    }
+
+    .crm-stat span {
+      color: #00FFFF;
+      font-weight: 600;
+    }
+
+    .crm-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid rgba(0, 255, 255, 0.2);
+      padding-bottom: 0;
+    }
+
+    .crm-tab {
+      padding: 12px 20px;
+      background: transparent;
+      color: #7d8590;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      margin-bottom: -2px;
+    }
+
+    .crm-tab:hover {
+      color: #00FFFF;
+      background: rgba(0, 255, 255, 0.05);
+    }
+
+    .crm-tab.active {
+      color: #00FFFF;
+      border-bottom-color: #00FFFF;
+    }
+
+    .crm-tab-content {
+      animation: fadeIn 0.3s ease;
+    }
+
+    .crm-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .crm-table th {
+      text-align: left;
+      padding: 12px 16px;
+      background: rgba(0, 255, 255, 0.05);
+      color: #00FFFF;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+    }
+
+    .crm-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+      color: #e6edf3;
+    }
+
+    .crm-table tbody tr:hover {
+      background: rgba(0, 255, 255, 0.03);
+    }
+
+    .crm-table .editable {
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .crm-table .editable:hover {
+      background: rgba(0, 255, 255, 0.1);
+      outline: 1px dashed rgba(0, 255, 255, 0.4);
+    }
+
+    .crm-table .editable input {
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      border-radius: 4px;
+      padding: 6px 10px;
+      color: #e6edf3;
+      font-size: 14px;
+      width: 100%;
+      outline: none;
+    }
+
+    .crm-table .editable input:focus {
+      border-color: #00FFFF;
+      box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.2);
+    }
+
+    .crm-table .first-name-only {
+      background: rgba(255, 200, 0, 0.15);
+      border: 1px solid rgba(255, 200, 0, 0.3);
+      border-radius: 4px;
+    }
+
+    .crm-table .empty-field {
+      color: #555;
+      font-style: italic;
+    }
+
+    .crm-delete-btn {
+      padding: 6px 12px;
+      background: rgba(239, 68, 68, 0.1);
+      color: #ff6b6b;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .crm-delete-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+    }
+
+    .crm-type-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .crm-type-badge.insurance {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .crm-type-badge.law_firm {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    .crm-type-badge.medical_office {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .crm-type-badge.other {
+      background: rgba(156, 163, 175, 0.15);
+      color: #9ca3af;
+      border: 1px solid rgba(156, 163, 175, 0.3);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: #161b22;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .modal-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .modal-btn.danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ff6b6b;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .modal-btn.danger:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    .modal-btn.secondary {
+      background: rgba(100, 100, 100, 0.15);
+      color: #9ca3af;
+      border: 1px solid rgba(100, 100, 100, 0.4);
+    }
+
+    .modal-btn.secondary:hover {
+      background: rgba(100, 100, 100, 0.25);
+    }
+
     @keyframes pulse {
       0%, 100% {
         border-color: #00FFFF;
@@ -2955,6 +3178,166 @@
           <div style="padding: 40px; text-align: center; color: #7d8590;">
             <p>Loading denied leads...</p>
           </div>
+        </div>
+      </div>
+
+      <!-- CRM Section - Caller Database -->
+      <div id="crm-section" class="calls-section" style="margin-bottom: 32px;">
+        <div class="section-header">
+          <div class="section-title">Caller Database (CRM)</div>
+          <div class="crm-stats-row">
+            <span class="crm-stat"><span id="crm-org-count">--</span> Orgs</span>
+            <span class="crm-stat"><span id="crm-contact-count">--</span> Contacts</span>
+            <span class="crm-stat"><span id="crm-client-count">--</span> Clients</span>
+            <span class="crm-stat"><span id="crm-lead-count">--</span> Leads</span>
+            <button class="action-btn" onclick="loadCRMData()" style="margin-left: 12px;">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- CRM Tabs -->
+        <div class="crm-tabs">
+          <button class="crm-tab active" data-tab="organizations" onclick="switchCRMTab('organizations')">
+            🏢 Organizations
+          </button>
+          <button class="crm-tab" data-tab="contacts" onclick="switchCRMTab('contacts')">
+            👤 Contacts
+          </button>
+          <button class="crm-tab" data-tab="clients" onclick="switchCRMTab('clients')">
+            ⭐ Clients
+          </button>
+          <button class="crm-tab" data-tab="leads" onclick="switchCRMTab('leads')">
+            🎯 Leads
+          </button>
+        </div>
+
+        <!-- CRM Search -->
+        <div style="margin: 20px 0;">
+          <div style="position: relative; max-width: 500px;">
+            <svg style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input
+              type="text"
+              id="crm-search-input"
+              placeholder="Search by name, phone, email..."
+              oninput="handleCRMSearch(this.value)"
+              style="
+                width: 100%;
+                padding: 12px 44px 12px 44px;
+                background: rgba(13, 17, 23, 0.6);
+                border: 1px solid rgba(0, 255, 255, 0.3);
+                border-radius: 8px;
+                color: #e6edf3;
+                font-size: 14px;
+                outline: none;
+                transition: all 0.2s;
+              "
+              onfocus="this.style.borderColor='rgba(0, 255, 255, 0.6)'; this.style.boxShadow='0 0 0 3px rgba(0, 255, 255, 0.1)'"
+              onblur="this.style.borderColor='rgba(0, 255, 255, 0.3)'; this.style.boxShadow='none'"
+            />
+          </div>
+        </div>
+
+        <!-- Organizations Tab Content -->
+        <div id="crm-tab-organizations" class="crm-tab-content">
+          <div class="table-wrapper">
+            <table class="crm-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Phone</th>
+                  <th>Contacts</th>
+                  <th>Calls</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="crm-organizations-body">
+                <tr><td colspan="6" style="text-align: center; padding: 40px; color: #7d8590;">Loading organizations...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Contacts Tab Content -->
+        <div id="crm-tab-contacts" class="crm-tab-content" style="display: none;">
+          <div class="table-wrapper">
+            <table class="crm-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Organization</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Calls</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="crm-contacts-body">
+                <tr><td colspan="6" style="text-align: center; padding: 40px; color: #7d8590;">Loading contacts...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Clients Tab Content -->
+        <div id="crm-tab-clients" class="crm-tab-content" style="display: none;">
+          <div class="table-wrapper">
+            <table class="crm-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Language</th>
+                  <th>Calls</th>
+                  <th>Last Call</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="crm-clients-body">
+                <tr><td colspan="7" style="text-align: center; padding: 40px; color: #7d8590;">Loading clients...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Leads Tab Content -->
+        <div id="crm-tab-leads" class="crm-tab-content" style="display: none;">
+          <div class="table-wrapper">
+            <table class="crm-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Claim #</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="crm-leads-body">
+                <tr><td colspan="6" style="text-align: center; padding: 40px; color: #7d8590;">Loading leads...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delete Confirmation Modal -->
+      <div id="crm-delete-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 450px;">
+          <h3 style="margin-bottom: 16px; color: #ff6b6b;">Confirm Delete</h3>
+          <p id="crm-delete-message" style="margin-bottom: 24px; color: #9ca3af;"></p>
+          <div id="crm-delete-options" style="display: flex; flex-direction: column; gap: 12px;"></div>
+          <button onclick="closeCRMDeleteModal()" style="margin-top: 16px; width: 100%; padding: 12px; background: rgba(100, 100, 100, 0.2); border: 1px solid rgba(100, 100, 100, 0.4); border-radius: 8px; color: #9ca3af; cursor: pointer;">
+            Cancel
+          </button>
         </div>
       </div>
 
@@ -6766,6 +7149,471 @@
           showToast('Failed to submit', 'error');
         }
       }
+    }
+
+    // ============================================================================
+    // CRM FUNCTIONALITY
+    // ============================================================================
+
+    let crmData = {
+      organizations: [],
+      contacts: [],
+      clients: [],
+      leads: []
+    };
+    let crmSearchTerm = '';
+    let currentCRMTab = 'organizations';
+
+    // Load CRM data on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadCRMData();
+    });
+
+    async function loadCRMData() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        // Load stats
+        const statsRes = await fetch('/api/crm/stats', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (statsRes.ok) {
+          const stats = await statsRes.json();
+          document.getElementById('crm-org-count').textContent = stats.organizations;
+          document.getElementById('crm-contact-count').textContent = stats.contacts;
+          document.getElementById('crm-client-count').textContent = stats.clients;
+          document.getElementById('crm-lead-count').textContent = stats.leads;
+        }
+
+        // Load all data in parallel
+        const [orgsRes, contactsRes, clientsRes, leadsRes] = await Promise.all([
+          fetch('/api/crm/organizations', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/crm/contacts', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/crm/callers?type=existing_client', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/crm/callers?type=new_lead', { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
+
+        if (orgsRes.ok) crmData.organizations = (await orgsRes.json()).organizations;
+        if (contactsRes.ok) crmData.contacts = (await contactsRes.json()).contacts;
+        if (clientsRes.ok) crmData.clients = (await clientsRes.json()).callers;
+        if (leadsRes.ok) crmData.leads = (await leadsRes.json()).callers;
+
+        renderCRMTable(currentCRMTab);
+      } catch (error) {
+        console.error('Error loading CRM data:', error);
+      }
+    }
+
+    function switchCRMTab(tab) {
+      currentCRMTab = tab;
+
+      // Update tab buttons
+      document.querySelectorAll('.crm-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tab);
+      });
+
+      // Update tab content
+      document.querySelectorAll('.crm-tab-content').forEach(content => {
+        content.style.display = 'none';
+      });
+      document.getElementById(`crm-tab-${tab}`).style.display = 'block';
+
+      renderCRMTable(tab);
+    }
+
+    function handleCRMSearch(term) {
+      crmSearchTerm = term.toLowerCase();
+      renderCRMTable(currentCRMTab);
+    }
+
+    function renderCRMTable(tab) {
+      const bodyId = `crm-${tab}-body`;
+      const tbody = document.getElementById(bodyId);
+      if (!tbody) return;
+
+      let data = crmData[tab] || [];
+
+      // Apply search filter
+      if (crmSearchTerm) {
+        data = data.filter(item => {
+          const searchable = Object.values(item).join(' ').toLowerCase();
+          return searchable.includes(crmSearchTerm);
+        });
+      }
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 40px; color: #7d8590;">No ${tab} found</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      switch (tab) {
+        case 'organizations':
+          html = renderOrganizationsTable(data);
+          break;
+        case 'contacts':
+          html = renderContactsTable(data);
+          break;
+        case 'clients':
+          html = renderClientsTable(data);
+          break;
+        case 'leads':
+          html = renderLeadsTable(data);
+          break;
+      }
+
+      tbody.innerHTML = html;
+    }
+
+    function renderOrganizationsTable(data) {
+      return data.map(org => `
+        <tr data-id="${org.id}">
+          <td class="editable" onclick="editOrgField(${org.id}, 'name', this)">${org.name || '<span class="empty-field">--</span>'}</td>
+          <td><span class="crm-type-badge ${org.type || 'other'}">${formatOrgType(org.type)}</span></td>
+          <td class="editable" onclick="editOrgField(${org.id}, 'primary_phone', this)">${org.primary_phone || '<span class="empty-field">--</span>'}</td>
+          <td>${org.contact_count || 0}</td>
+          <td>${org.total_calls || 0}</td>
+          <td><button class="crm-delete-btn" onclick="confirmDeleteOrg(${org.id}, '${escapeHtml(org.name)}', ${org.contact_count || 0})">Delete</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderContactsTable(data) {
+      return data.map(contact => `
+        <tr data-id="${contact.id}">
+          <td class="editable" onclick="editContactField(${contact.id}, 'name', this)">${contact.name || '<span class="empty-field">--</span>'}</td>
+          <td>${contact.organization_name || '<span class="empty-field">Unassociated</span>'}</td>
+          <td class="editable" onclick="editContactField(${contact.id}, 'email', this)">${contact.email || '<span class="empty-field">--</span>'}</td>
+          <td class="editable" onclick="editContactField(${contact.id}, 'direct_phone', this)">${contact.direct_phone || '<span class="empty-field">--</span>'}</td>
+          <td>${contact.total_calls || 0}</td>
+          <td><button class="crm-delete-btn" onclick="confirmDeleteContact(${contact.id}, '${escapeHtml(contact.name)}')">Delete</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderClientsTable(data) {
+      return data.map(client => {
+        const isFirstNameOnly = client.name && !client.name.includes(' ');
+        const nameClass = isFirstNameOnly ? 'editable first-name-only' : 'editable';
+        const nameTitle = isFirstNameOnly ? 'title="Missing last name - will ask on next call"' : '';
+
+        return `
+          <tr data-id="${client.id}">
+            <td class="${nameClass}" ${nameTitle} onclick="editCallerField(${client.id}, 'name', this)">${client.name || '<span class="empty-field">--</span>'}</td>
+            <td>${formatPhone(client.phone_number)}</td>
+            <td class="editable" onclick="editCallerField(${client.id}, 'email', this)">${client.email || '<span class="empty-field">--</span>'}</td>
+            <td>${client.preferred_language || 'english'}</td>
+            <td>${client.total_calls || 0}</td>
+            <td>${client.last_call ? formatDate(client.last_call) : '--'}</td>
+            <td><button class="crm-delete-btn" onclick="confirmDeleteCaller(${client.id}, '${escapeHtml(client.name)}')">Delete</button></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderLeadsTable(data) {
+      return data.map(lead => `
+        <tr data-id="${lead.id}">
+          <td class="editable" onclick="editCallerField(${lead.id}, 'name', this)">${lead.name || '<span class="empty-field">--</span>'}</td>
+          <td>${formatPhone(lead.phone_number)}</td>
+          <td class="editable" onclick="editCallerField(${lead.id}, 'email', this)">${lead.email || '<span class="empty-field">--</span>'}</td>
+          <td>${lead.claim_number || '<span class="empty-field">--</span>'}</td>
+          <td>${formatDate(lead.created_at)}</td>
+          <td><button class="crm-delete-btn" onclick="confirmDeleteCaller(${lead.id}, '${escapeHtml(lead.name)}')">Delete</button></td>
+        </tr>
+      `).join('');
+    }
+
+    // Inline editing functions
+    function editOrgField(id, field, cell) {
+      if (cell.querySelector('input')) return;
+      const currentValue = cell.textContent.trim() === '--' ? '' : cell.textContent.trim();
+      cell.innerHTML = `<input type="text" value="${escapeHtml(currentValue)}" />`;
+      const input = cell.querySelector('input');
+      input.focus();
+      input.select();
+
+      input.addEventListener('blur', () => saveOrgField(id, field, input.value, cell, currentValue));
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') saveOrgField(id, field, input.value, cell, currentValue);
+        if (e.key === 'Escape') cell.innerHTML = currentValue || '<span class="empty-field">--</span>';
+      });
+    }
+
+    async function saveOrgField(id, field, value, cell, oldValue) {
+      if (value === oldValue) {
+        cell.innerHTML = value || '<span class="empty-field">--</span>';
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+      try {
+        const res = await fetch(`/api/crm/organizations/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ [field]: value })
+        });
+
+        if (res.ok) {
+          cell.innerHTML = value || '<span class="empty-field">--</span>';
+          showToast('Updated successfully', 'success');
+          // Update local data
+          const org = crmData.organizations.find(o => o.id === id);
+          if (org) org[field] = value;
+        } else {
+          cell.innerHTML = oldValue || '<span class="empty-field">--</span>';
+          showToast('Failed to update', 'error');
+        }
+      } catch (error) {
+        cell.innerHTML = oldValue || '<span class="empty-field">--</span>';
+        showToast('Failed to update', 'error');
+      }
+    }
+
+    function editContactField(id, field, cell) {
+      if (cell.querySelector('input')) return;
+      const currentValue = cell.textContent.trim() === '--' ? '' : cell.textContent.trim();
+      cell.innerHTML = `<input type="text" value="${escapeHtml(currentValue)}" />`;
+      const input = cell.querySelector('input');
+      input.focus();
+      input.select();
+
+      input.addEventListener('blur', () => saveContactField(id, field, input.value, cell, currentValue));
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') saveContactField(id, field, input.value, cell, currentValue);
+        if (e.key === 'Escape') cell.innerHTML = currentValue || '<span class="empty-field">--</span>';
+      });
+    }
+
+    async function saveContactField(id, field, value, cell, oldValue) {
+      if (value === oldValue) {
+        cell.innerHTML = value || '<span class="empty-field">--</span>';
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+      try {
+        const res = await fetch(`/api/crm/contacts/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ [field]: value })
+        });
+
+        if (res.ok) {
+          cell.innerHTML = value || '<span class="empty-field">--</span>';
+          showToast('Updated successfully', 'success');
+          const contact = crmData.contacts.find(c => c.id === id);
+          if (contact) contact[field] = value;
+        } else {
+          cell.innerHTML = oldValue || '<span class="empty-field">--</span>';
+          showToast('Failed to update', 'error');
+        }
+      } catch (error) {
+        cell.innerHTML = oldValue || '<span class="empty-field">--</span>';
+        showToast('Failed to update', 'error');
+      }
+    }
+
+    function editCallerField(id, field, cell) {
+      if (cell.querySelector('input')) return;
+      const currentValue = cell.textContent.trim() === '--' ? '' : cell.textContent.trim();
+      cell.innerHTML = `<input type="text" value="${escapeHtml(currentValue)}" />`;
+      const input = cell.querySelector('input');
+      input.focus();
+      input.select();
+
+      input.addEventListener('blur', () => saveCallerField(id, field, input.value, cell, currentValue));
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') saveCallerField(id, field, input.value, cell, currentValue);
+        if (e.key === 'Escape') cell.innerHTML = currentValue || '<span class="empty-field">--</span>';
+      });
+    }
+
+    async function saveCallerField(id, field, value, cell, oldValue) {
+      if (value === oldValue) {
+        cell.innerHTML = value || '<span class="empty-field">--</span>';
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+      try {
+        const res = await fetch(`/api/crm/callers/${id}/field`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ field_name: field, field_value: value })
+        });
+
+        if (res.ok) {
+          cell.innerHTML = value || '<span class="empty-field">--</span>';
+          // Remove first-name-only highlight if we now have a full name
+          if (field === 'name' && value.includes(' ')) {
+            cell.classList.remove('first-name-only');
+          }
+          showToast('Updated successfully', 'success');
+          // Update local data
+          const caller = [...crmData.clients, ...crmData.leads].find(c => c.id === id);
+          if (caller) caller[field] = value;
+        } else {
+          cell.innerHTML = oldValue || '<span class="empty-field">--</span>';
+          showToast('Failed to update', 'error');
+        }
+      } catch (error) {
+        cell.innerHTML = oldValue || '<span class="empty-field">--</span>';
+        showToast('Failed to update', 'error');
+      }
+    }
+
+    // Delete functions
+    let pendingDelete = null;
+
+    function confirmDeleteOrg(id, name, contactCount) {
+      pendingDelete = { type: 'organization', id, name, contactCount };
+      const modal = document.getElementById('crm-delete-modal');
+      const message = document.getElementById('crm-delete-message');
+      const options = document.getElementById('crm-delete-options');
+
+      message.textContent = `Are you sure you want to delete "${name}"?`;
+
+      if (contactCount > 0) {
+        options.innerHTML = `
+          <button class="modal-btn danger" onclick="executeDeleteOrg(true)">Delete organization and ${contactCount} contact(s)</button>
+          <button class="modal-btn secondary" onclick="executeDeleteOrg(false)">Delete organization only (keep contacts)</button>
+        `;
+      } else {
+        options.innerHTML = `
+          <button class="modal-btn danger" onclick="executeDeleteOrg(false)">Delete organization</button>
+        `;
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    async function executeDeleteOrg(deleteContacts) {
+      const token = localStorage.getItem('token');
+      try {
+        const res = await fetch(`/api/crm/organizations/${pendingDelete.id}?deleteContacts=${deleteContacts}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (res.ok) {
+          showToast('Organization deleted', 'success');
+          closeCRMDeleteModal();
+          loadCRMData();
+        } else {
+          showToast('Failed to delete', 'error');
+        }
+      } catch (error) {
+        showToast('Failed to delete', 'error');
+      }
+    }
+
+    function confirmDeleteContact(id, name) {
+      pendingDelete = { type: 'contact', id, name };
+      const modal = document.getElementById('crm-delete-modal');
+      const message = document.getElementById('crm-delete-message');
+      const options = document.getElementById('crm-delete-options');
+
+      message.textContent = `Are you sure you want to delete contact "${name}"?`;
+      options.innerHTML = `<button class="modal-btn danger" onclick="executeDeleteContact()">Delete contact</button>`;
+
+      modal.style.display = 'flex';
+    }
+
+    async function executeDeleteContact() {
+      const token = localStorage.getItem('token');
+      try {
+        const res = await fetch(`/api/crm/contacts/${pendingDelete.id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (res.ok) {
+          showToast('Contact deleted', 'success');
+          closeCRMDeleteModal();
+          loadCRMData();
+        } else {
+          showToast('Failed to delete', 'error');
+        }
+      } catch (error) {
+        showToast('Failed to delete', 'error');
+      }
+    }
+
+    function confirmDeleteCaller(id, name) {
+      pendingDelete = { type: 'caller', id, name };
+      const modal = document.getElementById('crm-delete-modal');
+      const message = document.getElementById('crm-delete-message');
+      const options = document.getElementById('crm-delete-options');
+
+      message.textContent = `Are you sure you want to delete "${name || 'this caller'}"? This will remove all their data.`;
+      options.innerHTML = `<button class="modal-btn danger" onclick="executeDeleteCaller()">Delete caller</button>`;
+
+      modal.style.display = 'flex';
+    }
+
+    async function executeDeleteCaller() {
+      const token = localStorage.getItem('token');
+      try {
+        const res = await fetch(`/api/crm/callers/${pendingDelete.id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (res.ok) {
+          showToast('Caller deleted', 'success');
+          closeCRMDeleteModal();
+          loadCRMData();
+        } else {
+          showToast('Failed to delete', 'error');
+        }
+      } catch (error) {
+        showToast('Failed to delete', 'error');
+      }
+    }
+
+    function closeCRMDeleteModal() {
+      document.getElementById('crm-delete-modal').style.display = 'none';
+      pendingDelete = null;
+    }
+
+    // Helper functions
+    function formatOrgType(type) {
+      if (!type) return 'Other';
+      return type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    function formatPhone(phone) {
+      if (!phone) return '--';
+      // Clean and format
+      const cleaned = phone.replace(/\D/g, '');
+      if (cleaned.length === 10) {
+        return `(${cleaned.slice(0,3)}) ${cleaned.slice(3,6)}-${cleaned.slice(6)}`;
+      } else if (cleaned.length === 11 && cleaned[0] === '1') {
+        return `(${cleaned.slice(1,4)}) ${cleaned.slice(4,7)}-${cleaned.slice(7)}`;
+      }
+      return phone;
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '--';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
   </script>
 
