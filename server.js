@@ -5725,7 +5725,7 @@ app.get('/api/crm/callers', authenticateToken, async (req, res) => {
         MAX(CASE WHEN cd.field_name = 'email' THEN cd.field_value END) as email,
         MAX(CASE WHEN cd.field_name = 'callback_phone' THEN cd.field_value END) as callback_phone,
         MAX(CASE WHEN cd.field_name = 'claim_number' THEN cd.field_value END) as claim_number,
-        MAX(ci.start_time) as last_call
+        MAX(ci.call_start) as last_call
       FROM callers c
       LEFT JOIN caller_details cd ON c.id = cd.caller_id AND cd.valid_until IS NULL
       LEFT JOIN call_interactions ci ON c.id = ci.caller_id
