@@ -2446,11 +2446,24 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
                       console.log(`   🏢 Organization saved: ${org.name} (${orgType})`);
                       // Create contact if we have a name
                       if (callData.name) {
-                        await callerCRM.getOrCreateOrganizationContact(
+                        const contact = await callerCRM.getOrCreateOrganizationContact(
                           org.id,
                           callData.name,
                           { phone: phoneNumber, email: callData.email }
                         );
+
+                        // If they mentioned a CourtLaw client (case_name), save that association
+                        if (contact && callData.case_name) {
+                          await callerCRM.saveContactClientMention(
+                            contact.id,
+                            callData.case_name,
+                            {
+                              claimNumber: callData.claim_number,
+                              callId: callId,
+                              notes: callData.purpose
+                            }
+                          );
+                        }
                       }
                     }
                   } catch (orgErr) {
