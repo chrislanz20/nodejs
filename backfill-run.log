@@ -1,0 +1,57 @@
+[dotenv@17.2.3] injecting env (11) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+✅ Caller CRM using shared database pool
+
+🚀 Starting Caller Recognition Backfill for CourtLaw...
+📋 Strategy: HIGH CONFIDENCE extraction only
+   - Only save data that was SPELLED OUT or CONFIRMED by Maria
+   - Missing data is better than wrong data
+
+🔧 Initializing Caller CRM tables...
+✅ Caller CRM tables initialized (including organizations, contacts & client associations)
+📥 Fetching all historical calls from Retell API...
+   Page 1: Fetched 1000 calls...
+✅ Found 457 CourtLaw calls with transcripts
+
+📥 Fetching call categories...
+✅ Found 2318 categorized calls
+
+🔄 Processing calls with Gemini 2.5 AI extraction...
+
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   📝 Updated caller 171 field "name" = "Sheena Johnson"
+   📝 Updated caller 171 field "email" = "sheenaj745@gmail.com"
+   📝 Updated caller 171 field "callback_phone" = "908-266-3618"
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   ⚠️ Could not parse Gemini response
+   📝 Updated caller 173 field "name" = "Giovanni Martinez"
+   📝 Updated caller 173 field "callback_phone" = "732-485-1134"

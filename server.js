@@ -5697,8 +5697,8 @@ app.get('/api/crm/organizations/:id/details', authenticateToken, async (req, res
     const agentIds = req.user.agent_ids || [];
     const { id } = req.params;
 
-    // Get full organization details using callerCRM function
-    const details = await callerCRM.getOrganizationDetails(parseInt(id), agentIds[0]);
+    // Get full organization details using callerCRM function (pass all agentIds)
+    const details = await callerCRM.getOrganizationDetails(parseInt(id), agentIds);
 
     if (!details) {
       return res.status(404).json({ error: 'Organization not found' });
