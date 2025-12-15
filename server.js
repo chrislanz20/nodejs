@@ -2393,6 +2393,79 @@ app.post('/webhook/retell-call-ended', async (req, res) => {
           // - The current call's phone number and metadata
           console.log(`   ⏸️  Database lookups DISABLED - using transcript data only`);
 
+          // ============ SAVE CALLER DATA TO CRM ============
+          // This saves data AFTER the call for future reference
+          // It does NOT affect the current call or Maria's responses
+          try {
+            // Get or create the caller record
+            const caller = await callerCRM.getOrCreateCaller(phoneNumber, agentId);
+            if (caller) {
+              console.log(`   💾 Saving caller data to CRM (ID: ${caller.id})`);
+
+              // Map category to caller_type
+              const categoryToCallerType = {
+                'New Lead': 'new_lead',
+                'Existing Client': 'existing_client',
+                'Insurance': 'insurance',
+                'Attorney': 'attorney',
+                'Medical': 'medical',
+                'Other': 'other'
+              };
+              const callerType = categoryToCallerType[categoryResult.category] || 'other';
+
+              // Update caller type
+              await callerCRM.updateCallerType(caller.id, callerType);
+
+              // Update caller fields from extracted data
+              await callerCRM.updateCallerFromCallData(caller.id, callData, callId);
+
+              // Log the call interaction
+              await callerCRM.logCallInteraction(caller.id, {
+                callId: callId,
+                agentId: agentId,
+                phoneNumber: phoneNumber,
+                direction: 'inbound',
+                category: categoryResult.category,
+                outcome: callData.call_summary || categoryResult.reasoning,
+                dataCollected: callData
+              });
+
+              // For professional callers, create organization record
+              if (['insurance', 'attorney', 'medical'].includes(callerType)) {
+                const orgName = callData.who_representing || callData.representing_who || callData.purpose;
+                if (orgName && typeof orgName === 'string' && orgName.trim().length > 2) {
+                  try {
+                    const orgType = callerCRM.callerTypeToOrgType(callerType);
+                    const org = await callerCRM.getOrCreateOrganization(
+                      orgName.trim(),
+                      orgType,
+                      phoneNumber,
+                      agentId
+                    );
+                    if (org) {
+                      console.log(`   🏢 Organization saved: ${org.name} (${orgType})`);
+                      // Create contact if we have a name
+                      if (callData.name) {
+                        await callerCRM.getOrCreateOrganizationContact(
+                          org.id,
+                          callData.name,
+                          { phone: phoneNumber, email: callData.email }
+                        );
+                      }
+                    }
+                  } catch (orgErr) {
+                    console.error(`   ⚠️ Organization save error:`, orgErr.message);
+                  }
+                }
+              }
+
+              console.log(`   ✅ Caller data saved to CRM`);
+            }
+          } catch (crmError) {
+            console.error(`   ⚠️ CRM save error (non-fatal):`, crmError.message);
+            // Don't fail the webhook if CRM save fails
+          }
+
           // Send notifications with error handling
           try {
             await sendNotifications(agentId, categoryResult.category, callData);
