@@ -769,26 +769,35 @@
   </div>
 
   <script>
-    // Check auth
-    const token = localStorage.getItem('token');
-    if (!token) {
-      window.location.href = '/client-portal';
-    }
+    let currentUser = null;
 
-    // Load user info
-    async function loadUserInfo() {
+    // Check authentication (matches client-dashboard pattern)
+    async function checkAuth() {
       try {
-        const res = await fetch('/api/auth/me', {
-          headers: { 'Authorization': `Bearer ${token}` }
+        // Try client auth first
+        let response = await fetch('/api/auth/me', {
+          credentials: 'include'
         });
-        if (res.ok) {
-          const data = await res.json();
-          document.getElementById('business-name').textContent = data.business_name || data.email;
-        } else {
-          window.location.href = '/client-portal';
+
+        // If client auth fails, try team member auth
+        if (!response.ok) {
+          response = await fetch('/api/team/auth/me', {
+            credentials: 'include'
+          });
         }
+
+        if (!response.ok) {
+          window.location.href = '/client-portal';
+          return false;
+        }
+
+        currentUser = await response.json();
+        document.getElementById('business-name').textContent = currentUser.business_name || currentUser.email;
+        return true;
       } catch (error) {
         console.error('Auth error:', error);
+        window.location.href = '/client-portal';
+        return false;
       }
     }
 
@@ -843,7 +852,7 @@
     async function loadCRMData() {
       try {
         const statsRes = await fetch('/api/crm/stats', {
-          headers: { 'Authorization': `Bearer ${token}` }
+          credentials: 'include'
         });
         if (statsRes.ok) {
           const stats = await statsRes.json();
@@ -854,10 +863,10 @@
         }
 
         const [orgsRes, contactsRes, clientsRes, leadsRes] = await Promise.all([
-          fetch('/api/crm/organizations', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/crm/contacts', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/crm/callers?type=existing_client', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/crm/callers?type=new_lead', { headers: { 'Authorization': `Bearer ${token}` } })
+          fetch('/api/crm/organizations', { credentials: 'include' }),
+          fetch('/api/crm/contacts', { credentials: 'include' }),
+          fetch('/api/crm/callers?type=existing_client', { credentials: 'include' }),
+          fetch('/api/crm/callers?type=new_lead', { credentials: 'include' })
         ]);
 
         if (orgsRes.ok) crmData.organizations = (await orgsRes.json()).organizations;
@@ -994,7 +1003,8 @@
       try {
         const res = await fetch(`/api/crm/organizations/${id}`, {
           method: 'PUT',
-          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ [field]: value })
         });
         if (res.ok) {
@@ -1031,7 +1041,8 @@
       try {
         const res = await fetch(`/api/crm/contacts/${id}`, {
           method: 'PUT',
-          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ [field]: value })
         });
         if (res.ok) {
@@ -1066,7 +1077,8 @@
       try {
         const res = await fetch(`/api/crm/callers/${id}/field`, {
           method: 'PUT',
-          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ field_name: field, field_value: value })
         });
         if (res.ok) {
@@ -1104,7 +1116,7 @@
     async function executeDeleteOrg(deleteContacts) {
       try {
         const res = await fetch(`/api/crm/organizations/${pendingDelete.id}?deleteContacts=${deleteContacts}`, {
-          method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
+          method: 'DELETE', credentials: 'include'
         });
         if (res.ok) { showToast('Deleted'); closeCRMDeleteModal(); loadCRMData(); }
         else showToast('Failed', 'error');
@@ -1121,7 +1133,7 @@
     async function executeDeleteContact() {
       try {
         const res = await fetch(`/api/crm/contacts/${pendingDelete.id}`, {
-          method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
+          method: 'DELETE', credentials: 'include'
         });
         if (res.ok) { showToast('Deleted'); closeCRMDeleteModal(); loadCRMData(); }
         else showToast('Failed', 'error');
@@ -1138,7 +1150,7 @@
     async function executeDeleteCaller() {
       try {
         const res = await fetch(`/api/crm/callers/${pendingDelete.id}`, {
-          method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
+          method: 'DELETE', credentials: 'include'
         });
         if (res.ok) { showToast('Deleted'); closeCRMDeleteModal(); loadCRMData(); }
         else showToast('Failed', 'error');
@@ -1163,8 +1175,13 @@
     function escapeHtml(s) { return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;') : ''; }
 
     // Init
-    loadUserInfo();
-    loadCRMData();
+    async function init() {
+      const authed = await checkAuth();
+      if (authed) {
+        loadCRMData();
+      }
+    }
+    init();
   </script>
 </body>
 </html>
