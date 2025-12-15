@@ -5608,6 +5608,7 @@ app.get('/api/crm/organizations', authenticateToken, async (req, res) => {
         o.name,
         o.type,
         o.primary_phone,
+        o.additional_phones,
         o.total_calls,
         o.created_at,
         COUNT(oc.id) as contact_count
@@ -5618,7 +5619,13 @@ app.get('/api/crm/organizations', authenticateToken, async (req, res) => {
       ORDER BY o.name ASC
     `, [agentIds]);
 
-    res.json({ organizations: result.rows });
+    // Combine primary_phone and additional_phones into a single phone_numbers array
+    const organizations = result.rows.map(org => ({
+      ...org,
+      phone_numbers: [org.primary_phone, ...(org.additional_phones || [])].filter(Boolean)
+    }));
+
+    res.json({ organizations });
   } catch (error) {
     console.error('Error fetching organizations:', error);
     res.status(500).json({ error: 'Failed to fetch organizations' });
@@ -5630,26 +5637,161 @@ app.put('/api/crm/organizations/:id', authenticateToken, async (req, res) => {
   try {
     const agentIds = req.user.agent_ids || [];
     const { id } = req.params;
-    const { name, type, primary_phone } = req.body;
+    const { name, type, phone_numbers } = req.body;
+
+    // If phone_numbers array is provided, split into primary_phone and additional_phones
+    let primaryPhone = null;
+    let additionalPhones = null;
+    if (phone_numbers && Array.isArray(phone_numbers)) {
+      primaryPhone = phone_numbers[0] || null;
+      additionalPhones = phone_numbers.slice(1);
+    }
 
     const result = await pool.query(`
       UPDATE organizations
       SET name = COALESCE($1, name),
           type = COALESCE($2, type),
           primary_phone = COALESCE($3, primary_phone),
+          additional_phones = COALESCE($4, additional_phones),
           updated_at = NOW()
-      WHERE id = $4 AND agent_id = ANY($5)
+      WHERE id = $5 AND agent_id = ANY($6)
       RETURNING *
-    `, [name, type, primary_phone, id, agentIds]);
+    `, [name, type, primaryPhone, additionalPhones, id, agentIds]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Organization not found' });
     }
 
-    res.json({ organization: result.rows[0] });
+    const org = result.rows[0];
+    res.json({
+      organization: {
+        ...org,
+        phone_numbers: [org.primary_phone, ...(org.additional_phones || [])].filter(Boolean)
+      }
+    });
   } catch (error) {
     console.error('Error updating organization:', error);
     res.status(500).json({ error: 'Failed to update organization' });
+  }
+});
+
+// POST /api/crm/organizations/:id/phone - Add a phone number to organization
+app.post('/api/crm/organizations/:id/phone', authenticateToken, async (req, res) => {
+  try {
+    const agentIds = req.user.agent_ids || [];
+    const { id } = req.params;
+    const { phone_number } = req.body;
+
+    if (!phone_number) {
+      return res.status(400).json({ error: 'phone_number required' });
+    }
+
+    // Normalize phone number
+    const normalizedPhone = phone_number.replace(/[\s\-\(\)\+]/g, '');
+
+    // Get current org
+    const orgCheck = await pool.query(
+      'SELECT id, primary_phone, additional_phones FROM organizations WHERE id = $1 AND agent_id = ANY($2)',
+      [id, agentIds]
+    );
+
+    if (orgCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    const org = orgCheck.rows[0];
+    const currentPhones = [org.primary_phone, ...(org.additional_phones || [])].filter(Boolean);
+
+    // Check if phone already exists (normalize both for comparison)
+    const phoneExists = currentPhones.some(p =>
+      p.replace(/[\s\-\(\)\+]/g, '') === normalizedPhone
+    );
+
+    if (phoneExists) {
+      return res.status(400).json({ error: 'Phone number already exists for this organization' });
+    }
+
+    // Add to additional_phones array
+    const result = await pool.query(`
+      UPDATE organizations
+      SET additional_phones = array_append(COALESCE(additional_phones, ARRAY[]::text[]), $1),
+          updated_at = NOW()
+      WHERE id = $2
+      RETURNING *
+    `, [phone_number, id]);
+
+    const updated = result.rows[0];
+    res.json({
+      success: true,
+      phone_numbers: [updated.primary_phone, ...(updated.additional_phones || [])].filter(Boolean)
+    });
+  } catch (error) {
+    console.error('Error adding phone to organization:', error);
+    res.status(500).json({ error: 'Failed to add phone number' });
+  }
+});
+
+// DELETE /api/crm/organizations/:id/phone - Remove a phone number from organization
+app.delete('/api/crm/organizations/:id/phone', authenticateToken, async (req, res) => {
+  try {
+    const agentIds = req.user.agent_ids || [];
+    const { id } = req.params;
+    const { phone_number } = req.body;
+
+    if (!phone_number) {
+      return res.status(400).json({ error: 'phone_number required' });
+    }
+
+    // Get current org
+    const orgCheck = await pool.query(
+      'SELECT id, primary_phone, additional_phones FROM organizations WHERE id = $1 AND agent_id = ANY($2)',
+      [id, agentIds]
+    );
+
+    if (orgCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    const org = orgCheck.rows[0];
+
+    // If removing primary_phone, promote first additional phone
+    if (org.primary_phone === phone_number) {
+      const newPrimary = (org.additional_phones || [])[0] || null;
+      const newAdditional = (org.additional_phones || []).slice(1);
+
+      const result = await pool.query(`
+        UPDATE organizations
+        SET primary_phone = $1,
+            additional_phones = $2,
+            updated_at = NOW()
+        WHERE id = $3
+        RETURNING *
+      `, [newPrimary, newAdditional.length > 0 ? newAdditional : null, id]);
+
+      const updated = result.rows[0];
+      return res.json({
+        success: true,
+        phone_numbers: [updated.primary_phone, ...(updated.additional_phones || [])].filter(Boolean)
+      });
+    }
+
+    // Otherwise, remove from additional_phones array
+    const result = await pool.query(`
+      UPDATE organizations
+      SET additional_phones = array_remove(additional_phones, $1),
+          updated_at = NOW()
+      WHERE id = $2
+      RETURNING *
+    `, [phone_number, id]);
+
+    const updated = result.rows[0];
+    res.json({
+      success: true,
+      phone_numbers: [updated.primary_phone, ...(updated.additional_phones || [])].filter(Boolean)
+    });
+  } catch (error) {
+    console.error('Error removing phone from organization:', error);
+    res.status(500).json({ error: 'Failed to remove phone number' });
   }
 });
 

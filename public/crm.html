@@ -394,6 +394,54 @@
       border-color: #ef4444;
     }
 
+    /* Phone list styles for organizations */
+    .phone-list-cell {
+      min-width: 180px;
+    }
+    .phone-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+    .phone-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 12px;
+      color: #60a5fa;
+    }
+    .phone-remove-btn {
+      background: none;
+      border: none;
+      color: #ff6b6b;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      padding: 0 2px;
+      opacity: 0.6;
+    }
+    .phone-remove-btn:hover {
+      opacity: 1;
+    }
+    .phone-add-btn {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #4ade80;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .phone-add-btn:hover {
+      background: rgba(34, 197, 94, 0.2);
+    }
+
     .crm-type-badge {
       display: inline-block;
       padding: 5px 12px;
@@ -916,6 +964,7 @@
             <tr>
               <th>Name</th>
               <th>Phone</th>
+              <th>Claim #</th>
               <th>Email</th>
               <th>Language</th>
               <th>Calls</th>
@@ -924,7 +973,7 @@
             </tr>
           </thead>
           <tbody id="crm-clients-body">
-            <tr><td colspan="7" class="empty-state">Loading clients...</td></tr>
+            <tr><td colspan="8" class="empty-state">Loading clients...</td></tr>
           </tbody>
         </table>
       </div>
@@ -1007,7 +1056,7 @@
         <!-- Linked Clients Section -->
         <div class="org-detail-section">
           <div class="org-detail-section-title">
-            Court Law Clients They've Called About
+            CourtLaw Clients They've Called About
             <span class="org-detail-section-count" id="org-clients-count">0</span>
           </div>
           <div id="org-clients-content">
@@ -1189,16 +1238,25 @@
     }
 
     function renderOrganizationsTable(data) {
-      return data.map(org => `
-        <tr>
-          <td><span class="org-name-clickable" onclick="openOrgDetail(${org.id})">${org.name || '<span class="empty-field">--</span>'}</span></td>
-          <td><span class="crm-type-badge ${org.type || 'other'}">${formatOrgType(org.type)}</span></td>
-          <td><span class="editable" onclick="editOrgField(${org.id}, 'primary_phone', this)">${org.primary_phone || '<span class="empty-field">--</span>'}</span></td>
-          <td>${org.contact_count || 0}</td>
-          <td>${org.total_calls || 0}</td>
-          <td><button class="crm-delete-btn" onclick="confirmDeleteOrg(${org.id}, '${escapeHtml(org.name)}', ${org.contact_count || 0})">Delete</button></td>
-        </tr>
-      `).join('');
+      return data.map(org => {
+        const phones = org.phone_numbers || [];
+        const phoneDisplay = phones.length > 0
+          ? phones.map((p, i) => `<span class="phone-item">${formatPhone(p)}<button class="phone-remove-btn" onclick="removeOrgPhone(${org.id}, '${escapeHtml(p)}', event)">×</button></span>`).join('')
+          : '<span class="empty-field">--</span>';
+        return `
+          <tr>
+            <td><span class="org-name-clickable" onclick="openOrgDetail(${org.id})">${org.name || '<span class="empty-field">--</span>'}</span></td>
+            <td><span class="crm-type-badge ${org.type || 'other'}">${formatOrgType(org.type)}</span></td>
+            <td class="phone-list-cell">
+              <div class="phone-list">${phoneDisplay}</div>
+              <button class="phone-add-btn" onclick="addOrgPhone(${org.id}, event)">+ Add</button>
+            </td>
+            <td>${org.contact_count || 0}</td>
+            <td>${org.total_calls || 0}</td>
+            <td><button class="crm-delete-btn" onclick="confirmDeleteOrg(${org.id}, '${escapeHtml(org.name)}', ${org.contact_count || 0})">Delete</button></td>
+          </tr>
+        `;
+      }).join('');
     }
 
     function renderContactsTable(data) {
@@ -1223,6 +1281,7 @@
           <tr>
             <td><span class="${nameClass}" ${nameTitle} onclick="editCallerField(${c.id}, 'name', this)">${c.name || '<span class="empty-field">--</span>'}</span></td>
             <td>${formatPhone(c.phone_number)}</td>
+            <td><span class="editable" onclick="editCallerField(${c.id}, 'claim_number', this)">${c.claim_number || '<span class="empty-field">--</span>'}</span></td>
             <td><span class="editable" onclick="editCallerField(${c.id}, 'email', this)">${c.email || '<span class="empty-field">--</span>'}</span></td>
             <td>${c.preferred_language || 'english'}</td>
             <td>${c.total_calls || 0}</td>
@@ -1282,6 +1341,60 @@
       } catch (e) {
         el.innerHTML = oldVal || '<span class="empty-field">--</span>';
         showToast('Failed to update', 'error');
+      }
+    }
+
+    // Phone number management for organizations
+    async function addOrgPhone(orgId, event) {
+      event.stopPropagation();
+      const phone = prompt('Enter phone number to add:');
+      if (!phone || !phone.trim()) return;
+
+      try {
+        const res = await fetch(`/api/crm/organizations/${orgId}/phone`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone_number: phone.trim() })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast('Phone added');
+          // Update local data and re-render
+          const org = crmData.organizations.find(o => o.id === orgId);
+          if (org) org.phone_numbers = data.phone_numbers;
+          renderTable('organizations', crmData.organizations);
+        } else {
+          showToast(data.error || 'Failed to add phone', 'error');
+        }
+      } catch (e) {
+        showToast('Failed to add phone', 'error');
+      }
+    }
+
+    async function removeOrgPhone(orgId, phone, event) {
+      event.stopPropagation();
+      if (!confirm(`Remove phone number ${phone}?`)) return;
+
+      try {
+        const res = await fetch(`/api/crm/organizations/${orgId}/phone`, {
+          method: 'DELETE',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone_number: phone })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast('Phone removed');
+          // Update local data and re-render
+          const org = crmData.organizations.find(o => o.id === orgId);
+          if (org) org.phone_numbers = data.phone_numbers;
+          renderTable('organizations', crmData.organizations);
+        } else {
+          showToast(data.error || 'Failed to remove phone', 'error');
+        }
+      } catch (e) {
+        showToast('Failed to remove phone', 'error');
       }
     }
 
@@ -1522,7 +1635,7 @@
       document.getElementById('org-clients-count').textContent = clients.length;
 
       if (clients.length === 0) {
-        document.getElementById('org-clients-body').innerHTML = '<tr><td colspan="5" class="org-detail-empty">No Court Law clients linked to this organization yet</td></tr>';
+        document.getElementById('org-clients-body').innerHTML = '<tr><td colspan="5" class="org-detail-empty">No CourtLaw clients linked to this organization yet</td></tr>';
       } else {
         document.getElementById('org-clients-body').innerHTML = clients.map(c => `
           <tr>
