@@ -442,6 +442,52 @@
       background: rgba(34, 197, 94, 0.2);
     }
 
+    /* Editable dropdown style */
+    .editable-dropdown {
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      text-transform: capitalize;
+    }
+    .editable-dropdown:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .editable-dropdown select {
+      background: #1a1f2e;
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      padding: 2px 4px;
+      font-size: 13px;
+    }
+
+    /* Editable type badge */
+    .crm-type-badge.editable-type {
+      cursor: pointer;
+    }
+    .crm-type-badge.editable-type:hover {
+      opacity: 0.8;
+    }
+
+    /* Org edit name button */
+    .org-edit-name-btn {
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      font-size: 12px;
+      margin-left: 6px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    tr:hover .org-edit-name-btn {
+      opacity: 0.6;
+    }
+    .org-edit-name-btn:hover {
+      opacity: 1 !important;
+      color: #60a5fa;
+    }
+
     .crm-type-badge {
       display: inline-block;
       padding: 5px 12px;
@@ -1243,10 +1289,14 @@
         const phoneDisplay = phones.length > 0
           ? phones.map((p, i) => `<span class="phone-item">${formatPhone(p)}<button class="phone-remove-btn" onclick="removeOrgPhone(${org.id}, '${escapeHtml(p)}', event)">×</button></span>`).join('')
           : '<span class="empty-field">--</span>';
+        const orgType = org.type || 'other';
         return `
           <tr>
-            <td><span class="org-name-clickable" onclick="openOrgDetail(${org.id})">${org.name || '<span class="empty-field">--</span>'}</span></td>
-            <td><span class="crm-type-badge ${org.type || 'other'}">${formatOrgType(org.type)}</span></td>
+            <td>
+              <span class="org-name-clickable" onclick="openOrgDetail(${org.id})">${org.name || '<span class="empty-field">--</span>'}</span>
+              <button class="org-edit-name-btn" onclick="editOrgName(${org.id}, event)" title="Edit name">✎</button>
+            </td>
+            <td><span class="crm-type-badge editable-type ${orgType}" data-type="${orgType}" onclick="editOrgType(${org.id}, this, event)">${formatOrgType(orgType)}</span></td>
             <td class="phone-list-cell">
               <div class="phone-list">${phoneDisplay}</div>
               <button class="phone-add-btn" onclick="addOrgPhone(${org.id}, event)">+ Add</button>
@@ -1277,13 +1327,14 @@
         const isFirstNameOnly = c.name && !c.name.includes(' ');
         const nameClass = isFirstNameOnly ? 'editable first-name-only' : 'editable';
         const nameTitle = isFirstNameOnly ? 'title="Missing last name"' : '';
+        const lang = c.preferred_language || 'english';
         return `
           <tr>
             <td><span class="${nameClass}" ${nameTitle} onclick="editCallerField(${c.id}, 'name', this)">${c.name || '<span class="empty-field">--</span>'}</span></td>
             <td>${formatPhone(c.phone_number)}</td>
             <td><span class="editable" onclick="editCallerField(${c.id}, 'claim_number', this)">${c.claim_number || '<span class="empty-field">--</span>'}</span></td>
             <td><span class="editable" onclick="editCallerField(${c.id}, 'email', this)">${c.email || '<span class="empty-field">--</span>'}</span></td>
-            <td>${c.preferred_language || 'english'}</td>
+            <td><span class="editable-dropdown" onclick="editLanguage(${c.id}, this)">${lang}</span></td>
             <td>${c.total_calls || 0}</td>
             <td>${c.last_call ? formatDate(c.last_call) : '--'}</td>
             <td><button class="crm-delete-btn" onclick="confirmDeleteCaller(${c.id}, '${escapeHtml(c.name)}')">Delete</button></td>
@@ -1298,7 +1349,7 @@
           <td><span class="editable" onclick="editCallerField(${l.id}, 'name', this)">${l.name || '<span class="empty-field">--</span>'}</span></td>
           <td>${formatPhone(l.phone_number)}</td>
           <td><span class="editable" onclick="editCallerField(${l.id}, 'email', this)">${l.email || '<span class="empty-field">--</span>'}</span></td>
-          <td>${l.claim_number || '<span class="empty-field">--</span>'}</td>
+          <td><span class="editable" onclick="editCallerField(${l.id}, 'claim_number', this)">${l.claim_number || '<span class="empty-field">--</span>'}</span></td>
           <td>${formatDate(l.created_at)}</td>
           <td><button class="crm-delete-btn" onclick="confirmDeleteCaller(${l.id}, '${escapeHtml(l.name)}')">Delete</button></td>
         </tr>
@@ -1395,6 +1446,141 @@
         }
       } catch (e) {
         showToast('Failed to remove phone', 'error');
+      }
+    }
+
+    // Language dropdown editor for clients
+    function editLanguage(callerId, el) {
+      if (el.querySelector('select')) return;
+      const currentLang = el.textContent.trim().toLowerCase();
+      el.innerHTML = `
+        <select>
+          <option value="english" ${currentLang === 'english' ? 'selected' : ''}>English</option>
+          <option value="spanish" ${currentLang === 'spanish' ? 'selected' : ''}>Spanish</option>
+          <option value="chinese" ${currentLang === 'chinese' ? 'selected' : ''}>Chinese</option>
+          <option value="other" ${currentLang === 'other' ? 'selected' : ''}>Other</option>
+        </select>
+      `;
+      const select = el.querySelector('select');
+      select.focus();
+      select.onchange = () => saveCallerLanguage(callerId, select.value, el, currentLang);
+      select.onblur = () => {
+        if (el.querySelector('select')) {
+          el.innerHTML = currentLang;
+        }
+      };
+    }
+
+    async function saveCallerLanguage(callerId, value, el, oldVal) {
+      try {
+        const res = await fetch(`/api/crm/callers/${callerId}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ preferred_language: value })
+        });
+        if (res.ok) {
+          el.innerHTML = value;
+          showToast('Language updated');
+          // Update local data
+          const client = crmData.clients.find(c => c.id === callerId);
+          if (client) client.preferred_language = value;
+        } else {
+          el.innerHTML = oldVal;
+          showToast('Failed to update', 'error');
+        }
+      } catch (e) {
+        el.innerHTML = oldVal;
+        showToast('Failed to update', 'error');
+      }
+    }
+
+    // Organization type dropdown editor
+    function editOrgType(orgId, el, event) {
+      event.stopPropagation();
+      if (el.querySelector('select')) return;
+      const currentType = el.getAttribute('data-type') || 'other';
+      const badge = el;
+      badge.innerHTML = `
+        <select>
+          <option value="insurance" ${currentType === 'insurance' ? 'selected' : ''}>Insurance</option>
+          <option value="law_firm" ${currentType === 'law_firm' ? 'selected' : ''}>Law Firm</option>
+          <option value="medical_office" ${currentType === 'medical_office' ? 'selected' : ''}>Medical</option>
+          <option value="other" ${currentType === 'other' ? 'selected' : ''}>Other</option>
+        </select>
+      `;
+      const select = badge.querySelector('select');
+      select.focus();
+      select.onchange = () => saveOrgType(orgId, select.value, badge, currentType);
+      select.onblur = () => {
+        if (badge.querySelector('select')) {
+          badge.className = `crm-type-badge editable-type ${currentType}`;
+          badge.setAttribute('data-type', currentType);
+          badge.innerHTML = formatOrgType(currentType);
+        }
+      };
+    }
+
+    async function saveOrgType(orgId, value, el, oldVal) {
+      try {
+        const res = await fetch(`/api/crm/organizations/${orgId}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: value })
+        });
+        if (res.ok) {
+          el.className = `crm-type-badge editable-type ${value}`;
+          el.setAttribute('data-type', value);
+          el.innerHTML = formatOrgType(value);
+          showToast('Type updated');
+          // Update local data
+          const org = crmData.organizations.find(o => o.id === orgId);
+          if (org) org.type = value;
+        } else {
+          el.className = `crm-type-badge editable-type ${oldVal}`;
+          el.setAttribute('data-type', oldVal);
+          el.innerHTML = formatOrgType(oldVal);
+          showToast('Failed to update', 'error');
+        }
+      } catch (e) {
+        el.className = `crm-type-badge editable-type ${oldVal}`;
+        el.setAttribute('data-type', oldVal);
+        el.innerHTML = formatOrgType(oldVal);
+        showToast('Failed to update', 'error');
+      }
+    }
+
+    // Organization name editor
+    function editOrgName(orgId, event) {
+      event.stopPropagation();
+      const org = crmData.organizations.find(o => o.id === orgId);
+      if (!org) return;
+
+      const newName = prompt('Edit organization name:', org.name || '');
+      if (newName === null || newName.trim() === org.name) return;
+
+      saveOrgName(orgId, newName.trim());
+    }
+
+    async function saveOrgName(orgId, newName) {
+      try {
+        const res = await fetch(`/api/crm/organizations/${orgId}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newName })
+        });
+        if (res.ok) {
+          showToast('Name updated');
+          const org = crmData.organizations.find(o => o.id === orgId);
+          if (org) org.name = newName;
+          renderTable('organizations', crmData.organizations);
+        } else {
+          showToast('Failed to update name', 'error');
+        }
+      } catch (e) {
+        showToast('Failed to update name', 'error');
       }
     }
 
