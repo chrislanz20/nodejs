@@ -1015,9 +1015,9 @@
               <thead>
                 <tr>
                   <th>Client Name</th>
-                  <th>Phone</th>
+                  <th>Claim #</th>
                   <th>Contact Who Called</th>
-                  <th>Times Called</th>
+                  <th>Mentions</th>
                   <th>Last Contact</th>
                 </tr>
               </thead>
@@ -1527,9 +1527,9 @@
         document.getElementById('org-clients-body').innerHTML = clients.map(c => `
           <tr>
             <td>${escapeHtml(c.clientName) || 'Unknown'}</td>
-            <td>${formatPhone(c.clientPhone) || '--'}</td>
+            <td>${escapeHtml(c.claimNumber) || '<span class="empty-field">--</span>'}</td>
             <td>${escapeHtml(c.contactName) || 'Unknown contact'}</td>
-            <td>${c.associationCalls || 1}</td>
+            <td>${c.mentionCount || 1}</td>
             <td>${formatDate(c.lastAssociationDate)}</td>
           </tr>
         `).join('');
