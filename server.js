@@ -6001,6 +6001,7 @@ app.get('/api/crm/contacts', authenticateToken, async (req, res) => {
         oc.fax,
         oc.total_calls,
         oc.organization_id,
+        oc.created_at,
         o.name as organization_name,
         o.type as organization_type
       FROM organization_contacts oc
