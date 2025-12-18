@@ -5830,6 +5830,9 @@ app.delete('/api/crm/organizations/:id', authenticateToken, async (req, res) => 
       await pool.query('UPDATE organization_contacts SET organization_id = NULL WHERE organization_id = $1', [id]);
     }
 
+    // Unlink any callers from this organization (foreign key constraint)
+    await pool.query('UPDATE callers SET organization_id = NULL WHERE organization_id = $1', [id]);
+
     const result = await pool.query(
       'DELETE FROM organizations WHERE id = $1 AND agent_id = ANY($2) RETURNING id',
       [id, agentIds]
