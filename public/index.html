@@ -14,7 +14,8 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/responsive.css" />
   </head>
   <body>
     <header class="hero" id="top">
@@ -54,30 +55,66 @@
 
     <main>
       <section class="section" id="about">
-        <div class="container section__grid">
-          <div class="section__content">
-            <h2>Born from a Breakfast Obsession</h2>
-            <p>
-              Omelette Headquarters began as a pop-up on Wakefield&rsquo;s lakefront farmer&rsquo;s market and
-              quickly became the town&rsquo;s favorite morning ritual. Founder and chef Dana Avery wanted a
-              place where guests could slow down, savor the moment, and experience eggs elevated beyond
-              expectations.
-            </p>
-            <p>
-              Today, our kitchen celebrates the craft of breakfast with seasonal ingredients, a zero-waste
-              mindset, and barista-crafted coffee drinks. Every omelette is folded to order, served with
-              toasted sourdough, and paired with playful sauces you won&rsquo;t find anywhere else.
-            </p>
+        <div class="container">
+          <div class="about__grid">
+            <div class="section__content">
+              <h2>Born from a Breakfast Obsession</h2>
+              <p>
+                Omelette Headquarters began as a pop-up on Wakefield&rsquo;s lakefront farmer&rsquo;s market and
+                quickly became the town&rsquo;s favorite morning ritual. Founder and chef Dana Avery wanted a
+                place where guests could slow down, savor the moment, and experience eggs elevated beyond
+                expectations.
+              </p>
+              <p>
+                Today, our kitchen celebrates the craft of breakfast with seasonal ingredients, a zero-waste
+                mindset, and barista-crafted coffee drinks. Every omelette is folded to order, served with
+                toasted sourdough, and paired with playful sauces you won&rsquo;t find anywhere else.
+              </p>
+            </div>
+            <article class="highlight-card" aria-label="House values">
+              <h3>Our Guiding Ingredients</h3>
+              <ul class="checklist">
+                <li>Farm eggs sourced within 50 miles of Wakefield</li>
+                <li>House-fermented hot sauces and pickled vegetables</li>
+                <li>Compost-first kitchen with reusable packaging</li>
+                <li>Warm, neighborhood hospitality every day</li>
+              </ul>
+            </article>
           </div>
-          <article class="highlight-card" aria-label="House values">
-            <h3>Our Guiding Ingredients</h3>
-            <ul class="checklist">
-              <li>Farm eggs sourced within 50 miles of Wakefield</li>
-              <li>House-fermented hot sauces and pickled vegetables</li>
-              <li>Compost-first kitchen with reusable packaging</li>
-              <li>Warm, neighborhood hospitality every day</li>
-            </ul>
-          </article>
+          <div class="about-gallery" aria-label="Omelette Headquarters café gallery">
+            <figure class="about-gallery__item about-gallery__item--featured">
+              <img
+                class="about-gallery__image"
+                src="https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=1200&q=80"
+                alt="Chef plating an omelette with fresh herbs"
+              />
+              <figcaption class="about-gallery__caption">Chef-crafted omelettes</figcaption>
+            </figure>
+            <figure class="about-gallery__item">
+              <img
+                class="about-gallery__image"
+                src="https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?auto=format&fit=crop&w=800&q=80"
+                alt="Coffee and fresh pastries on a breakfast table"
+              />
+              <figcaption class="about-gallery__caption">Morning pastry flights</figcaption>
+            </figure>
+            <figure class="about-gallery__item">
+              <img
+                class="about-gallery__image"
+                src="https://images.unsplash.com/photo-1551782450-17144efb9c50?auto=format&fit=crop&w=800&q=80"
+                alt="Sizzling skillet with breakfast vegetables"
+              />
+              <figcaption class="about-gallery__caption">Seasonal sautés</figcaption>
+            </figure>
+            <figure class="about-gallery__item">
+              <img
+                class="about-gallery__image"
+                src="https://images.unsplash.com/photo-1484980859177-5ac1249fda6f?auto=format&fit=crop&w=800&q=80"
+                alt="Guests enjoying brunch at a sunlit café table"
+              />
+              <figcaption class="about-gallery__caption">Community brunch vibes</figcaption>
+            </figure>
+          </div>
         </div>
       </section>
 
